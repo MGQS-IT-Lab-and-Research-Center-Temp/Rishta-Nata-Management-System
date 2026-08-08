@@ -9,3 +9,5 @@ I enjoy working on projects that solve real-world problems, such as MediAssistAI
 and also planning to build a Marriage Registraation Portal for the Ahmadiyya Muslim Jama'at,
 and inshallah May Allah make it successful for me and my teamMates, Aamain . 
 I’m always eager to learn new technologies, collaborate with others, and grow as a developer.
+  
+
