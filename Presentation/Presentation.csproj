@@ -4,6 +4,19 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>f8ad9e2e-0716-4c71-a79c-006651dde0a8</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10"/>
+  </ItemGroup>
+
+	<!--Reference the Infrastructure Project-->
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
 
 </Project>
