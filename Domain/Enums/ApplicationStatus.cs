@@ -10,13 +10,15 @@ namespace Domain.Enums
 
         Submitted = 20,
 
-        Reviewed1Approved = 30,
-        Reviewed1Rejected = 40,
+        JamaatPresidentReviewApproved = 30,
+        jamaatPresidentPendingApproval = 35,
+        JamaatPresidentReviewRejected = 40,
 
-        Reviewed2Approved = 50,
-        Reveiwed2Rejected = 60,
+        NationalRishtanataSecretaryReviewApproved = 50,
+        NationalRishtanataSecretaryPendingApproval = 55,
+        NationalRishtanataSecretaryReveiwRejected = 60,
 
-        Reviewed3Approved = 70,
-        Reviewed3Rejected = 80
+        AmirReviewApproved = 70,
+        AmirReviewRejected = 80
     }
 }
