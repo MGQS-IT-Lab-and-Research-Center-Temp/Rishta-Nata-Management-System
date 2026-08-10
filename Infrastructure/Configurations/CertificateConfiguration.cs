@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.Entities;
 
-namespace Infrastructure.Persistence.Configurations
+namespace Infrastructure.Configurations
 {
     public class CertificateConfiguration : IEntityTypeConfiguration<Certificate>
     {
