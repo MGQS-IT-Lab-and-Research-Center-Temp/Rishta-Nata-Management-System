@@ -4,11 +4,9 @@ using Infrastructure.Identity;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext
-    : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+public class RishtanataDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {
-    public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options)
+    public RishtanataDbContext(DbContextOptions<RishtanataDbContext> options)
         : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -16,6 +14,6 @@ public class ApplicationDbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(ApplicationDbContext).Assembly);
+            typeof(RishtanataDbContext).Assembly);
     }
 }
