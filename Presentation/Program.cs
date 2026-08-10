@@ -10,14 +10,12 @@ builder.Services.AddControllersWithViews();
 
 // Add services for database access
 
-
-
 builder.Services.AddMySQLServer<RishtanataDbContext>(
     builder.Configuration.GetConnectionString("DefaultConnection")!);
+
 // Configure Identity
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<RishtanataDbContext>();
-
 
 var app = builder.Build();
 
