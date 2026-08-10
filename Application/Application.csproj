@@ -11,4 +11,11 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Mapper\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

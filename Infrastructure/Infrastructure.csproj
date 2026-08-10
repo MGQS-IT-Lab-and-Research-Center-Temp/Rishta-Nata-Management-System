@@ -19,4 +19,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
+    <Folder Include="Context\" />
+    <Folder Include="ExternalServices\" />
+    <Folder Include="EFConfiguration\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
