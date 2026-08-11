@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace Infrastructure.Identity
+namespace Infrastructure.Identity;
+
+public class ApplicationRole : IdentityRole<Guid>
 {
-    public class ApplicationRole : IdentityRole
-    {
-    }
+    public string Description { get; set; } = default!;
 }

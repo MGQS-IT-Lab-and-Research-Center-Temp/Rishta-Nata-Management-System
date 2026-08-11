@@ -1,15 +1,14 @@
+﻿using Domain.Entities;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure.Identity;
-using Domain.Entities;
 
 namespace Infrastructure.Persistence;
 
-public class RishtanataDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+public class RishtanataDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
     public RishtanataDbContext(DbContextOptions<RishtanataDbContext> options)
         : base(options) { }
-
     public DbSet<Certificate> Certificates => Set<Certificate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
