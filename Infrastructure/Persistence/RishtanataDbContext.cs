@@ -12,6 +12,8 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public DbSet<Certificate> Certificates => Set<Certificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
+    public DbSet<MarriageApplication> MarriageApplications => Set<MarriageApplication>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
