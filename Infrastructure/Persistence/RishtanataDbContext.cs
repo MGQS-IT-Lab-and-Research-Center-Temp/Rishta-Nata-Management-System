@@ -10,6 +10,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public RishtanataDbContext(DbContextOptions<RishtanataDbContext> options)
         : base(options) { }
     public DbSet<Certificate> Certificates => Set<Certificate>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
