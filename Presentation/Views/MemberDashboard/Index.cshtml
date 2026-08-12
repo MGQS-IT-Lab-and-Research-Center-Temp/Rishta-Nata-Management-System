@@ -1,0 +1,96 @@
+﻿@model Presentation.ViewModels.MemberDashboardViewModel
+
+@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+<div class="dashboard-hero">
+    <h1>Assalamu Alaykum Warahmatullahi Wabarakatuh, @Model.MemberName</h1>
+    <p>Here's an overview of your marriage records with the Jama'at.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card dashboard-card">
+            <div class="card-header">Current Spouse</div>
+            <div class="card-body">
+                @if (Model.CurrentSpouse is not null)
+                {
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="spouse-avatar">@Model.CurrentSpouse.Name.Substring(0, 1)</div>
+                        <div>
+                            <div class="fw-semibold">@Model.CurrentSpouse.Name</div>
+                            <div class="text-muted small">Married since @Model.CurrentSpouse.MarriageDate.ToString("dd MMM yyyy")</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No current spouse on record.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card dashboard-card">
+            <div class="card-header">Marriage History</div>
+            <div class="card-body">
+                <ul class="timeline">
+                    @foreach (var entry in Model.MarriageHistory)
+                    {
+                        <li>
+                            <span>
+                                <span class="status-dot @(entry.Status == "Married" ? "married" : "divorced")"></span>
+                                <strong>@entry.Status</strong> @entry.SpouseName
+                            </span>
+                            <span class="text-muted small">@entry.Date.ToString("dd MMM yyyy")</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <button type="button" class="btn btn-primary apply-nikah-btn" data-bs-toggle="modal" data-bs-target="#nikahApplicationModal">
+        Apply for Nikah
+    </button>
+</div>
+
+<!-- Apply for Nikah Modal (non-functional dummy form per #119) -->
+<div class="modal fade" id="nikahApplicationModal" tabindex="-1" aria-labelledby="nikahApplicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nikahApplicationModalLabel">Apply for Nikah</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label asp-for="NikahForm.ProspectiveSpouseName" class="form-label">Prospective Spouse's Name</label>
+                        <input asp-for="NikahForm.ProspectiveSpouseName" class="form-control" placeholder="Full name" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NikahForm.ProspectiveSpouseGuardian" class="form-label">Guardian's Name</label>
+                        <input asp-for="NikahForm.ProspectiveSpouseGuardian" class="form-control" placeholder="Wali / Guardian" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NikahForm.ProposedDate" class="form-label">Proposed Date</label>
+                        <input asp-for="NikahForm.ProposedDate" type="date" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NikahForm.Notes" class="form-label">Notes</label>
+                        <textarea asp-for="NikahForm.Notes" class="form-control" rows="3" placeholder="Anything else the Jama'at should know"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" disabled title="Dummy form — not yet wired up">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+﻿.dashboard-hero {
+    background: linear-gradient(135deg, #1b6ec2 0%, #0d4a8a 100%);
+    color: #fff;
+    border-radius: 0.75rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+}
+
+    .dashboard-hero h1 {
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .dashboard-hero p {
+        opacity: 0.85;
+        margin-bottom: 0;
+    }
+
+.dashboard-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.06);
+    height: 100%;
+}
+
+    .dashboard-card .card-header {
+        background: #fff;
+        border-bottom: 1px solid #eef0f2;
+        font-weight: 600;
+        padding: 1rem 1.25rem;
+        border-radius: 0.75rem 0.75rem 0 0 !important;
+    }
+
+    .dashboard-card .card-body {
+        padding: 1.25rem;
+    }
+
+.spouse-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #eaf2fb;
+    color: #1b6ec2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .timeline li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f2f4;
+    }
+
+        .timeline li:last-child {
+            border-bottom: none;
+        }
+
+    .timeline .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+.status-dot.married {
+    background: #1fa860;
+}
+
+.status-dot.divorced {
+    background: #9aa2ac;
+}
+
+.apply-nikah-btn {
+    border-radius: 2rem;
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+}
