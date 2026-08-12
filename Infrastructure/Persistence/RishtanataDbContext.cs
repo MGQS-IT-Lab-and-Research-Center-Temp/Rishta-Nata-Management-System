@@ -11,6 +11,8 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
         : base(options) { }
     public DbSet<Certificate> Certificates => Set<Certificate>();
 
+    public DbSet<MarriageApplication> MarriageApplications => Set<MarriageApplication>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
