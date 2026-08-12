@@ -479,7 +479,3 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Vim temporary swap files
-*.swp
-Presentation/appsettings.Development.json 
-/Infrastructure/Persistence/AuditLogDbContext.cs
