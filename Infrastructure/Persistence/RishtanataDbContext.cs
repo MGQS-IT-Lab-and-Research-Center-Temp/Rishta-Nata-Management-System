@@ -11,7 +11,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
         : base(options) { }
     public DbSet<Certificate> Certificates => Set<Certificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
-
+    public DbSet<Bride> Brides => Set<Bride>();
     public DbSet<MarriageApplication> MarriageApplications => Set<MarriageApplication>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
