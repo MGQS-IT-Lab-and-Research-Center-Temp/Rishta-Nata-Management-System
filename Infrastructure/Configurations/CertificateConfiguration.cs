@@ -12,11 +12,11 @@ public class CertificateConfiguration : IEntityTypeConfiguration<Certificate>
         builder.HasKey(c => c.Id);
 
         // Enforces one certificate per application at the DB level.
-        // TODO: once MarriageApplication exists, replace this with a proper
-        // HasOne(c => c.MarriageApplication).WithOne().HasForeignKey<Certificate>(c => c.MarriageApplicationId)
-        // and keep IsRequired() + the unique index below.
-        builder.Property(c => c.MarriageApplicationId)
-            .IsRequired();
+        builder.HasOne(c => c.MarriageApplication)
+            .WithOne(ma => ma.Certificate)
+            .HasForeignKey<Certificate>(c => c.MarriageApplicationId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(c => c.MarriageApplicationId)
             .IsUnique();
