@@ -24,4 +24,10 @@
     <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
+    <Folder Include="Context\" />
+    <Folder Include="ExternalServices\" />
+  </ItemGroup>
+
 </Project>
