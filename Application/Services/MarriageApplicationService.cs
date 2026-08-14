@@ -1,6 +1,7 @@
-﻿using Infrastructure.Persistence;
+﻿using Application.DTOs.MarriageApplication;
 using Application.Interfaces;
 using Domain.Entities;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
@@ -14,20 +15,45 @@ namespace Application.Services
             _context = context;
         }
 
-        public async Task<MarriageApplication> CreateAsync(
-            MarriageApplication marriageApplication)
+        public async Task<MarriageApplicationDto> CreateApplicationAsync(
+            CreateMarriageApplicationDto dto)
         {
+            var marriageApplication = new MarriageApplication
+            {
+                UserId = dto.UserId
+            };
+
             _context.MarriageApplications.Add(marriageApplication);
 
             await _context.SaveChangesAsync();
 
-            return marriageApplication;
+            return new MarriageApplicationDto
+            {
+                Id = marriageApplication.Id,
+                Status = marriageApplication.Status,
+                UserId = marriageApplication.UserId,
+                SerialNumber = marriageApplication.SerialNumber
+            };
         }
 
-        public async Task<MarriageApplication?> GetByIdAsync(Guid id)
+        public async Task<MarriageApplicationDto> GetApplicationByIdAsync(Guid id)
         {
-            return await _context.MarriageApplications
-                .FindAsync(id);
+            var marriageApplication = await _context.MarriageApplications
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (marriageApplication == null)
+            {
+                throw new KeyNotFoundException(
+                    $"Marriage application with ID {id} was not found.");
+            }
+
+            return new MarriageApplicationDto
+            {
+                Id = marriageApplication.Id,
+                Status = marriageApplication.Status,
+                UserId = marriageApplication.UserId,
+                SerialNumber = marriageApplication.SerialNumber
+            };
         }
 
         public async Task<List<MarriageApplication>> GetAllAsync()

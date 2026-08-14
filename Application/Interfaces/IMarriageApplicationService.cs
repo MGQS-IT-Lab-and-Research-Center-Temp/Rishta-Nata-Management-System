@@ -1,12 +1,13 @@
 ﻿
+using Application.DTOs.MarriageApplication;
 using Domain.Entities;
 
 namespace Application.Interfaces
 {
     public interface IMarriageApplicationService
     {
-        Task<MarriageApplication> CreateAsync(MarriageApplication marriageApplication);
-        Task<MarriageApplication?> GetByIdAsync(Guid id);
+        Task<MarriageApplicationDto> CreateApplicationAsync(CreateMarriageApplicationDto dto);
+        Task<MarriageApplicationDto> GetApplicationByIdAsync(Guid id);
         Task<List<MarriageApplication>> GetAllAsync();
     }
 }
