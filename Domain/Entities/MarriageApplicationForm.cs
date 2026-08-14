@@ -7,6 +7,7 @@ namespace Domain.Entities
     {
         // ===== Application =====
         public Guid MarriageApplicationId { get; set; }
+        public MarriageApplication MarriageApplication { get; set; }
         public string ReferenceNumber { get; set; } = string.Empty; // AMJN/NF/NO
         public DateTime ProposedNikahDate { get; set; }
         public string Venue { get; set; } = string.Empty; // Jama'at / Circuit
