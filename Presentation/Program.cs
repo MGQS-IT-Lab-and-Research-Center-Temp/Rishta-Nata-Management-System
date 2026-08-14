@@ -1,6 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Infrastructure.Persistence;
+using Application.Interfaces;
+using Application.Services;
 using Infrastructure.Identity;
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,8 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
 // Configure Identity
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<RishtanataDbContext>();
+
+builder.Services.AddScoped<IMarriageApplicationService, MarriageApplicationService>();
 
 var app = builder.Build();
 
