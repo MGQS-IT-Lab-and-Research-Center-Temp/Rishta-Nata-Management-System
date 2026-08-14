@@ -1,0 +1,343 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Amir Dashboard</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/amir-dashboard.css" />
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+                <h4>Ahmadiyya</h4>
+                <span>Marriage Admin</span>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="#" class="nav-link active">
+                    Dashboard
+                </a>
+
+                <a href="#" class="nav-link">
+                    Applications
+                </a>
+
+                <a href="#" class="nav-link">
+                    Applicants
+                </a>
+
+                <a href="#" class="nav-link">
+                    Reviews
+                </a>
+
+                <a href="#" class="nav-link">
+                    Marriages
+                </a>
+
+                <a href="#" class="nav-link">
+                    Events
+                </a>
+
+                <a href="#" class="nav-link">
+                    Users
+                </a>
+
+                <a href="#" class="nav-link">
+                    Reports
+                </a>
+
+                <a href="#" class="nav-link">
+                    Settings
+                </a>
+
+            </nav>
+
+            <div class="sidebar-user">
+                <strong>Admin User</strong>
+                <small>Administrator</small>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+
+                <div>
+                    <span>Home</span>
+                    <span>/</span>
+                    <strong>Dashboard</strong>
+                </div>
+
+                <div class="topbar-user">
+                    <span>🔔</span>
+                    <span>AU</span>
+                </div>
+
+            </header>
+
+            <section class="welcome-banner">
+
+                <h1>Assalamu Alaikum Warahmatullahi Wabarakatuh, Amir Sahib</h1>
+
+                <p>
+                    Here's an overview of your marriage management system.
+                </p>
+
+            </section>
+
+            <section class="summary-section">
+
+                <div class="row g-4">
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="card summary-card">
+                            <div class="card-body">
+
+                                <h6>Total Applications</h6>
+
+                                <h2>24</h2>
+
+                                <a href="#">View all applications →</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="card summary-card">
+                            <div class="card-body">
+
+                                <h6>Pending Reviews</h6>
+
+                                <h2>8</h2>
+
+                                <a href="#">View pending reviews →</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="card summary-card">
+                            <div class="card-body">
+
+                                <h6>Approved</h6>
+
+                                <h2>12</h2>
+
+                                <a href="#">View approved →</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="card summary-card">
+                            <div class="card-body">
+
+                                <h6>Rejected</h6>
+
+                                <h2>4</h2>
+
+                                <a href="#">View rejected →</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="dashboard-content mt-4">
+
+                <div class="row g-4">
+
+                    <div class="col-lg-7">
+
+                        <div class="card dashboard-card">
+
+                            <div class="card-header application-header">
+
+                                <h5>Recent Applications</h5>
+
+                                <div class="application-filters">
+
+                                    <button type="button"
+                                            class="filter-btn active"
+                                            data-filter="all">
+                                        All
+                                    </button>
+
+                                    <div class="application-item" data-status="pending">
+
+                                        <strong>Ali Ahmad & Fatima Noor</strong>
+
+                                        <small>Submitted on 18 May 2025</small>
+
+                                        <span class="badge bg-warning">
+                                            Pending Review
+                                        </span>
+
+                                    </div>
+
+                                    <div class="application-item" data-status="review">
+
+                                        <strong>Usman Khalid & Ayesha Khan</strong>
+
+                                        <small>Submitted on 17 May 2025</small>
+
+                                        <span class="badge bg-primary">
+                                            Under Review
+                                        </span>
+
+                                    </div>
+
+                                    <div class="application-item" data-status="approved">
+
+                                        <strong>Hamza Iqbal & Sana Bashir</strong>
+
+                                        <small>Submitted on 16 May 2025</small>
+
+                                        <span class="badge bg-success">
+                                            Approved
+                                        </span>
+
+                                    </div>
+                                    <div class="application-item" data-status="rejected">
+
+                                        <strong>Bilal Hussain & Maryam Saleem</strong>
+
+                                        <small>Submitted on 15 May 2025</small>
+
+                                        <span class="badge bg-danger">
+                                            Rejected
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-5">
+
+                        <div class="card dashboard-card">
+
+                            <div class="card-header">
+                                <h5>Upcoming Events</h5>
+                            </div>
+
+                            <div class="card-body">
+
+                                <div class="event-item">
+                                    <strong>Marriage Interview Session</strong>
+                                    <small>20 May 2025 — 10:00 AM</small>
+                                </div>
+
+                                <div class="event-item">
+                                    <strong>Pre-Nikkah Counseling</strong>
+                                    <small>22 May 2025 — 02:00 PM</small>
+                                </div>
+
+                                <div class="event-item">
+                                    <strong>Nikah Ceremony</strong>
+                                    <small>25 May 2025 — 11:00 AM</small>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="statistics-section mt-4">
+
+                <div class="card dashboard-card">
+
+                    <div class="card-header">
+                        <h5>Marriage Statistics</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-4">
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-item">
+                                    <h6>Marriages This Year</h6>
+                                    <h2>18</h2>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-item">
+                                    <h6>Marriages Last Year</h6>
+                                    <h2>22</h2>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-item">
+                                    <h6>Total Marriages</h6>
+                                    <h2>156</h2>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
+                                <div class="stat-item">
+                                    <h6>Active Couples</h6>
+                                    <h2>142</h2>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+        </main>
+
+    </div>
+
+    <script src="~/js//amir-dashboard.js"></script>
+
+</body>
+</html>
