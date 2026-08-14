@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Login - Rishta Nata</title>
+
+    <link rel="stylesheet" href="css/Login.css" />
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <div class="login-card">
+
+            <div class="logo">
+                <div class="logo-circle">RN</div>
+            </div>
+
+            <h1>Welcome Back</h1>
+
+            <p class="subtitle">
+                Login to your Rishta Nata account
+            </p>
+
+            <form>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                    />
+                </div>
+
+                <div class="form-options">
+
+                    <label class="remember">
+                        <input type="checkbox" />
+                        Remember me
+                    </label>
+
+                    <a href="#">Forgot Password?</a>
+
+                </div>
+
+                <button type="submit" class="login-button">
+                    Login
+                </button>
+
+            </form>
+
+            <p class="register-text">
+                Don't have an account?
+                <a href="#">Create an account</a>
+            </p>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
+
