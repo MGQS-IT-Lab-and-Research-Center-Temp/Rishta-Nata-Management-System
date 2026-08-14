@@ -26,12 +26,4 @@
   <ItemGroup>
     <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.9" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Logging\" />
-    <Folder Include="Mapping\" />
-    <Folder Include="Middleware\" />
-    <Folder Include="Logs\" />
-    <Folder Include="RequestModels\" />
-  </ItemGroup>
 </Project>
