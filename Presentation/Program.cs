@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql;
 using Application;
 using Infrastructure;
 using Infrastructure.Persistence;
