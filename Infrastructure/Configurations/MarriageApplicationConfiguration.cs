@@ -7,7 +7,7 @@ namespace Infrastructure.Configurations
     public class MarriageApplicationConfiguration : IEntityTypeConfiguration<MarriageApplication>
     {
         public void Configure(EntityTypeBuilder<MarriageApplication> builder)
-        { 
+        {
             builder.HasKey(ma => ma.Id);
 
             builder.Property(ma => ma.Status)
@@ -16,11 +16,6 @@ namespace Infrastructure.Configurations
 
             builder.Property(ma => ma.UserId)
                 .IsRequired();
-
-            builder.HasOne(ma => ma.Certificate)
-                .WithOne()
-                .HasForeignKey<MarriageApplication>(ma => ma.Certificate)
-                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasIndex(ma => ma.SerialNumber)
                 .IsUnique();

@@ -13,6 +13,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     public DbSet<MarriageApplication> MarriageApplications => Set<MarriageApplication>();
+    public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
