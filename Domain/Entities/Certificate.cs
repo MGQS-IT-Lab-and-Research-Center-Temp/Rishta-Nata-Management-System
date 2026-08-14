@@ -14,7 +14,8 @@ public class Certificate : AuditableEntity
 
     // Who issued it. FK to ApplicationUser (Identity), Restrict on delete so the record
     // survives account removal — configured in CertificateConfiguration.
-    public Guid IssuedByUserId { get; set; }
+    //this will be implemented after identity is done
+    // public Guid IssuedByUserId { get; set; }
 
     // Path only, consistent with Document. Nullable because whether a file is produced
     // at all is still pending clarification (#34).
