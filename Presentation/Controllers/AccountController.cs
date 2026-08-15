@@ -1,7 +1,7 @@
 ﻿using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Models;
+using Presentation.ViewModels;
 
 namespace Presentation.Controllers;
 

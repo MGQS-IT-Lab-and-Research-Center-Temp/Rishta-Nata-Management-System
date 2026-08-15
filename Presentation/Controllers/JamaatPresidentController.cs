@@ -1,11 +1,10 @@
-using System.Security.Claims;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Presentation.Models;
+using Presentation.ViewModels;
+using System.Security.Claims;
 
 namespace Presentation.Controllers;
 
@@ -35,7 +34,7 @@ public class JamaatPresidentController : Controller
             .ToListAsync();
 
         var totalApplications =
-            await _context.Applications.CountAsync();
+            await _context.ApplicationS.CountAsync();
 
         var today = DateTime.UtcNow.Date;
         var tomorrow = today.AddDays(1);
