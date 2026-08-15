@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Application.DTOs
+﻿namespace Presentation.ViewModels
 {
-    public class RishtanataSecretaryDashboardDto
+    public class RishtanataSecretaryDashboardViewModel
     {
         public string? SecretaryName { get; set; }
 
@@ -16,17 +14,17 @@ namespace Application.DTOs
 
         public int TotalMembers { get; set; }
 
-        public List<PendingApprovalDto> PendingApplications { get; set; }
+        public List<PendingApprovalViewModel> PendingApplications { get; set; }
             = new();
 
-        public List<RecentActivityDto> RecentActivities { get; set; }
+        public List<RecentActivityViewModel> RecentActivities { get; set; }
             = new();
     }
 
 
 
 
-    public class ReviewApplicationDto
+    public class ReviewApplicationViewModel
     {
         public int Id { get; set; }
 
@@ -60,7 +58,7 @@ namespace Application.DTOs
 
 
 
-    public class PendingApprovalDto
+    public class PendingApprovalViewModel
     {
         public int Id { get; set; }
 
@@ -82,7 +80,7 @@ namespace Application.DTOs
     }
 
 
-    public class MarriedCoupleDto
+    public class MarriedCoupleViewModel
     {
         public int Id { get; set; }
 
@@ -99,7 +97,7 @@ namespace Application.DTOs
         public string? Status { get; set; }
     }
 
-    public class JamaatMemberDto
+    public class JamaatMemberViewModel
     {
         public int Id { get; set; }
 
@@ -116,13 +114,5 @@ namespace Application.DTOs
         public string? Occupation { get; set; }
 
         public string? PhoneNumber { get; set; }
-    }
-
-    public class RecentActivityDto
-    {
-        public int Id { get; set; }
-        public string? ActivityType { get; set; }
-        public string? Description { get; set; }
-        public DateTime ActivityDate { get; set; }
     }
 }
