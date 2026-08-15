@@ -1,0 +1,507 @@
+@model Presentation.ViewModel.MarriageApplicationFormViewModel
+
+@{
+    ViewData["Title"] = "Marriage Application";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Marriage Application</h2>
+        <p class="text-muted">
+            Complete the marriage application form with the required information.
+        </p>
+    </div>
+
+    <form asp-action="Create" method="post">
+
+        @* Application Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Application Information</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ReferenceNumber" class="form-label">
+                            Reference Number
+                        </label>
+                        <input asp-for="ReferenceNumber" class="form-control" />
+                        <span asp-validation-for="ReferenceNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ProposedNikahDate" class="form-label">
+                            Proposed Nikah Date
+                        </label>
+                        <input asp-for="ProposedNikahDate" type="date" class="form-control" />
+                        <span asp-validation-for="ProposedNikahDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label asp-for="Venue" class="form-label">
+                            Nikah Venue
+                        </label>
+                        <input asp-for="Venue" class="form-control" placeholder="Enter the proposed Nikah venue" />
+                        <span asp-validation-for="Venue" class="text-danger"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        @* Bride Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Bride Information</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideMembershipNo" class="form-label">
+                            Membership Number
+                        </label>
+                        <input asp-for="BrideMembershipNo" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideName" class="form-label">
+                            Full Name
+                        </label>
+                        <input asp-for="BrideName" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideDateOfBirth" class="form-label">
+                            Date of Birth
+                        </label>
+                        <input asp-for="BrideDateOfBirth" type="date" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideResidentOf" class="form-label">
+                            Resident Of
+                        </label>
+                        <input asp-for="BrideResidentOf" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="BrideGenotype" class="form-label">
+                            Genotype
+                        </label>
+                        <input asp-for="BrideGenotype" class="form-control" placeholder="e.g. AA" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="BrideBloodGroup" class="form-label">
+                            Blood Group
+                        </label>
+                        <input asp-for="BrideBloodGroup" class="form-control" placeholder="e.g. O+" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="BrideMaritalStatus" class="form-label">
+                            Marital Status
+                        </label>
+                        <input asp-for="BrideMaritalStatus" class="form-control" placeholder="e.g. Single" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideProposedDowerAmount" class="form-label">
+                            Proposed Dower Amount
+                        </label>
+                        <input asp-for="BrideProposedDowerAmount" type="number" step="0.01" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideDowerAmountReceivedInCash" class="form-label">
+                            Dower Received in Cash
+                        </label>
+                        <input asp-for="BrideDowerAmountReceivedInCash" type="number" step="0.01"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideFatherName" class="form-label">
+                            Father's Name
+                        </label>
+                        <input asp-for="BrideFatherName" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrideSignatureTel" class="form-label">
+                            Signature / Telephone
+                        </label>
+                        <input asp-for="BrideSignatureTel" class="form-control" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        @* Bridegroom Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Bridegroom Information</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BridegroomMembershipNo" class="form-label">
+                            Membership Number
+                        </label>
+                        <input asp-for="BridegroomMembershipNo" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BridegroomName" class="form-label">
+                            Full Name
+                        </label>
+                        <input asp-for="BridegroomName" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BridegroomDateOfBirth" class="form-label">
+                            Date of Birth
+                        </label>
+                        <input asp-for="BridegroomDateOfBirth" type="date" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BridegroomResidentOf" class="form-label">
+                            Resident Of
+                        </label>
+                        <input asp-for="BridegroomResidentOf" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="BridegroomGenotype" class="form-label">
+                            Genotype
+                        </label>
+                        <input asp-for="BridegroomGenotype" class="form-control" placeholder="e.g. AA" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="BridegroomBloodGroup" class="form-label">
+                            Blood Group
+                        </label>
+                        <input asp-for="BridegroomBloodGroup" class="form-control" placeholder="e.g. O+" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="BridegroomFatherName" class="form-label">
+                            Father's Name
+                        </label>
+                        <input asp-for="BridegroomFatherName" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BridegroomDowerAmountPaidInCash" class="form-label">
+                            Dower Paid in Cash
+                        </label>
+                        <input asp-for="BridegroomDowerAmountPaidInCash" type="number" step="0.01"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BridegroomDowerAmountToBePaid" class="form-label">
+                            Dower Amount to be Paid
+                        </label>
+                        <input asp-for="BridegroomDowerAmountToBePaid" type="number" step="0.01" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BridegroomSignatureTel" class="form-label">
+                            Signature / Telephone
+                        </label>
+                        <input asp-for="BridegroomSignatureTel" class="form-control" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @* Nikah Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Nikah Information</h5>
+            </div>
+
+            <div class="card-body">
+
+                <h6 class="fw-bold mb-3">Nikah Status</h6>
+
+                <div class="form-check mb-2">
+                    <input asp-for="IsFirstNikah" class="form-check-input" type="checkbox" />
+
+                    <label asp-for="IsFirstNikah" class="form-check-label">
+                        This is the bridegroom's first Nikah
+                    </label>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="checkbox" />
+
+                    <label asp-for="IsSecondThirdOrFourthNikah" class="form-check-label">
+                        Second / Third / Fourth Nikah
+                    </label>
+                </div>
+
+                <hr />
+
+                <h6 class="fw-bold mb-3">Former Wife Information</h6>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input asp-for="FormerWifeIsDead" class="form-check-input" type="checkbox" />
+
+                            <label asp-for="FormerWifeIsDead" class="form-check-label">
+                                Former wife is deceased
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input asp-for="HasDivorcedFormerWife" class="form-check-input" type="checkbox" />
+
+                            <label asp-for="HasDivorcedFormerWife" class="form-check-label">
+                                Has divorced former wife
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input asp-for="FormerWifeIsPresent" class="form-check-input" type="checkbox" />
+
+                            <label asp-for="FormerWifeIsPresent" class="form-check-label">
+                                Former wife is still present
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input asp-for="FormerWifeObtainedKhula" class="form-check-input" type="checkbox" />
+
+                            <label asp-for="FormerWifeObtainedKhula" class="form-check-label">
+                                Former wife obtained Khula
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        @* Guardian / Waliyy Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Guardian / Waliyy Information</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianName" class="form-label">
+                            Guardian Name
+                        </label>
+                        <input asp-for="GuardianName" class="form-control" placeholder="Enter guardian's full name" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianRelationToBride" class="form-label">
+                            Relationship to Bride
+                        </label>
+                        <input asp-for="GuardianRelationToBride" class="form-control"
+                               placeholder="e.g. Father, Brother, Uncle" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianTel" class="form-label">
+                            Telephone
+                        </label>
+                        <input asp-for="GuardianTel" class="form-control" placeholder="Enter telephone number" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianSignatureDate" class="form-label">
+                            Signature Date
+                        </label>
+                        <input asp-for="GuardianSignatureDate" class="form-control"
+                               placeholder="Enter signature date" />
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label asp-for="GuardianAddress" class="form-label">
+                            Address
+                        </label>
+                        <textarea asp-for="GuardianAddress" class="form-control" rows="3"
+                                  placeholder="Enter guardian's address"></textarea>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @* Representative / Wakeel Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Representative / Wakeel Information</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="RepresentativeName" class="form-label">
+                            Representative Name
+                        </label>
+                        <input asp-for="RepresentativeName" class="form-control"
+                               placeholder="Enter representative's full name" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="RepresentativeActingFor" class="form-label">
+                            Acting For
+                        </label>
+                        <select asp-for="RepresentativeActingFor" class="form-select">
+                            <option value="">-- Select --</option>
+                            <option value="Bride">Bride</option>
+                            <option value="Bridegroom">Bridegroom</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label asp-for="RepresentativeAddress" class="form-label">
+                            Address
+                        </label>
+                        <textarea asp-for="RepresentativeAddress" class="form-control" rows="3"
+                                  placeholder="Enter representative's address"></textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="RepresentativeSignatureDate" class="form-label">
+                            Signature Date
+                        </label>
+                        <input asp-for="RepresentativeSignatureDate" class="form-control"
+                               placeholder="Enter signature date" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @* Witness One Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Witness One</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WitnessOneName" class="form-label">
+                            Full Name
+                        </label>
+                        <input asp-for="WitnessOneName" class="form-control" placeholder="Enter witness name" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WitnessOneTel" class="form-label">
+                            Telephone
+                        </label>
+                        <input asp-for="WitnessOneTel" class="form-control" placeholder="Enter telephone number" />
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label asp-for="WitnessOneAddress" class="form-label">
+                            Address
+                        </label>
+                        <textarea asp-for="WitnessOneAddress" class="form-control" rows="3"
+                                  placeholder="Enter witness address"></textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WitnessOneSignatureDate" class="form-label">
+                            Signature Date
+                        </label>
+                        <input asp-for="WitnessOneSignatureDate" class="form-control"
+                               placeholder="Enter signature date" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @* Witness Two Information *@
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Witness Two</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WitnessTwoName" class="form-label">
+                            Full Name
+                        </label>
+                        <input asp-for="WitnessTwoName" class="form-control" placeholder="Enter witness name" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WitnessTwoTel" class="form-label">
+                            Telephone
+                        </label>
+                        <input asp-for="WitnessTwoTel" class="form-control" placeholder="Enter telephone number" />
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label asp-for="WitnessTwoAddress" class="form-label">
+                            Address
+                        </label>
+                        <textarea asp-for="WitnessTwoAddress" class="form-control" rows="3"
+                                  placeholder="Enter witness address"></textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WitnessTwoSignatureDate" class="form-label">
+                            Signature Date
+                        </label>
+                        <input asp-for="WitnessTwoSignatureDate" class="form-control"
+                               placeholder="Enter signature date" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="d-flex justify-content-end gap-2 mb-5">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                Cancel
+            </a>
+
+            <button type="submit" class="btn btn-primary px-4">
+                Continue
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
