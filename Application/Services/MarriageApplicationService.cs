@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.MarriageApplication;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,30 +16,38 @@ namespace Application.Services
             _context = context;
         }
 
-        public async Task<MarriageApplicationDto> CreateApplicationAsync(
-            CreateMarriageApplicationDto dto)
+        public async Task<ApplicationDto> CreateApplicationAsync(CreateApplicationDto dto)
         {
-            var marriageApplication = new MarriageApplication
-            {
-                UserId = dto.UserId
-            };
+            //    var application = new Application
+            //    {
+            //     Status = dto.Status,
 
-            _context.MarriageApplications.Add(marriageApplication);
+            //public Guid MarriageApplicationFormId { get; set; }
+            //public MarriageApplicationForm MarriageApplicationForm { get; set; } = default!;
+            ////public Guid UserId { get; set; }
+            ////public User User { get; set; }
+            //public Guid CertificateId { get; set; }
+            //public Certificate Certificate { get; set; } = default!;
+            //public DateTime AppliedAt { get; set; }
+            //    };
 
-            await _context.SaveChangesAsync();
+            //_context.Applications.Add(application);
 
-            return new MarriageApplicationDto
-            {
-                Id = marriageApplication.Id,
-                Status = marriageApplication.Status,
-                UserId = marriageApplication.UserId,
-                SerialNumber = marriageApplication.SerialNumber
-            };
+            //await _context.SaveChangesAsync();
+
+            //return new ApplicationDto
+            //{
+            //    Id = marriageApplication.Id,
+            //    Status = marriageApplication.Status,
+            //    UserId = marriageApplication.UserId,
+            //    SerialNumber = marriageApplication.SerialNumber
+            //};
+            return null!;
         }
 
-        public async Task<MarriageApplicationDto> GetApplicationByIdAsync(Guid id)
+        public async Task<ApplicationDto> GetApplicationByIdAsync(Guid id)
         {
-            var marriageApplication = await _context.MarriageApplications
+            var marriageApplication = await _context.Applications
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (marriageApplication == null)
@@ -47,18 +56,16 @@ namespace Application.Services
                     $"Marriage application with ID {id} was not found.");
             }
 
-            return new MarriageApplicationDto
+            return new ApplicationDto
             {
                 Id = marriageApplication.Id,
                 Status = marriageApplication.Status,
-                UserId = marriageApplication.UserId,
-                SerialNumber = marriageApplication.SerialNumber
             };
         }
 
-        public async Task<List<MarriageApplication>> GetAllAsync()
+        public async Task<List<Domain.Entities.Application>> GetAllAsync()
         {
-            return await _context.MarriageApplications
+            return await _context.Applications
                 .ToListAsync();
         }
     }

@@ -7,7 +7,7 @@ public class Certificate : AuditableEntity
     // complete
     // Required FK to MarriageApplication (one-to-one; unique index enforced in EF configuration).
     public Guid MarriageApplicationId { get; set; }
-    public MarriageApplication MarriageApplication { get; set; } = null!;
+    public Application MarriageApplication { get; set; } = null!;
 
     // A certificate row only exists once issued, so this is never nullable.
     public DateTime IssueDate { get; set; }

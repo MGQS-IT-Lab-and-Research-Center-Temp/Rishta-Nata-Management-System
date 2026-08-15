@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    public class MarriageApplicationConfiguration : IEntityTypeConfiguration<MarriageApplication>
+    public class MarriageApplicationConfiguration : IEntityTypeConfiguration<Application>
     {
-        public void Configure(EntityTypeBuilder<MarriageApplication> builder)
+        public void Configure(EntityTypeBuilder<Application> builder)
         {
             builder.HasKey(ma => ma.Id);
 
@@ -14,15 +14,8 @@ namespace Infrastructure.Configurations
                 .HasConversion<string>()
                 .IsRequired();
 
-            builder.Property(ma => ma.UserId)
-                .IsRequired();
-
-            builder.HasIndex(ma => ma.SerialNumber)
-                .IsUnique();
-
-            builder.Property(ma => ma.SerialNumber)
-                .HasMaxLength(50)
-                .IsRequired(false);
+            //builder.Property(ma => ma.UserId)
+            //    .IsRequired();
         }
     }
 }
