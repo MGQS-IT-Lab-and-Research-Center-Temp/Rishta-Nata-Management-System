@@ -9,9 +9,14 @@ namespace Domain.Entities
         //add fk to certificate
         //change name of the entity to only application
         public ApplicationStatus Status { get; set; }
+
         public Guid UserId { get; set; }
+
         public Certificate? Certificate { get; set; }
+
         public string? SerialNumber { get; set; }
 
+        // One MarriageApplication has one MarriageApplicationForm
+        public MarriageApplicationForm? MarriageApplicationForm { get; set; }
     }
 }

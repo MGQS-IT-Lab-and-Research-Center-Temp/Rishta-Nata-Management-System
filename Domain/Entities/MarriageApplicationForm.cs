@@ -7,10 +7,12 @@ namespace Domain.Entities
     {
         // ===== Application =====
         public Guid MarriageApplicationId { get; set; }
-        public MarriageApplication MarriageApplication { get; set; } = default!;
-        public string ReferenceNumber { get; set; } = string.Empty; // AMJN/NF/NO
+
+        public MarriageApplication MarriageApplication { get; set; } = null!;
+
+        public string ReferenceNumber { get; set; } = string.Empty;
         public DateTime ProposedNikahDate { get; set; }
-        public string Venue { get; set; } = string.Empty; // Jama'at / Circuit
+        public string Venue { get; set; } = string.Empty;
 
         // ===== Bride =====
         public string BrideMembershipNo { get; set; } = string.Empty;
@@ -19,9 +21,11 @@ namespace Domain.Entities
         public string BrideResidentOf { get; set; } = string.Empty;
         public string BrideGenotype { get; set; } = string.Empty;
         public string BrideBloodGroup { get; set; } = string.Empty;
-        public string BrideMaritalStatus { get; set; } = string.Empty; // Unmarried / Widowed (waited) / Divorced (waited)
+        public string BrideMaritalStatus { get; set; } = string.Empty;
+
         public decimal BrideProposedDowerAmount { get; set; }
         public decimal BrideDowerAmountReceivedInCash { get; set; }
+
         public string BrideSignatureTel { get; set; } = string.Empty;
 
         // ===== Bridegroom =====
@@ -31,21 +35,25 @@ namespace Domain.Entities
         public string BridegroomResidentOf { get; set; } = string.Empty;
         public string BridegroomGenotype { get; set; } = string.Empty;
         public string BridegroomBloodGroup { get; set; } = string.Empty;
+
         public decimal BridegroomDowerAmountPaidInCash { get; set; }
         public decimal BridegroomDowerAmountToBePaid { get; set; }
+
         public bool IsFirstNikah { get; set; }
         public bool IsSecondThirdOrFourthNikah { get; set; }
+
         public bool FormerWifeIsDead { get; set; }
-        public bool HasDivorcedFormerWife { get; set; } // Talaq
+        public bool HasDivorcedFormerWife { get; set; }
         public bool FormerWifeIsPresent { get; set; }
         public bool FormerWifeObtainedKhula { get; set; }
+
         public string BridegroomSignatureTel { get; set; } = string.Empty;
 
         // ===== Bride's Parent =====
-        public string BrideFatherName { get; set; } = string.Empty; // D/o ...
+        public string BrideFatherName { get; set; } = string.Empty;
 
         // ===== Groom's Parent =====
-        public string BridegroomFatherName { get; set; } = string.Empty; // S/o ...
+        public string BridegroomFatherName { get; set; } = string.Empty;
 
         // ===== Guardian (Bride's Waliyy) =====
         public string GuardianName { get; set; } = string.Empty;
@@ -55,18 +63,18 @@ namespace Domain.Entities
         public string GuardianSignatureDate { get; set; } = string.Empty;
 
         // ===== Representative (Wakeel) =====
-        // Used when the Guardian or Bridegroom cannot attend the Nikah ceremony in person.
         public string RepresentativeName { get; set; } = string.Empty;
         public string RepresentativeAddress { get; set; } = string.Empty;
-        public string RepresentativeActingFor { get; set; } = string.Empty; // e.g. "Guardian" or "Bridegroom"
+        public string RepresentativeActingFor { get; set; } = string.Empty;
         public string RepresentativeSignatureDate { get; set; } = string.Empty;
 
-        // ===== Witnesses =====
+        // ===== Witness One =====
         public string WitnessOneName { get; set; } = string.Empty;
         public string WitnessOneAddress { get; set; } = string.Empty;
         public string WitnessOneTel { get; set; } = string.Empty;
         public string WitnessOneSignatureDate { get; set; } = string.Empty;
 
+        // ===== Witness Two =====
         public string WitnessTwoName { get; set; } = string.Empty;
         public string WitnessTwoAddress { get; set; } = string.Empty;
         public string WitnessTwoTel { get; set; } = string.Empty;
@@ -82,6 +90,7 @@ namespace Domain.Entities
 
         public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
         public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
         public DateTime? ApprovedDateOfNikah { get; set; }
 
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;

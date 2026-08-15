@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Enums
+﻿namespace Domain.Enums
 {
     public enum ApplicationStatus
     {
@@ -10,15 +6,34 @@ namespace Domain.Enums
 
         Submitted = 20,
 
+        // ==============================
+        // Jama'at President
+        // ==============================
+
         JamaatPresidentReviewApproved = 30,
-        jamaatPresidentPendingApproval = 35,
+
+        JamaatPresidentPendingApproval = 35,
+
         JamaatPresidentReviewRejected = 40,
 
+        JamaatPresidentInformationRequired = 45,
+
+        // ==============================
+        // National Rishtanata Secretary
+        // ==============================
+
         NationalRishtanataSecretaryReviewApproved = 50,
+
         NationalRishtanataSecretaryPendingApproval = 55,
-        NationalRishtanataSecretaryReveiwRejected = 60,
+
+        NationalRishtanataSecretaryReviewRejected = 60,
+
+        // ==============================
+        // Amir
+        // ==============================
 
         AmirReviewApproved = 70,
+
         AmirReviewRejected = 80
     }
 }
