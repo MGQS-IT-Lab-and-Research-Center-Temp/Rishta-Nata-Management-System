@@ -23,4 +23,6 @@ public class Certificate : AuditableEntity
 
     // Deliberately NOT declared here: Nikah serial number.
     // It belongs to MarriageApplication; read it through the relationship once wired up.
+    public string? IssuedByUserId { get; set; }
+
 }
