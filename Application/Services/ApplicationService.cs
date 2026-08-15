@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
-    public class MarriageApplicationService : IMarriageApplicationService
+    public class ApplicationService : IApplicationService
     {
         private readonly RishtanataDbContext _context;
 
-        public MarriageApplicationService(RishtanataDbContext context)
+        public ApplicationService(RishtanataDbContext context)
         {
             _context = context;
         }

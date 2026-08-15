@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Application.Interfaces
 {
-    public interface IMarriageApplicationService
+    public interface IApplicationService
     {
         Task<ApplicationDto> CreateApplicationAsync(CreateApplicationDto dto);
         Task<ApplicationDto> GetApplicationByIdAsync(Guid id);
