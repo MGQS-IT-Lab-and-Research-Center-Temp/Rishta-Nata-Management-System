@@ -8,7 +8,7 @@ namespace Domain.Entities
         // ===== Application =====
         public Guid MarriageApplicationId { get; set; }
 
-        public Application MarriageApplication { get; set; } = null!;
+        public FormApplication MarriageApplication { get; set; } = null!;
 
         public string ReferenceNumber { get; set; } = string.Empty;
         public DateTime ProposedNikahDate { get; set; }

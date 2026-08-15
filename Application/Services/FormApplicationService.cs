@@ -7,18 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
-    public class ApplicationService : IApplicationService
+    public class FormApplicationService : IFormApplicationService
     {
         private readonly RishtanataDbContext _context;
 
-        public ApplicationService(RishtanataDbContext context)
+        public FormApplicationService(RishtanataDbContext context)
         {
             _context = context;
         }
 
-        public async Task<ApplicationDto> CreateApplicationAsync(CreateApplicationDto dto)
+        public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)
         {
-            var application = new Domain.Entities.Application
+            var application = new FormApplication
             {
                 Status = dto.Status,
                 MarriageApplicationFormId = dto.MarriageApplicationFormId,
@@ -26,19 +26,20 @@ namespace Application.Services
                 AppliedAt = dto.AppliedAt
             };
 
-            _context.Applications.Add(application);
+            _context.FormApplications.Add(application);
             await _context.SaveChangesAsync();
 
-            return new ApplicationDto
+            return new FormApplicationDto
             {
                 Id = application.Id,
                 Status = application.Status
             };
         }
 
-        public async Task<ApplicationDto> GetApplicationByIdAsync(Guid id)
+        // why returning a new form application dto??
+        public async Task<FormApplicationDto> GetApplicationByIdAsync(Guid id)
         {
-            var marriageApplication = await _context.Applications
+            var marriageApplication = await _context.FormApplications
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (marriageApplication == null)
@@ -47,22 +48,22 @@ namespace Application.Services
                     $"Marriage application with ID {id} was not found.");
             }
 
-            return new ApplicationDto
+            return new FormApplicationDto
             {
                 Id = marriageApplication.Id,
                 Status = marriageApplication.Status,
             };
         }
 
-        public async Task<List<Domain.Entities.Application>> GetAllAsync()
+        public async Task<List<FormApplication>> GetAllAsync()
         {
-            return await _context.Applications
+            return await _context.FormApplications
                 .ToListAsync();
         }
-        public async Task<List<Domain.Entities.Application>>
+        public async Task<List<FormApplication>>
         GetPendingApplicationsAsync()
         {
-            return await _context.Applications
+            return await _context.FormApplications
                 .Where(x =>
                     x.Status == ApplicationStatus.ApplicationPending)
                 .Include(x => x.MarriageApplicationForm)
@@ -71,7 +72,7 @@ namespace Application.Services
         }
         public async Task<bool> ApproveApplicationAsync(Guid id)
         {
-            var application = await _context.Applications
+            var application = await _context.FormApplications
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (application == null)
@@ -96,7 +97,7 @@ namespace Application.Services
         }
         public async Task<bool> RejectApplicationAsync(Guid id)
         {
-            var application = await _context.Applications
+            var application = await _context.FormApplications
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (application == null)
@@ -113,6 +114,7 @@ namespace Application.Services
             application.Status =
                 ApplicationStatus.ApplicationRejected;
 
+            //later, modifiedat will always be updated in a savechangesasync that will be configured in dbcontext
             application.ModifiedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -121,7 +123,7 @@ namespace Application.Services
         }
         public async Task<bool> RequestMoreInformationAsync(Guid id)
         {
-            var application = await _context.Applications
+            var application = await _context.FormApplications
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (application == null)
@@ -145,11 +147,11 @@ namespace Application.Services
             return true;
         }
 
-        public async Task<List<Domain.Entities.Application>> GetApplicationsByJamaatAsync(Guid jamaatId)
+        public async Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId)
         {
             // TODO: Implement filtering by jamaatId when jamaatId is added to the Application entity
             // For now, return all applications
-            return await _context.Applications
+            return await _context.FormApplications
                 .Include(x => x.MarriageApplicationForm)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();

@@ -28,14 +28,14 @@ public class JamaatPresidentController : Controller
     {
         var pendingStatus = ApplicationStatus.ApplicationPending;
 
-        var pendingApplications = await _context.Applications
+        var pendingApplications = await _context.FormApplications
             .Where(x => x.Status == pendingStatus)
             .Include(x => x.MarriageApplicationForm)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
         var totalApplications =
-            await _context.Applications.CountAsync();
+            await _context.FormApplications.CountAsync();
 
         var today = DateTime.UtcNow.Date;
         var tomorrow = today.AddDays(1);
@@ -123,7 +123,7 @@ public class JamaatPresidentController : Controller
     [HttpGet]
     public async Task<IActionResult> Review(Guid id)
     {
-        var application = await _context.Applications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -224,7 +224,7 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(Guid id)
     {
-        var application = await _context.Applications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -286,7 +286,7 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(Guid id)
     {
-        var application = await _context.Applications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -347,7 +347,7 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RequestMoreInformation(Guid id)
     {
-        var application = await _context.Applications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 

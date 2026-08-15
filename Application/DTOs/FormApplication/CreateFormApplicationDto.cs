@@ -3,7 +3,7 @@ using Domain.Enums;
 
 namespace Application.DTOs.MarriageApplication;
 
-public class CreateApplicationDto
+public class CreateFormApplicationDto
 {
     public ApplicationStatus Status { get; set; }
     public Guid MarriageApplicationFormId { get; set; }

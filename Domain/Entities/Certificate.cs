@@ -23,7 +23,7 @@ public class Certificate : AuditableEntity
 
     // Application relationship
     public Guid MarriageApplicationId { get; set; }
-    public Application MarriageApplication { get; set; } = null!;
+    public FormApplication MarriageApplication { get; set; } = null!;
 
     // Certificate administration
     public DateTime IssueDate { get; set; }

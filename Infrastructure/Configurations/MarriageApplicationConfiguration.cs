@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    public class MarriageApplicationConfiguration : IEntityTypeConfiguration<Application>
+    public class MarriageApplicationConfiguration : IEntityTypeConfiguration<FormApplication>
     {
-        public void Configure(EntityTypeBuilder<Application> builder)
+        public void Configure(EntityTypeBuilder<FormApplication> builder)
         {
             builder.HasKey(ma => ma.Id);
 

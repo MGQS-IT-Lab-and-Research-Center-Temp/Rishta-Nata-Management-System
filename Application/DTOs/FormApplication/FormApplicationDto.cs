@@ -2,7 +2,7 @@
 
 namespace Application.DTOs.MarriageApplication;
 
-public class ApplicationDto
+public class FormApplicationDto
 {
     public Guid Id { get; set; }
     public ApplicationStatus Status { get; set; }
