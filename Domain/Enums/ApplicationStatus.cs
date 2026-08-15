@@ -2,38 +2,10 @@
 {
     public enum ApplicationStatus
     {
-        Draft = 10,
-
-        Submitted = 20,
-
-        // ==============================
-        // Jama'at President
-        // ==============================
-
-        JamaatPresidentReviewApproved = 30,
-
-        JamaatPresidentPendingApproval = 35,
-
-        JamaatPresidentReviewRejected = 40,
-
-        JamaatPresidentInformationRequired = 45,
-
-        // ==============================
-        // National Rishtanata Secretary
-        // ==============================
-
-        NationalRishtanataSecretaryReviewApproved = 50,
-
-        NationalRishtanataSecretaryPendingApproval = 55,
-
-        NationalRishtanataSecretaryReviewRejected = 60,
-
-        // ==============================
-        // Amir
-        // ==============================
-
-        AmirReviewApproved = 70,
-
-        AmirReviewRejected = 80
+        Draft = 1,
+        Submitted = 2,
+        ApplicationRejected = 3,
+        ApplicationApproved = 4,
+        ApplicationPending = 5
     }
 }
