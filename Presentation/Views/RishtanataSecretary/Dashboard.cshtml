@@ -2,6 +2,7 @@
 @model Presentation.Models.RishtanataSecretaryDashboardViewModel
 
 @{
+      Layout = "_SecretaryLayout";
     ViewData["Title"] = "Rishtanata Secretary Dashboard";
 }
 
@@ -19,37 +20,37 @@
             <a class="nav-link"
                asp-controller="RishtanataSecretary"
                asp-action="Dashboard">
-                🏠 Dashboard
+                 Dashboard
             </a>
 
             <a class="nav-link"
                asp-controller="RishtanataSecretary"
                asp-action="PendingApprovals">
-                📋 Pending Approvals
+                 Pending Approvals
             </a>
 
             <a class="nav-link"
                asp-controller="RishtanataSecretary"
                asp-action="MarriedCouples">
-                💍 Married Couples
+                 Married Couples
             </a>
 
             <a class="nav-link"
                asp-controller="RishtanataSecretary"
                asp-action="JamaatMembers">
-                👥 Jama'at Members
+                 Jama'at Members
             </a>
 
             <a class="nav-link"
                asp-controller="Reports"
                asp-action="Index">
-                📊 Reports
+                 Reports
             </a>
 
             <a class="nav-link logout-link"
                asp-controller="Account"
                asp-action="Logout">
-                🚪 Logout
+                 Logout
             </a>
 
         </nav>
