@@ -18,7 +18,7 @@ namespace Application.Services
         }
         public RishtanataSecretaryDashboardDto GetDashboard()
         {
-            var pendingApplications = _context.Applications
+            var pendingApplications = _context.FormApplications
                 .Where(x => x.Status == ApplicationStatus.ApplicationPending)
                 .ToList();
 
@@ -26,10 +26,10 @@ namespace Application.Services
             {
                 PendingApprovals = pendingApplications.Count,
 
-                ApprovedApplications = _context.Applications
+                ApprovedApplications = _context.FormApplications
                     .Count(x => x.Status == ApplicationStatus.ApplicationApproved),
 
-                MarriedCouples = _context.Applications
+                MarriedCouples = _context.FormApplications
                     .Count(x => x.Certificate != null)
             };
 
@@ -110,7 +110,7 @@ namespace Application.Services
         }
         public void ReturnToPresident(Guid id)
         {
-            var application = _context.Applications
+            var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
 
             if (application == null)
@@ -140,7 +140,7 @@ namespace Application.Services
         //}
         public void Reject(Guid id)
         {
-            var application = _context.Applications
+            var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
 
             if (application == null)
@@ -152,7 +152,7 @@ namespace Application.Services
         }
         public void Approve(Guid id)
         {
-            var application = _context.Applications
+            var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
 
             if (application == null)
