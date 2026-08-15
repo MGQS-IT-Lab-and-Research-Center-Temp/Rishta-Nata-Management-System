@@ -14,6 +14,6 @@ using System.Text;
 
         Task<MarriageApplicationForm?> GetByIdAsync(Guid id);
 
-        Task<bool> UpdateAsyn(MarriageApplicationForm application);
+        Task<bool> UpdateAsync(MarriageApplicationForm application);
     }
 

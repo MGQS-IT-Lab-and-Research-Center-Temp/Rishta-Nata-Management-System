@@ -38,4 +38,9 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         return true;
     }
+
+    public Task<bool> UpdateAsync(MarriageApplicationForm application)
+    {
+        throw new NotImplementedException();
+    }
 }
