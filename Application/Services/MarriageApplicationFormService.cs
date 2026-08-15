@@ -30,6 +30,13 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(Guid marriageAplicationId)
+    {
+        return await
+        _context.MarriageApplicationForms.FirstOrDefaultAsync(x => x.MarriageApplicationId == marriageAplicationId);
+            
+    }
+
     public async Task<bool> UpdateAsyn(MarriageApplicationForm application)
     {
         _context.MarriageApplicationForms.Update(application);

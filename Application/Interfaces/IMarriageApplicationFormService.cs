@@ -9,10 +9,11 @@ using System.Text;
 
     public interface IMarriageApplicationFormService
     {
-        Task<MarriageApplicationForm> CreateAsync(
-            MarriageApplicationForm application);
+        Task<MarriageApplicationForm> CreateAsync(MarriageApplicationForm application);
 
         Task<MarriageApplicationForm?> GetByIdAsync(Guid id);
+        Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(Guid marriageAplicationId);
+
 
         Task<bool> UpdateAsync(MarriageApplicationForm application);
     }
