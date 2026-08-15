@@ -4,25 +4,31 @@ namespace Domain.Entities;
 
 public class Certificate : AuditableEntity
 {
-    // complete
-    // Required FK to MarriageApplication (one-to-one; unique index enforced in EF configuration).
+    // Certificate number printed on the certificate.
+    public string SerialNumber { get; set; } = string.Empty;
+
+    // Bride
+    public string BrideName { get; set; } = string.Empty;
+    public string BrideFatherName { get; set; } = string.Empty;
+    public string BrideResidentOf { get; set; } = string.Empty;
+
+    // Bridegroom
+    public string BridegroomName { get; set; } = string.Empty;
+    public string BridegroomFatherName { get; set; } = string.Empty;
+    public string BridegroomResidentOf { get; set; } = string.Empty;
+
+    // Marriage
+    public DateTime NikahDate { get; set; }
+    public decimal DowryAmount { get; set; }
+
+    // Application relationship
     public Guid MarriageApplicationId { get; set; }
     public Application MarriageApplication { get; set; } = null!;
 
-    // A certificate row only exists once issued, so this is never nullable.
+    // Certificate administration
     public DateTime IssueDate { get; set; }
 
-    // Who issued it. FK to ApplicationUser (Identity), Restrict on delete so the record
-    // survives account removal — configured in CertificateConfiguration.
-    //this will be implemented after identity is done
-    // public Guid IssuedByUserId { get; set; }
+    public Guid IssuedByUserId { get; set; }
 
-    // Path only, consistent with Document. Nullable because whether a file is produced
-    // at all is still pending clarification (#34).
     public string? CertificateFilePath { get; set; }
-
-    // Deliberately NOT declared here: Nikah serial number.
-    // It belongs to MarriageApplication; read it through the relationship once wired up.
-    public string? IssuedByUserId { get; set; }
-
 }

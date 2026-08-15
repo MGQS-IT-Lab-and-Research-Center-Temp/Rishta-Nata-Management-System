@@ -1,4 +1,6 @@
 ﻿using Application.DTOs.MarriageApplication;
+﻿
+using Application.DTOs.MarriageApplication;
 using Domain.Entities;
 
 namespace Application.Interfaces
@@ -6,8 +8,10 @@ namespace Application.Interfaces
     public interface IApplicationService
     {
         Task<ApplicationDto> CreateApplicationAsync(CreateApplicationDto dto);
-
-        Task<ApplicationDto> GetApplicationByIdAsync(Guid id);
+      
+      Task<List<Domain.Entities.Application>> GetAllApplicationsAsync();  
+      
+      Task<ApplicationDto> GetApplicationByIdAsync(Guid id);
 
         Task<List<Domain.Entities.Application>> GetAllAsync();
 
