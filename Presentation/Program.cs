@@ -2,11 +2,15 @@ using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
 using Infrastructure.Identity;
 using MySql.EntityFrameworkCore.Extensions;
+using Application.Interfaces;
+using Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IBridegroomService, BridegroomService>();
+builder.Services.AddScoped<IRepresentativeService, RepresentativeService>();
 
 // Add services for database access
 
