@@ -1,86 +1,176 @@
-﻿@model Presentation.Models.LoginViewModel
-
-@{
+﻿@{
     ViewData["Title"] = "Login";
+    Layout = null;
 }
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5 col-lg-4">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-            <div class="card shadow-sm border-0">
+    <title>Login - Rishta Nata Management System</title>
 
-                <div class="card-body p-4">
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 
-                    <div class="text-center mb-4">
-                        <h2 class="fw-bold">Sign In</h2>
+    <style>
+        body {
+            min-height: 100vh;
+            background-color: #f5f7f6;
+        }
 
-                        <p class="text-muted mb-0">
-                            Rishta-Nata Management System
-                        </p>
+        .login-wrapper {
+            min-height: 100vh;
+        }
+
+        .login-card {
+            max-width: 450px;
+            width: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .logo-circle {
+            width: 260px;
+            height: 260px;
+            background-color: #000000;
+            border: 10px solid #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+        }
+
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .login-button {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .login-button:hover {
+            background-color: #157347;
+            border-color: #157347;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center login-wrapper">
+
+            <div class="col-12">
+
+                <div class="card login-card shadow mx-auto">
+
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Logo -->
+                        <div class="text-center">
+                            <div class="logo-circle">
+                                <img src="~/img/logo.png" alt="Rishta Nata logo" />
+                            </div>
+
+                            <h2 class="fw-bold mb-2">
+                                Welcome Back
+                            </h2>
+
+                            <p class="text-muted mb-4">
+                                Login to your Rishta Nata account
+                            </p>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-semibold">
+                                    Email Address
+                                </label>
+
+                                <input
+                                    type="email"
+                                    class="form-control form-control-lg"
+                                    id="email"
+                                    placeholder="Enter your email"
+                                    required>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-semibold">
+                                    Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    class="form-control form-control-lg"
+                                    id="password"
+                                    placeholder="Enter your password"
+                                    required>
+                            </div>
+
+                            <!-- Remember + Forgot -->
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="rememberMe">
+
+                                    <label
+                                        class="form-check-label"
+                                        for="rememberMe">
+                                        Remember me
+                                    </label>
+                                </div>
+
+                                <a href="#" class="text-success text-decoration-none">
+                                    Forgot Password?
+                                </a>
+
+                            </div>
+
+                            <!-- Login Button -->
+                            <div class="d-grid">
+                                <button
+                                    type="submit"
+                                    class="btn btn-success btn-lg login-button">
+                                    Login
+                                </button>
+                            </div>
+
+                        </form>
+
+                        <!-- Register -->
+                        <div class="text-center mt-4">
+
+                            <p class="text-muted mb-0">
+                                Don't have an account?
+                                <a
+                                    href="#"
+                                    class="text-success fw-semibold text-decoration-none">
+                                    Create an account
+                                </a>
+                            </p>
+
+                        </div>
+
                     </div>
-
-                    <form asp-controller="Account"
-                          asp-action="Login"
-                          method="post">
-
-                        @Html.AntiForgeryToken()
-
-                        <input type="hidden"
-                               asp-for="ReturnUrl" />
-
-                        <div asp-validation-summary="ModelOnly"
-                             class="text-danger mb-3">
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email"
-                                   class="form-label">
-                                Email
-                            </label>
-
-                            <input asp-for="Email"
-                                   class="form-control"
-                                   placeholder="Enter your email"
-                                   autocomplete="username" />
-
-                            <span asp-validation-for="Email"
-                                  class="text-danger">
-                            </span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Password"
-                                   class="form-label">
-                                Password
-                            </label>
-
-                            <input asp-for="Password"
-                                   class="form-control"
-                                   placeholder="Enter your password"
-                                   autocomplete="current-password" />
-
-                            <span asp-validation-for="Password"
-                                  class="text-danger">
-                            </span>
-                        </div>
-
-                        <div class="form-check mb-4">
-                            <input asp-for="RememberMe"
-                                   class="form-check-input" />
-
-                            <label asp-for="RememberMe"
-                                   class="form-check-label">
-                                Remember me
-                            </label>
-                        </div>
-
-                        <button type="submit"
-                                class="btn btn-primary w-100">
-                            Login
-                        </button>
-
-                    </form>
 
                 </div>
 
@@ -88,10 +178,11 @@
 
         </div>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+    <!-- Bootstrap 5 JavaScript -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+</body>
+</html>

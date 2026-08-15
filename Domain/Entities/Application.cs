@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 

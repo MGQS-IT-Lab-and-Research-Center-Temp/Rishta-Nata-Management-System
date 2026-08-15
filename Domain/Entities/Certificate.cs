@@ -1,5 +1,4 @@
 ﻿using Domain.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Entities;
 
