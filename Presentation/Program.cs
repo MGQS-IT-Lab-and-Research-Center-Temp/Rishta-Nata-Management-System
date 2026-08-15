@@ -19,7 +19,7 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<RishtanataDbContext>();
 
-builder.Services.AddScoped<IMarriageApplicationService, MarriageApplicationService>();
+builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 
 var app = builder.Build();
 
