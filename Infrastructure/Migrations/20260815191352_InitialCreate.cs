@@ -65,11 +65,11 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Action = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
-                    EntityName = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    Action = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    EntityName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     RecordId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ChangeDetails = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    ChangeDetails = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,21 +78,22 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "MarriageApplications",
+                name: "FormApplications",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     Status = table.Column<string>(type: "longtext", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    SerialNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
+                    MarriageApplicationFormId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CertificateId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    AppliedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MarriageApplications", x => x.Id);
+                    table.PrimaryKey("PK_FormApplications", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -212,12 +213,21 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    SerialNumber = table.Column<string>(type: "longtext", nullable: false),
+                    BrideName = table.Column<string>(type: "longtext", nullable: false),
+                    BrideFatherName = table.Column<string>(type: "longtext", nullable: false),
+                    BrideResidentOf = table.Column<string>(type: "longtext", nullable: false),
+                    BridegroomName = table.Column<string>(type: "longtext", nullable: false),
+                    BridegroomFatherName = table.Column<string>(type: "longtext", nullable: false),
+                    BridegroomResidentOf = table.Column<string>(type: "longtext", nullable: false),
+                    NikahDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DowryAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     MarriageApplicationId = table.Column<Guid>(type: "char(36)", nullable: false),
                     IssueDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IssuedByUserId = table.Column<Guid>(type: "char(36)", nullable: false),
                     CertificateFilePath = table.Column<string>(type: "longtext", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
                 },
@@ -225,15 +235,9 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Certificates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Certificates_AspNetUsers_IssuedByUserId",
-                        column: x => x.IssuedByUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Certificates_MarriageApplications_MarriageApplicationId",
+                        name: "FK_Certificates_FormApplications_MarriageApplicationId",
                         column: x => x.MarriageApplicationId,
-                        principalTable: "MarriageApplications",
+                        principalTable: "FormApplications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -248,7 +252,7 @@ namespace Infrastructure.Migrations
                     ReferenceNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     ProposedNikahDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Venue = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    BrideMembershipNo = table.Column<string>(type: "longtext", nullable: false),
+                    BrideMembershipNo = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     BrideName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     BrideDateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     BrideResidentOf = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
@@ -257,8 +261,8 @@ namespace Infrastructure.Migrations
                     BrideMaritalStatus = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     BrideProposedDowerAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     BrideDowerAmountReceivedInCash = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BrideSignatureTel = table.Column<string>(type: "longtext", nullable: false),
-                    BridegroomMembershipNo = table.Column<string>(type: "longtext", nullable: false),
+                    BrideSignatureTel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
+                    BridegroomMembershipNo = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     BridegroomName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     BridegroomDateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     BridegroomResidentOf = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
@@ -272,37 +276,37 @@ namespace Infrastructure.Migrations
                     HasDivorcedFormerWife = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     FormerWifeIsPresent = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     FormerWifeObtainedKhula = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    BridegroomSignatureTel = table.Column<string>(type: "longtext", nullable: false),
+                    BridegroomSignatureTel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
                     BrideFatherName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     BridegroomFatherName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     GuardianName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     GuardianRelationToBride = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     GuardianAddress = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
                     GuardianTel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
-                    GuardianSignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    GuardianSignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     RepresentativeName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     RepresentativeAddress = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
                     RepresentativeActingFor = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
-                    RepresentativeSignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    RepresentativeSignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     WitnessOneName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     WitnessOneAddress = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
                     WitnessOneTel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
-                    WitnessOneSignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    WitnessOneSignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     WitnessTwoName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     WitnessTwoAddress = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
                     WitnessTwoTel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
-                    WitnessTwoSignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    WitnessTwoSignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     OfficiatingImamName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     OfficiatingImamAddressJamaat = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
-                    OfficiatingImamSignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    OfficiatingImamSignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     JamaatPresidentName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    JamaatPresidentSignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    JamaatPresidentSignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     NationalRishtanataSecretaryName = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    NationalRishtanataSecretarySignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    NationalRishtanataSecretarySignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     ApprovedDateOfNikah = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    NationalAmirOrMissionarySignatureDate = table.Column<string>(type: "longtext", nullable: false),
+                    NationalAmirOrMissionarySignatureDate = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
                 },
@@ -310,9 +314,9 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_MarriageApplicationForms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MarriageApplicationForms_MarriageApplications_MarriageApplic~",
+                        name: "FK_MarriageApplicationForms_FormApplications_MarriageApplicatio~",
                         column: x => x.MarriageApplicationId,
-                        principalTable: "MarriageApplications",
+                        principalTable: "FormApplications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -371,11 +375,6 @@ namespace Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_IssuedByUserId",
-                table: "Certificates",
-                column: "IssuedByUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Certificates_MarriageApplicationId",
                 table: "Certificates",
                 column: "MarriageApplicationId",
@@ -385,12 +384,6 @@ namespace Infrastructure.Migrations
                 name: "IX_MarriageApplicationForms_MarriageApplicationId",
                 table: "MarriageApplicationForms",
                 column: "MarriageApplicationId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MarriageApplications_SerialNumber",
-                table: "MarriageApplications",
-                column: "SerialNumber",
                 unique: true);
         }
 
@@ -428,7 +421,7 @@ namespace Infrastructure.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "MarriageApplications");
+                name: "FormApplications");
         }
     }
 }
