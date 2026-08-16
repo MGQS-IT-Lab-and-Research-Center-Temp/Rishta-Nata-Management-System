@@ -6,9 +6,9 @@ namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
 {
     public class JamaatMemberDto
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string? MemberNumber { get; set; }
+        public string? MembershipNumber { get; set; }
 
         public string? FullName { get; set; }
 
