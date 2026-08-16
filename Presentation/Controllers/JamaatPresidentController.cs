@@ -39,23 +39,15 @@ public class JamaatPresidentController : Controller
         var today = DateTime.UtcNow.Date;
         var tomorrow = today.AddDays(1);
 
-        var currentUserId = GetCurrentUserId();
-
-        var reviewedToday = 0;
-
-        if (currentUserId.HasValue)
-        {
-            reviewedToday = await _context.AuditLogs
-                .CountAsync(x =>
-                    x.UserId == currentUserId.Value &&
-                    x.Timestamp >= today &&
-                    x.Timestamp < tomorrow &&
-                    (
-                        x.Action == "Approved Nikah Application" ||
-                        x.Action == "Rejected Nikah Application" ||
-                        x.Action == "Requested More Information"
-                    ));
-        }
+        var reviewedToday = await _context.AuditLogs
+            .CountAsync(x =>
+                x.Timestamp >= today &&
+                x.Timestamp < tomorrow &&
+                (
+                    x.Action == "Approved Nikah Application" ||
+                    x.Action == "Rejected Nikah Application" ||
+                    x.Action == "Requested More Information"
+                ));
 
         var recentActivities = await _context.AuditLogs
             .OrderByDescending(x => x.Timestamp)
