@@ -1,5 +1,5 @@
 ﻿using Domain.Entities;
-using Infrastructure.DTOs.FormApplication;
+using Infrastructure.DTOs.MarriageApplication;
 
 namespace Application.Interfaces
 {

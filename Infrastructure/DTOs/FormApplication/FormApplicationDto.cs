@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 
-namespace Application.DTOs.MarriageApplication;
+namespace Infrastructure.DTOs.MarriageApplication;
 
 public class FormApplicationDto
 {
