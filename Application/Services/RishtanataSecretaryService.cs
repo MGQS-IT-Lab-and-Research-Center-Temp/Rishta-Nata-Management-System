@@ -118,7 +118,7 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationPending;
 
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
         }
 
 
@@ -148,7 +148,7 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationRejected;
 
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
         }
         public void Approve(Guid id)
         {
@@ -160,7 +160,7 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationApproved;
 
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
         }
     }
 }
