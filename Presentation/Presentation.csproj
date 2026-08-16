@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Mapping\" />
     <Folder Include="Models\" />
   </ItemGroup>
   
