@@ -1,10 +1,8 @@
-﻿using Domain.Entities;
-
-namespace Presentation.ViewModels.JamaatMember;
+﻿namespace Presentation.ViewModels.JamaatMember;
 
 public class JamaatMemberVM
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Surname { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
@@ -27,7 +25,6 @@ public class JamaatMemberVM
     public string Nationality { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public Guid RoleId { get; set; }
-    public Role Role { get; set; } = default!;
     public string FullName => $"{FirstName} {Surname}".Trim();
     public bool IsSystemDefault { get; set; } = false;
     public string NewRole { get; set; } = string.Empty;

@@ -13,13 +13,14 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task SignInAsync(JamaatMember jamaatMember)
+    public async Task SignInAsync(JamaatMember jamaatMember, bool isRishtanataSecretary)
     {
+        var role = isRishtanataSecretary ? RoleNames.RishtanataSecretary : jamaatMember.Role.Name;
         var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
                 new Claim(ClaimTypes.Name, jamaatMember.chandaNo),
-                new Claim(ClaimTypes.Role, jamaatMember.Role.Name.ToLowerInvariant()),
+                new Claim(ClaimTypes.Role, role.ToLowerInvariant()),
                 new Claim("HierarchyLevel", jamaatMember.Role.HierarchyLevel.ToString()),
             };
 

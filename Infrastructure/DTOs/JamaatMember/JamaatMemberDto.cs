@@ -1,10 +1,8 @@
-﻿using Domain.Entities;
-
-namespace Infrastructure.DTOs.JamaatMember;
+﻿namespace Infrastructure.DTOs.JamaatMember;
 
 public class JamaatMemberDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Surname { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
@@ -25,12 +23,8 @@ public class JamaatMemberDto
     public string NextOfKinName { get; set; } = string.Empty!;
     public string NextOfKinAddress { get; set; } = string.Empty!;
     public string Nationality { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
     public Guid RoleId { get; set; }
-    public Role Role { get; set; } = default!;
     public string FullName => $"{FirstName} {Surname}".Trim();
     public bool IsSystemDefault { get; set; } = false;
     public string NewRole { get; set; } = string.Empty;
-    public string? ResetToken { get; set; }
-    public DateTime? ResetTokenExpiry { get; set; }
 }

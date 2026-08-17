@@ -2,9 +2,9 @@
 using Presentation.ViewModels;
 
 
-namespace Presentation.Mapping.RishtanataSecretaryMapper;
+namespace Presentation.Mapping.RishtanataSecretary;
 
-    public static class RishtanataSecretaryReviewMapper
+    public static class RishtanataSecretaryReviewMapping
     {
 
     public static ReviewApplicationViewModel ToViewModel(ReviewApplicationDto dto)

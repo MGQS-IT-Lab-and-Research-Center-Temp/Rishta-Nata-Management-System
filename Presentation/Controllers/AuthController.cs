@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Identity;
+using Domain.Entities;
 using Infrastructure.Identity.Tokens;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Constants.Roles;
@@ -13,11 +14,13 @@ public class AuthController : Controller
 {
     private readonly IGatewayHandler _gatewayHandler;
     private readonly ICookieAuthenticationService _cookieAuthService;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService)
+    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService, IConfiguration configuration)
     {
         _gatewayHandler = gatewayHandler;
         _cookieAuthService = cookieAuthService;
+        _configuration = configuration;
     }
 
     // GET: /Auth/Login
@@ -67,11 +70,21 @@ public class AuthController : Controller
             return View(model);
         }
 
-        await _cookieAuthService.SignInAsync(jamaatMember);
+        var rishtanataSecretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
+
+        var isRishtanataSecretary = !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo)
+            && jamaatMember.chandaNo == rishtanataSecretaryChandaNo;
+
+        await _cookieAuthService.SignInAsync(jamaatMember, isRishtanataSecretary);
 
         if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
         {
             return Redirect(model.ReturnUrl);
+        }
+
+        if (isRishtanataSecretary)
+        {
+            return RedirectToAction("Dashboard", "RishtanataSecretary");
         }
 
         return RedirectUserToDashboard(jamaatMember);
@@ -86,7 +99,7 @@ public class AuthController : Controller
         return RedirectToAction("Login", "Auth");
     }
 
-    private IActionResult RedirectUserToDashboard(JamaatMemberVM memberViewModel)
+    private IActionResult RedirectUserToDashboard(JamaatMember memberViewModel)
     {
         return memberViewModel.Role.Name switch
         {
@@ -96,7 +109,10 @@ public class AuthController : Controller
             RoleNames.CircuitSecretary =>
                 RedirectToAction("Dashboard", "CircuitSecretary"),
 
-                _ =>
+            RoleNames.RishtanataSecretary =>
+            RedirectToAction("Dashboard", "RishtanataSecretary"),
+
+            _ =>
                 RedirectToAction("Dashboard", "Home")
         };
     }
