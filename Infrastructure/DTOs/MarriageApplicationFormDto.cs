@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.DTOs
+namespace Infrastructure.DTOs
 {
     public class MarriageApplicationFormDto
     {

@@ -26,7 +26,7 @@
 
     public class ReviewApplicationViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string? ApplicationNumber { get; set; }
 
@@ -60,7 +60,7 @@
 
     public class PendingApprovalViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string? ApplicationNumber { get; set; }
 
@@ -82,7 +82,7 @@
 
     public class MarriedCoupleViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string? CertificateNumber { get; set; }
 
@@ -99,9 +99,9 @@
 
     public class JamaatMemberViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string? MemberNumber { get; set; }
+        public string? MembershipNumber { get; set; }
 
         public string? FullName { get; set; }
 
@@ -110,8 +110,6 @@
         public string? JamaatName { get; set; }
 
         public string? MaritalStatus { get; set; }
-
-        public string? Occupation { get; set; }
 
         public string? PhoneNumber { get; set; }
     }
