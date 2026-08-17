@@ -1,6 +1,6 @@
 ﻿
 
-namespace Application.DTOs.MarriageApplication;
+namespace Infrastructure.DTOs.FormApplication;
 
 public class CertificateDto
 {
