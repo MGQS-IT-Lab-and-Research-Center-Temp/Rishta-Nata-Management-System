@@ -75,8 +75,6 @@ public class AuthController : Controller
         }
 
         return RedirectUserToDashboard(jamaatMember);
-
-        return RedirectToAction("Dashboard", "JamaatPresident");
     }
 
     // POST: /Auth/Logout
