@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.DTOs.MarriageApplication;
+using Infrastructure.DTOs.FormApplication;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +18,10 @@ namespace Application.Services
 
         public async Task<List<FormApplication>> GetAllApplicationsAsync()
         {
-            return new List<FormApplication>();
+            return await _context.FormApplications
+                .Include(x => x.MarriageApplicationForm)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
         }
 
         public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)
@@ -41,10 +44,13 @@ namespace Application.Services
             };
         }
 
-        // why returning a new form application dto??
+        Task<FormApplicationDto> IFormApplicationService.CreateApplicationAsync(CreateFormApplicationDto dto)
+            => CreateApplicationAsync(dto);
+
         public async Task<FormApplicationDto> GetApplicationByIdAsync(Guid id)
         {
             var marriageApplication = await _context.FormApplications
+                .Include(x => x.MarriageApplicationForm)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (marriageApplication == null)
@@ -60,13 +66,16 @@ namespace Application.Services
             };
         }
 
+        Task<FormApplicationDto> IFormApplicationService.GetApplicationByIdAsync(Guid id)
+            => GetApplicationByIdAsync(id);
+
         public async Task<List<FormApplication>> GetAllAsync()
         {
             return await _context.FormApplications
                 .ToListAsync();
         }
-        public async Task<List<FormApplication>>
-        GetPendingApplicationsAsync()
+
+        public async Task<List<FormApplication>> GetPendingApplicationsAsync()
         {
             return await _context.FormApplications
                 .Where(x =>
@@ -75,6 +84,7 @@ namespace Application.Services
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
         }
+
         public async Task<bool> ApproveApplicationAsync(Guid id)
         {
             var application = await _context.FormApplications
@@ -100,6 +110,7 @@ namespace Application.Services
 
             return true;
         }
+
         public async Task<bool> RejectApplicationAsync(Guid id)
         {
             var application = await _context.FormApplications
@@ -126,6 +137,7 @@ namespace Application.Services
 
             return true;
         }
+
         public async Task<bool> RequestMoreInformationAsync(Guid id)
         {
             var application = await _context.FormApplications
