@@ -1,10 +1,4 @@
-﻿
-
-<<<<<<< HEAD
-namespace Infrastructure.DTOs.FormApplication;
-=======
-namespace Infrastructure.DTOs.MarriageApplication;
->>>>>>> origin/Dev
+﻿namespace Infrastructure.DTOs.FormApplication;
 
 public class CertificateDto
 {

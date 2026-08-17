@@ -1,11 +1,6 @@
 ﻿using Domain.Enums;
-using Infrastructure.DTOs.Certificates;
 
-<<<<<<< HEAD
 namespace Infrastructure.DTOs.FormApplication;
-=======
-namespace Infrastructure.DTOs.MarriageApplication;
->>>>>>> origin/Dev
 
 public class FormApplicationDto
 {
