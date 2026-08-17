@@ -1,3 +1,11 @@
+// do page for review - azeez
+// do page for review for individual nikkah form - azeez
+// do page for viewing aqeeqah certificates - yusroh
+// do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
+// fix all errors under your dto - faridah
+// fix all errors under service and interface - yusroh
+// ensure that dto namespace is infrastructure not application
+
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Persistence;
@@ -5,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Presentation.ViewModels;
 using System.Security.Claims;
+using Application.Interfaces;
 
 namespace Presentation.Controllers;
 
@@ -13,10 +22,12 @@ namespace Presentation.Controllers;
 public class JamaatPresidentController : Controller
 {
     private readonly RishtanataDbContext _context;
+    private readonly IAqeeqahCertificateService _aqeeqahService;
 
-    public JamaatPresidentController(RishtanataDbContext context)
+    public JamaatPresidentController(RishtanataDbContext context, IAqeeqahCertificateService aqeeqahService)
     {
         _context = context;
+        _aqeeqahService = aqeeqahService;
     }
 
     // ============================================================
@@ -397,6 +408,19 @@ public class JamaatPresidentController : Controller
             "More information has been requested for this Nikah application.";
 
         return RedirectToAction(nameof(Dashboard));
+    }
+
+    // ============================================================
+    // AQEEQAH CERTIFICATES
+    // ============================================================
+
+    /// <summary>
+    /// Displays all Aqeeqah certificates for the Jamaat President
+    /// </summary>
+    public async Task<IActionResult> AqeeqahCertificates()
+    {
+        var certificates = await _aqeeqahService.GetAllCertificatesAsync();
+        return View(certificates);
     }
 
     // ============================================================

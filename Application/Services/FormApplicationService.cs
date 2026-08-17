@@ -154,7 +154,7 @@ namespace Application.Services
 
         public async Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId)
         {
-            // TODO: Implement filtering by jamaatId when jamaatId is added to the Application entity
+            // TODO: Implement filtering by jamaatId when jamaatId is added to the User entity
             // For now, return all applications
             return await _context.FormApplications
                 .Include(x => x.MarriageApplicationForm)
