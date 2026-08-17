@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Presentation.ViewModels;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
+using Presentation.Mapping.RishtanataSecretary;
 namespace Presentation.Controllers
 {
     using Application.Interfaces;
@@ -33,12 +34,18 @@ namespace Presentation.Controllers
             }
 
             // Pending approvals page
-            public  async Task<IActionResult> PendingApprovals()
-            {
-                var pendingApprovals = _service.GetPendingApprovals();
+            // Pending approvals page
+public async Task<IActionResult> PendingApprovals()
+{
+    var pendingApprovals = _service.GetPendingApprovals();
 
-                return View(pendingApprovals);
-            }
+    var viewModels = pendingApprovals
+        .Select(PendingApprovalMapping.ToViewModel)
+        .ToList();
+
+    return View(viewModels);
+}
+
             // MarriedCouples Page
             public async Task<IActionResult> MarriedCouples()
             {
