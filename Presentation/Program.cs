@@ -4,6 +4,7 @@ using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
+using Presentation.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<RishtanataDbContext>();
 
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 
 var app = builder.Build();
 
@@ -44,5 +46,11 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+// Seed Aqeeqah certificates data
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<RishtanataDbContext>();
+    await AqeeqahCertificateSeeder.SeedAqeeqahCertificatesAsync(dbContext);
+}
 
 app.Run();

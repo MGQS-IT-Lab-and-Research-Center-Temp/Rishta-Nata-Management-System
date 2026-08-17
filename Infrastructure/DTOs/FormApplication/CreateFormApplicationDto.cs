@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Enums;
 
-namespace Application.DTOs.MarriageApplication;
+namespace Infrastructure.DTOs.FormApplication;
 
 public class CreateFormApplicationDto
 {
