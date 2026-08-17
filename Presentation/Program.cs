@@ -50,6 +50,10 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<RishtanataDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+    
+
     await AqeeqahCertificateSeeder.SeedAqeeqahCertificatesAsync(dbContext);
 }
 
