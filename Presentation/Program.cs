@@ -19,7 +19,9 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<RishtanataDbContext>();
 
-builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+// TEMP: commented out locally to unblock build — see IFormApplicationService.cs / FormApplicationService.cs. Do not commit this change.
+// builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+builder.Services.AddScoped<IJamaatPresidentService, JamaatPresidentService>();
 
 var app = builder.Build();
 
