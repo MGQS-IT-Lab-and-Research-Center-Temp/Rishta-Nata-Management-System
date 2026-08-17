@@ -8,7 +8,8 @@
 
   <ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\Gateway\Gateway.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -25,6 +26,10 @@
 
   <ItemGroup>
     <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
   
 </Project>

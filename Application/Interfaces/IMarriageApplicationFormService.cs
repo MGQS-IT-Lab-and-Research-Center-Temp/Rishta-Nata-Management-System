@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Domain.Entities;
 
-
-    using Domain.Entities;
-
-    namespace Application.Interfaces;
-
+namespace Application.Interfaces
+{
     public interface IMarriageApplicationFormService
     {
         Task<MarriageApplicationForm> CreateAsync(MarriageApplicationForm application);
@@ -15,6 +13,10 @@ using System.Text;
         Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(Guid marriageAplicationId);
 
 
-        Task<bool> UpdateAsync(MarriageApplicationForm application);
+        /// <summary>
+        /// Updates an existing marriage application.
+        /// Returns true if any rows were affected.
+        /// </summary>
+        Task<bool> UpdateAsync(MarriageApplicationForm application, CancellationToken cancellationToken = default);
     }
-
+}

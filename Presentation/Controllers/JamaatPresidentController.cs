@@ -1,11 +1,10 @@
-using System.Security.Claims;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Presentation.Models;
+using Presentation.ViewModels;
+using System.Security.Claims;
 
 namespace Presentation.Controllers;
 
@@ -26,16 +25,16 @@ public class JamaatPresidentController : Controller
 
     public async Task<IActionResult> Dashboard()
     {
-        var pendingStatus = ApplicationStatus.JamaatPresidentPendingApproval;
+        var pendingStatus = ApplicationStatus.ApplicationPending;
 
-        var pendingApplications = await _context.MarriageApplications
+        var pendingApplications = await _context.FormApplications
             .Where(x => x.Status == pendingStatus)
             .Include(x => x.MarriageApplicationForm)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
         var totalApplications =
-            await _context.MarriageApplications.CountAsync();
+            await _context.FormApplications.CountAsync();
 
         var today = DateTime.UtcNow.Date;
         var tomorrow = today.AddDays(1);
@@ -123,7 +122,7 @@ public class JamaatPresidentController : Controller
     [HttpGet]
     public async Task<IActionResult> Review(Guid id)
     {
-        var application = await _context.MarriageApplications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -224,7 +223,7 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(Guid id)
     {
-        var application = await _context.MarriageApplications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -234,7 +233,7 @@ public class JamaatPresidentController : Controller
         }
 
         if (application.Status !=
-            ApplicationStatus.JamaatPresidentPendingApproval)
+            ApplicationStatus.ApplicationPending)
         {
             TempData["Error"] =
                 "This application is no longer awaiting Jama'at President review.";
@@ -243,7 +242,7 @@ public class JamaatPresidentController : Controller
         }
 
         application.Status =
-            ApplicationStatus.JamaatPresidentReviewApproved;
+            ApplicationStatus.ApplicationApproved;
 
         application.ModifiedAt = DateTime.UtcNow;
         application.ModifiedBy = GetCurrentUserId();
@@ -286,7 +285,7 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(Guid id)
     {
-        var application = await _context.MarriageApplications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -296,7 +295,7 @@ public class JamaatPresidentController : Controller
         }
 
         if (application.Status !=
-            ApplicationStatus.JamaatPresidentPendingApproval)
+            ApplicationStatus.ApplicationPending)
         {
             TempData["Error"] =
                 "This application is no longer awaiting Jama'at President review.";
@@ -305,7 +304,7 @@ public class JamaatPresidentController : Controller
         }
 
         application.Status =
-            ApplicationStatus.JamaatPresidentReviewRejected;
+            ApplicationStatus.ApplicationRejected;
 
         application.ModifiedAt = DateTime.UtcNow;
         application.ModifiedBy = GetCurrentUserId();
@@ -347,7 +346,7 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RequestMoreInformation(Guid id)
     {
-        var application = await _context.MarriageApplications
+        var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
             .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -357,7 +356,7 @@ public class JamaatPresidentController : Controller
         }
 
         if (application.Status !=
-            ApplicationStatus.JamaatPresidentPendingApproval)
+            ApplicationStatus.ApplicationPending)
         {
             TempData["Error"] =
                 "This application is no longer awaiting Jama'at President review.";
@@ -366,7 +365,7 @@ public class JamaatPresidentController : Controller
         }
 
         application.Status =
-            ApplicationStatus.JamaatPresidentInformationRequired;
+            ApplicationStatus.ApplicationPending;
 
         application.ModifiedAt = DateTime.UtcNow;
         application.ModifiedBy = GetCurrentUserId();

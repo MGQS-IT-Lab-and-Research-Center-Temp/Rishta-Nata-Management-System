@@ -2,32 +2,56 @@
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-
-namespace Application.Services;
+using Microsoft.Extensions.Logging;
 
 public class MarriageApplicationFormService : IMarriageApplicationFormService
 {
     private readonly RishtanataDbContext _context;
+    private readonly ILogger<MarriageApplicationFormService> _logger;
 
-    public MarriageApplicationFormService(RishtanataDbContext context)
+    public MarriageApplicationFormService(RishtanataDbContext context, ILogger<MarriageApplicationFormService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
-    public async Task<MarriageApplicationForm> CreateAsync(
-        MarriageApplicationForm application)
+    public async Task<MarriageApplicationForm> CreateAsync(MarriageApplicationForm application, CancellationToken ct = default)
     {
+        if (application is null) throw new ArgumentNullException(nameof(application));
+
         _context.MarriageApplicationForms.Add(application);
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            var saved = await _context.SaveChangesAsync(ct);
+            if (saved == 0)
+            {
+                _logger.LogWarning("SaveChangesAsync returned 0 when creating MarriageApplicationForm (Id: {Id})", application.Id);
+            }
 
-        return application;
+            return application;
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            _logger.LogWarning(ex, "Concurrency conflict saving MarriageApplicationForm (Id: {Id})", application.Id);
+            // either rethrow, wrap, or return a failure result depending on your error-handling policy
+            throw;
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Database error while saving MarriageApplicationForm (Id: {Id})", application.Id);
+            throw new InvalidOperationException("Unable to save marriage application to the database.", ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while saving MarriageApplicationForm (Id: {Id})", application.Id);
+            throw;
+        }
     }
 
-    public async Task<MarriageApplicationForm?> GetByIdAsync(Guid id)
+    public Task<MarriageApplicationForm?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.MarriageApplicationForms
-            .FirstOrDefaultAsync(x => x.Id == id);
+        throw new NotImplementedException();
     }
 
     public async Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(Guid marriageAplicationId)
@@ -39,15 +63,24 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
     public async Task<bool> UpdateAsyn(MarriageApplicationForm application)
     {
+        if (application is null) throw new ArgumentNullException(nameof(application));
+
         _context.MarriageApplicationForms.Update(application);
 
-        await _context.SaveChangesAsync();
-
-        return true;
-    }
-
-    public Task<bool> UpdateAsync(MarriageApplicationForm application)
-    {
-        throw new NotImplementedException();
+        try
+        {
+            var affected = await _context.SaveChangesAsync(ct);
+            return affected > 0;
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            _logger.LogWarning(ex, "Concurrency conflict updating MarriageApplicationForm (Id: {Id})", application.Id);
+            throw;
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Database error while updating MarriageApplicationForm (Id: {Id})", application.Id);
+            throw new InvalidOperationException("Unable to update marriage application.", ex);
+        }
     }
 }

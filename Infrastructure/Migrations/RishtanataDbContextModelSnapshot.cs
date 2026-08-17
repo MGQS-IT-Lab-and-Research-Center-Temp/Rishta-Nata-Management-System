@@ -66,17 +66,47 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("BrideFatherName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BrideName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BrideResidentOf")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BridegroomFatherName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BridegroomName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BridegroomResidentOf")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("CertificateFilePath")
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("DowryAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("IssuedByUserId")
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("MarriageApplicationId")
                         .HasColumnType("char(36)");
@@ -87,6 +117,13 @@ namespace Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime>("NikahDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MarriageApplicationId")
@@ -95,17 +132,26 @@ namespace Infrastructure.Migrations
                     b.ToTable("Certificates");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MarriageApplication", b =>
+            modelBuilder.Entity("Domain.Entities.FormApplication", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime>("AppliedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CertificateId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MarriageApplicationFormId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -113,23 +159,13 @@ namespace Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("SerialNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("SerialNumber")
-                        .IsUnique();
-
-                    b.ToTable("MarriageApplications");
+                    b.ToTable("FormApplications");
                 });
 
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
@@ -237,8 +273,8 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
 
                     b.Property<bool>("FormerWifeIsDead")
                         .HasColumnType("tinyint(1)");
@@ -616,7 +652,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
                 {
-                    b.HasOne("Domain.Entities.MarriageApplication", "MarriageApplication")
+                    b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
                         .WithOne("Certificate")
                         .HasForeignKey("Domain.Entities.Certificate", "MarriageApplicationId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -627,7 +663,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
                 {
-                    b.HasOne("Domain.Entities.MarriageApplication", "MarriageApplication")
+                    b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
                         .WithOne("MarriageApplicationForm")
                         .HasForeignKey("Domain.Entities.MarriageApplicationForm", "MarriageApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -687,11 +723,13 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.MarriageApplication", b =>
+            modelBuilder.Entity("Domain.Entities.FormApplication", b =>
                 {
-                    b.Navigation("Certificate");
+                    b.Navigation("Certificate")
+                        .IsRequired();
 
-                    b.Navigation("MarriageApplicationForm");
+                    b.Navigation("MarriageApplicationForm")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

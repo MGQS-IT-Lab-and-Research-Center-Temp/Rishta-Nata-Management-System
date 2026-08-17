@@ -1,9 +1,11 @@
 using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Application.Services;
-using Infrastructure.Identity;
+using Gateway.Implementation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
+using Presentation.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,11 +17,24 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddMySQLServer<RishtanataDbContext>(
     builder.Configuration.GetConnectionString("DefaultConnection")!);
 
-// Configure Identity
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddEntityFrameworkStores<RishtanataDbContext>();
+builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 
-builder.Services.AddScoped<IMarriageApplicationService, MarriageApplicationService>();
+
+builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
+
+builder.Services.AddHttpContextAccessor();
+
+
+builder.Services
+    .AddAuthentication("MyCookieAuth")
+    .AddCookie("MyCookieAuth", options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
 
 var app = builder.Build();
 
