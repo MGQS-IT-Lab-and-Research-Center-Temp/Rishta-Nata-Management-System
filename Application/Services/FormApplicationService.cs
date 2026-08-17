@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.DTOs.FormApplication;
+using Infrastructure.DTOs.MarriageApplication;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
