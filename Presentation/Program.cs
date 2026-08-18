@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Application.Services;
+using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
