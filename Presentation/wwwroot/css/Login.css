@@ -1,132 +1,46 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: Arial, sans-serif;
-    background: #f5f7f6;
     min-height: 100vh;
+    background-color: #f5f7f6;
 }
 
-.login-container {
+.login-wrapper {
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
 }
 
 .login-card {
+    max-width: 450px;
     width: 100%;
-    max-width: 430px;
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-}
-
-.logo {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+    border: none;
+    border-radius: 15px;
 }
 
 .logo-circle {
-    width: 65px;
-    height: 65px;
+    width: 260px;
+    height: 260px;
+    background-color: #000000;
+    border: 10px solid #ffffff;
     border-radius: 50%;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
-    background: #198754;
-    color: white;
-    font-size: 22px;
-    font-weight: bold;
+    overflow: hidden;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 8px;
-    color: #222;
-}
-
-.subtitle {
-    text-align: center;
-    color: #777;
-    margin-bottom: 30px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #333;
-}
-
-.form-group input {
+.logo-circle img {
     width: 100%;
-    padding: 13px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    font-size: 15px;
-    outline: none;
-}
-
-.form-group input:focus {
-    border-color: #198754;
-}
-
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    font-size: 14px;
-}
-
-.remember {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.form-options a,
-.register-text a {
-    color: #198754;
-    text-decoration: none;
-}
-
-.form-options a:hover,
-.register-text a:hover {
-    text-decoration: underline;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .login-button {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 7px;
-    background: #198754;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
+    background-color: #198754;
+    border-color: #198754;
 }
 
 .login-button:hover {
-    background: #157347;
+    background-color: #157347;
+    border-color: #157347;
 }
-
-.register-text {
-    text-align: center;
-    margin-top: 25px;
-    color: #777;
-    font-size: 14px;
-}
-

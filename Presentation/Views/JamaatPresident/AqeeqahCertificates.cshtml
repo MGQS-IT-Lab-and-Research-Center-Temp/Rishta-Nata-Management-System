@@ -1,0 +1,177 @@
+@model List<Infrastructure.DTOs.Certificates.AqeeqahCertificateDto>
+
+@{
+    ViewData["Title"] = "Aqeeqah Certificates";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">Aqeeqah Certificates</h1>
+            <p class="text-muted">View and manage Aqeeqah certificates issued by your Jamaat</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary" onclick="location.href='@Url.Action("Dashboard")'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i> No Aqeeqah certificates found.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Serial #</th>
+                        <th>Child Name</th>
+                        <th>Father Name</th>
+                        <th>Mother Name</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Aqeeqah Date</th>
+                        <th>Issue Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cert in Model)
+                    {
+                        <tr>
+                            <td><strong>@cert.SerialNumber</strong></td>
+                            <td>@cert.ChildName</td>
+                            <td>@cert.FatherName</td>
+                            <td>@cert.MotherName</td>
+                            <td>@cert.DateOfBirth.ToString("dd MMM yyyy")</td>
+                            <td>@cert.Gender</td>
+                            <td>@cert.AqeeqahDate.ToString("dd MMM yyyy")</td>
+                            <td>@cert.IssueDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal@cert.Id">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    @if (!string.IsNullOrEmpty(cert.CertificateFilePath))
+                                    {
+                                        <a href="@cert.CertificateFilePath" class="btn btn-success" target="_blank">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Details Modals -->
+        @foreach (var cert in Model)
+        {
+            <div class="modal fade" id="detailsModal@cert.Id" tabindex="-1" aria-labelledby="detailsModalLabel@cert.Id" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title" id="detailsModalLabel@cert.Id">
+                                Aqeeqah Certificate - @cert.ChildName
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Certificate Information</h6>
+                                    <p>
+                                        <strong>Serial Number:</strong> @cert.SerialNumber
+                                    </p>
+                                    <p>
+                                        <strong>Issue Date:</strong> @cert.IssueDate.ToString("dd MMM yyyy")
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Child Information</h6>
+                                    <p>
+                                        <strong>Child Name:</strong> @cert.ChildName
+                                    </p>
+                                    <p>
+                                        <strong>Gender:</strong> @cert.Gender
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Birth Details</h6>
+                                    <p>
+                                        <strong>Date of Birth:</strong> @cert.DateOfBirth.ToString("dd MMM yyyy")
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Parents</h6>
+                                    <p>
+                                        <strong>Father:</strong> @cert.FatherName
+                                    </p>
+                                    <p>
+                                        <strong>Mother:</strong> @cert.MotherName
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Aqeeqah Details</h6>
+                                    <p>
+                                        <strong>Aqeeqah Date:</strong> @cert.AqeeqahDate.ToString("dd MMM yyyy")
+                                    </p>
+                                    @if (!string.IsNullOrEmpty(cert.AqeeqahLocation))
+                                    {
+                                        <p>
+                                            <strong>Location:</strong> @cert.AqeeqahLocation
+                                        </p>
+                                    }
+                                    @if (cert.AnimalCount.HasValue)
+                                    {
+                                        <p>
+                                            <strong>Animals Sacrificed:</strong> @cert.AnimalCount
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            @if (!string.IsNullOrEmpty(cert.CertificateFilePath))
+                            {
+                                <a href="@cert.CertificateFilePath" class="btn btn-success" target="_blank">
+                                    <i class="fas fa-download"></i> Download Certificate
+                                </a>
+                            }
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .modal-lg {
+        max-width: 800px;
+    }
+</style>
