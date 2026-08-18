@@ -8,7 +8,8 @@
 
   <ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\Gateway\Gateway.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -28,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
     <Folder Include="Models\" />
   </ItemGroup>
   

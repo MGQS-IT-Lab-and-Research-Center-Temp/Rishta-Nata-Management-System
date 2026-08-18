@@ -19,6 +19,73 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Domain.Entities.AqeeqahCertificate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int?>("AnimalCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AqeeqahDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("AqeeqahLocation")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CertificateFilePath")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ChildName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FatherName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("IssuedByUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("JamaatId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("MotherName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AqeeqahCertificates");
+                });
+
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")

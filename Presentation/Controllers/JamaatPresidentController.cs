@@ -1,3 +1,11 @@
+// do page for review - azeez
+// do page for review for individual nikkah form - azeez
+// do page for viewing aqeeqah certificates - yusroh
+// do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
+// fix all errors under your dto - faridah
+// fix all errors under service and interface - yusroh
+// ensure that dto namespace is infrastructure not application
+
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -9,10 +17,12 @@ namespace Presentation.Controllers;
 public class JamaatPresidentController : Controller
 {
     private readonly IJamaatPresidentService _service;
+    private readonly IAqeeqahCertificateService _aqeeqahService;
 
-    public JamaatPresidentController(IJamaatPresidentService service)
+    public JamaatPresidentController(IJamaatPresidentService service, IAqeeqahCertificateService aqeeqahService)
     {
         _service = service;
+        _aqeeqahService = aqeeqahService;
     }
 
     // ============================================================
@@ -103,6 +113,19 @@ public class JamaatPresidentController : Controller
             : "This application is no longer awaiting Jama'at President review.";
 
         return RedirectToAction(nameof(Dashboard));
+    }
+
+    // ============================================================
+    // AQEEQAH CERTIFICATES
+    // ============================================================
+
+    /// <summary>
+    /// Displays all Aqeeqah certificates for the Jamaat President
+    /// </summary>
+    public async Task<IActionResult> AqeeqahCertificates()
+    {
+        var certificates = await _aqeeqahService.GetAllCertificatesAsync();
+        return View(certificates);
     }
 
     // ============================================================
