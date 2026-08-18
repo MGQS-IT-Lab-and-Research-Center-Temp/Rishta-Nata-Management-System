@@ -23,4 +23,5 @@ namespace Application.Interfaces
         /// </summary>
         Task<bool> UpdateAsync(MarriageApplicationForm application, CancellationToken cancellationToken = default);
     }
+    
 }

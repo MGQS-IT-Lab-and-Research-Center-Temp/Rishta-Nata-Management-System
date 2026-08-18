@@ -5,6 +5,7 @@ using Domain.Enums;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Application.Services
 {
     public class FormApplicationService : IFormApplicationService
@@ -55,7 +56,7 @@ namespace Application.Services
             };
         }
 
-        public async Task<List<FormApplication>> GetAllAsync()
+        public async Task<List<FormApplication>> GetAllApplicationsAsync()
         {
             return await _context.FormApplications
                 .ToListAsync();
