@@ -1,7 +1,7 @@
-﻿using Application.DTOs.MarriageApplication;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using Infrastructure.DTOs.MarriageApplication;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +15,11 @@ namespace Application.Services
         public FormApplicationService(RishtanataDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<FormApplication>> GetAllApplicationsAsync()
+        {
+            return new List<FormApplication>();
         }
 
         public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)
@@ -150,7 +155,7 @@ namespace Application.Services
 
         public async Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId)
         {
-            // TODO: Implement filtering by jamaatId when jamaatId is added to the Application entity
+            // TODO: Implement filtering by jamaatId when jamaatId is added to the User entity
             // For now, return all applications
             return await _context.FormApplications
                 .Include(x => x.MarriageApplicationForm)

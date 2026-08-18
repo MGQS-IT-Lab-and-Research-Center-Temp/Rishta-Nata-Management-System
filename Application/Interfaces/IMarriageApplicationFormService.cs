@@ -7,15 +7,11 @@ namespace Application.Interfaces
 {
     public interface IMarriageApplicationFormService
     {
-        /// <summary>
-        /// Creates a new marriage application.
-        /// </summary>
-        Task<MarriageApplicationForm> CreateAsync(MarriageApplicationForm application, CancellationToken cancellationToken = default);
+        Task<MarriageApplicationForm> CreateAsync(MarriageApplicationForm application);
 
-        /// <summary>
-        /// Gets a marriage application by its Id.
-        /// </summary>
-        Task<MarriageApplicationForm?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<MarriageApplicationForm?> GetByIdAsync(Guid id);
+        Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(Guid marriageAplicationId);
+
 
         /// <summary>
         /// Updates an existing marriage application.
