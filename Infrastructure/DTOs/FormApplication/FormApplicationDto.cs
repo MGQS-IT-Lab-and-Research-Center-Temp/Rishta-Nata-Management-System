@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-using Infrastructure.DTOs.Certificates;
 
 namespace Infrastructure.DTOs.FormApplication;
 

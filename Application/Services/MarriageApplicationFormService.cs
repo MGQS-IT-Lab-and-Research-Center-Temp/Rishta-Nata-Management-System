@@ -54,7 +54,14 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         throw new NotImplementedException();
     }
 
-    public async Task<bool> UpdateAsync(MarriageApplicationForm application, CancellationToken ct = default)
+    public async Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(Guid marriageAplicationId)
+    {
+        return await
+        _context.MarriageApplicationForms.FirstOrDefaultAsync(x => x.MarriageApplicationId == marriageAplicationId);
+            
+    }
+
+    public async Task<bool> UpdateAsyn(MarriageApplicationForm application)
     {
         if (application is null) throw new ArgumentNullException(nameof(application));
 

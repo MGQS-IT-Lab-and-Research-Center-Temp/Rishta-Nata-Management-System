@@ -1,6 +1,4 @@
-﻿
-
-namespace Infrastructure.DTOs.FormApplication;
+﻿namespace Infrastructure.DTOs.FormApplication;
 
 public class CertificateDto
 {
