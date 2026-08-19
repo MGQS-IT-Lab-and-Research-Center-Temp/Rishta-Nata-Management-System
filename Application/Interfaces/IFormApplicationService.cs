@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Infrastructure.DTOs.FormApplication;
 
+
 namespace Application.Interfaces
 {
     public interface IFormApplicationService
@@ -11,13 +12,12 @@ namespace Application.Interfaces
 
         Task<FormApplicationDto> GetApplicationByIdAsync(Guid id);
 
-        Task<List<FormApplication>> GetAllAsync();
-
         Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId);
 
         Task<bool> ApproveApplicationAsync(Guid applicationId);
 
         Task<bool> RejectApplicationAsync(Guid applicationId);
+
         Task<bool> RequestMoreInformationAsync(Guid id);
     }
 }
