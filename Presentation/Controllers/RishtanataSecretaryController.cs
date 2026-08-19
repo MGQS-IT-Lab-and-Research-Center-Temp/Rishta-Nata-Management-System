@@ -2,6 +2,7 @@
 using Presentation.ViewModels;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
+using Presentation.Mapping.JamaatMember;
 
 namespace Presentation.Controllers
 {
@@ -43,6 +44,17 @@ namespace Presentation.Controllers
             return View(marriedCouples);
         }
 
+// View all Jama'at members
+public IActionResult JamaatMembers()
+{
+    var members = _service.GetMembers();
+
+    var viewModels = members
+        .Select(JamaatMemberMapping.ToViewModel)
+        .ToList();
+
+    return View(viewModels);
+}
         // Review a specific application
         public async Task<IActionResult> Review(Guid id)
         {

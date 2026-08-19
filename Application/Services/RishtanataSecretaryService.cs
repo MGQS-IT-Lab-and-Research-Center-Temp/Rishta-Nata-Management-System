@@ -4,7 +4,10 @@ using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using Domain.Entities;
+using Infrastructure.DTOs.JamaatMember;
+using Infrastructure.Mapper;
+
 namespace Application.Services
 {
    public class RishtanataSecretaryService : IRishtanataSecretaryService
@@ -121,23 +124,12 @@ namespace Application.Services
             _context.SaveChangesAsync();
         }
 
-
-        //public List<JamaatMemberDto> GetMembers()
-        //{
-        //    return _context.JamaatMembers
-        //        .Select(x => new JamaatMemberDto
-        //        {
-        //            Id = x.Id,
-        //            MemberNumber = x.MembershipNumber,
-        //            FullName = x.FullName,
-        //            PhoneNumber = x.PhoneNumber,
-        //            Gender = x.Gender,
-        //            Occupation = x.Occupation,
-        //            MaritalStatus = x.MaritalStatus,
-        //            JamaatName = x.Jamaat.Name
-        //        })
-        //        .ToList();
-        //}
+public List<JamaatMemberDto> GetMembers()
+{
+    return _context.Set<JamaatMember>()
+        .Select(x => JamaatMemberMapper.ToDto(x))
+        .ToList();
+}
         public void Reject(Guid id)
         {
             var application = _context.FormApplications
