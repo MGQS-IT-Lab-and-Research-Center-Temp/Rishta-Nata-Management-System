@@ -1,5 +1,4 @@
-﻿@page
-@model IEnumerable<Presentation.ViewModels.JamaatMemberViewModel>
+﻿@model IEnumerable<Presentation.ViewModels.JamaatMember.JamaatMemberVM>
 
 @{
     ViewData["Title"] = "Jama'at Members";
@@ -160,15 +159,11 @@
                         {
                             <tr>
 
-                                <td>
-
-                                    <strong class="text-primary">
-
-                                        @member.MemberNumber
-
-                                    </strong>
-
-                                </td>
+                                    <td>
+                                        <strong class="text-primary">
+                                            @member.ChandaNo
+                                        </strong>
+                                    </td>
 
                                 <td>
 
@@ -178,7 +173,7 @@
 
                                 <td>
 
-                                    @member.Gender
+                                    @member.Sex
 
                                 </td>
 
@@ -219,13 +214,7 @@
 
                                 <td>
 
-                                    @member.Occupation
-
-                                </td>
-
-                                <td>
-
-                                    @member.PhoneNumber
+                                    @member.PhoneNo
 
                                 </td>
 
