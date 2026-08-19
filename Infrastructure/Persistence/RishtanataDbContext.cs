@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +15,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
 
     public DbSet<FormApplication> FormApplications => Set<FormApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
+    public DbSet<Domain.Entities.ParticipantInvitation> ParticipantInvitations => Set<Domain.Entities.ParticipantInvitation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

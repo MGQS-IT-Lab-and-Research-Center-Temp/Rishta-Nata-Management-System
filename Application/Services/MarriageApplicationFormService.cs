@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +15,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         _logger = logger;
     }
 
-    public async Task<MarriageApplicationForm> CreateAsync(MarriageApplicationForm application, CancellationToken ct = default)
+    public async Task<MarriageApplicationForm> CreateAsync(MarriageApplicationForm application, CancellationToken cancellationToken = default)
     {
         if (application is null) throw new ArgumentNullException(nameof(application));
 
@@ -23,7 +23,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         try
         {
-            var saved = await _context.SaveChangesAsync(ct);
+            var saved = await _context.SaveChangesAsync(cancellationToken);
             if (saved == 0)
             {
                 _logger.LogWarning("SaveChangesAsync returned 0 when creating MarriageApplicationForm (Id: {Id})", application.Id);
@@ -61,7 +61,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             
     }
 
-    public async Task<bool> UpdateAsyn(MarriageApplicationForm application)
+    public async Task<bool> UpdateAsync(MarriageApplicationForm application, CancellationToken cancellationToken = default)
     {
         if (application is null) throw new ArgumentNullException(nameof(application));
 
@@ -69,7 +69,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         try
         {
-            var affected = await _context.SaveChangesAsync(ct);
+            var affected = await _context.SaveChangesAsync(cancellationToken);
             return affected > 0;
         }
         catch (DbUpdateConcurrencyException ex)
