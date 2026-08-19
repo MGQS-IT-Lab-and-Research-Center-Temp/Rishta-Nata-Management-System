@@ -17,10 +17,10 @@ namespace Application.Services
             _context = context;
         }
 
-        public async Task<List<FormApplication>> GetAllApplicationsAsync()
-        {
-            return new List<FormApplication>();
-        }
+        // public async Task<List<FormApplication>> GetAllApplicationsAsync()
+        // {
+        //     return new List<FormApplication>();
+        // }
 
         public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)
         {
