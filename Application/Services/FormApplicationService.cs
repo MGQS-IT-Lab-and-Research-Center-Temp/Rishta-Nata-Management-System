@@ -1,10 +1,9 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.DTOs.MarriageApplication;
+using Infrastructure.DTOs.FormApplication;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Application.Services
 {
@@ -17,11 +16,7 @@ namespace Application.Services
             _context = context;
         }
 
-        public async Task<List<FormApplication>> GetAllApplicationsAsync()
-        {
-            return new List<FormApplication>();
-        }
-
+        // ✅ Create a new application
         public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)
         {
             var application = new FormApplication
@@ -42,121 +37,87 @@ namespace Application.Services
             };
         }
 
-        // why returning a new form application dto??
+        // ✅ Get a single application by ID
         public async Task<FormApplicationDto> GetApplicationByIdAsync(Guid id)
         {
-            var marriageApplication = await _context.FormApplications
+            var application = await _context.FormApplications
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (marriageApplication == null)
-            {
-                throw new KeyNotFoundException(
-                    $"Marriage application with ID {id} was not found.");
-            }
+            if (application == null)
+                throw new KeyNotFoundException($"Application with ID {id} was not found.");
 
             return new FormApplicationDto
             {
-                Id = marriageApplication.Id,
-                Status = marriageApplication.Status,
+                Id = application.Id,
+                Status = application.Status
             };
         }
 
+        // ✅ Get all applications
         public async Task<List<FormApplication>> GetAllApplicationsAsync()
         {
-            return await _context.FormApplications
-                .ToListAsync();
+            return await _context.FormApplications.ToListAsync();
         }
-        public async Task<List<FormApplication>>
-        GetPendingApplicationsAsync()
+
+        // ✅ Get pending applications
+        public async Task<List<FormApplication>> GetPendingApplicationsAsync()
         {
             return await _context.FormApplications
-                .Where(x =>
-                    x.Status == ApplicationStatus.ApplicationPending)
+                .Where(x => x.Status == ApplicationStatus.ApplicationPending)
                 .Include(x => x.MarriageApplicationForm)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
         }
+
+        // ✅ Approve application
         public async Task<bool> ApproveApplicationAsync(Guid id)
         {
-            var application = await _context.FormApplications
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var application = await _context.FormApplications.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (application == null)
-            {
+            if (application == null || application.Status != ApplicationStatus.ApplicationPending)
                 return false;
-            }
 
-            if (application.Status !=
-                ApplicationStatus.ApplicationPending)
-            {
-                return false;
-            }
-
-            application.Status =
-                ApplicationStatus.ApplicationApproved;
-
+            application.Status = ApplicationStatus.ApplicationApproved;
             application.ModifiedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-
             return true;
         }
+
+        // ✅ Reject application
         public async Task<bool> RejectApplicationAsync(Guid id)
         {
-            var application = await _context.FormApplications
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var application = await _context.FormApplications.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (application == null)
-            {
+            if (application == null || application.Status != ApplicationStatus.ApplicationPending)
                 return false;
-            }
 
-            if (application.Status !=
-                ApplicationStatus.ApplicationPending)
-            {
-                return false;
-            }
-
-            application.Status =
-                ApplicationStatus.ApplicationRejected;
-
-            //later, modifiedat will always be updated in a savechangesasync that will be configured in dbcontext
+            application.Status = ApplicationStatus.ApplicationRejected;
             application.ModifiedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-
             return true;
         }
+
+        // ✅ Request more information (optional new status)
         public async Task<bool> RequestMoreInformationAsync(Guid id)
         {
-            var application = await _context.FormApplications
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var application = await _context.FormApplications.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (application == null)
-            {
+            if (application == null || application.Status != ApplicationStatus.ApplicationPending)
                 return false;
-            }
 
-            if (application.Status !=
-                ApplicationStatus.ApplicationPending)
-            {
-                return false;
-            }
-
-            application.Status =
-                ApplicationStatus.ApplicationPending;
-
+            // If you have a distinct enum value for "NeedsMoreInfo", use that instead
+            application.Status = ApplicationStatus.ApplicationPending;
             application.ModifiedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-
             return true;
         }
 
+        // ✅ Get applications by Jamaat (placeholder until filtering is implemented)
         public async Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId)
         {
-            // TODO: Implement filtering by jamaatId when jamaatId is added to the User entity
-            // For now, return all applications
             return await _context.FormApplications
                 .Include(x => x.MarriageApplicationForm)
                 .OrderByDescending(x => x.CreatedAt)

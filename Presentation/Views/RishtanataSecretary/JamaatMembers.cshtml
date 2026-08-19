@@ -1,5 +1,8 @@
 ﻿@page
-@model IEnumerable<Presentation.ViewModels.JamaatMemberViewModel>
+@model IEnumerable<Presentation.ViewModels.JamaatMember.JamaatMemberVM>
+
+
+
 
 @{
     ViewData["Title"] = "Jama'at Members";
@@ -22,9 +25,7 @@
 
         </div>
 
-        <a asp-controller="RishtanataSecretary"
-           asp-action="Dashboard"
-           class="btn btn-outline-secondary">
+        <a asp-controller="RishtanataSecretary" asp-action="Dashboard" class="btn btn-outline-secondary">
 
             ← Dashboard
 
@@ -42,9 +43,7 @@
 
                 <div class="col-md-4">
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Search by Name or Member Number..." />
+                    <input type="text" class="form-control" placeholder="Search by Name or Member Number..." />
 
                 </div>
 
