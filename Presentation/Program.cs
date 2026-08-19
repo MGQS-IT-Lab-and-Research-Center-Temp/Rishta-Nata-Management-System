@@ -18,6 +18,7 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
+builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
 
 
 var app = builder.Build();
