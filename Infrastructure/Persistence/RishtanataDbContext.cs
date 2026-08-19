@@ -9,6 +9,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
 {
     public RishtanataDbContext(DbContextOptions<RishtanataDbContext> options)
         : base(options) { }
+    public DbSet<JamaatMember> JamaatMembers { get; set; }
     public DbSet<Certificate> Certificates => Set<Certificate>();
     public DbSet<AqeeqahCertificate> AqeeqahCertificates => Set<AqeeqahCertificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
