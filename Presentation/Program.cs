@@ -1,11 +1,9 @@
 using Application.Interfaces;
-using Application.Interfaces.Identity;
 using Application.Services;
-using Gateway.Implementation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
-using Presentation.Services.Auth;
+using Presentation.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,23 +16,9 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
     builder.Configuration.GetConnectionString("DefaultConnection")!);
 
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
+builder.Services.AddScoped<ICertificateService, CertificateService>();
 
-
-builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
-
-builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
-
-builder.Services.AddHttpContextAccessor();
-
-
-builder.Services
-    .AddAuthentication("MyCookieAuth")
-    .AddCookie("MyCookieAuth", options =>
-    {
-        options.LoginPath = "/Auth/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-    });
 
 var app = builder.Build();
 
@@ -49,15 +33,21 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+// Seed Aqeeqah certificates data
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<RishtanataDbContext>();
 
+    await dbContext.Database.MigrateAsync();
+
+
+    await AqeeqahCertificateSeeder.SeedAqeeqahCertificatesAsync(dbContext);
+}
 
 app.Run();

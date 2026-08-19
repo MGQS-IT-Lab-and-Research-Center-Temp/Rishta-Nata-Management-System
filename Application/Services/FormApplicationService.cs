@@ -5,6 +5,7 @@ using Infrastructure.DTOs.MarriageApplication;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Application.Services
 {
     public class FormApplicationService : IFormApplicationService
@@ -60,7 +61,7 @@ namespace Application.Services
             };
         }
 
-        public async Task<List<FormApplication>> GetAllAsync()
+        public async Task<List<FormApplication>> GetAllApplicationsAsync()
         {
             return await _context.FormApplications
                 .ToListAsync();
@@ -154,7 +155,7 @@ namespace Application.Services
 
         public async Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId)
         {
-            // TODO: Implement filtering by jamaatId when jamaatId is added to the Application entity
+            // TODO: Implement filtering by jamaatId when jamaatId is added to the User entity
             // For now, return all applications
             return await _context.FormApplications
                 .Include(x => x.MarriageApplicationForm)

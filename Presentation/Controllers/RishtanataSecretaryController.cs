@@ -2,80 +2,69 @@
 using Presentation.ViewModels;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
+
 namespace Presentation.Controllers
 {
-    using Application.Interfaces;
-    using Microsoft.AspNetCore.Mvc;
-
-    namespace Presentation.Controllers
+    public class RishtanataSecretaryController : Controller
     {
-        public class RishtanataSecretaryDashboardController : Controller
+        private readonly IRishtanataSecretaryService _service;
+
+        public RishtanataSecretaryController(IRishtanataSecretaryService service)
         {
-            private readonly IRishtanataSecretaryService _service;
+            _service = service;
+        }
 
-            public RishtanataSecretaryDashboardController(IRishtanataSecretaryService service)
-            {
-                _service = service;
-            }
+        // Dashboard page
+        public IActionResult Dashboard()
+        {
+            var dto = _service.GetDashboard();
 
-            
-          
+            var model = RishtanataSecretaryDashboardMapping.ToViewModel(dto);
 
-            // Dashboard page
-            public async Task< IActionResult> Dashboard()
-            {
-                var dto = _service.GetDashboard();
+            return View(model);
+        }
 
-                
-                // var model = SecretaryMapper.ToViewModel(dto);
-                // return View(model);
+        // Pending approvals page
+        public async Task<IActionResult> PendingApprovals()
+        {
+            var pendingApprovals = _service.GetPendingApprovals();
 
-                return View(dto);
-            }
+            var viewModels = pendingApprovals
+                .Select(PendingApprovalMapping.ToViewModel)
+                .ToList();
 
-            // Pending approvals page
-            // Pending approvals page
-public async Task<IActionResult> PendingApprovals()
-{
-    var pendingApprovals = _service.GetPendingApprovals();
+            return View(viewModels);
+        }
 
-    var viewModels = pendingApprovals
-        .Select(PendingApprovalMapping.ToViewModel)
-        .ToList();
+        // MarriedCouples Page
+        public async Task<IActionResult> MarriedCouples()
+        {
+            var marriedCouples = _service.GetMarriedCouples();
+            return View(marriedCouples);
+        }
 
-    return View(viewModels);
-}
+        // Review a specific application
+        public async Task<IActionResult> Review(Guid id)
+        {
+            var application = _service.GetById(id);
 
-            // MarriedCouples Page
-            public async Task<IActionResult> MarriedCouples()
-            {
-                var marriedCouples = _service.GetMarriedCouples();
-                return View(marriedCouples);
-            }
+            return View(application);
+        }
 
-            // Review a specific application
-            public async Task<IActionResult> Review(Guid id)
-            {
-                var application = _service.GetById(id);
+        [HttpPost]
+        public async Task<IActionResult> Approve(Guid id)
+        {
+            _service.Approve(id);
 
-                return View(application);
-            }
+            return RedirectToAction(nameof(PendingApprovals));
+        }
 
-            [HttpPost]
-            public async Task<IActionResult> Approve(Guid id)
-            {
-                _service.Approve(id);
+        [HttpPost]
+        public async Task<IActionResult> Reject(Guid id)
+        {
+            _service.Reject(id);
 
-                return RedirectToAction(nameof(PendingApprovals));
-            }
-
-            [HttpPost]
-            public async Task<IActionResult> Reject(Guid id)
-            {
-                _service.Reject(id);
-
-                return RedirectToAction(nameof(PendingApprovals));
-            }
+            return RedirectToAction(nameof(PendingApprovals));
         }
     }
 }
