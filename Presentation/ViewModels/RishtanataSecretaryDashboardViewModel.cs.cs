@@ -113,4 +113,29 @@
 
         public string? PhoneNumber { get; set; }
     }
+
+
+    public class RoleManagementViewModel
+    {
+        public int UserId { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string MembershipNumber { get; set; } = string.Empty;
+
+        public List<AssignedRoleViewModel> AssignedRoles { get; set; } = new();
+        public List<RoleOptionViewModel> AvailableRoles { get; set; } = new();
+    }
+
+    public class AssignedRoleViewModel
+    {
+        public int RoleId { get; set; }
+        public string RoleName { get; set; } = string.Empty;
+        public bool IsBaseline { get; set; }
+        public DateTime AssignedDate { get; set; }
+    }
+
+    public class RoleOptionViewModel
+    {
+        public int RoleId { get; set; }
+        public string RoleName { get; set; } = string.Empty;
+    }
 }

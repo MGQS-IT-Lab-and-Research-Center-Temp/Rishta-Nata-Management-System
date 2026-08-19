@@ -38,11 +38,13 @@ namespace Presentation.Controllers
         public async Task<IActionResult> MarriedCouples()
         {
             var marriedCouples = _service.GetMarriedCouples();
-            return View(marriedCouples);
+
+            var model = MarriedCoupleMapping.ToViewModel(marriedCouples);
+            return View(model);
         }
 
         // Review a specific application
-        public async Task<IActionResult> Review(Guid id)
+        public async Task<IActionResult> Reviews(Guid id)
         {
             var application = _service.GetById(id);
 

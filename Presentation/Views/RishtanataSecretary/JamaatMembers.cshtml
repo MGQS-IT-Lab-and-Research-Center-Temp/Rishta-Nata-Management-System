@@ -53,10 +53,10 @@
                     <select class="form-select">
 
                         <option>All Jama'ats</option>
-                        <option>Kano Central</option>
-                        <option>Kaduna North</option>
-                        <option>Abuja Central</option>
-                        <option>Ibadan West</option>
+                        <option>Agege</option>
+                        <option>Ilaro</option>
+                        <option>Ibeju-Lekki</option>
+                        <option>Mowe-Ibafo</option>
 
                     </select>
 
@@ -144,8 +144,6 @@
 
                         <th>Marital Status</th>
 
-                        <th>Occupation</th>
-
                         <th>Phone</th>
 
                     </tr>
@@ -164,7 +162,7 @@
 
                                     <strong class="text-primary">
 
-                                        @member.MemberNumber
+                                        @member.MembershipNumber
 
                                     </strong>
 
@@ -217,16 +215,24 @@
 
                                 </td>
 
-                                <td>
-
-                                    @member.Occupation
-
-                                </td>
+              
 
                                 <td>
 
                                     @member.PhoneNumber
 
+                                </td>
+                                <td>
+                                    @member.PhoneNumber
+                                </td>
+
+                                <td>
+                                    <a asp-controller="RishtanataSecretary"
+                                       asp-action="ManageRoles"
+                                       asp-route-id="@member.Id"
+                                       class="btn btn-outline-primary btn-sm">
+                                        Manage Roles
+                                    </a>
                                 </td>
 
                             </tr>
