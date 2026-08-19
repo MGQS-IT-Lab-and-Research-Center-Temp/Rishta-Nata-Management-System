@@ -16,15 +16,23 @@ public class JamaatPresidentService : IJamaatPresidentService
     }
 
     public async Task<JamaatPresidentDashboardDto> GetDashboardAsync(
-    string? presidentDisplayName,
-    Guid? currentUserId)
+        string? presidentDisplayName,
+        Guid? currentUserId)
     {
         var pendingStatus = ApplicationStatus.ApplicationPending;
 
         var jamaatMember = currentUserId.HasValue
-    ? await _context.JamaatMembers
-        .FirstOrDefaultAsync(x => x.Id == currentUserId.Value)
-    : null;
+            ? await _context.JamaatMembers
+                .FirstOrDefaultAsync(x => x.Id == currentUserId.Value)
+            : null;
+
+        if (jamaatMember == null)
+        {
+            throw new InvalidOperationException(
+                currentUserId.HasValue
+                    ? $"No Jama'at member was found for the current user ID '{currentUserId.Value}'."
+                    : "Unable to load the Jama'at member because no current user ID was provided.");
+        }
 
         var pendingApplications = await _context.FormApplications
             .Where(x => x.Status == pendingStatus)
@@ -61,8 +69,8 @@ public class JamaatPresidentService : IJamaatPresidentService
         return new JamaatPresidentDashboardDto
         {
             PresidentName = presidentDisplayName ?? "Jama'at President",
-            JamaatName = jamaatMember?.jamaatName ?? "Jama'at",
-            CircuitName = jamaatMember?.circuitName ?? "Circuit",
+            JamaatName = jamaatMember.jamaatName ?? "Jama'at",
+            CircuitName = jamaatMember.circuitName ?? "Circuit",
             PendingNikahReviews = pendingApplications.Count,
             ReviewedToday = reviewedToday,
             TotalNikahApplications = totalApplications,
@@ -90,14 +98,16 @@ public class JamaatPresidentService : IJamaatPresidentService
 
         if (review == null)
         {
-            return null;
+            throw new KeyNotFoundException(
+                $"No review was found with ID '{id}'.");
         }
 
         var form = review.MarriageApplicationForm;
 
         if (form == null)
         {
-            return null;
+            throw new InvalidOperationException(
+                $"Review '{id}' does not have an associated marriage application form.");
         }
 
         return new JamaatPresidentReviewDto
@@ -169,12 +179,15 @@ public class JamaatPresidentService : IJamaatPresidentService
             JamaatPresidentSignatureDate = form.JamaatPresidentSignatureDate,
 
             NationalRishtanataSecretaryName = form.NationalRishtanataSecretaryName,
-            NationalRishtanataSecretarySignatureDate = form.NationalRishtanataSecretarySignatureDate,
+            NationalRishtanataSecretarySignatureDate =
+                form.NationalRishtanataSecretarySignatureDate,
 
             ApprovedDateOfNikah = form.ApprovedDateOfNikah,
-            NationalAmirOrMissionarySignatureDate = form.NationalAmirOrMissionarySignatureDate
+            NationalAmirOrMissionarySignatureDate =
+                form.NationalAmirOrMissionarySignatureDate
         };
     }
+
     public async Task<bool> ApproveAsync(Guid id, Guid? currentUserId)
     {
         return await ChangeStatusAsync(
@@ -205,7 +218,12 @@ public class JamaatPresidentService : IJamaatPresidentService
             "");
     }
 
-    private async Task<bool> ChangeStatusAsync(Guid id, Guid? currentUserId, ApplicationStatus newStatus, string actionLabel, string extraDetail)
+    private async Task<bool> ChangeStatusAsync(
+        Guid id,
+        Guid? currentUserId,
+        ApplicationStatus newStatus,
+        string actionLabel,
+        string extraDetail)
     {
         var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
@@ -225,7 +243,9 @@ public class JamaatPresidentService : IJamaatPresidentService
         application.ModifiedAt = DateTime.UtcNow;
         application.ModifiedBy = currentUserId;
 
-        var reference = application.MarriageApplicationForm?.ReferenceNumber ?? application.Id.ToString();
+        var reference =
+            application.MarriageApplicationForm?.ReferenceNumber
+            ?? application.Id.ToString();
 
         var auditLog = new AuditLog
         {
@@ -235,10 +255,13 @@ public class JamaatPresidentService : IJamaatPresidentService
             EntityName = "MarriageApplication",
             RecordId = application.Id,
             Timestamp = DateTime.UtcNow,
-            ChangeDetails = $"Jama'at President {actionLabel.ToLower()} application {reference}. {extraDetail}".Trim()
+            ChangeDetails =
+                $"Jama'at President {actionLabel.ToLower()} application {reference}. {extraDetail}"
+                    .Trim()
         };
 
         _context.AuditLogs.Add(auditLog);
+
         await _context.SaveChangesAsync();
 
         return true;
