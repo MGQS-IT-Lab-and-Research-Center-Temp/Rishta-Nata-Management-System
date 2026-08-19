@@ -1,11 +1,10 @@
-// do page for review - azeez
-// do page for review for individual nikkah form - azeez
-// do page for viewing aqeeqah certificates - yusroh
-// do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
-// fix all errors under your dto - faridah
-// fix all errors under service and interface - yusroh
-// ensure that dto namespace is infrastructure not application
 
+// do page for review for individual nikkah form - azeez
+// do page for viewing aqeeqah certificates - yusroh - done
+// do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
+// fix all errors under your dto - faridah -done
+// fix all errors under service and interface - yusroh
+// ensure that dto namespace is infrastructure not application - done
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -31,7 +30,10 @@ public class JamaatPresidentController : Controller
 
     public async Task<IActionResult> Dashboard()
     {
-        var dto = await _service.GetDashboardAsync(User.Identity?.Name);
+        var dto = await _service.GetDashboardAsync(
+            User.Identity?.Name,
+            GetCurrentUserId());
+
         return View(dto);
     }
 
@@ -42,7 +44,7 @@ public class JamaatPresidentController : Controller
     [HttpGet]
     public async Task<IActionResult> Review(Guid id)
     {
-        var dto = await _service.GetReviewAsync(id);
+        var dto = await _service.GetReviewByIdAsync(id);
 
         if (dto == null)
         {
@@ -114,6 +116,17 @@ public class JamaatPresidentController : Controller
 
         return RedirectToAction(nameof(Dashboard));
     }
+
+    // ============================================================
+    // MARRIAGE CERTIFICATES
+    // ============================================================
+
+    /// <summary>
+    /// Displays all marriage certificates.
+    ///
+    /// For now, all certificates are displayed.
+    /// Later, this can be filtered by the Jama'at President's Jama'at.
+    /// </summary>
 
     // ============================================================
     // AQEEQAH CERTIFICATES

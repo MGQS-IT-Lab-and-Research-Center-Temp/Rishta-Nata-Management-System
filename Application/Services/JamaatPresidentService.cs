@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs.JamaatPresidentDashboardDto;
 using Infrastructure.Persistence;
@@ -15,9 +15,16 @@ public class JamaatPresidentService : IJamaatPresidentService
         _context = context;
     }
 
-    public async Task<JamaatPresidentDashboardDto> GetDashboardAsync(string? presidentDisplayName)
+    public async Task<JamaatPresidentDashboardDto> GetDashboardAsync(
+    string? presidentDisplayName,
+    Guid? currentUserId)
     {
         var pendingStatus = ApplicationStatus.ApplicationPending;
+
+        var jamaatMember = currentUserId.HasValue
+    ? await _context.JamaatMembers
+        .FirstOrDefaultAsync(x => x.Id == currentUserId.Value)
+    : null;
 
         var pendingApplications = await _context.FormApplications
             .Where(x => x.Status == pendingStatus)
@@ -54,8 +61,8 @@ public class JamaatPresidentService : IJamaatPresidentService
         return new JamaatPresidentDashboardDto
         {
             PresidentName = presidentDisplayName ?? "Jama'at President",
-            JamaatName = "Jama'at",
-            CircuitName = "Circuit",
+            JamaatName = jamaatMember?.jamaatName ?? "Jama'at",
+            CircuitName = jamaatMember?.circuitName ?? "Circuit",
             PendingNikahReviews = pendingApplications.Count,
             ReviewedToday = reviewedToday,
             TotalNikahApplications = totalApplications,
@@ -75,18 +82,18 @@ public class JamaatPresidentService : IJamaatPresidentService
         };
     }
 
-    public async Task<JamaatPresidentReviewDto?> GetReviewAsync(Guid id)
+    public async Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id)
     {
-        var application = await _context.FormApplications
-            .Include(x => x.MarriageApplicationForm)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var review = await _context.Reviews
+            .Include(r => r.MarriageApplicationForm)
+            .FirstOrDefaultAsync(r => r.Id == id);
 
-        if (application == null)
+        if (review == null)
         {
             return null;
         }
 
-        var form = application.MarriageApplicationForm;
+        var form = review.MarriageApplicationForm;
 
         if (form == null)
         {
@@ -95,10 +102,11 @@ public class JamaatPresidentService : IJamaatPresidentService
 
         return new JamaatPresidentReviewDto
         {
-            Id = application.Id,
+            Id = review.Id,
             ReferenceNumber = form.ReferenceNumber,
-            Status = application.Status.ToString(),
-            SubmittedDate = application.CreatedAt,
+            Status = review.Status,
+            SubmittedDate = review.ReviewedAt,
+
             ProposedNikahDate = form.ProposedNikahDate,
             Venue = form.Venue,
 
@@ -167,7 +175,6 @@ public class JamaatPresidentService : IJamaatPresidentService
             NationalAmirOrMissionarySignatureDate = form.NationalAmirOrMissionarySignatureDate
         };
     }
-
     public async Task<bool> ApproveAsync(Guid id, Guid? currentUserId)
     {
         return await ChangeStatusAsync(

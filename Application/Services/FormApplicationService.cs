@@ -1,9 +1,10 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs.FormApplication;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Application.Services
 {
@@ -16,10 +17,6 @@ namespace Application.Services
             _context = context;
         }
 
-        public async Task<List<FormApplication>> GetAllApplicationsAsync()
-        {
-            return new List<FormApplication>();
-        }
 
         public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)
         {
@@ -60,7 +57,7 @@ namespace Application.Services
             };
         }
 
-        public async Task<List<FormApplication>> GetAllAsync()
+        public async Task<List<FormApplication>> GetAllApplicationsAsync()
         {
             return await _context.FormApplications
                 .ToListAsync();

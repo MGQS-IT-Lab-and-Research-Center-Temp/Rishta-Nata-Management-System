@@ -1,12 +1,14 @@
-﻿using Infrastructure.DTOs.JamaatPresidentDashboardDto;
+using Infrastructure.DTOs.JamaatPresidentDashboardDto;
 
 namespace Application.Interfaces;
 
 public interface IJamaatPresidentService
 {
-    Task<JamaatPresidentDashboardDto> GetDashboardAsync(string? presidentDisplayName);
+    Task<JamaatPresidentDashboardDto> GetDashboardAsync(
+    string? presidentDisplayName,
+    Guid? currentUserId);
 
-    Task<JamaatPresidentReviewDto?> GetReviewAsync(Guid id);
+    Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id);
 
     Task<bool> ApproveAsync(Guid id, Guid? currentUserId);
 
