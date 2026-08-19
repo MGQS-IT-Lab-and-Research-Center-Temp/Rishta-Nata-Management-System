@@ -16,6 +16,8 @@ namespace Application.Interfaces
        
         Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(Guid marriageAplicationId);
 
+        Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(
+            Guid marriageAplicationId);
 
         /// <summary>
         /// Updates an existing marriage application.
@@ -27,5 +29,4 @@ namespace Application.Interfaces
         Task<bool> UpdateAsync(MarriageApplicationForm application, CancellationToken cancellationToken = default);
 
     }
-    
 }
