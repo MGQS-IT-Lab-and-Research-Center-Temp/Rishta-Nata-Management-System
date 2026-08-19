@@ -7,7 +7,14 @@ namespace Application.Interfaces
 {
     public interface IParticipantInvitationService
     {
-        Task<ParticipantInvitationDto> CreateInvitationAsync(Guid applicationId, Side side, ParticipantRole role, int? witnessOrder = null);
+        Task<ParticipantInvitationDto> CreateInvitationAsync(
+            Guid applicationId,
+            Side side,
+            ParticipantRole role,
+            string? recipientEmail = null,
+            string? recipientName = null,
+            int? witnessOrder = null);
+
         Task<ParticipantInvitationDto> GetInvitationByTokenAsync(string token);
         Task RevokeInvitationAsync(Guid invitationId);
         Task MarkCompletedAsync(Guid invitationId);

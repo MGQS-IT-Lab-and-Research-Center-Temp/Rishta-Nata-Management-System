@@ -32,7 +32,14 @@ namespace Presentation.Controllers.Api
                 return BadRequest("Invalid role");
             }
 
-            var dto = await _service.CreateInvitationAsync(applicationId, side, role, request.WitnessOrder);
+            var dto = await _service.CreateInvitationAsync(
+                applicationId,
+                side,
+                role,
+                request.Email,
+                request.Name,
+                request.WitnessOrder);
+
             return Ok(dto);
         }
 
@@ -56,6 +63,8 @@ namespace Presentation.Controllers.Api
     {
         public string Side { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public string? Name { get; set; }
         public int? WitnessOrder { get; set; }
     }
 }

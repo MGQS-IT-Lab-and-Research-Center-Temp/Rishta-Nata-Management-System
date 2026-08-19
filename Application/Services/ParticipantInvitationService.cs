@@ -24,7 +24,13 @@ namespace Application.Services
             _emailService = emailService;
         }
 
-        public async Task<ParticipantInvitationDto> CreateInvitationAsync(Guid applicationId, Side side, ParticipantRole role, int? witnessOrder = null)
+        public async Task<ParticipantInvitationDto> CreateInvitationAsync(
+            Guid applicationId,
+            Side side,
+            ParticipantRole role,
+            string? recipientEmail = null,
+            string? recipientName = null,
+            int? witnessOrder = null)
         {
             // Prevent duplicate active invitation
             var now = DateTime.UtcNow;
@@ -40,7 +46,20 @@ namespace Application.Services
 
             if (existing != null)
             {
-                return MapToDto(existing, includeUrl: true);
+                var existingDto = MapToDto(existing, includeUrl: true);
+
+                if (!string.IsNullOrWhiteSpace(recipientEmail) && !string.IsNullOrWhiteSpace(existingDto.InvitationUrl))
+                {
+                    await _emailService.SendParticipantInvitationAsync(
+                        recipientEmail,
+                        string.IsNullOrWhiteSpace(recipientName) ? "Participant" : recipientName,
+                        existingDto.InvitationUrl,
+                        side.ToString(),
+                        role.ToString(),
+                        witnessOrder);
+                }
+
+                return existingDto;
             }
 
             var rawToken = TokenHelper.GenerateTokenRaw();
@@ -68,16 +87,16 @@ namespace Application.Services
 
             var dto = MapToDto(invitation, includeUrl: true, rawToken: rawToken);
 
-            // NOTE: The actual recipient email must come from the person being invited.
-            // This can be supplied from the application data or from controller request payload.
-            // Example:
-            // await _emailService.SendParticipantInvitationAsync(
-            //     recipientEmail,
-            //     recipientName,
-            //     dto.InvitationUrl!,
-            //     side.ToString(),
-            //     role.ToString(),
-            //     witnessOrder);
+            if (!string.IsNullOrWhiteSpace(recipientEmail) && !string.IsNullOrWhiteSpace(dto.InvitationUrl))
+            {
+                await _emailService.SendParticipantInvitationAsync(
+                    recipientEmail,
+                    string.IsNullOrWhiteSpace(recipientName) ? "Participant" : recipientName,
+                    dto.InvitationUrl,
+                    side.ToString(),
+                    role.ToString(),
+                    witnessOrder);
+            }
 
             return dto;
         }
