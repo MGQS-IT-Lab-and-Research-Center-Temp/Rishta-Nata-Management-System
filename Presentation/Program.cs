@@ -18,6 +18,7 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<Application.Interfaces.IParticipantInvitationService, Application.Services.ParticipantInvitationService>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 var app = builder.Build();
 

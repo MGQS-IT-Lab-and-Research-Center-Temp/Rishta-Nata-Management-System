@@ -15,11 +15,13 @@ namespace Application.Services
     {
         private readonly RishtanataDbContext _db;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public ParticipantInvitationService(RishtanataDbContext db, IConfiguration configuration)
+        public ParticipantInvitationService(RishtanataDbContext db, IConfiguration configuration, IEmailService emailService)
         {
             _db = db;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         public async Task<ParticipantInvitationDto> CreateInvitationAsync(Guid applicationId, Side side, ParticipantRole role, int? witnessOrder = null)
@@ -65,6 +67,18 @@ namespace Application.Services
             await _db.SaveChangesAsync();
 
             var dto = MapToDto(invitation, includeUrl: true, rawToken: rawToken);
+
+            // NOTE: The actual recipient email must come from the person being invited.
+            // This can be supplied from the application data or from controller request payload.
+            // Example:
+            // await _emailService.SendParticipantInvitationAsync(
+            //     recipientEmail,
+            //     recipientName,
+            //     dto.InvitationUrl!,
+            //     side.ToString(),
+            //     role.ToString(),
+            //     witnessOrder);
+
             return dto;
         }
 
