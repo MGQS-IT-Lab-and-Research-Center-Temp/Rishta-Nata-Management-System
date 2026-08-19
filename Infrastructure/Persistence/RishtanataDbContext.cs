@@ -15,6 +15,8 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
 
     public DbSet<FormApplication> FormApplications => Set<FormApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
+    public DbSet<JamaatMember> JamaatMembers => Set<JamaatMember>();
+    public DbSet<Role> JamaatRoles => Set<Role>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

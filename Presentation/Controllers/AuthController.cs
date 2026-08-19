@@ -73,7 +73,7 @@ public class AuthController : Controller
         var rishtanataSecretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
 
         var isRishtanataSecretary = !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo)
-            && jamaatMember.chandaNo == rishtanataSecretaryChandaNo;
+            && jamaatMember.ChandaNo == rishtanataSecretaryChandaNo;
 
         await _cookieAuthService.SignInAsync(jamaatMember, isRishtanataSecretary);
 

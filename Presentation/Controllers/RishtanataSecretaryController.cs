@@ -49,6 +49,16 @@ namespace Presentation.Controllers
             return View(application);
         }
 
+        // Full member profile page
+        public async Task<IActionResult> MemberProfile(Guid id)
+        {
+            var dto = _service.GetMemberProfile(id);
+
+            var model = MemberProfileMapping.ToViewModel(dto);
+
+            return View(model);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Approve(Guid id)
         {
