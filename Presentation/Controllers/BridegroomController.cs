@@ -58,7 +58,7 @@ public class BridegroomController : Controller
                 ReferenceNumber = $"RN-{DateTime.UtcNow.Year}-{Guid.NewGuid().ToString().Substring(0, 6).ToUpper()}"
             };
 
-            await _marriageApplicationFormService.CreateDraftForGroomAsync(form, ct);
+            await _marriageApplicationFormService.CreateAsync(form, ct);
         }
         else
         {

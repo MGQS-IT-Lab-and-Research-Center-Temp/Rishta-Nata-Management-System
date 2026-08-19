@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -22,6 +23,8 @@ builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
 
 
+
+builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
 
 
 var app = builder.Build();
