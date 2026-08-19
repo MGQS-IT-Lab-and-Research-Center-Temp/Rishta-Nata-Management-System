@@ -18,6 +18,7 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
     builder.Configuration.GetConnectionString("DefaultConnection")!);
 
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
 
 
 builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
