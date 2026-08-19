@@ -38,14 +38,13 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 // Seed Aqeeqah certificates data
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<RishtanataDbContext>();
 
     await dbContext.Database.MigrateAsync();
-    
+
 
     await AqeeqahCertificateSeeder.SeedAqeeqahCertificatesAsync(dbContext);
 }
