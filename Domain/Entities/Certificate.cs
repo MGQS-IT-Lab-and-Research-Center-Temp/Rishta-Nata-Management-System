@@ -20,7 +20,7 @@ public class Certificate : AuditableEntity
     // Path only, consistent with Document. Nullable because whether a file is produced
     // at all is still pending clarification (#34).
     public string? CertificateFilePath { get; set; }
-    public required object IssuedByUserId { get; set; }
+    public  object? IssuedByUserId { get; set; }
 
     // Deliberately NOT declared here: Nikah serial number.
     // It belongs to MarriageApplication; read it through the relationship once wired up.
