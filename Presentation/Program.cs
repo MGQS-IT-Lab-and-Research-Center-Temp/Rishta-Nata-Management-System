@@ -1,9 +1,13 @@
 using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Application.Services;
+using Gateway.Implementation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
+using Presentation.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +23,14 @@ builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
 builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
+builder.Services.AddScoped<IJamaatMemberService, JamaatMemberService>();
+builder.Services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
+builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
 
+builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
