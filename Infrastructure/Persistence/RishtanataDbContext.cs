@@ -12,7 +12,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public DbSet<Certificate> Certificates => Set<Certificate>();
     public DbSet<AqeeqahCertificate> AqeeqahCertificates => Set<AqeeqahCertificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
-
+    public DbSet<JamaatMember> JamaatMembers => Set<JamaatMember>();
     public DbSet<FormApplication> FormApplications => Set<FormApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
 

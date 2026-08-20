@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+﻿using Infrastructure.DTOs.JamaatMember;
 using Domain.Enums;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
@@ -122,22 +122,21 @@ namespace Application.Services
         }
 
 
-        //public List<JamaatMemberDto> GetMembers()
-        //{
-        //    return _context.JamaatMembers
-        //        .Select(x => new JamaatMemberDto
-        //        {
-        //            Id = x.Id,
-        //            MemberNumber = x.MembershipNumber,
-        //            FullName = x.FullName,
-        //            PhoneNumber = x.PhoneNumber,
-        //            Gender = x.Gender,
-        //            Occupation = x.Occupation,
-        //            MaritalStatus = x.MaritalStatus,
-        //            JamaatName = x.Jamaat.Name
-        //        })
-        //        .ToList();
-        //}
+        public List<JamaatMemberDto> GetMembers()
+        {
+            return _context.JamaatMembers
+                .Select(x => new JamaatMemberDto
+                {
+                    Id = x.Id,
+                    ChandaNo = x.chandaNo,
+                    FullName = x.FullName,
+                    PhoneNo = x.phoneNo,
+                    Sex = x.sex,
+                    MaritalStatus = x.maritalStatus,
+                    JamaatName = x.jamaatName
+                })
+                .ToList();
+        }
         public void Reject(Guid id)
         {
             var application = _context.FormApplications

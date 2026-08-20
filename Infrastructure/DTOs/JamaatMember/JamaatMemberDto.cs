@@ -24,7 +24,7 @@ public class JamaatMemberDto
     public string NextOfKinAddress { get; set; } = string.Empty!;
     public string Nationality { get; set; } = string.Empty;
     public Guid RoleId { get; set; }
-    public string FullName => $"{FirstName} {Surname}".Trim();
+    public string FullName { get; set; }
     public bool IsSystemDefault { get; set; } = false;
     public string NewRole { get; set; } = string.Empty;
 }

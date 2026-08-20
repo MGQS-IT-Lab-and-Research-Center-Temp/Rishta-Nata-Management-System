@@ -2,16 +2,20 @@
 using Presentation.ViewModels;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
+using Application.Interfaces;
 
 namespace Presentation.Controllers
 {
     public class RishtanataSecretaryController : Controller
     {
         private readonly IRishtanataSecretaryService _service;
+        private readonly IRoleAssignmentService _roleService;
 
-        public RishtanataSecretaryController(IRishtanataSecretaryService service)
+        public RishtanataSecretaryController(IRishtanataSecretaryService service, IRoleAssignmentService roleService)
         {
             _service = service;
+            _roleService = roleService;
+
         }
 
 
@@ -39,7 +43,7 @@ namespace Presentation.Controllers
         {
             var marriedCouples = _service.GetMarriedCouples();
 
-            var model = MarriedCoupleMapping.ToViewModel(marriedCouples);
+            var model = marriedCouples.Select(MarriedCoupleMapping.ToViewModel).ToList();
             return View(model);
         }
 
@@ -50,8 +54,21 @@ namespace Presentation.Controllers
 
             return View(application);
         }
+        // Gert All Jamaat Members
+        public async Task<IActionResult> Members()
+        {
+            var members = _service.GetMembers();
+            return View(members);
+        }
+        // Edit Role of a specific Jamaat Member
+        public async Task<IActionResult> EditRoles(Guid id)
+        {
+            var dto = await _roleService.GetRoleManagementAsync(id);
+            var viewModel = RoleManagementMapper.toViewModel(dto);
+            return View(viewModel);
+        }
 
-        [HttpPost]
+            [HttpPost]
         public async Task<IActionResult> Approve(Guid id)
         {
             _service.Approve(id);
@@ -65,6 +82,26 @@ namespace Presentation.Controllers
             _service.Reject(id);
 
             return RedirectToAction(nameof(PendingApprovals));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeRole(Guid memberId, Guid roleId)
+        {
+            var currentSecretary = User.Identity?.Name ?? "System"; 
+            var (success, error) = await _roleService.AssignRoleAsync(memberId, roleId, currentSecretary);
+
+            TempData[success ? "Success" : "Error"] = success ? "Role updated successfully." : error;
+            return RedirectToAction(nameof(EditRoles), new { id = memberId });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveRole(Guid memberId)
+        {
+            var currentSecretary = User.Identity?.Name ?? "System";
+            var (success, error) = await _roleService.ResetToBaseRoleAsync(memberId, currentSecretary);
+
+            TempData[success ? "Success" : "Error"] = success ? "Role reset to Jama'at Member." : error;
+            return RedirectToAction(nameof(EditRoles), new { id = memberId });
         }
     }
 }

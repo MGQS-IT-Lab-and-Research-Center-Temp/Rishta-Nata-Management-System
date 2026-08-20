@@ -1,4 +1,6 @@
-﻿namespace Presentation.ViewModels
+﻿using Infrastructure.DTOs.Roles;
+
+namespace Presentation.ViewModels
 {
     public class RishtanataSecretaryDashboardViewModel
     {
@@ -114,28 +116,15 @@
         public string? PhoneNumber { get; set; }
     }
 
+        public class RoleManagementViewModel
+        {
+            public Guid MemberId { get; set; }
+            public string FullName { get; set; } = string.Empty;
+            public string ChandaNo { get; set; } = string.Empty;
 
-    public class RoleManagementViewModel
-    {
-        public int UserId { get; set; }
-        public string FullName { get; set; } = string.Empty;
-        public string MembershipNumber { get; set; } = string.Empty;
+            public RoleDto CurrentRole { get; set; } = default!;
+            public List<RoleDto> AvailableRoles { get; set; } = new();
 
-        public List<AssignedRoleViewModel> AssignedRoles { get; set; } = new();
-        public List<RoleOptionViewModel> AvailableRoles { get; set; } = new();
+            public bool IsAtBaseRole => CurrentRole.HierarchyLevel == 1; 
+        }
     }
-
-    public class AssignedRoleViewModel
-    {
-        public int RoleId { get; set; }
-        public string RoleName { get; set; } = string.Empty;
-        public bool IsBaseline { get; set; }
-        public DateTime AssignedDate { get; set; }
-    }
-
-    public class RoleOptionViewModel
-    {
-        public int RoleId { get; set; }
-        public string RoleName { get; set; } = string.Empty;
-    }
-}

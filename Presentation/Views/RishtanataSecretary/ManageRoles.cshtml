@@ -1,8 +1,7 @@
-﻿@page
-@model Presentation.ViewModels.RoleManagementViewModel
+﻿@model Presentation.ViewModels.RoleManagementViewModel
 
 @{
-    ViewData["Title"] = "Manage Roles";
+    ViewData["Title"] = "Manage Role";
 }
 
 <div class="container py-4">
@@ -10,16 +9,16 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h2 class="fw-bold">Manage Roles</h2>
+            <h2 class="fw-bold">Manage Role</h2>
             <p class="text-muted mb-0">
-                @Model.FullName <span class="text-muted">(@Model.MembershipNumber)</span>
+                @Model.FullName <span class="text-muted">(@Model.ChandaNo)</span>
             </p>
         </div>
 
         <a asp-controller="RishtanataSecretary"
            asp-action="JamaatMembers"
            class="btn btn-outline-secondary">
-            ← Back to Members
+             Back to Members
         </a>
 
     </div>
@@ -33,94 +32,74 @@
         <div class="alert alert-success">@TempData["Success"]</div>
     }
 
-    <!-- Current Roles -->
+    <!-- Current Role -->
     <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-header bg-white">
-            <h5 class="mb-0">Current Roles</h5>
+            <h5 class="mb-0">Current Role</h5>
         </div>
 
-        <div class="card-body">
+        <div class="card-body d-flex justify-content-between align-items-center">
 
-            @if (!Model.AssignedRoles.Any())
+            <div>
+                <span class="badge @(Model.IsAtBaseRole ? "bg-primary" : "bg-dark") fs-6">
+                    @Model.CurrentRole.Name
+                </span>
+                <small class="text-muted ms-2">Hierarchy level @Model.CurrentRole.HierarchyLevel</small>
+            </div>
+
+            @if (Model.IsAtBaseRole)
             {
-                <p class="text-muted mb-0">No roles assigned.</p>
+                <small class="text-muted">baseline · cannot be reset further</small>
             }
             else
             {
-                <div class="d-flex flex-wrap gap-2">
-
-                    @foreach (var role in Model.AssignedRoles)
-                    {
-                        <div class="d-flex align-items-center border rounded px-3 py-2">
-
-                            <span class="badge @(role.IsBaseline ? "bg-primary" : "bg-dark") me-2">
-                                @role.RoleName
-                            </span>
-
-                            @if (role.IsBaseline)
-                            {
-                                <small class="text-muted">baseline · cannot be removed</small>
-                            }
-                            else
-                            {
-                                <form asp-action="RemoveRole" method="post" class="ms-2 mb-0">
-                                    <input type="hidden" name="userId" value="@Model.UserId" />
-                                    <input type="hidden" name="roleId" value="@role.RoleId" />
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Remove @role.RoleName from this member?');">
-                                        Remove
-                                    </button>
-                                </form>
-                            }
-
-                        </div>
-                    }
-
-                </div>
+                <form asp-action="RemoveRole" method="post" class="mb-0">
+                    <input type="hidden" name="memberId" value="@Model.MemberId" />
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Reset this member to Jama\'at Member?');">
+                        Reset to Jama'at Member
+                    </button>
+                </form>
             }
 
         </div>
 
     </div>
 
-    <!-- Assign New Role -->
+    <!-- Change Role -->
     <div class="card shadow-sm border-0">
 
         <div class="card-header bg-white">
-            <h5 class="mb-0">Assign a Role</h5>
+            <h5 class="mb-0">Change Role</h5>
         </div>
 
         <div class="card-body">
 
-            @if (!Model.AvailableRoles.Any())
-            {
-                <p class="text-muted mb-0">All roles have already been assigned to this member.</p>
-            }
-            else
-            {
-                <form asp-action="AssignRole" method="post" class="row g-3 align-items-end">
+            <form asp-action="ChangeRole" method="post" class="row g-3 align-items-end">
 
-                    <input type="hidden" name="userId" value="@Model.UserId" />
+                <input type="hidden" name="memberId" value="@Model.MemberId" />
 
-                    <div class="col-md-6">
-                        <label class="form-label">Role</label>
-                        <select name="roleId" class="form-select" required>
-                            <option value="" selected disabled>Select a role...</option>
-                            @foreach (var role in Model.AvailableRoles)
-                            {
-                                <option value="@role.RoleId">@role.RoleName</option>
-                            }
-                        </select>
-                    </div>
+                <div class="col-md-6">
+                    <label class="form-label">New Role</label>
+                    <select name="roleId" class="form-select" required>
+                        <option value="" selected disabled>Select a role...</option>
+                        @foreach (var role in Model.AvailableRoles)
+                        {
+                            <option value="@role.Id">@role.Name (Level @role.HierarchyLevel)</option>
+                        }
+                    </select>
+                </div>
 
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary w-100">Assign Role</button>
-                    </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Update Role</button>
+                </div>
 
-                </form>
-            }
+            </form>
+
         </div>
+
     </div>
+
 </div>
