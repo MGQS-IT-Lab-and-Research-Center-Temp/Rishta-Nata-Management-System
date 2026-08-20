@@ -1,3 +1,4 @@
+
 using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -17,36 +18,34 @@ public class JamaatMemberService : IJamaatMemberService
     public async Task<JamaatMember> CreateOrUpdateAsync(JamaatMember member)
     {
         var existingMember = await _context.JamaatMembers
-            .FirstOrDefaultAsync(x => x.chandaNo == member.chandaNo);
+            .FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
 
         // FIRST LOGIN
         if (existingMember == null)
         {
             var newMember = new JamaatMember
             {
-                surname = member.surname,
-                firstName = member.firstName,
-                email = member.email,
-                chandaNo = member.chandaNo,
-                wasiyatNo = member.wasiyatNo,
-                title = member.title,
-                auxillaryBodyName = member.auxillaryBodyName,
-                middleName = member.middleName,
-                maidenName = member.maidenName,
-                dateOfBirth = member.dateOfBirth,
-                phoneNo = member.phoneNo,
-                jamaatName = member.jamaatName,
-                circuitName = member.circuitName,
-                sex = member.sex,
-                maritalStatus = member.maritalStatus,
-                address = member.address,
-                nextOfKinPhoneNo = member.nextOfKinPhoneNo,
-                nextOfKinName = member.nextOfKinName,
-                nextOfKinAddress = member.nextOfKinAddress,
-                nationality = member.nationality,
+                Surname = member.Surname,
+                FirstName = member.FirstName,
+                Email = member.Email,
+                ChandaNo = member.ChandaNo,
+                WasiyatNo = member.WasiyatNo,
+                Title = member.Title,
+                AuxillaryBodyName = member.AuxillaryBodyName,
+                MiddleName = member.MiddleName,
+                MaidenName = member.MaidenName,
+                DateOfBirth = member.DateOfBirth,
+                PhoneNo = member.PhoneNo,
+                JamaatName = member.JamaatName,
+                CircuitName = member.CircuitName,
+                Sex = member.Sex,
+                MaritalStatus = member.MaritalStatus,
+                Address = member.Address,
+                NextOfKinPhoneNo = member.NextOfKinPhoneNo,
+                NextOfKinName = member.NextOfKinName,
+                NextOfKinAddress = member.NextOfKinAddress,
+                Nationality = member.Nationality,
 
-                // These should normally be handled by your application,
-                // not copied blindly from the gateway.
                 RoleId = member.RoleId,
                 IsSystemDefault = false,
 
@@ -61,25 +60,23 @@ public class JamaatMemberService : IJamaatMemberService
         }
 
         // SUBSEQUENT LOGINS
-        // Update only properties that can change in real time.
-
-        existingMember.surname = member.surname;
-        existingMember.firstName = member.firstName;
-        existingMember.email = member.email;
-        existingMember.wasiyatNo = member.wasiyatNo;
-        existingMember.title = member.title;
-        existingMember.auxillaryBodyName = member.auxillaryBodyName;
-        existingMember.middleName = member.middleName;
-        existingMember.maidenName = member.maidenName;
-        existingMember.phoneNo = member.phoneNo;
-        existingMember.jamaatName = member.jamaatName;
-        existingMember.circuitName = member.circuitName;
-        existingMember.maritalStatus = member.maritalStatus;
-        existingMember.address = member.address;
-        existingMember.nextOfKinPhoneNo = member.nextOfKinPhoneNo;
-        existingMember.nextOfKinName = member.nextOfKinName;
-        existingMember.nextOfKinAddress = member.nextOfKinAddress;
-        existingMember.nationality = member.nationality;
+        existingMember.Surname = member.Surname;
+        existingMember.FirstName = member.FirstName;
+        existingMember.Email = member.Email;
+        existingMember.WasiyatNo = member.WasiyatNo;
+        existingMember.Title = member.Title;
+        existingMember.AuxillaryBodyName = member.AuxillaryBodyName;
+        existingMember.MiddleName = member.MiddleName;
+        existingMember.MaidenName = member.MaidenName;
+        existingMember.PhoneNo = member.PhoneNo;
+        existingMember.JamaatName = member.JamaatName;
+        existingMember.CircuitName = member.CircuitName;
+        existingMember.MaritalStatus = member.MaritalStatus;
+        existingMember.Address = member.Address;
+        existingMember.NextOfKinPhoneNo = member.NextOfKinPhoneNo;
+        existingMember.NextOfKinName = member.NextOfKinName;
+        existingMember.NextOfKinAddress = member.NextOfKinAddress;
+        existingMember.Nationality = member.Nationality;
 
         // Don't change:
         // existingMember.Id

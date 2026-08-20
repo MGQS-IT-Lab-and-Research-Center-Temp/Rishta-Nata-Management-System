@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Presentation.Constants.Roles;
 namespace Presentation.Services.Auth;
 
+
 public class CookieAuthenticationService : ICookieAuthenticationService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;

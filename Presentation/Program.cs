@@ -1,9 +1,13 @@
 using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Application.Services;
+using Gateway.Implementation;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
+using Presentation.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +23,27 @@ builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
 builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
+builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
+
+builder.Services.AddScoped<IJamaatMemberService, JamaatMemberService>();
+builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
+
+builder.Services
+    .AddAuthentication("MyCookieAuth")
+    .AddCookie("MyCookieAuth", options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -30,9 +54,17 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else 
+{
+    app.UseSwagger(); 
+    app.UseSwaggerUI(); 
+}
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 
