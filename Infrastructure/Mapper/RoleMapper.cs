@@ -12,6 +12,7 @@ namespace Infrastructure.Mapper;
     {
         return new RoleDto
         {
+            Id = role.Id,
             Name = role.Name,
             HierarchyLevel = role.HierarchyLevel,
             UpdatedBy = role.UpdatedBy
@@ -22,6 +23,7 @@ namespace Infrastructure.Mapper;
     {
         return new Role
         { 
+            Id=roleDto.Id,
             Name = roleDto.Name,
             UpdatedBy = roleDto.UpdatedBy,
             HierarchyLevel = roleDto.HierarchyLevel

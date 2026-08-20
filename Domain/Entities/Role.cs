@@ -1,6 +1,6 @@
-﻿namespace Domain.Entities;
-
-public class Role
+﻿using Domain.Abstractions;
+namespace Domain.Entities;
+public class Role: AuditableEntity
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
