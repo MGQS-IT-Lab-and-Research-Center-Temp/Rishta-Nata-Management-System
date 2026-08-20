@@ -22,6 +22,8 @@ builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryServi
 builder.Services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
 
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
