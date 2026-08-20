@@ -14,9 +14,6 @@ namespace Presentation.Controllers
             _service = service;
         }
 
-
-
-
         // Dashboard page
         public IActionResult Dashboard()
         {
@@ -32,8 +29,13 @@ namespace Presentation.Controllers
         {
             var pendingApprovals = _service.GetPendingApprovals();
 
-            return View(pendingApprovals);
+            var viewModels = pendingApprovals
+                .Select(PendingApprovalMapping.ToViewModel)
+                .ToList();
+
+            return View(viewModels);
         }
+
         // MarriedCouples Page
         public async Task<IActionResult> MarriedCouples()
         {
