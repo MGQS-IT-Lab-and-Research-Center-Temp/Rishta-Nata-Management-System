@@ -13,6 +13,7 @@ using Application.Interfaces;
 using Infrastructure.Services;
 using Domain.Interfaces;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -26,6 +27,11 @@ builder.Services.AddMySQLServer<RishtanataDbContext>(
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
+builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+builder.Services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
+
+
+
 builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
 
 builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();

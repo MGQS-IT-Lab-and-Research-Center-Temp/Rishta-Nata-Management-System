@@ -27,4 +27,6 @@ public class JamaatMemberDto
     public string FullName => $"{FirstName} {Surname}".Trim();
     public bool IsSystemDefault { get; set; } = false;
     public string NewRole { get; set; } = string.Empty;
+    public string MemberNumber { get; set; } = string.Empty;
+    public string Occupation { get; set; } = string.Empty;
 }
