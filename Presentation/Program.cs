@@ -8,6 +8,10 @@ using MySql.Data.MySqlClient;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
 using Presentation.Services.Auth;
+using Application.Services;
+using Application.Interfaces;
+using Infrastructure.Services;
+using Domain.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +39,11 @@ builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationSer
 builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
 
 builder.Services.AddHttpContextAccessor();
+
+// Invitation and email services
+builder.Services.AddScoped<IInvitationService, InvitationService>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<IInvitationEmailService, InvitationEmailService>();
 
 var app = builder.Build();
 
