@@ -4,12 +4,9 @@ using Application.Services;
 using Gateway.Implementation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
 using Presentation.Services.Auth;
-using Application.Services;
-using Application.Interfaces;
 using Infrastructure.Services;
 using Domain.Interfaces;
 
@@ -24,7 +21,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddMySQLServer<RishtanataDbContext>(
     builder.Configuration.GetConnectionString("DefaultConnection")!);
 
-builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
