@@ -16,7 +16,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddMySQLServer<RishtanataDbContext>(
     builder.Configuration.GetConnectionString("DefaultConnection")!);
 
-builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
 builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
