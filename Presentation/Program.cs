@@ -1,9 +1,14 @@
 using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Application.Services;
+using Gateway.Implementation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
+using Presentation.Services.Auth;
+using Infrastructure.Services;
+using Domain.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +30,16 @@ builder.Services.AddScoped<IMarriageApplicationFormService, MarriageApplicationF
 
 builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
 
+builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
+
+builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
+
+builder.Services.AddHttpContextAccessor();
+
+// Invitation and email services
+builder.Services.AddScoped<IInvitationService, InvitationService>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<IInvitationEmailService, InvitationEmailService>();
 
 var app = builder.Build();
 

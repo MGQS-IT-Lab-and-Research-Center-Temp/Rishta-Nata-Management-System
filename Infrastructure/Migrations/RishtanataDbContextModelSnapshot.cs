@@ -235,6 +235,118 @@ namespace Infrastructure.Migrations
                     b.ToTable("FormApplications");
                 });
 
+            modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("AuxillaryBodyName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ChandaNo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CircuitName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsSystemDefault")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("JamaatName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MaidenName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MaritalStatus")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Nationality")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NewRole")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NextOfKinAddress")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NextOfKinName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NextOfKinPhoneNo")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhoneNo")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ResetToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("ResetTokenExpiry")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("WasiyatNo")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("JamaatMembers");
+                });
+
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
                 {
                     b.Property<Guid>("Id")
@@ -516,6 +628,43 @@ namespace Infrastructure.Migrations
                     b.ToTable("MarriageApplicationForms");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("HierarchyLevel")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JamaatRoles");
+                });
+
             modelBuilder.Entity("Infrastructure.Identity.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -728,6 +877,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("MarriageApplication");
                 });
 
+            modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
+                {
+                    b.HasOne("Domain.Entities.Role", "Role")
+                        .WithMany("Members")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
                 {
                     b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
@@ -797,6 +957,11 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("MarriageApplicationForm")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Role", b =>
+                {
+                    b.Navigation("Members");
                 });
 #pragma warning restore 612, 618
         }
