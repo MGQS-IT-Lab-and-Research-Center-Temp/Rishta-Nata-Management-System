@@ -14,19 +14,8 @@ namespace Domain.Entities
         public DateTime ProposedNikahDate { get; set; }
         public string Venue { get; set; } = string.Empty;
 
-        // ===== Bride =====
-        public string BrideMembershipNo { get; set; } = string.Empty;
-        public string BrideName { get; set; } = string.Empty;
-        public DateTime BrideDateOfBirth { get; set; }
-        public string BrideResidentOf { get; set; } = string.Empty;
-        public string BrideGenotype { get; set; } = string.Empty;
-        public string BrideBloodGroup { get; set; } = string.Empty;
-        public string BrideMaritalStatus { get; set; } = string.Empty;
-
-        public decimal BrideProposedDowerAmount { get; set; }
-        public decimal BrideDowerAmountReceivedInCash { get; set; }
-
-        public string BrideSignatureTel { get; set; } = string.Empty;
+        public Bride? Bride { get; set; }
+       
 
         // ===== Bridegroom =====
         public string BridegroomMembershipNo { get; set; } = string.Empty;

@@ -49,7 +49,7 @@ namespace Application.Services
 
                     GroomName = f.BridegroomName,
 
-                    BrideName = f.BrideName,
+                    BrideName = f.Bride == null ? string.Empty : f.Bride.Name,
 
                     PresidentName = f.JamaatPresidentName,
 
@@ -62,7 +62,8 @@ namespace Application.Services
         public ReviewApplicationDto GetById(Guid id)
         {
             var form = _context.MarriageApplicationForms
-                .FirstOrDefault(x => x.MarriageApplicationId == id);
+                       .Include(x => x.Bride)
+                       .FirstOrDefault(x => x.MarriageApplicationId == id);
 
             if (form == null)
                 throw new Exception("Application not found.");
@@ -75,11 +76,11 @@ namespace Application.Services
 
                 GroomName = form.BridegroomName,
 
-                BrideName = form.BrideName,
+                BrideName = form.Bride?.Name ?? string.Empty,
 
                 GroomPhone = form.BridegroomSignatureTel,
 
-                BridePhone = form.BrideSignatureTel,
+                BridePhone = form.Bride?.SignatureTel ?? string.Empty,
 
                 PresidentName = form.JamaatPresidentName,
 
@@ -100,8 +101,7 @@ namespace Application.Services
 
                     HusbandName = x.BridegroomName,
 
-                    WifeName = x.BrideName,
-
+                    WifeName = x.Bride == null ? string.Empty : x.Bride.Name,
                     MarriageDate = x.ApprovedDateOfNikah ?? DateTime.MinValue,
 
                     Status = x.MarriageApplication.Status.ToString()

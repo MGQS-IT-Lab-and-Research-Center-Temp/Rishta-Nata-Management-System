@@ -12,7 +12,7 @@ public static class PendingApprovalMapper
             Id = entity.MarriageApplicationId,
             ApplicationNumber = entity.ReferenceNumber,
             GroomName = entity.BridegroomName,
-            BrideName = entity.BrideName,
+            BrideName = entity.Bride?.Name ?? string.Empty,
             PresidentName = entity.JamaatPresidentName,
             SubmittedDate = entity.CreatedAt,
             Status = entity.MarriageApplication.Status.ToString()

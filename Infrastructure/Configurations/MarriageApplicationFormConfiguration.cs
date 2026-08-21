@@ -41,32 +41,10 @@ namespace Infrastructure.Configurations
             // Bride
             // =====================================================
 
-            builder.Property(f => f.BrideMembershipNo)
-                .HasMaxLength(50);
-
-            builder.Property(f => f.BrideName)
-                .HasMaxLength(200);
-
-            builder.Property(f => f.BrideResidentOf)
-                .HasMaxLength(300);
-
-            builder.Property(f => f.BrideGenotype)
-                .HasMaxLength(10);
-
-            builder.Property(f => f.BrideBloodGroup)
-                .HasMaxLength(10);
-
-            builder.Property(f => f.BrideMaritalStatus)
-                .HasMaxLength(50);
-
-            builder.Property(f => f.BrideProposedDowerAmount)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(f => f.BrideDowerAmountReceivedInCash)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(f => f.BrideSignatureTel)
-                .HasMaxLength(30);
+            builder.HasOne(f => f.Bride)
+                   .WithOne(b => b.MarriageApplicationForm)
+                   .HasForeignKey<Bride>(b => b.MarriageApplicationFormId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             // =====================================================
             // Bridegroom
