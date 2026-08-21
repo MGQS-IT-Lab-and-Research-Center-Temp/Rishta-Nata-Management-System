@@ -1,10 +1,10 @@
 ﻿using Application.Interfaces;
 using Domain.Enums;
+using Infrastructure.DTOs.JamaatMember;
+using Microsoft.EntityFrameworkCore;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 namespace Application.Services
 {
    public class RishtanataSecretaryService : IRishtanataSecretaryService
@@ -108,6 +108,43 @@ namespace Application.Services
                 })
                 .ToList();
         }
+
+        public MemberProfileDto GetMemberProfile(Guid id)
+        {
+            var member = _context.JamaatMembers
+                .Include(x => x.Role)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (member == null)
+                throw new Exception("Member not found.");
+
+            return new MemberProfileDto
+            {
+                Id = member.Id,
+                Surname = member.Surname,
+                FirstName = member.FirstName,
+                MiddleName = member.MiddleName,
+                MaidenName = member.MaidenName,
+                Title = member.Title,
+                FullName = member.FullName,
+                Email = member.Email,
+                ChandaNo = member.ChandaNo,
+                WasiyatNo = member.WasiyatNo,
+                AuxillaryBodyName = member.AuxillaryBodyName,
+                DateOfBirth = member.DateOfBirth,
+                PhoneNo = member.PhoneNo,
+                JamaatName = member.JamaatName,
+                CircuitName = member.CircuitName,
+                Sex = member.Sex,
+                MaritalStatus = member.MaritalStatus,
+                Address = member.Address,
+                NextOfKinName = member.NextOfKinName,
+                NextOfKinPhoneNo = member.NextOfKinPhoneNo,
+                NextOfKinAddress = member.NextOfKinAddress,
+                Nationality = member.Nationality,
+                RoleName = member.Role?.Name
+            };
+        }
         public void ReturnToPresident(Guid id)
         {
             var application = _context.FormApplications
@@ -121,23 +158,21 @@ namespace Application.Services
             _context.SaveChangesAsync();
         }
 
-
-        //public List<JamaatMemberDto> GetMembers()
-        //{
-        //    return _context.JamaatMembers
-        //        .Select(x => new JamaatMemberDto
-        //        {
-        //            Id = x.Id,
-        //            MemberNumber = x.MembershipNumber,
-        //            FullName = x.FullName,
-        //            PhoneNumber = x.PhoneNumber,
-        //            Gender = x.Gender,
-        //            Occupation = x.Occupation,
-        //            MaritalStatus = x.MaritalStatus,
-        //            JamaatName = x.Jamaat.Name
-        //        })
-        //        .ToList();
-        //}
+        public List<JamaatMemberDto> GetMembers()
+        {
+            return _context.JamaatMembers
+                .Select(x => new JamaatMemberDto
+                {
+                    Id = x.Id,
+                    ChandaNo = x.ChandaNo,
+                    FirstName = (x.FirstName + " " + x.Surname).Trim(),
+                    PhoneNo = x.PhoneNo ?? string.Empty,
+                    Sex = x.Sex,
+                    MaritalStatus = x.MaritalStatus ?? string.Empty,
+                    JamaatName = x.JamaatName
+                })
+                .ToList();
+        }
         public void Reject(Guid id)
         {
             var application = _context.FormApplications

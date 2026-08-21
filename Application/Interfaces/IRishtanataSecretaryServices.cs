@@ -9,6 +9,7 @@ public interface IRishtanataSecretaryService
     ReviewApplicationDto GetById(Guid id);
 
     List<MarriedCoupleDto> GetMarriedCouples();
+    MemberProfileDto GetMemberProfile(Guid id);
 
     //List<JamaatMemberDto> GetMembers();
 

@@ -1,9 +1,13 @@
 using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Application.Services;
+using Gateway.Implementation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
+using Presentation.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 

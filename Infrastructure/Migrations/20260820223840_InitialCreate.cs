@@ -16,6 +16,35 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "AqeeqahCertificates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    SerialNumber = table.Column<string>(type: "longtext", nullable: false),
+                    ChildName = table.Column<string>(type: "longtext", nullable: false),
+                    FatherName = table.Column<string>(type: "longtext", nullable: false),
+                    MotherName = table.Column<string>(type: "longtext", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Gender = table.Column<string>(type: "longtext", nullable: false),
+                    AqeeqahDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    AqeeqahLocation = table.Column<string>(type: "longtext", nullable: true),
+                    AnimalCount = table.Column<int>(type: "int", nullable: true),
+                    IssueDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IssuedByUserId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    JamaatId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CertificateFilePath = table.Column<string>(type: "longtext", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AqeeqahCertificates", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -94,6 +123,26 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FormApplications", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "JamaatRoles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: false),
+                    HierarchyLevel = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JamaatRoles", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -322,6 +371,54 @@ namespace Infrastructure.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "JamaatMembers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Surname = table.Column<string>(type: "longtext", nullable: false),
+                    FirstName = table.Column<string>(type: "longtext", nullable: false),
+                    Email = table.Column<string>(type: "longtext", nullable: false),
+                    ChandaNo = table.Column<string>(type: "longtext", nullable: false),
+                    WasiyatNo = table.Column<string>(type: "longtext", nullable: true),
+                    Title = table.Column<string>(type: "longtext", nullable: true),
+                    AuxillaryBodyName = table.Column<string>(type: "longtext", nullable: true),
+                    MiddleName = table.Column<string>(type: "longtext", nullable: true),
+                    MaidenName = table.Column<string>(type: "longtext", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    PhoneNo = table.Column<string>(type: "longtext", nullable: true),
+                    JamaatName = table.Column<string>(type: "longtext", nullable: false),
+                    CircuitName = table.Column<string>(type: "longtext", nullable: false),
+                    Sex = table.Column<string>(type: "longtext", nullable: false),
+                    MaritalStatus = table.Column<string>(type: "longtext", nullable: true),
+                    Address = table.Column<string>(type: "longtext", nullable: true),
+                    NextOfKinPhoneNo = table.Column<string>(type: "longtext", nullable: true),
+                    NextOfKinName = table.Column<string>(type: "longtext", nullable: true),
+                    NextOfKinAddress = table.Column<string>(type: "longtext", nullable: true),
+                    Nationality = table.Column<string>(type: "longtext", nullable: true),
+                    Password = table.Column<string>(type: "longtext", nullable: false),
+                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    IsSystemDefault = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    NewRole = table.Column<string>(type: "longtext", nullable: false),
+                    ResetToken = table.Column<string>(type: "longtext", nullable: true),
+                    ResetTokenExpiry = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JamaatMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JamaatMembers_JamaatRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "JamaatRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -381,6 +478,11 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_JamaatMembers_RoleId",
+                table: "JamaatMembers",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MarriageApplicationForms_MarriageApplicationId",
                 table: "MarriageApplicationForms",
                 column: "MarriageApplicationId",
@@ -390,6 +492,9 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AqeeqahCertificates");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -412,6 +517,9 @@ namespace Infrastructure.Migrations
                 name: "Certificates");
 
             migrationBuilder.DropTable(
+                name: "JamaatMembers");
+
+            migrationBuilder.DropTable(
                 name: "MarriageApplicationForms");
 
             migrationBuilder.DropTable(
@@ -419,6 +527,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "JamaatRoles");
 
             migrationBuilder.DropTable(
                 name: "FormApplications");
