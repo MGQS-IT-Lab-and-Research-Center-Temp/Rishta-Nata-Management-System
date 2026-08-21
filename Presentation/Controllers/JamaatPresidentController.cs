@@ -136,6 +136,7 @@ public class JamaatPresidentController : Controller
     {
         var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(x => x.Witnesses)
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (application == null)
@@ -149,6 +150,12 @@ public class JamaatPresidentController : Controller
         {
             return NotFound("Marriage application form was not found.");
         }
+
+        var witnessOne = form.Witnesses
+            .FirstOrDefault(w => w.WitnessNumber == 1);
+
+        var witnessTwo = form.Witnesses
+            .FirstOrDefault(w => w.WitnessNumber == 2);
 
         var model = new JamaatPresidentReviewViewModel
         {
@@ -200,15 +207,15 @@ public class JamaatPresidentController : Controller
             RepresentativeActingFor = form.RepresentativeActingFor,
             RepresentativeSignatureDate = form.RepresentativeSignatureDate,
 
-            WitnessOneName = form.WitnessOneName,
-            WitnessOneAddress = form.WitnessOneAddress,
-            WitnessOneTel = form.WitnessOneTel,
-            WitnessOneSignatureDate = form.WitnessOneSignatureDate,
+            WitnessOneName = witnessOne?.FullName ?? string.Empty,
+            WitnessOneAddress = witnessOne?.Address ?? string.Empty,
+            WitnessOneTel = witnessOne?.PhoneNumber ?? string.Empty,
+            WitnessOneSignatureDate = witnessOne?.SignatureDate ?? string.Empty,
 
-            WitnessTwoName = form.WitnessTwoName,
-            WitnessTwoAddress = form.WitnessTwoAddress,
-            WitnessTwoTel = form.WitnessTwoTel,
-            WitnessTwoSignatureDate = form.WitnessTwoSignatureDate,
+            WitnessTwoName = witnessTwo?.FullName ?? string.Empty,
+            WitnessTwoAddress = witnessTwo?.Address ?? string.Empty,
+            WitnessTwoTel = witnessTwo?.PhoneNumber ?? string.Empty,
+            WitnessTwoSignatureDate = witnessTwo?.SignatureDate ?? string.Empty,
 
             OfficiatingImamName = form.OfficiatingImamName,
             OfficiatingImamAddressJamaat = form.OfficiatingImamAddressJamaat,

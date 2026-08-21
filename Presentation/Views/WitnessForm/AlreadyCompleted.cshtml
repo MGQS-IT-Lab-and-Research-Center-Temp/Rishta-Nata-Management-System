@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Witness Form Already Completed";
+}
+
+<div class="container py-5">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body text-center py-5">
+
+            <h2 class="fw-bold mb-3">
+                Witness Form Already Completed
+            </h2>
+
+            <p class="text-muted mb-4">
+                This witness form has already been completed.
+                You do not need to submit your information again.
+            </p>
+
+            <div class="alert alert-info">
+                Your witness information has already been recorded
+                for this marriage application.
+            </div>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-primary mt-3">
+                Return Home
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

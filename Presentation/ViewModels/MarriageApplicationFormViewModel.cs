@@ -80,17 +80,8 @@ public class MarriageApplicationFormViewModel
     public string RepresentativeActingFor { get; set; } = string.Empty;
     public string RepresentativeSignatureDate { get; set; } = string.Empty;
 
-    // Witness One
-    public string WitnessOneName { get; set; } = string.Empty;
-    public string WitnessOneAddress { get; set; } = string.Empty;
-    public string WitnessOneTel { get; set; } = string.Empty;
-    public string WitnessOneSignatureDate { get; set; } = string.Empty;
-
-    // Witness Two
-    public string WitnessTwoName { get; set; } = string.Empty;
-    public string WitnessTwoAddress { get; set; } = string.Empty;
-    public string WitnessTwoTel { get; set; } = string.Empty;
-    public string WitnessTwoSignatureDate { get; set; } = string.Empty;
+    // Witnesses
+    public List<WitnessViewModel> Witnesses { get; set; } = new();
 
     // Verification & Approval
     public string OfficiatingImamName { get; set; } = string.Empty;

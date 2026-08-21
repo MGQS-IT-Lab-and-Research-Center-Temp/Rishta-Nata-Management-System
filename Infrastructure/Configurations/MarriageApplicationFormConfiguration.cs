@@ -142,38 +142,6 @@ namespace Infrastructure.Configurations
                 .HasMaxLength(50);
 
             // =====================================================
-            // Witness One
-            // =====================================================
-
-            builder.Property(f => f.WitnessOneName)
-                .HasMaxLength(200);
-
-            builder.Property(f => f.WitnessOneAddress)
-                .HasMaxLength(300);
-
-            builder.Property(f => f.WitnessOneTel)
-                .HasMaxLength(30);
-
-            builder.Property(f => f.WitnessOneSignatureDate)
-                .HasMaxLength(50);
-
-            // =====================================================
-            // Witness Two
-            // =====================================================
-
-            builder.Property(f => f.WitnessTwoName)
-                .HasMaxLength(200);
-
-            builder.Property(f => f.WitnessTwoAddress)
-                .HasMaxLength(300);
-
-            builder.Property(f => f.WitnessTwoTel)
-                .HasMaxLength(30);
-
-            builder.Property(f => f.WitnessTwoSignatureDate)
-                .HasMaxLength(50);
-
-            // =====================================================
             // Verification & Approval
             // =====================================================
 

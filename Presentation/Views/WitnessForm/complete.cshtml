@@ -1,0 +1,118 @@
+﻿@model Presentation.ViewModel.WitnessViewModel
+
+@{
+    ViewData["Title"] = "Witness Form";
+}
+
+<div class="container py-5">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Witness Form</h2>
+
+        <p class="text-muted">
+            Please provide your information below to complete your
+            witness section of the marriage application.
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Witness Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-controller="WitnessForm"
+                  asp-action="Complete"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input asp-for="Id" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label asp-for="FullName"
+                           class="form-label">
+                        Full Name
+                    </label>
+
+                    <input asp-for="FullName"
+                           class="form-control"
+                           placeholder="Enter your full name" />
+
+                    <span asp-validation-for="FullName"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label asp-for="Email"
+                           class="form-label">
+                        Email
+                    </label>
+
+                    <input asp-for="Email"
+                           type="email"
+                           class="form-control"
+                           placeholder="Enter your email address" />
+
+                    <span asp-validation-for="Email"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber"
+                           class="form-label">
+                        Phone Number
+                    </label>
+
+                    <input asp-for="PhoneNumber"
+                           class="form-control"
+                           placeholder="Enter your phone number" />
+
+                    <span asp-validation-for="PhoneNumber"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <!-- Signature Date -->
+                <div class="mb-3">
+                    <label asp-for="SignatureDate"
+                           class="form-label">
+                        Signature Date
+                    </label>
+
+                    <input asp-for="SignatureDate"
+                           class="form-control"
+                           placeholder="Enter your signature date" />
+
+                    <span asp-validation-for="SignatureDate"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Submit Witness Information
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
