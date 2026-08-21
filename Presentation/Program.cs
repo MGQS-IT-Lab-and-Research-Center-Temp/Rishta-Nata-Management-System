@@ -23,9 +23,7 @@ builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
 builder.Services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
 builder.Services.AddScoped<ICertificateService, CertificateService>();
 builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
-builder.Services.AddScoped<IJamaatMemberService, JamaatMemberService>();
-builder.Services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
-builder.Services.AddScoped<IFormApplicationService, FormApplicationService>();
+
 builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
 
 builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
