@@ -112,4 +112,14 @@ namespace Presentation.Data
             await context.SaveChangesAsync();
         }
     }
+    public static class DbInitializer
+    {
+        public static async Task InitializeAsync(
+            RishtanataDbContext dbContext)
+        {
+            await dbContext.Database.MigrateAsync();
+
+            await AqeeqahCertificateSeeder.SeedAqeeqahCertificatesAsync(dbContext);
+        }
+    }
 }
