@@ -2,16 +2,19 @@
 using Presentation.ViewModels;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
-
+using Application.Services;
+using Infrastructure.Mapper;
 namespace Presentation.Controllers
 {
     public class RishtanataSecretaryController : Controller
     {
         private readonly IRishtanataSecretaryService _service;
+        private readonly RoleAssignmentService _roleService;
 
-        public RishtanataSecretaryController(IRishtanataSecretaryService service)
+        public RishtanataSecretaryController(IRishtanataSecretaryService service,RoleAssignmentService roleService)
         {
             _service = service;
+            _roleService = roleService;
         }
 
         // Dashboard page
@@ -60,7 +63,13 @@ namespace Presentation.Controllers
 
             return View(model);
         }
-
+        // Edit Role of a specific Jamaat Member
+        public async Task<IActionResult> EditRoles(Guid id)
+        {
+            var dto = await _roleService.GetRoleManagementAsync(id);
+            var viewModel = RoleManagementMapper.toViewModel(dto);
+            return View(viewModel);
+        }
         [HttpPost]
         public async Task<IActionResult> Approve(Guid id)
         {
