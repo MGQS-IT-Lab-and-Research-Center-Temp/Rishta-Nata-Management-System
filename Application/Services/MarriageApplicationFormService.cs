@@ -3,8 +3,7 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-using Infrastructure.Persistence; // 👈 adjust to match your RishtanataDbContext namespace
-
+using Infrastructure.Persistence; 
 public class MarriageApplicationFormService : IMarriageApplicationFormService
 {
     private readonly RishtanataDbContext _dbContext;

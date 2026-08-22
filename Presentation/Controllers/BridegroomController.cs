@@ -5,22 +5,18 @@ using Domain.Entities;
 
 public class BridegroomController : Controller
 {
-    private readonly IMarriageApplicationFormService _marriageApplicationFormService;
+    private readonly IBridegroomService _bridegroomService;
 
-    public BridegroomController(IMarriageApplicationFormService marriageApplicationFormService)
+    public BridegroomController(IBridegroomService bridegroomService)
     {
-        _marriageApplicationFormService = marriageApplicationFormService;
+        _bridegroomService = bridegroomService;
     }
 
     // GET: Show empty form
     [HttpGet]
     public IActionResult Create()
     {
-        var model = new BridegroomFormViewModel
-        {
-            ReferenceNumber = string.Empty // initialize safely
-        };
-        return View(model);
+        return View(new BridegroomFormViewModel());
     }
 
     // POST: Handle form submission
@@ -30,16 +26,15 @@ public class BridegroomController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-
-        // Check if groom already exists by membership number
-        var form = await _marriageApplicationFormService.GetByMembershipNoAsync(model.BridegroomMembershipNo, ct);
+        // Check if groom already exists
+        var form = await _bridegroomService
+            .GetByMembershipNoAsync(model.BridegroomMembershipNo, ct);
 
         if (form == null)
         {
-            // Groom is first to apply → generate reference number
-            form = new MarriageApplicationForm
+            // Groom is first to apply → create new application
+            var newForm = new BrideGroom
             {
-                
                 BridegroomName = model.BridegroomName,
                 BridegroomMembershipNo = model.BridegroomMembershipNo,
                 BridegroomDateOfBirth = model.BridegroomDateOfBirth,
@@ -54,55 +49,58 @@ public class BridegroomController : Controller
                 FormerWifeIsDead = model.FormerWifeIsDead,
                 HasDivorcedFormerWife = model.HasDivorcedFormerWife,
                 FormerWifeIsPresent = model.FormerWifeIsPresent,
-                FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
-                ReferenceNumber = $"RN-{DateTime.UtcNow.Year}-{Guid.NewGuid().ToString().Substring(0, 6).ToUpper()}"
+                FormerWifeObtainedKhula = model.FormerWifeObtainedKhula
             };
 
-            await _marriageApplicationFormService.CreateAsync(form, ct);
-        }
-        else
-        {
-            // Groom already exists → update details
-            form.BridegroomName = model.BridegroomName;
-            form.BridegroomDateOfBirth = model.BridegroomDateOfBirth;
-            form.BridegroomResidentOf = model.BridegroomResidentOf;
-            form.BridegroomGenotype = model.BridegroomGenotype;
-            form.BridegroomBloodGroup = model.BridegroomBloodGroup;
-            form.BridegroomDowerAmountPaidInCash = model.BridegroomDowerAmountPaidInCash;
-            form.BridegroomDowerAmountToBePaid = model.BridegroomDowerAmountToBePaid;
-            form.BridegroomSignatureTel = model.BridegroomPhoneNumber;
-            form.IsFirstNikah = model.IsFirstNikah;
-            form.IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah;
-            form.FormerWifeIsDead = model.FormerWifeIsDead;
-            form.HasDivorcedFormerWife = model.HasDivorcedFormerWife;
-            form.FormerWifeIsPresent = model.FormerWifeIsPresent;
-            form.FormerWifeObtainedKhula = model.FormerWifeObtainedKhula;
+            var application = await _bridegroomService.CreateAsync(newForm, ct);
 
-            await _marriageApplicationFormService.UpdateAsync(form, ct);
+            return RedirectToAction("Confirmation", new { id = application.Id });
+
         }
 
-        return RedirectToAction("Confirmation", new { id = form.MarriageApplicationId });
+        // Groom already exists → update details
+        form.BridegroomName = model.BridegroomName;
+        form.BridegroomDateOfBirth = model.BridegroomDateOfBirth;
+        form.BridegroomResidentOf = model.BridegroomResidentOf;
+        form.BridegroomGenotype = model.BridegroomGenotype;
+        form.BridegroomBloodGroup = model.BridegroomBloodGroup;
+        form.BridegroomDowerAmountPaidInCash = model.BridegroomDowerAmountPaidInCash;
+        form.BridegroomDowerAmountToBePaid = model.BridegroomDowerAmountToBePaid;
+        form.BridegroomSignatureTel = model.BridegroomPhoneNumber;
+        form.IsFirstNikah = model.IsFirstNikah;
+        form.IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah;
+        form.FormerWifeIsDead = model.FormerWifeIsDead;
+        form.HasDivorcedFormerWife = model.HasDivorcedFormerWife;
+        form.FormerWifeIsPresent = model.FormerWifeIsPresent;
+        form.FormerWifeObtainedKhula = model.FormerWifeObtainedKhula;
+
+        await _bridegroomService.UpdateAsync(form, ct);
+
+        return RedirectToAction("Confirmation", new { id = form.Id });
     }
-    
+
+
 
     // GET: Confirmation page
     [HttpGet]
-    public async Task<IActionResult> Confirmation(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Confirmation(Guid id)
     {
-        var form = await _marriageApplicationFormService.GetByIdAsync(id, ct);
-        if (form == null) return NotFound();
+        var application = await _bridegroomService.GetByIdAsync(id);
+        if (application == null)
+            return NotFound();
 
-        return View(form);
+        return View(application);
     }
+
 
     // GET: Detail page
     [HttpGet]
     public async Task<IActionResult> Detail(Guid id, CancellationToken ct)
     {
-        var form = await _marriageApplicationFormService.GetByIdAsync(id, ct);
+        var form = await _bridegroomService.GetByIdAsync(id, ct);
         if (form == null) return NotFound();
 
         return View(form);
     }
-    
+
 }

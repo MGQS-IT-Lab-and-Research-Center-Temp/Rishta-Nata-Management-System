@@ -73,6 +73,7 @@ namespace Presentation.ViewModels
         public bool FormerWifeIsPresent { get; set; }
 
         public bool FormerWifeObtainedKhula { get; set; }
+        public string BridegroomSignatureTel { get; internal set; }
     }
 }
 
