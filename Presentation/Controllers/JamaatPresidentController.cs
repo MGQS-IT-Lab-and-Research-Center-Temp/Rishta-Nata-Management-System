@@ -5,6 +5,8 @@
 // fix all errors under your dto - faridah -done
 // fix all errors under service and interface - yusroh
 // ensure that dto namespace is infrastructure not application - done
+//use the respective service to do all db operation in this controller
+
 
 using Domain.Entities;
 using Domain.Enums;
@@ -38,7 +40,7 @@ public class JamaatPresidentController : Controller
     public async Task<IActionResult> Dashboard()
     {
         var pendingStatus = ApplicationStatus.ApplicationPending;
-
+        
         var pendingApplications = await _context.FormApplications
             .Where(x => x.Status == pendingStatus)
             .Include(x => x.MarriageApplicationForm)

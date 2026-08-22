@@ -44,4 +44,48 @@ public static class JamaatMemberMapping
             NewRole = dto.NewRole
         };
     }
+
+    public static List<JamaatMemberVM> ToViewModelList(IEnumerable<JamaatMemberDto> dtos)
+    {
+        return dtos?.Select(ToViewModel).ToList() ?? new List<JamaatMemberVM>();
+    }
+
+    public static JamaatMemberDto ToDto(JamaatMemberVM vm)
+    {
+        return new JamaatMemberDto
+        {
+            Id = vm.Id,
+
+            Surname = vm.Surname,
+            FirstName = vm.FirstName,
+            Email = vm.Email,
+            ChandaNo = vm.ChandaNo,
+
+            WasiyatNo = vm.WasiyatNo,
+            Title = vm.Title,
+            AuxillaryBodyName = vm.AuxillaryBodyName,
+            MiddleName = vm.MiddleName,
+            MaidenName = vm.MaidenName,
+
+            DateOfBirth = vm.DateOfBirth,
+
+            PhoneNo = vm.PhoneNo,
+            JamaatName = vm.JamaatName,
+            CircuitName = vm.CircuitName,
+            Sex = vm.Sex,
+            MaritalStatus = vm.MaritalStatus,
+            Address = vm.Address,
+
+            NextOfKinPhoneNo = vm.NextOfKinPhoneNo,
+            NextOfKinName = vm.NextOfKinName,
+            NextOfKinAddress = vm.NextOfKinAddress,
+
+            Nationality = vm.Nationality,
+
+            RoleId = vm.RoleId,
+
+            IsSystemDefault = vm.IsSystemDefault,
+            NewRole = vm.NewRole
+        };
+    }
 }
