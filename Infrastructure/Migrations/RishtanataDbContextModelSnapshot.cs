@@ -127,7 +127,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("AuditLogs");
                 });
 
-            modelBuilder.Entity("Domain.Entities.BrideGroom", b =>
+            modelBuilder.Entity("Domain.Entities.BridegroomFormSection", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
