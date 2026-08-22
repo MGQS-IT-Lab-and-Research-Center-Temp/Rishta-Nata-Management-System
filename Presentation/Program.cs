@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Presentation.Data;
 using Presentation.Extensions;
-
-=======
-using Presentation.Extensions;
->>>>>>> 0f3b436286a37509a7093d6e975e34bc9947f416
 
 var builder = WebApplication.CreateBuilder(args);
 
