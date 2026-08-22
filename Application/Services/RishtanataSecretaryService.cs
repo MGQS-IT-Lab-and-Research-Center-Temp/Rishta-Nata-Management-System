@@ -3,8 +3,6 @@ using Domain.Enums;
 using Infrastructure.DTOs.JamaatMember;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
-using System;
-using System.Collections.Generic;
 using Domain.Entities;
 using Infrastructure.Mapper;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services
 {
     public class RishtanataSecretaryService : IRishtanataSecretaryService
+    
+
     {
         private readonly RishtanataDbContext _context;
 
