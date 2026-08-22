@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RishtanataDbContext))]
-    partial class RishtanataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260822094359_AddBrideGuardianRelationship")]
+    partial class AddBrideGuardianRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,11 +178,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
-
-                    b.Property<string>("ReferenceNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
 
                     b.HasKey("BrideGuardianId");
 
@@ -348,7 +346,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("AuxillaryBodyName")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("BrideGuardianId")
+                    b.Property<Guid?>("BrideGuardianId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("ChandaNo")
@@ -988,8 +986,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.BrideGuardian", "BrideGuardian")
                         .WithMany("Brides")
                         .HasForeignKey("BrideGuardianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("Members")
