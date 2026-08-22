@@ -10,9 +10,7 @@ namespace Domain.Entities
         public Guid MarriageApplicationId { get; set; }
 
         public FormApplication MarriageApplication { get; set; } = null!;
-
-        public ICollection<Review> Reviews { get; set; } = new List<Review>();
-
+        
         public string ReferenceNumber { get; set; } = string.Empty;
         public DateTime ProposedNikahDate { get; set; }
         public string Venue { get; set; } = string.Empty;
