@@ -21,6 +21,7 @@ public class BrideGroomDto
     public bool HasDivorcedFormerWife { get; set; }
     public bool FormerWifeIsPresent { get; set; }
     public bool FormerWifeObtainedKhula { get; set; }
+    
 
     public string BridegroomSignatureTel { get; set; } = string.Empty;
 }

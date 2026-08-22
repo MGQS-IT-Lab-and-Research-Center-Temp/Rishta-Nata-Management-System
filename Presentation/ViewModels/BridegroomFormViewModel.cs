@@ -10,32 +10,32 @@ namespace Presentation.ViewModels
         // Application
         // =========================
 
-        public string ReferenceNumber { get; set; } = string.Empty;
+        
 
 
         // =========================
         // Bridegroom Personal Information
         // =========================
 
-        [Required(ErrorMessage = "Membership number is required.")]
+        [Required(ErrorMessage = "⚠️Membership number is required⚠️.")]
         [Display(Name = "Membership Number")]
         public string BridegroomMembershipNo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Full name is required.")]
+        [Required(ErrorMessage = "⚠️Full name is required⚠️.")]
         [Display(Name = "Full Name")]
         public string BridegroomName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Date of birth is required.")]
+        [Required(ErrorMessage = "⚠️Date of birth is required⚠️.")]
         [DataType(DataType.Date)]
         [Display(Name = "Date of Birth")]
         public DateTime BridegroomDateOfBirth { get; set; }
 
-        [Required(ErrorMessage = "Residential address is required.")]
+        [Required(ErrorMessage = "⚠️Residential address is required⚠️.")]
         [Display(Name = "Residential Address")]
         public string BridegroomResidentOf { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Phone number is required.")]
-        [Phone(ErrorMessage = "Enter a valid phone number.")]
+        [Required(ErrorMessage = "⚠️Phone number is required⚠️.")]
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "⚠️Phone number must contain exactly 11 digits⚠️.")]
         [Display(Name = "Phone Number")]
         public string BridegroomPhoneNumber { get; set; } = string.Empty;
 
@@ -73,7 +73,6 @@ namespace Presentation.ViewModels
         public bool FormerWifeIsPresent { get; set; }
 
         public bool FormerWifeObtainedKhula { get; set; }
-        public string BridegroomSignatureTel { get; internal set; }
     }
 }
 

@@ -14,6 +14,40 @@ public class BridegroomService : IBridegroomService
         _dbContext = dbContext;
     }
 
+    public async Task<BrideGroom> CreateOrUpdateAsync(
+        BrideGroom bridegroom,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(bridegroom);
+
+        var existingBridegroom = await GetByMembershipNoAsync(
+            bridegroom.BridegroomMembershipNo,
+            cancellationToken);
+
+        if (existingBridegroom is null)
+        {
+            return await CreateAsync(bridegroom, cancellationToken);
+        }
+
+        existingBridegroom.BridegroomName = bridegroom.BridegroomName;
+        existingBridegroom.BridegroomDateOfBirth = bridegroom.BridegroomDateOfBirth;
+        existingBridegroom.BridegroomResidentOf = bridegroom.BridegroomResidentOf;
+        existingBridegroom.BridegroomGenotype = bridegroom.BridegroomGenotype;
+        existingBridegroom.BridegroomBloodGroup = bridegroom.BridegroomBloodGroup;
+        existingBridegroom.BridegroomDowerAmountPaidInCash = bridegroom.BridegroomDowerAmountPaidInCash;
+        existingBridegroom.BridegroomDowerAmountToBePaid = bridegroom.BridegroomDowerAmountToBePaid;
+        existingBridegroom.BridegroomSignatureTel = bridegroom.BridegroomSignatureTel;
+        existingBridegroom.IsFirstNikah = bridegroom.IsFirstNikah;
+        existingBridegroom.IsSecondThirdOrFourthNikah = bridegroom.IsSecondThirdOrFourthNikah;
+        existingBridegroom.FormerWifeIsDead = bridegroom.FormerWifeIsDead;
+        existingBridegroom.HasDivorcedFormerWife = bridegroom.HasDivorcedFormerWife;
+        existingBridegroom.FormerWifeIsPresent = bridegroom.FormerWifeIsPresent;
+        existingBridegroom.FormerWifeObtainedKhula = bridegroom.FormerWifeObtainedKhula;
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return existingBridegroom;
+    }
+
     public async Task<BrideGroom> CreateAsync(
         BrideGroom bridegroom,
         CancellationToken cancellationToken = default)

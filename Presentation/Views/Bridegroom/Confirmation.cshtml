@@ -1,4 +1,4 @@
-@model Domain.Entities.MarriageApplicationForm
+@model Domain.Entities.BrideGroom
 
 
 <h2>Application Confirmation</h2>
@@ -6,7 +6,6 @@
 <p>✅ Thank you for submitting your marriage application.</p>
 
 <div style="margin-top:20px;">
-    <p><strong>Reference Number:</strong> @Model.ReferenceNumber</p>
     <p><strong>Bridegroom Name:</strong> @Model.BridegroomName</p>
     <p><strong>Membership No:</strong> @Model.BridegroomMembershipNo</p>
     <p><strong>Date of Birth:</strong> @Model.BridegroomDateOfBirth.ToShortDateString()</p>
