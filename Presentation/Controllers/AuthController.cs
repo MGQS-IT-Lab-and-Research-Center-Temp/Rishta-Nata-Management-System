@@ -51,16 +51,23 @@ public class AuthController : Controller
         var tokenRequest = new TokenRequest(
             model.ChandaNo,
             model.Password);
-
-        var tokenResponse = await _gatewayHandler.GenerateToken(tokenRequest);
-
-        if (tokenResponse is null)
+        try
         {
-            ModelState.AddModelError(
-                string.Empty,
-                "Invalid Chanda number or password.");
 
+            var tokenResponse = await _gatewayHandler.GenerateToken(tokenRequest);
+
+            if (tokenResponse is null)
+            {
+                ModelState.AddModelError(string.Empty,"Invalid Chanda number or password.");
+
+                return View(model);
+            }
+        }
+        catch (Exception) 
+        {
+            ModelState.AddModelError(string.Empty,"Invalid Chanda number or password.");
             return View(model);
+            
         }
 
         var chandaNoInt = Convert.ToInt32(model.ChandaNo);
@@ -110,7 +117,7 @@ public class AuthController : Controller
         return memberViewModel.Role.Name switch
         {
             RoleNames.JamaatSecretary =>
-            RedirectToAction("Dashboard", "JamaatSecretary"),
+            RedirectToAction("Dashboard", "JamaatPresidentDashboard"),
 
             RoleNames.CircuitSecretary =>
                 RedirectToAction("Dashboard", "CircuitSecretary"),
@@ -119,7 +126,7 @@ public class AuthController : Controller
             RedirectToAction("Dashboard", "RishtanataSecretary"),
 
             _ =>
-                RedirectToAction("Dashboard", "Home")
+                RedirectToAction("Dashboard", "MemberDashboard")
         };
     }
 }
