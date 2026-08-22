@@ -1,0 +1,21 @@
+﻿using Domain.Abstractions;
+using Domain.Enums;
+
+namespace Domain.Entities
+{
+    public class MarriageFormRejection : AuditableEntity
+    {
+        // The form this rejection belongs to
+        public Guid MarriageApplicationFormId { get; set; }
+        public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
+
+        // Where the problem was found
+        public ApplicationStage RejectedAtStage { get; set; }
+
+        // Where it was sent back to
+        public ApplicationStage RevertedToStage { get; set; }
+
+        // Free-text reason for the rejection
+        public string Reason { get; set; } = string.Empty;
+    }
+}
