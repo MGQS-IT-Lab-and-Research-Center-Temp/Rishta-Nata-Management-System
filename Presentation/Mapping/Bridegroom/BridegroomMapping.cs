@@ -5,7 +5,7 @@ namespace Presentation.Mapping.Bridegroom;
 
 public static class BridegroomMapping
 {
-    public static BridegroomFormViewModel ToViewModel(BrideGroomDto dto)
+    public static BridegroomFormViewModel ToViewModel(BridegroomSectionDto dto)
     {
         return new BridegroomFormViewModel
         {

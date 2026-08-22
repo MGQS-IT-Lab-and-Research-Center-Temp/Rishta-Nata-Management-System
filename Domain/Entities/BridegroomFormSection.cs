@@ -23,3 +23,9 @@ namespace Domain.Entities
         public string ReferenceNumber { get; set; } = Guid.NewGuid().ToString();
     }
 }
+
+public enum NikahOrdinal
+{
+    First,
+    SecondThirdOrFourth
+}

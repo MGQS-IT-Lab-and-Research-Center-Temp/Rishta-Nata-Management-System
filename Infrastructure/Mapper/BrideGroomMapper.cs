@@ -5,9 +5,9 @@ namespace Infrastructure.Mapper;
 
 public static class BrideGroomMapper
 {
-    public static BrideGroomDto ToDto(BridegroomFormSection entity)
+    public static BridegroomSectionDto ToDto(BridegroomFormSection entity)
     {
-        return new BrideGroomDto
+        return new BridegroomSectionDto
         {
             Id = entity.Id,
             BridegroomMembershipNo = entity.BridegroomMembershipNo,
@@ -28,7 +28,7 @@ public static class BrideGroomMapper
         };
     }
 
-    public static BridegroomFormSection ToEntity(BrideGroomDto dto)
+    public static BridegroomFormSection ToEntity(BridegroomSectionDto dto)
     {
         return new BridegroomFormSection
         {
