@@ -10,10 +10,10 @@ namespace Domain.Entities
         
         public string Title { get; set; }
         public string Comment { get; set; }
-        public Guid MarriageApplicationId { get; set; } 
         public string Status { get; set; }
         public string ReviewedAt { get; set; }
-        public MarriageApplication? MarriageApplication  { get; set; }
+        public Guid FormApplicationId { get; set; } 
+        public FormApplication FormApplication { get; set; }
         public DateTime ReviewerId { get; set; }
     }
 }

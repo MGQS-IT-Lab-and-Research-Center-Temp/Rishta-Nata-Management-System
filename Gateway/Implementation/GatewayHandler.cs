@@ -24,10 +24,7 @@ public class GatewayHandler : IGatewayHandler
     public async Task<string[]?> GetMemberRoleAsync(int chandaNo)
     {
         var url = $"{_apiUrl}{chandaNo}/userRoles";
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url
-            );
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
         var response = await _client.SendAsync(request);
 
