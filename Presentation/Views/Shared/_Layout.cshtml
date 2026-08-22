@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="~/Presentation.styles.css" asp-append-version="true" />
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
@@ -71,7 +71,7 @@
         <!-- shared messages location -->
     </div>
 
-    <main role="main">
+    <main role="main" class="flex-grow-1">
         @RenderBody()
     </main>
 
