@@ -1,8 +1,4 @@
-# Stage-Authorization Policy (Ticket B1)
-
-> **Status:** Spec — no implementation yet. Tickets B2, B3, C3, D1–D4 and F2/F3
-> implement against this document. Do not build ad-hoc authorization checks in
-> controllers or services; everything goes through the policy described here.
+# Stage-Authorization Policy
 
 ---
 
