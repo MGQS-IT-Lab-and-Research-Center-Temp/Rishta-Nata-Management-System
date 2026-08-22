@@ -17,7 +17,7 @@ public class BrideService : IBrideService
 
     public async Task<BrideDto> CreateAsync(CreateBrideDto dto)
     {
-        var bride = new Bride
+        var bride = new BrideFormSection
         {
             MarriageApplicationFormId = dto.MarriageApplicationFormId,
             MembershipNo = dto.MembershipNo,

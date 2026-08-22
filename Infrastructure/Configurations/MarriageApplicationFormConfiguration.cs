@@ -43,7 +43,7 @@ namespace Infrastructure.Configurations
 
             builder.HasOne(f => f.Bride)
                    .WithOne(b => b.MarriageApplicationForm)
-                   .HasForeignKey<Bride>(b => b.MarriageApplicationFormId)
+                   .HasForeignKey<BrideFormSection>(b => b.MarriageApplicationFormId)
                    .OnDelete(DeleteBehavior.Cascade);
 
             // =====================================================

@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class Bride : AuditableEntity
+public class BrideFormSection : AuditableEntity
 {
     public Guid MarriageApplicationFormId { get; set; }
 

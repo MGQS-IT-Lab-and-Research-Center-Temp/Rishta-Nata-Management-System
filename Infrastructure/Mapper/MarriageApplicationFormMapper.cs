@@ -10,7 +10,7 @@ public static class MarriageApplicationFormMapper
     // BRIDE ENTITY -> BRIDE DTO
     // ============================================================
 
-    public static BrideDto ToBrideDto(this Bride entity)
+    public static BrideDto ToBrideDto(this BrideFormSection entity)
     {
         return new BrideDto
         {
@@ -41,9 +41,9 @@ public static class MarriageApplicationFormMapper
     // BRIDE DTO -> BRIDE ENTITY
     // ============================================================
 
-    public static Bride ToEntity(this BrideDto dto)
+    public static BrideFormSection ToEntity(this BrideDto dto)
     {
-        return new Bride
+        return new BrideFormSection
         {
             Id = dto.Id,
             MarriageApplicationFormId =

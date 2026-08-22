@@ -14,7 +14,7 @@ namespace Domain.Entities
         public DateTime ProposedNikahDate { get; set; }
         public string Venue { get; set; } = string.Empty;
 
-        public Bride? Bride { get; set; }
+        public BrideFormSection? Bride { get; set; }
        
 
         // ===== Bridegroom =====

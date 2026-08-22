@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations;
 
-public class BrideConfiguration : IEntityTypeConfiguration<Bride>
+public class BrideConfiguration : IEntityTypeConfiguration<BrideFormSection>
 {
-    public void Configure(EntityTypeBuilder<Bride> builder)
+    public void Configure(EntityTypeBuilder<BrideFormSection> builder)
     {
         builder.ToTable("Brides");
 
@@ -22,11 +22,11 @@ public class BrideConfiguration : IEntityTypeConfiguration<Bride>
 
         builder.HasOne(x => x.MarriageApplicationForm)
             .WithOne(x => x.Bride)
-            .HasForeignKey<Bride>(x => x.MarriageApplicationFormId)
+            .HasForeignKey<BrideFormSection>(x => x.MarriageApplicationFormId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(b => b.MarriageApplicationForm)
                .WithOne(f => f.Bride)
-               .HasForeignKey<Bride>(b => b.MarriageApplicationFormId);
+               .HasForeignKey<BrideFormSection>(b => b.MarriageApplicationFormId);
     }
 }
