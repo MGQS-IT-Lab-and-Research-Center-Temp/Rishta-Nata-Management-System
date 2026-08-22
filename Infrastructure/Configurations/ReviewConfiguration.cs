@@ -12,8 +12,6 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Review> builder)
         {
-            builder.ToTable("Reviews");
-            // Title
             builder.Property(r => r.Title)
                 .IsRequired()
                 .HasMaxLength(200);
