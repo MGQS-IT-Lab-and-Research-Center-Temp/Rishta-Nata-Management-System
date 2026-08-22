@@ -4,7 +4,7 @@ using Infrastructure.DTOs.JamaatMember;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
-
+using Infrastructure.Mapper;
 namespace Application.Services
 {
    public class RishtanataSecretaryService : IRishtanataSecretaryService
@@ -161,16 +161,7 @@ namespace Application.Services
         public List<JamaatMemberDto> GetMembers()
         {
             return _context.JamaatMembers
-                .Select(x => new JamaatMemberDto
-                {
-                    Id = x.Id,
-                    ChandaNo = x.ChandaNo,
-                    FirstName = (x.FirstName + " " + x.Surname).Trim(),
-                    PhoneNo = x.PhoneNo ?? string.Empty,
-                    Sex = x.Sex,
-                    MaritalStatus = x.MaritalStatus ?? string.Empty,
-                    JamaatName = x.JamaatName
-                })
+                .Select(x => JamaatMemberMapper.ToDto(x))
                 .ToList();
         }
         public void Reject(Guid id)
