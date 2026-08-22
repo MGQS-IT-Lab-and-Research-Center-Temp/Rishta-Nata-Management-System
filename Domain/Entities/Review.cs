@@ -11,8 +11,8 @@ namespace Domain.Entities;
         public string Comment { get; set; }
         public Guid MarriageApplicationId { get; set; } 
         public string Status { get; set; }
-        public string ReviewedAt { get; set; }
+        public DateTime ReviewedAt { get; set; }
         public FormApplication? MarriageApplication  { get; set; }
-        public DateTime ReviewerId { get; set; }
+        public Guid ReviewerId { get; set; }
     }
 
