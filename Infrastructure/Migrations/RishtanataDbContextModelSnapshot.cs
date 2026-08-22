@@ -83,7 +83,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AqeeqahCertificates");
+                    b.ToTable("AqeeqahCertificates", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
@@ -124,7 +124,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("EntityName", "RecordId");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.BrideGroom", b =>
@@ -270,7 +270,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
-                    b.ToTable("Certificates");
+                    b.ToTable("Certificates", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.FormApplication", b =>
@@ -306,7 +306,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FormApplications");
+                    b.ToTable("FormApplications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Invitation", b =>
@@ -460,7 +460,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("JamaatMembers");
+                    b.ToTable("JamaatMembers", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
@@ -741,7 +741,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
-                    b.ToTable("MarriageApplicationForms");
+                    b.ToTable("MarriageApplicationForms", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -778,7 +778,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("JamaatRoles");
+                    b.ToTable("JamaatRoles", (string)null);
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.ApplicationRole", b =>
