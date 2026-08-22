@@ -16,6 +16,10 @@ namespace Application.Interfaces
         Task<MarriageApplicationForm?> GetByMarriageApplicationIdAsync(
             Guid marriageAplicationId);
 
+        Task<MarriageApplicationForm?> GetByReferenceNumberAsync(
+            string referenceNumber,
+            CancellationToken cancellationToken = default);
+
         Task<bool> UpdateAsync(
             MarriageApplicationForm application,
             CancellationToken cancellationToken = default);

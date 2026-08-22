@@ -88,6 +88,18 @@ namespace Application.Services
                     x => x.MarriageApplicationId == marriageAplicationId);
         }
 
+        public async Task<MarriageApplicationForm?> GetByReferenceNumberAsync(
+            string referenceNumber,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(referenceNumber);
+
+            return await _context.MarriageApplicationForms
+                .FirstOrDefaultAsync(
+                    x => x.ReferenceNumber == referenceNumber,
+                    cancellationToken);
+        }
+
         public async Task<bool> UpdateAsync(
             MarriageApplicationForm application,
             CancellationToken cancellationToken = default)
