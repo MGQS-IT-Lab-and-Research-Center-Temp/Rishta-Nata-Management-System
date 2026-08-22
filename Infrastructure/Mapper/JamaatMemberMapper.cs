@@ -3,7 +3,7 @@ using Infrastructure.DTOs.JamaatMember;
 
 namespace Infrastructure.Mapper;
 
-public static class JamaatMemberMapper
+public static class   JamaatMemberMapper
 {
     public static JamaatMemberDto ToDto(JamaatMember entity)
     {
