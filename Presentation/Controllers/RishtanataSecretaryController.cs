@@ -3,15 +3,16 @@ using Presentation.ViewModels;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
 using Application.Services;
+using Application.Interfaces;
 using Infrastructure.Mapper;
 namespace Presentation.Controllers
 {
     public class RishtanataSecretaryController : Controller
     {
         private readonly IRishtanataSecretaryService _service;
-        private readonly RoleAssignmentService _roleService;
+        private readonly IRoleAssignmentService _roleService;
 
-        public RishtanataSecretaryController(IRishtanataSecretaryService service,RoleAssignmentService roleService)
+        public RishtanataSecretaryController(IRishtanataSecretaryService service,IRoleAssignmentService roleService)
         {
             _service = service;
             _roleService = roleService;

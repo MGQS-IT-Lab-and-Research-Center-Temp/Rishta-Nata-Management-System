@@ -3,8 +3,10 @@ using Application.Interfaces.Identity;
 using Application.Services;
 using Domain.Interfaces;
 using Gateway.Implementation;
+using Infrastructure.Identity;         
 using Infrastructure.Persistence;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Data;
@@ -20,6 +22,10 @@ public static class DependencyInjection
     {
         services.AddMySQLServer<RishtanataDbContext>(
             configuration.GetConnectionString("DefaultConnection")!);
+
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
+            .AddEntityFrameworkStores<RishtanataDbContext>()
+            .AddDefaultTokenProviders();
 
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
