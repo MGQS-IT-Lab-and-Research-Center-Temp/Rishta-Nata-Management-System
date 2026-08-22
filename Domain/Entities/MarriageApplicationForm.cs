@@ -1,6 +1,6 @@
 ﻿using System;
 using Domain.Abstractions;
-
+using System.Collections.Generic;
 namespace Domain.Entities
 {
     public class MarriageApplicationForm : AuditableEntity
@@ -94,5 +94,8 @@ namespace Domain.Entities
         public DateTime? ApprovedDateOfNikah { get; set; }
 
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
+
+        // ===== Rejection Audit Trail =====
+        public ICollection<MarriageFormRejection> Rejections { get; set; } = new List<MarriageFormRejection>();
     }
 }
