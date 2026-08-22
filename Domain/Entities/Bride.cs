@@ -6,7 +6,7 @@ public class Bride : AuditableEntity
 {
     public Guid MarriageApplicationFormId { get; set; }
 
-    public MarriageApplicationForm? MarriageApplicationForm { get; set; } = null!;
+    public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
 
     public string MembershipNo { get; set; } = string.Empty;
 

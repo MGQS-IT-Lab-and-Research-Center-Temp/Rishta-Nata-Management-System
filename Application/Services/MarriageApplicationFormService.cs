@@ -1,76 +1,84 @@
 ﻿using Application.Interfaces;
+using Application.Interfaces.Service;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Application.Services
+namespace Application.Services;
+
+public class MarriageApplicationFormService : IMarriageApplicationFormService
 {
-    public class MarriageApplicationFormService : IMarriageApplicationFormService
+    private readonly RishtanataDbContext _context;
+    private readonly ILogger<MarriageApplicationFormService> _logger;
+    private readonly IReferenceNumberService _referenceNumberService;
+
+    public MarriageApplicationFormService(
+        RishtanataDbContext context,
+        ILogger<MarriageApplicationFormService> logger,
+        IReferenceNumberService referenceNumberService)
     {
-        private readonly RishtanataDbContext _context;
-        private readonly ILogger<MarriageApplicationFormService> _logger;
+        _context = context;
+        _logger = logger;
+        _referenceNumberService = referenceNumberService;
+    }
 
-        public MarriageApplicationFormService(
-            RishtanataDbContext context,
-            ILogger<MarriageApplicationFormService> logger)
+    public async Task<MarriageApplicationForm> CreateAsync(
+        MarriageApplicationForm application,
+        CancellationToken cancellationToken = default)
+    {
+        if (application is null)
+            throw new ArgumentNullException(nameof(application));
+
+        // Generate reference number
+        application.ReferenceNumber =
+            await _referenceNumberService.GenerateAsync();
+
+        _context.MarriageApplicationForms.Add(application);
+
+        try
         {
-            _context = context;
-            _logger = logger;
-        }
+            var saved = await _context.SaveChangesAsync(cancellationToken);
 
-        public async Task<MarriageApplicationForm> CreateAsync(
-            MarriageApplicationForm application,
-            CancellationToken cancellationToken = default)
-        {
-            if (application is null)
-                throw new ArgumentNullException(nameof(application));
-
-            _context.MarriageApplicationForms.Add(application);
-
-            try
-            {
-                var saved = await _context.SaveChangesAsync(cancellationToken);
-
-                if (saved == 0)
-                {
-                    _logger.LogWarning(
-                        "SaveChangesAsync returned 0 when creating MarriageApplicationForm (Id: {Id})",
-                        application.Id);
-                }
-
-                return application;
-            }
-            catch (DbUpdateConcurrencyException ex)
+            if (saved == 0)
             {
                 _logger.LogWarning(
-                    ex,
-                    "Concurrency conflict saving MarriageApplicationForm (Id: {Id})",
+                    "SaveChangesAsync returned 0 when creating MarriageApplicationForm (Id: {Id})",
                     application.Id);
-
-                throw;
             }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Database error while saving MarriageApplicationForm (Id: {Id})",
-                    application.Id);
 
-                throw new InvalidOperationException(
-                    "Unable to save marriage application to the database.",
-                    ex);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Unexpected error while saving MarriageApplicationForm (Id: {Id})",
-                    application.Id);
-
-                throw;
-            }
+            return application;
         }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Concurrency conflict saving MarriageApplicationForm (Id: {Id})",
+                application.Id);
+
+            throw;
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(
+                ex,
+                "Database error while saving MarriageApplicationForm (Id: {Id})",
+                application.Id);
+
+            throw new InvalidOperationException(
+                "Unable to save marriage application to the database.",
+                ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unexpected error while saving MarriageApplicationForm (Id: {Id})",
+                application.Id);
+
+            throw;
+        }
+    }
 
         public async Task<MarriageApplicationForm?> GetByIdAsync(
             Guid id,
@@ -123,6 +131,5 @@ namespace Application.Services
                     "Unable to update marriage application.",
                     ex);
             }
-        }
-    }
+          }
 }

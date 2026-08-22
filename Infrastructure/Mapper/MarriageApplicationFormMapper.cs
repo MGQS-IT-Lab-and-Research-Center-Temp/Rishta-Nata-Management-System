@@ -58,7 +58,7 @@ public static class MarriageApplicationFormMapper
             MaritalStatus = dto.MaritalStatus,
 
             ProposedDowerAmount =
-                dto.ProposedDowerAmount,
+    dto.ProposedDowerAmount,
 
             DowerAmountReceivedInCash =
                 dto.DowerAmountReceivedInCash,
@@ -74,97 +74,98 @@ public static class MarriageApplicationFormMapper
 
     public static PendingApprovalDto ToPendingApprovalDto(
         this MarriageApplicationForm form)
+{
+    return new PendingApprovalDto
     {
-        return new PendingApprovalDto
-        {
-            Id = form.MarriageApplicationId,
+        Id = form.MarriageApplicationId,
 
-            ApplicationNumber =
-                form.ReferenceNumber,
+        ApplicationNumber =
+            form.ReferenceNumber,
 
-            GroomName =
-                form.BridegroomName,
+        GroomName =
+            form.BridegroomName,
 
-            BrideName =
-                form.Bride?.Name ?? string.Empty,
+        BrideName =
+            form.Bride?.Name ?? string.Empty,
 
-            PresidentName =
-                form.JamaatPresidentName,
+        PresidentName =
+            form.JamaatPresidentName,
 
-            SubmittedDate =
-                form.CreatedAt,
+        SubmittedDate =
+            form.CreatedAt,
 
-            Status =
-                form.MarriageApplication.Status.ToString()
-        };
-    }
-
-
-    // ============================================================
-    // REVIEW APPLICATION DTO
-    // ============================================================
-
-    public static ReviewApplicationDto ToReviewApplicationDto(
-        this MarriageApplicationForm form)
-    {
-        return new ReviewApplicationDto
-        {
-            Id = form.MarriageApplicationId,
-
-            ApplicationNumber =
-                form.ReferenceNumber,
-
-            GroomName =
-                form.BridegroomName,
-
-            BrideName =
-                form.Bride?.Name ?? string.Empty,
-
-            GroomPhone =
-                form.BridegroomSignatureTel,
-
-            BridePhone =
-                form.Bride?.SignatureTel ?? string.Empty,
-
-            PresidentName =
-                form.JamaatPresidentName,
-
-            SubmittedDate =
-                form.CreatedAt,
-
-            Status =
-                form.MarriageApplication.Status.ToString()
-        };
-    }
-
-
-    // ============================================================
-    // MARRIED COUPLE DTO
-    // ============================================================
-
-    public static MarriedCoupleDto ToMarriedCoupleDto(
-        this MarriageApplicationForm form)
-    {
-        return new MarriedCoupleDto
-        {
-            Id =
-                form.MarriageApplicationId,
-
-            CertificateNumber =
-                form.MarriageApplication.CertificateId,
-
-            HusbandName =
-                form.BridegroomName,
-
-            WifeName =
-                form.Bride?.Name ?? string.Empty,
-
-            MarriageDate =
-                form.ApprovedDateOfNikah
-                ?? DateTime.MinValue,
-
-            Status =
-                form.MarriageApplication.Status.ToString()
-        };
-    }
+        Status =
+            form.MarriageApplication.Status.ToString()
+    };
 }
+
+
+// ============================================================
+// REVIEW APPLICATION DTO
+// ============================================================
+
+public static ReviewApplicationDto ToReviewApplicationDto(
+    this MarriageApplicationForm form)
+{
+    return new ReviewApplicationDto
+    {
+        Id = form.MarriageApplicationId,
+
+        ApplicationNumber =
+            form.ReferenceNumber,
+
+        GroomName =
+            form.BridegroomName,
+
+        BrideName =
+            form.Bride?.Name ?? string.Empty,
+
+        GroomPhone =
+            form.BridegroomSignatureTel,
+
+        BridePhone =
+            form.Bride?.SignatureTel ?? string.Empty,
+
+        PresidentName =
+            form.JamaatPresidentName,
+
+        SubmittedDate =
+            form.CreatedAt,
+
+        Status =
+            form.MarriageApplication.Status.ToString()
+    };
+}
+
+
+// ============================================================
+// MARRIED COUPLE DTO
+// ============================================================
+
+public static MarriedCoupleDto ToMarriedCoupleDto(
+    this MarriageApplicationForm form)
+{
+    return new MarriedCoupleDto
+    {
+        Id =
+            form.MarriageApplicationId,
+
+        CertificateNumber =
+            form.MarriageApplication.CertificateId,
+
+        HusbandName =
+            form.BridegroomName,
+
+        WifeName =
+            form.Bride?.Name ?? string.Empty,
+
+        MarriageDate =
+            form.ApprovedDateOfNikah
+            ?? DateTime.MinValue,
+
+        Status =
+            form.MarriageApplication.Status.ToString()
+    };
+}
+}
+
