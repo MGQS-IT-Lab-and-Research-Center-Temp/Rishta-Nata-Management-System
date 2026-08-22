@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Presentation.Data;
 using Presentation.Extensions;
 
+=======
+using Presentation.Extensions;
+>>>>>>> 0f3b436286a37509a7093d6e975e34bc9947f416
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,15 +34,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-// Seed Aqeeqah certificates data
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<RishtanataDbContext>();
-
-    await dbContext.Database.MigrateAsync();
-
-
-    await AqeeqahCertificateSeeder.SeedAqeeqahCertificatesAsync(dbContext);
-}
 
 app.Run();
