@@ -1,4 +1,6 @@
-﻿namespace Presentation.ViewModels
+﻿using Infrastructure.DTOs.Roles;
+
+namespace Presentation.ViewModels
 {
     public class RishtanataSecretaryDashboardViewModel
     {
@@ -79,22 +81,23 @@
         public string? Status { get; set; }
     }
 
-
     public class MarriedCoupleViewModel
     {
         public Guid Id { get; set; }
+        public string ApplicationNumber { get; set; } = string.Empty;
 
-        public string? CertificateNumber { get; set; }
+        public string GroomName { get; set; } = string.Empty;
+        public string GroomMembershipNo { get; set; } = string.Empty;
+        public DateTime GroomDateOfBirth { get; set; }
 
-        public string? HusbandName { get; set; }
+        public string BrideName { get; set; } = string.Empty;
+        public string BrideMembershipNo { get; set; } = string.Empty;
+        public DateTime BrideDateOfBirth { get; set; }
 
-        public string? WifeName { get; set; }
+        public DateTime NikahDate { get; set; }
+        public string Venue { get; set; } = string.Empty;
 
-        public string? JamaatName { get; set; }
-
-        public DateTime MarriageDate { get; set; }
-
-        public string? Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 
     public class JamaatMemberViewModel
@@ -113,5 +116,18 @@
 
         public string? PhoneNumber { get; set; }
     }
-}
 
+    public class RoleManagementViewModel
+    {
+        public Guid MemberId { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string ChandaNo { get; set; } = string.Empty;
+
+        public RoleDto CurrentRole { get; set; } = default!;
+        public IEnumerable<RoleDto> AvailableRoles { get; set; }
+
+        public bool IsAtBaseRole => CurrentRole.HierarchyLevel == 1;
+    }
+
+
+}

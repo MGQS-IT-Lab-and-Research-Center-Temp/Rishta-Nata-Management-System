@@ -1,7 +1,7 @@
-﻿using Application.Interfaces;
-using Domain.Enums;
+﻿using Domain.Enums;
 using Infrastructure.DTOs.JamaatMember;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.DTOs.MarriedCoupleDto;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
 using Infrastructure.Mapper;
@@ -95,15 +95,15 @@ namespace Application.Services
                 .Select(x => new MarriedCoupleDto
                 {
                     Id = x.MarriageApplicationId,
-
-                    CertificateNumber = x.MarriageApplication.CertificateId,
-
-                    HusbandName = x.BridegroomName,
-
-                    WifeName = x.BrideName,
-
-                    MarriageDate = x.ApprovedDateOfNikah ?? DateTime.MinValue,
-
+                    ApplicationNumber = x.ReferenceNumber,
+                    GroomName = x.BridegroomName,
+                    GroomMembershipNo = x.BridegroomMembershipNo,
+                    GroomDateOfBirth = x.BridegroomDateOfBirth,
+                    BrideName = x.BrideName,
+                    BrideMembershipNo = x.BrideMembershipNo,
+                    BrideDateOfBirth = x.BrideDateOfBirth,
+                    NikahDate = x.ApprovedDateOfNikah ?? DateTime.MinValue,
+                    Venue = x.Venue,
                     Status = x.MarriageApplication.Status.ToString()
                 })
                 .ToList();

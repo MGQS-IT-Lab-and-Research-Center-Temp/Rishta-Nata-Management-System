@@ -1,4 +1,4 @@
-﻿using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
+﻿using Infrastructure.DTOs.MarriedCoupleDto;
 using Presentation.ViewModels;
 
 namespace Presentation.Mapping.RishtanataSecretary;
@@ -10,11 +10,15 @@ public static class MarriedCoupleMapping
         return new MarriedCoupleViewModel
         {
             Id = dto.Id,
-            CertificateNumber = dto.CertificateNumber.ToString(),
-            HusbandName = dto.HusbandName,
-            WifeName = dto.WifeName,
-            JamaatName = dto.JamaatName,
-            MarriageDate = dto.MarriageDate,
+            ApplicationNumber = dto.ApplicationNumber,
+            GroomName = dto.GroomName,
+            GroomMembershipNo = dto.GroomMembershipNo,
+            GroomDateOfBirth = dto.GroomDateOfBirth,
+            BrideName = dto.BrideName,
+            BrideMembershipNo = dto.BrideMembershipNo,
+            BrideDateOfBirth = dto.BrideDateOfBirth,
+            NikahDate = dto.NikahDate,
+            Venue = dto.Venue,
             Status = dto.Status
         };
     }
