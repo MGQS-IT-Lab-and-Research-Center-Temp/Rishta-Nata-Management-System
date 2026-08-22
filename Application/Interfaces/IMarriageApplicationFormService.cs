@@ -1,5 +1,5 @@
-﻿
-using Domain.Entities;
+﻿using Domain.Entities;
+
 
 namespace Application.Interfaces
 {
@@ -18,6 +18,10 @@ namespace Application.Interfaces
 
         Task<bool> UpdateAsync(
             MarriageApplicationForm application,
+            CancellationToken cancellationToken = default);
+
+        Task<MarriageApplicationForm?> GetByMembershipNoAsync(
+            string membershipNo,
             CancellationToken cancellationToken = default);
     }
 }
