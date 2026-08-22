@@ -11,7 +11,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
         : base(options) { }
     public DbSet<Certificate> Certificates => Set<Certificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
-    public  DbSet<Review> MarriageCertificates => Set<Review>();
+    public  DbSet<Review> Reviews => Set<Review>();
 
     public DbSet<MarriageApplication> MarriageApplications => Set<MarriageApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
