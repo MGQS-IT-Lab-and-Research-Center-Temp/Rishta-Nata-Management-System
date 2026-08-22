@@ -1,0 +1,46 @@
+body {
+    min-height: 100vh;
+    background-color: #f5f7f6;
+}
+
+.login-wrapper {
+    min-height: 100vh;
+}
+
+.login-card {
+    max-width: 450px;
+    width: 100%;
+    border: none;
+    border-radius: 15px;
+}
+
+.logo-circle {
+    width: 260px;
+    height: 260px;
+    background-color: #000000;
+    border: 10px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.logo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.login-button {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.login-button:hover {
+    background-color: #157347;
+    border-color: #157347;
+}

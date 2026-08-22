@@ -1,0 +1,121 @@
+﻿@model Presentation.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Login - Rishta Nata Management System</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="wwwroot\css\Login.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center login-wrapper">
+
+            <div class="col-12">
+
+                <div class="card login-card shadow mx-auto">
+
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Logo -->
+                        <div class="text-center">
+                            <div class="logo-circle">
+                                <img src="~/img/logo.png" alt="Rishta Nata logo" />
+                            </div>
+
+                            <h2 class="fw-bold mb-2">
+                                Welcome Back
+                            </h2>
+
+                            <p class="text-muted mb-4">
+                                Login to your Rishta Nata account
+                            </p>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form asp-controller="Auth" asp-action="Login" method="post">
+                            @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label for="chandaNo" class="form-label fw-semibold">
+                                Chanda Number
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control form-control-lg"
+                                id="chandaNo"
+                                name="ChandaNo"
+                                placeholder="Enter your Chanda number"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                class="form-control form-control-lg"
+                                id="password"
+                                name="Password"
+                                placeholder="Enter your password"
+                                required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button
+                                type="submit"
+                                class="btn btn-success btn-lg login-button">
+                                Login
+                            </button>
+                        </div>
+
+                    </form>
+
+                        <!-- Register -->
+                        <div class="text-center mt-4">
+
+                            <p class="text-muted mb-0">
+                                Don't have an account?
+                                <a
+                                    href="#"
+                                    class="text-success fw-semibold text-decoration-none">
+                                    Create an account
+                                </a>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JavaScript -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+</body>
+</html>

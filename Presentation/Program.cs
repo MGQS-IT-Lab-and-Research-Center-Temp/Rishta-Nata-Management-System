@@ -1,25 +1,11 @@
-using Application.Interfaces;
-using Application.Services;
-using Infrastructure.Identity;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions;
+using Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add services for database access
-
-builder.Services.AddMySQLServer<RishtanataDbContext>(
-    builder.Configuration.GetConnectionString("DefaultConnection")!);
-
-// Configure Identity
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddEntityFrameworkStores<RishtanataDbContext>();
-
-builder.Services.AddScoped<IMarriageApplicationService, MarriageApplicationService>();
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -34,15 +20,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

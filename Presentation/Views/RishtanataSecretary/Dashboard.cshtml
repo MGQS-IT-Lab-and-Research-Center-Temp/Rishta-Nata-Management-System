@@ -1,5 +1,5 @@
 ﻿
-@model Presentation.Models.RishtanataSecretaryDashboardViewModel
+@model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel
 
 @{
       Layout = "_SecretaryLayout";
@@ -342,7 +342,9 @@
                                     <td>
 
                                         <span class="badge bg-warning text-dark">
+
                                             Pending Review
+
                                         </span>
 
                                     </td>
@@ -379,7 +381,9 @@
                 <div class="card-header bg-white">
 
                     <h4 class="mb-0">
+
                         Recent Decisions
+
                     </h4>
 
                 </div>
@@ -394,17 +398,23 @@
                             <div>
 
                                 <strong>
+
                                     @activity.Description
+
                                 </strong>
 
                                 <div class="text-muted">
+
                                     @activity.ApplicationNumber
+
                                 </div>
 
                             </div>
 
                             <small class="text-muted">
+
                                 @activity.Date.ToString("dd MMM yyyy hh:mm tt")
+
                             </small>
 
                         </div>

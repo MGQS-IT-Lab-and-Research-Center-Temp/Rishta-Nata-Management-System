@@ -1,168 +1,466 @@
+// do page for review - azeez
+// do page for review for individual nikkah form - azeez
+// do page for viewing aqeeqah certificates - yusroh - done
+// do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
+// fix all errors under your dto - faridah -done
+// fix all errors under service and interface - yusroh
+// ensure that dto namespace is infrastructure not application - done
+//use the respective service to do all db operation in this controller
+
+
+using Domain.Entities;
+using Domain.Enums;
+using Infrastructure.Persistence;
+using Infrastructure.DTOs.Certificates;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Models;
+using Microsoft.EntityFrameworkCore;
+using Presentation.ViewModels;
+using System.Security.Claims;
+using Application.Interfaces;
 
 namespace Presentation.Controllers;
 
+// TODO: Restore [Authorize(Roles = "JamaatPresident")] once authentication is built.
+// Temporarily removed to allow testing this dashboard without a working login flow.
 public class JamaatPresidentController : Controller
 {
-    public IActionResult Dashboard()
+    private readonly RishtanataDbContext _context;
+    private readonly IAqeeqahCertificateService _aqeeqahService;
+
+    public JamaatPresidentController(RishtanataDbContext context, IAqeeqahCertificateService aqeeqahService)
     {
+        _context = context;
+        _aqeeqahService = aqeeqahService;
+    }
+
+    // ============================================================
+    // DASHBOARD
+    // ============================================================
+
+    public async Task<IActionResult> Dashboard()
+    {
+        var pendingStatus = ApplicationStatus.ApplicationPending;
+        
+        var pendingApplications = await _context.FormApplications
+            .Where(x => x.Status == pendingStatus)
+            .Include(x => x.MarriageApplicationForm)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
+
+        var totalApplications =
+            await _context.FormApplications.CountAsync();
+
+        var today = DateTime.UtcNow.Date;
+        var tomorrow = today.AddDays(1);
+
+        var reviewedToday = await _context.AuditLogs
+            .CountAsync(x =>
+                x.Timestamp >= today &&
+                x.Timestamp < tomorrow &&
+                (
+                    x.Action == "Approved Nikah Application" ||
+                    x.Action == "Rejected Nikah Application" ||
+                    x.Action == "Requested More Information"
+                ));
+
+        var recentActivities = await _context.AuditLogs
+            .OrderByDescending(x => x.Timestamp)
+            .Take(10)
+            .Select(x => new RecentActivityViewModel
+            {
+                ApplicationNumber = x.EntityName,
+                Description = x.Action,
+                Date = x.Timestamp
+            })
+            .ToListAsync();
+
         var dashboard = new JamaatPresidentDashboardViewModel
         {
-            PresidentName = "Abdul Rahman Muhammad",
-            JamaatName = "Yaba Jamaat",
-            CircuitName = "Lagos Mainland",
+            PresidentName = User.Identity?.Name ?? "Jama'at President",
 
-            PendingNikahReviews = 8,
-            ReviewedToday = 5,
-            TotalNikahApplications = 42,
+            // These can later come from the President's actual Jama'at profile.
+            JamaatName = "Jama'at",
+            CircuitName = "Circuit",
 
-            PendingApplications = new List<NikahApplicationViewModel>
-        {
-            new()
-            {
-                Id = 1,
-                GroomName = "Muhammad Abdul Rahman",
-                BrideName = "Aisha Yusuf",
-                JamaatName = "Yaba Jamaat",
-                SubmittedDate = DateTime.Today.AddDays(-1),
-                Status = "Pending Review"
-            },
+            PendingNikahReviews = pendingApplications.Count,
 
-            new()
-            {
-                Id = 2,
-                GroomName = "Ibrahim Musa",
-                BrideName = "Maryam Ibrahim",
-                JamaatName = "Yaba Jamaat",
-                SubmittedDate = DateTime.Today.AddDays(-2),
-                Status = "Pending Review"
-            },
+            ReviewedToday = reviewedToday,
 
-            new()
-            {
-                Id = 3,
-                GroomName = "Abdul Kareem",
-                BrideName = "Fatimah Ali",
-                JamaatName = "Yaba Jamaat",
-                SubmittedDate = DateTime.Today.AddDays(-3),
-                Status = "Pending Review"
-            },
+            TotalNikahApplications = totalApplications,
 
-            new()
-            {
-                Id = 4,
-                GroomName = "Yusuf Ahmed",
-                BrideName = "Hauwa Bello",
-                JamaatName = "Yaba Jamaat",
-                SubmittedDate = DateTime.Today.AddDays(-4),
-                Status = "Pending Review"
-            }
-        },
+            PendingApplications = pendingApplications
+                .Select(x => new NikahApplicationViewModel
+                {
+                    Id = x.Id,
 
-            RecentActivities = new List<RecentActivityViewModel>
-        {
-            new()
-            {
-                Description = "Nikah application submitted by Muhammad Abdul Rahman",
-                Date = DateTime.Now.AddHours(-2)
-            },
+                    ReferenceNumber =
+                        x.MarriageApplicationForm?.ReferenceNumber
+                        ?? "N/A",
 
-            new()
-            {
-                Description = "Nikah application reviewed",
-                Date = DateTime.Now.AddHours(-5)
-            },
+                    GroomName =
+                        x.MarriageApplicationForm?.BridegroomName
+                        ?? "Not provided",
 
-            new()
-            {
-                Description = "Nikah application submitted by Ibrahim Musa",
-                Date = DateTime.Now.AddDays(-1)
-            }
-        }
+                    BrideName =
+                        x.MarriageApplicationForm?.BrideName
+                        ?? "Not provided",
+
+                    JamaatName =
+                        x.MarriageApplicationForm?.Venue
+                        ?? "Not provided",
+
+                    SubmittedDate = x.CreatedAt,
+
+                    Status = x.Status.ToString()
+                })
+                .ToList(),
+
+            RecentActivities = recentActivities
         };
-
-
-        if (TempData["ApprovedApplicationId"] != null)
-        {
-            int approvedId = (int)TempData["ApprovedApplicationId"];
-
-            var approvedApplication = dashboard.PendingApplications.FirstOrDefault(x => x.Id == approvedId);
-
-            if (approvedApplication != null)
-            {
-                approvedApplication.Status = "Pending Admin Review";
-            }
-        }
-        if (TempData["RejectedApplicationId"] != null)
-        {
-            int rejectedId = (int)TempData["RejectedApplicationId"];
-
-            var rejectedApplication = dashboard.PendingApplications.FirstOrDefault(x => x.Id == rejectedId);
-
-            if (rejectedApplication != null)
-            {
-                rejectedApplication.Status = "Rejected by Jamaat President";
-            }
-        }
-        if (TempData["InformationRequiredApplicationId"] != null)
-        {
-            int informationId =
-                (int)TempData["InformationRequiredApplicationId"];
-
-            var application = dashboard.PendingApplications
-                .FirstOrDefault(x => x.Id == informationId);
-
-            if (application != null)
-            {
-                application.Status = "More Information Required";
-            }
-        }
 
         return View(dashboard);
     }
-    public IActionResult Review(int id)
+
+    // ============================================================
+    // REVIEW APPLICATION
+    // ============================================================
+
+    [HttpGet]
+    public async Task<IActionResult> Review(Guid id)
     {
-        var application = new NikahApplicationViewModel
+        var application = await _context.FormApplications
+            .Include(x => x.MarriageApplicationForm)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (application == null)
         {
-            Id = id,
-            GroomName = "Muhammad Abdul Rahman",
-            BrideName = "Aisha Yusuf",
-            JamaatName = "Yaba Jamaat",
-            SubmittedDate = new DateTime(2026, 8, 11),
-            Status = "Pending Review"
+            return NotFound();
+        }
+
+        var form = application.MarriageApplicationForm;
+
+        if (form == null)
+        {
+            return NotFound("Marriage application form was not found.");
+        }
+
+        var model = new JamaatPresidentReviewViewModel
+        {
+            Id = application.Id,
+            ReferenceNumber = form.ReferenceNumber,
+            Status = application.Status.ToString(),
+            SubmittedDate = application.CreatedAt,
+            ProposedNikahDate = form.ProposedNikahDate,
+            Venue = form.Venue,
+
+            BrideMembershipNo = form.BrideMembershipNo,
+            BrideName = form.BrideName,
+            BrideDateOfBirth = form.BrideDateOfBirth,
+            BrideResidentOf = form.BrideResidentOf,
+            BrideGenotype = form.BrideGenotype,
+            BrideBloodGroup = form.BrideBloodGroup,
+            BrideMaritalStatus = form.BrideMaritalStatus,
+            BrideProposedDowerAmount = form.BrideProposedDowerAmount,
+            BrideDowerAmountReceivedInCash = form.BrideDowerAmountReceivedInCash,
+            BrideSignatureTel = form.BrideSignatureTel,
+
+            BridegroomMembershipNo = form.BridegroomMembershipNo,
+            BridegroomName = form.BridegroomName,
+            BridegroomDateOfBirth = form.BridegroomDateOfBirth,
+            BridegroomResidentOf = form.BridegroomResidentOf,
+            BridegroomGenotype = form.BridegroomGenotype,
+            BridegroomBloodGroup = form.BridegroomBloodGroup,
+            BridegroomDowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
+            BridegroomDowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
+            IsFirstNikah = form.IsFirstNikah,
+            IsSecondThirdOrFourthNikah = form.IsSecondThirdOrFourthNikah,
+            FormerWifeIsDead = form.FormerWifeIsDead,
+            HasDivorcedFormerWife = form.HasDivorcedFormerWife,
+            FormerWifeIsPresent = form.FormerWifeIsPresent,
+            FormerWifeObtainedKhula = form.FormerWifeObtainedKhula,
+            BridegroomSignatureTel = form.BridegroomSignatureTel,
+
+            BrideFatherName = form.BrideFatherName,
+            BridegroomFatherName = form.BridegroomFatherName,
+
+            GuardianName = form.GuardianName,
+            GuardianRelationToBride = form.GuardianRelationToBride,
+            GuardianAddress = form.GuardianAddress,
+            GuardianTel = form.GuardianTel,
+            GuardianSignatureDate = form.GuardianSignatureDate,
+
+            RepresentativeName = form.RepresentativeName,
+            RepresentativeAddress = form.RepresentativeAddress,
+            RepresentativeActingFor = form.RepresentativeActingFor,
+            RepresentativeSignatureDate = form.RepresentativeSignatureDate,
+
+            WitnessOneName = form.WitnessOneName,
+            WitnessOneAddress = form.WitnessOneAddress,
+            WitnessOneTel = form.WitnessOneTel,
+            WitnessOneSignatureDate = form.WitnessOneSignatureDate,
+
+            WitnessTwoName = form.WitnessTwoName,
+            WitnessTwoAddress = form.WitnessTwoAddress,
+            WitnessTwoTel = form.WitnessTwoTel,
+            WitnessTwoSignatureDate = form.WitnessTwoSignatureDate,
+
+            OfficiatingImamName = form.OfficiatingImamName,
+            OfficiatingImamAddressJamaat = form.OfficiatingImamAddressJamaat,
+            OfficiatingImamSignatureDate = form.OfficiatingImamSignatureDate,
+
+            JamaatPresidentName = form.JamaatPresidentName,
+            JamaatPresidentSignatureDate = form.JamaatPresidentSignatureDate,
+
+            NationalRishtanataSecretaryName = form.NationalRishtanataSecretaryName,
+            NationalRishtanataSecretarySignatureDate = form.NationalRishtanataSecretarySignatureDate,
+
+            ApprovedDateOfNikah = form.ApprovedDateOfNikah,
+            NationalAmirOrMissionarySignatureDate = form.NationalAmirOrMissionarySignatureDate
         };
 
-        return View(application);
+        return View(model);
     }
+
+    // ============================================================
+    // APPROVE
+    // ============================================================
+
     [HttpPost]
-    public IActionResult Approve(int id)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Approve(Guid id)
     {
-        TempData["ApprovedApplicationId"] = id;
+        var application = await _context.FormApplications
+            .Include(x => x.MarriageApplicationForm)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (application == null)
+        {
+            return NotFound();
+        }
+
+        if (application.Status !=
+            ApplicationStatus.ApplicationPending)
+        {
+            TempData["Error"] =
+                "This application is no longer awaiting Jama'at President review.";
+
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        application.Status =
+            ApplicationStatus.ApplicationApproved;
+
+        application.ModifiedAt = DateTime.UtcNow;
+        application.ModifiedBy = GetCurrentUserId();
+
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+
+            UserId = GetCurrentUserId() ?? Guid.Empty,
+
+            Action = "Approved Nikah Application",
+
+            EntityName = "MarriageApplication",
+
+            RecordId = application.Id,
+
+            Timestamp = DateTime.UtcNow,
+
+            ChangeDetails =
+                $"Jama'at President approved application " +
+                $"{application.MarriageApplicationForm?.ReferenceNumber ?? application.Id.ToString()} " +
+                $"and forwarded it for National Rishtanata Secretary review."
+        };
+
+        _context.AuditLogs.Add(auditLog);
+
+        await _context.SaveChangesAsync();
 
         TempData["Success"] =
-            $"Nikah application #{id} has been approved by the Jamaat President and forwarded to Admin Review.";
+            "Nikah application approved and forwarded to the National Rishtanata Secretary.";
 
-        return RedirectToAction("Dashboard");
+        return RedirectToAction(nameof(Dashboard));
     }
+
+    // ============================================================
+    // REJECT
+    // ============================================================
+
     [HttpPost]
-    public IActionResult Reject(int id)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reject(Guid id)
     {
-        TempData["RejectedApplicationId"] = id;
+        var application = await _context.FormApplications
+            .Include(x => x.MarriageApplicationForm)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (application == null)
+        {
+            return NotFound();
+        }
+
+        if (application.Status !=
+            ApplicationStatus.ApplicationPending)
+        {
+            TempData["Error"] =
+                "This application is no longer awaiting Jama'at President review.";
+
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        application.Status =
+            ApplicationStatus.ApplicationRejected;
+
+        application.ModifiedAt = DateTime.UtcNow;
+        application.ModifiedBy = GetCurrentUserId();
+
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+
+            UserId = GetCurrentUserId() ?? Guid.Empty,
+
+            Action = "Rejected Nikah Application",
+
+            EntityName = "MarriageApplication",
+
+            RecordId = application.Id,
+
+            Timestamp = DateTime.UtcNow,
+
+            ChangeDetails =
+                $"Jama'at President rejected application " +
+                $"{application.MarriageApplicationForm?.ReferenceNumber ?? application.Id.ToString()}."
+        };
+
+        _context.AuditLogs.Add(auditLog);
+
+        await _context.SaveChangesAsync();
 
         TempData["Success"] =
-            $"Nikah application #{id} has been rejected by the Jamaat President.";
+            "Nikah application has been rejected.";
 
-        return RedirectToAction("Dashboard");
+        return RedirectToAction(nameof(Dashboard));
     }
+
+    // ============================================================
+    // REQUEST MORE INFORMATION
+    // ============================================================
+
     [HttpPost]
-    public IActionResult RequestMoreInformation(int id)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestMoreInformation(Guid id)
     {
-        TempData["InformationRequiredApplicationId"] = id;
+        var application = await _context.FormApplications
+            .Include(x => x.MarriageApplicationForm)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (application == null)
+        {
+            return NotFound();
+        }
+
+        if (application.Status !=
+            ApplicationStatus.ApplicationPending)
+        {
+            TempData["Error"] =
+                "This application is no longer awaiting Jama'at President review.";
+
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        application.Status =
+            ApplicationStatus.ApplicationPending;
+
+        application.ModifiedAt = DateTime.UtcNow;
+        application.ModifiedBy = GetCurrentUserId();
+
+        var auditLog = new AuditLog
+        {
+            Id = Guid.NewGuid(),
+
+            UserId = GetCurrentUserId() ?? Guid.Empty,
+
+            Action = "Requested More Information",
+
+            EntityName = "MarriageApplication",
+
+            RecordId = application.Id,
+
+            Timestamp = DateTime.UtcNow,
+
+            ChangeDetails =
+                $"Jama'at President requested more information for application " +
+                $"{application.MarriageApplicationForm?.ReferenceNumber ?? application.Id.ToString()}."
+        };
+
+        _context.AuditLogs.Add(auditLog);
+
+        await _context.SaveChangesAsync();
 
         TempData["Success"] =
-            $"More information has been requested for Nikah application #{id}.";
+            "More information has been requested for this Nikah application.";
 
-        return RedirectToAction("Dashboard");
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    // ============================================================
+    // MARRIAGE CERTIFICATES
+    // ============================================================
+
+    /// <summary>
+    /// Displays all marriage certificates.
+    /// 
+    /// For now, all certificates are displayed.
+    /// Later, this can be filtered by the Jama'at President's Jama'at.
+    /// </summary>
+    public async Task<IActionResult> Certificates()
+    {
+        var certificates = await _context.Certificates
+            .AsNoTracking()
+            .Select(c => new CertificateDto
+            {
+                Id = c.Id,
+                SerialNumber = c.SerialNumber,
+                BrideName = c.BrideName,
+                BridegroomName = c.BridegroomName,
+                NikahDate = c.NikahDate,
+                IssueDate = c.IssueDate,
+                CertificateFilePath = c.CertificateFilePath
+            })
+            .OrderByDescending(c => c.IssueDate)
+            .ToListAsync();
+
+        return View(certificates);
+    }
+    
+    // ============================================================
+    // AQEEQAH CERTIFICATES
+    // ============================================================
+
+    /// <summary>
+    /// Displays all Aqeeqah certificates for the Jamaat President
+    /// </summary>
+    public async Task<IActionResult> AqeeqahCertificates()
+    {
+        var certificates = await _aqeeqahService.GetAllCertificatesAsync();
+        return View(certificates);
+    }
+
+    // ============================================================
+    // CURRENT USER
+    // ============================================================
+
+    private Guid? GetCurrentUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (Guid.TryParse(userId, out var id))
+        {
+            return id;
+        }
+
+        return null;
     }
 }

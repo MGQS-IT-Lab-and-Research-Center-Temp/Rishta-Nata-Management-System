@@ -1,4 +1,4 @@
-@model Presentation.Models.NikahApplicationViewModel
+@model Presentation.ViewModels.JamaatPresidentReviewViewModel
 
 @{
     ViewData["Title"] = "Review Nikah Application";
@@ -6,34 +6,50 @@
 
 <div class="container py-4">
 
-    <!-- Page Header -->
+    <!-- Header -->
     <div class="mb-4">
-        <a asp-controller="JamaatPresident" asp-action="Dashboard" class="btn btn-outline-secondary btn-sm mb-3">
+
+        <a asp-controller="JamaatPresident"
+           asp-action="Dashboard"
+           class="btn btn-outline-secondary btn-sm mb-3">
             ← Back to Dashboard
         </a>
 
-        <h1 class="fw-bold">Review Nikah Application</h1>
+        <h1 class="fw-bold">
+            Review Nikah Application
+        </h1>
 
-        <p class="text-muted">
-            Review the application carefully before forwarding it
-            to the other administrators.
+        <p class="text-muted mb-0">
+            Carefully review all information before making a decision.
         </p>
+
     </div>
 
 
-    <!-- Application Status -->
-    <div class="alert alert-warning mb-4">
-        <strong>Pending President Review</strong>
+    <!-- Status -->
+    <div class="alert alert-warning">
+
+        <strong>
+            Jama'at President Review
+        </strong>
+
         <br />
-        This application is currently awaiting review by the Jamaat President.
+
+        Current Status:
+        <strong>
+            @Model.Status
+        </strong>
+
     </div>
 
 
     <!-- Application Information -->
     <div class="card shadow-sm border-0 mb-4">
 
-        <div class="card-header bg-white py-3">
-            <h4 class="mb-0">Application Information</h4>
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Application Information
+            </h4>
         </div>
 
         <div class="card-body">
@@ -41,47 +57,56 @@
             <div class="row g-4">
 
                 <div class="col-md-6">
-                    <label class="text-muted small">
+                    <small class="text-muted">
+                        Reference Number
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.ReferenceNumber
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
                         Application ID
-                    </label>
+                    </small>
 
-                    <div class="fw-bold">
-                        #@Model.Id
+                    <div class="fw-bold text-break">
+                        @Model.Id
                     </div>
                 </div>
 
 
                 <div class="col-md-6">
-                    <label class="text-muted small">
-                        Application Status
-                    </label>
-
-                    <div>
-                        <span class="badge bg-warning text-dark">
-                            @Model.Status
-                        </span>
-                    </div>
-                </div>
-
-
-                <div class="col-md-6">
-                    <label class="text-muted small">
+                    <small class="text-muted">
                         Date Submitted
-                    </label>
+                    </small>
 
                     <div class="fw-bold">
-                        @Model.SubmittedDate.ToString("dd MMMM yyyy")
+                        @Model.SubmittedDate.ToString("dd MMMM yyyy, hh:mm tt")
                     </div>
                 </div>
 
 
                 <div class="col-md-6">
-                    <label class="text-muted small">
-                        Jamaat
-                    </label>
+                    <small class="text-muted">
+                        Proposed Nikah Date
+                    </small>
 
                     <div class="fw-bold">
-                        @Model.JamaatName
+                        @Model.ProposedNikahDate.ToString("dd MMMM yyyy")
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <small class="text-muted">
+                        Venue / Jama'at
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.Venue
                     </div>
                 </div>
 
@@ -92,27 +117,595 @@
     </div>
 
 
-    <!-- Groom & Bride -->
+    <!-- Bride -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Bride Information
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Full Name
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BrideName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Membership Number
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BrideMembershipNo
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Date of Birth
+                    </small>
+
+                    <div>
+                        @Model.BrideDateOfBirth.ToString("dd MMMM yyyy")
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Resident Of
+                    </small>
+
+                    <div>
+                        @Model.BrideResidentOf
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <small class="text-muted">
+                        Genotype
+                    </small>
+
+                    <div>
+                        @Model.BrideGenotype
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <small class="text-muted">
+                        Blood Group
+                    </small>
+
+                    <div>
+                        @Model.BrideBloodGroup
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <small class="text-muted">
+                        Marital Status
+                    </small>
+
+                    <div>
+                        @Model.BrideMaritalStatus
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Proposed Dower
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BrideProposedDowerAmount.ToString("N2")
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Dower Received in Cash
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BrideDowerAmountReceivedInCash.ToString("N2")
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <small class="text-muted">
+                        Signature Telephone
+                    </small>
+
+                    <div>
+                        @Model.BrideSignatureTel
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Bridegroom -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Bridegroom Information
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Full Name
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BridegroomName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Membership Number
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BridegroomMembershipNo
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Date of Birth
+                    </small>
+
+                    <div>
+                        @Model.BridegroomDateOfBirth.ToString("dd MMMM yyyy")
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Resident Of
+                    </small>
+
+                    <div>
+                        @Model.BridegroomResidentOf
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Genotype
+                    </small>
+
+                    <div>
+                        @Model.BridegroomGenotype
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Blood Group
+                    </small>
+
+                    <div>
+                        @Model.BridegroomBloodGroup
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Dower Paid in Cash
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BridegroomDowerAmountPaidInCash.ToString("N2")
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Dower Yet to be Paid
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BridegroomDowerAmountToBePaid.ToString("N2")
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Previous Nikah Information -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Bridegroom Nikah History
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <strong>First Nikah:</strong>
+
+                    @if (Model.IsFirstNikah)
+                    {
+                        <span class="badge bg-success ms-2">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary ms-2">
+                            No
+                        </span>
+                    }
+                </div>
+
+
+                <div class="col-md-6">
+                    <strong>Second / Third / Fourth Nikah:</strong>
+
+                    @if (Model.IsSecondThirdOrFourthNikah)
+                    {
+                        <span class="badge bg-warning text-dark ms-2">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary ms-2">
+                            No
+                        </span>
+                    }
+                </div>
+
+
+                <div class="col-md-6">
+                    <strong>Former Wife Deceased:</strong>
+
+                    @if (Model.FormerWifeIsDead)
+                    {
+                        <span class="badge bg-info ms-2">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary ms-2">
+                            No
+                        </span>
+                    }
+                </div>
+
+
+                <div class="col-md-6">
+                    <strong>Former Wife Divorced:</strong>
+
+                    @if (Model.HasDivorcedFormerWife)
+                    {
+                        <span class="badge bg-info ms-2">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary ms-2">
+                            No
+                        </span>
+                    }
+                </div>
+
+
+                <div class="col-md-6">
+                    <strong>Former Wife Present:</strong>
+
+                    @if (Model.FormerWifeIsPresent)
+                    {
+                        <span class="badge bg-warning text-dark ms-2">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary ms-2">
+                            No
+                        </span>
+                    }
+                </div>
+
+
+                <div class="col-md-6">
+                    <strong>Former Wife Obtained Khula:</strong>
+
+                    @if (Model.FormerWifeObtainedKhula)
+                    {
+                        <span class="badge bg-info ms-2">
+                            Yes
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary ms-2">
+                            No
+                        </span>
+                    }
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Parents -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Parents
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Bride's Father
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BrideFatherName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Bridegroom's Father
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BridegroomFatherName
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Guardian -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Guardian / Waliyy
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Name
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.GuardianName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Relationship to Bride
+                    </small>
+
+                    <div>
+                        @Model.GuardianRelationToBride
+                    </div>
+                </div>
+
+
+                <div class="col-md-8">
+                    <small class="text-muted">
+                        Address
+                    </small>
+
+                    <div>
+                        @Model.GuardianAddress
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <small class="text-muted">
+                        Telephone
+                    </small>
+
+                    <div>
+                        @Model.GuardianTel
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <small class="text-muted">
+                        Signature Date
+                    </small>
+
+                    <div>
+                        @Model.GuardianSignatureDate
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Representative -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Representative / Wakeel
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Name
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.RepresentativeName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Acting For
+                    </small>
+
+                    <div>
+                        @Model.RepresentativeActingFor
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <small class="text-muted">
+                        Address
+                    </small>
+
+                    <div>
+                        @Model.RepresentativeAddress
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <small class="text-muted">
+                        Signature Date
+                    </small>
+
+                    <div>
+                        @Model.RepresentativeSignatureDate
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Witnesses -->
     <div class="row g-4 mb-4">
 
-        <!-- Groom -->
         <div class="col-md-6">
 
             <div class="card shadow-sm border-0 h-100">
 
-                <div class="card-header bg-white py-3">
-                    <h4 class="mb-0">Groom Information</h4>
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        Witness One
+                    </h4>
                 </div>
 
                 <div class="card-body">
 
-                    <label class="text-muted small">
-                        Full Name
-                    </label>
+                    <p>
+                        <small class="text-muted">
+                            Name
+                        </small>
+                        <br />
+                        <strong>
+                            @Model.WitnessOneName
+                        </strong>
+                    </p>
 
-                    <h5 class="fw-bold">
-                        @Model.GroomName
-                    </h5>
+                    <p>
+                        <small class="text-muted">
+                            Address
+                        </small>
+                        <br />
+                        @Model.WitnessOneAddress
+                    </p>
+
+                    <p>
+                        <small class="text-muted">
+                            Telephone
+                        </small>
+                        <br />
+                        @Model.WitnessOneTel
+                    </p>
+
+                    <p class="mb-0">
+                        <small class="text-muted">
+                            Signature Date
+                        </small>
+                        <br />
+                        @Model.WitnessOneSignatureDate
+                    </p>
 
                 </div>
 
@@ -121,25 +714,137 @@
         </div>
 
 
-        <!-- Bride -->
         <div class="col-md-6">
 
             <div class="card shadow-sm border-0 h-100">
 
-                <div class="card-header bg-white py-3">
-                    <h4 class="mb-0">Bride Information</h4>
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        Witness Two
+                    </h4>
                 </div>
 
                 <div class="card-body">
 
-                    <label class="text-muted small">
-                        Full Name
-                    </label>
+                    <p>
+                        <small class="text-muted">
+                            Name
+                        </small>
+                        <br />
+                        <strong>
+                            @Model.WitnessTwoName
+                        </strong>
+                    </p>
 
-                    <h5 class="fw-bold">
-                        @Model.BrideName
-                    </h5>
+                    <p>
+                        <small class="text-muted">
+                            Address
+                        </small>
+                        <br />
+                        @Model.WitnessTwoAddress
+                    </p>
 
+                    <p>
+                        <small class="text-muted">
+                            Telephone
+                        </small>
+                        <br />
+                        @Model.WitnessTwoTel
+                    </p>
+
+                    <p class="mb-0">
+                        <small class="text-muted">
+                            Signature Date
+                        </small>
+                        <br />
+                        @Model.WitnessTwoSignatureDate
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Verification -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Verification
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Officiating Imam
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.OfficiatingImamName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Imam's Jama'at / Address
+                    </small>
+
+                    <div>
+                        @Model.OfficiatingImamAddressJamaat
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Imam Signature Date
+                    </small>
+
+                    <div>
+                        @Model.OfficiatingImamSignatureDate
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Jama'at President
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.JamaatPresidentName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        President Signature Date
+                    </small>
+
+                    <div>
+                        @Model.JamaatPresidentSignatureDate
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        National Rishtanata Secretary
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.NationalRishtanataSecretaryName
+                    </div>
                 </div>
 
             </div>
@@ -152,46 +857,78 @@
     <!-- President Decision -->
     <div class="card shadow-sm border-0 mb-4">
 
-        <div class="card-header bg-white py-3">
-            <h4 class="mb-1">President's Decision</h4>
+        <div class="card-header bg-white">
+
+            <h4 class="mb-1">
+                Jama'at President Decision
+            </h4>
 
             <small class="text-muted">
-                Select the appropriate action after reviewing the application.
+                Make your decision after reviewing the complete application.
             </small>
+
         </div>
+
 
         <div class="card-body">
 
             <div class="d-flex gap-2 flex-wrap">
-                <form asp-controller="JamaatPresident" asp-action="Approve" method="post" class="d-inline">
 
-                    <input type="hidden" name="id" value="@Model.Id" />
+                <!-- APPROVE -->
+                <form asp-controller="JamaatPresident"
+                      asp-action="Approve"
+                      method="post">
 
-                    <button type="submit" class="btn btn-success">
-                        ✓ Approve & Forward to Admin
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.Id" />
+
+                    <button type="submit"
+                            class="btn btn-success"
+                            onclick="return confirm('Are you sure you want to approve this application?');">
+
+                        ✓ Approve & Forward
+
                     </button>
 
                 </form>
 
 
-                <form asp-controller="JamaatPresident" asp-action="Reject" method="post" class="d-inline">
+                <!-- REJECT -->
+                <form asp-controller="JamaatPresident"
+                      asp-action="Reject"
+                      method="post">
 
-                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.Id" />
 
-                    <button type="submit" class="btn btn-danger">
+                    <button type="submit"
+                            class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to reject this application?');">
+
                         ✕ Reject Application
+
                     </button>
 
                 </form>
 
 
-                <form asp-controller="JamaatPresident" asp-action="RequestMoreInformation" method="post"
-                      class="d-inline">
+                <!-- MORE INFORMATION -->
+                <form asp-controller="JamaatPresident"
+                      asp-action="RequestMoreInformation"
+                      method="post">
 
-                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.Id" />
 
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit"
+                            class="btn btn-warning"
+                            onclick="return confirm('Request additional information for this application?');">
+
                         ! Request More Information
+
                     </button>
 
                 </form>
@@ -203,54 +940,83 @@
     </div>
 
 
-    <!-- Review Process -->
-    <div class="card shadow-sm border-0">
+    <!-- Workflow -->
+    <div class="card shadow-sm border-0 mb-5">
 
         <div class="card-body">
 
             <h4 class="mb-3">
-                Current Review Process
+                Nikah Review Workflow
             </h4>
+
 
             <div class="row text-center">
 
                 <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3">
-                        <strong>Application Submitted</strong>
+
+                    <div class="border rounded p-3 h-100">
+
+                        <strong>
+                            Application Submitted
+                        </strong>
+
                         <div class="text-success mt-2">
                             ✓ Completed
                         </div>
+
                     </div>
+
                 </div>
 
 
                 <div class="col-md-3 mb-3">
-                    <div class="border border-primary rounded p-3">
-                        <strong>President Review</strong>
+
+                    <div class="border border-primary rounded p-3 h-100">
+
+                        <strong>
+                            Jama'at President Review
+                        </strong>
+
                         <div class="text-primary mt-2">
                             ● Current
                         </div>
+
                     </div>
+
                 </div>
 
 
                 <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3">
-                        <strong>Admin Review</strong>
+
+                    <div class="border rounded p-3 h-100">
+
+                        <strong>
+                            National Rishtanata Secretary
+                        </strong>
+
                         <div class="text-muted mt-2">
                             Pending
                         </div>
+
                     </div>
+
                 </div>
 
 
                 <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3">
-                        <strong>Final Approval</strong>
+
+                    <div class="border rounded p-3 h-100">
+
+                        <strong>
+                            Final Approval
+                        </strong>
+
                         <div class="text-muted mt-2">
                             Pending
                         </div>
+
                     </div>
+
                 </div>
 
             </div>
