@@ -24,13 +24,13 @@ public class CertificateConfiguration : IEntityTypeConfiguration<Certificate>
         builder.Property(c => c.IssueDate)
             .IsRequired();
 
-        builder.Property(c => c.IssuedByUserId)
-            .IsRequired();
+        //builder.Property(c => c.IssuedByUserId)
+        //    .IsRequired();
 
-        builder.HasOne<ApplicationUser>()
-            .WithMany()
-            .HasForeignKey(c => c.IssuedByUserId)
-            .OnDelete(DeleteBehavior.Restrict);
+        //builder.HasOne<ApplicationUser>()
+        //    .WithMany()
+        //    .HasForeignKey(c => c.IssuedByUserId)
+        //    .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(c => c.CertificateFilePath)
             .IsRequired(false);

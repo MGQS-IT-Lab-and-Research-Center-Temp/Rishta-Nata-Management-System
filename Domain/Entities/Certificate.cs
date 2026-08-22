@@ -1,24 +1,35 @@
-﻿using System;
-using Domain.Abstractions;
+﻿using Domain.Abstractions;
 
 namespace Domain.Entities;
 
 public class Certificate : AuditableEntity
 {
-    // Required FK to MarriageApplication (one-to-one; unique index enforced in EF configuration).
-    public Guid MarriageApplicationId { get; set; }
-    public MarriageApplication MarriageApplication { get; set; } = null!;
+    // Certificate number printed on the certificate.
+    public string SerialNumber { get; set; } = string.Empty;
 
-    // A certificate row only exists once issued, so this is never nullable.
+    // Bride
+    public string BrideName { get; set; } = string.Empty;
+    public string BrideFatherName { get; set; } = string.Empty;
+    public string BrideResidentOf { get; set; } = string.Empty;
+
+    // Bridegroom
+    public string BridegroomName { get; set; } = string.Empty;
+    public string BridegroomFatherName { get; set; } = string.Empty;
+    public string BridegroomResidentOf { get; set; } = string.Empty;
+
+    // Marriage
+    public DateTime NikahDate { get; set; }
+    public decimal DowryAmount { get; set; }
+
+    // Application relationship
+    public Guid MarriageApplicationId { get; set; }
+    public FormApplication MarriageApplication { get; set; } = null!;
+
+    // Certificate administration
     public DateTime IssueDate { get; set; }
 
-    // Who issued it. FK to ApplicationUser (Identity), Restrict on delete so the record
-    // survives account removal — configured in CertificateConfiguration.
-    //this will be implemented after identity is done
-    // public Guid IssuedByUserId { get; set; }
+    public Guid IssuedByUserId { get; set; }
 
-    // Path only, consistent with Document. Nullable because whether a file is produced
-    // at all is still pending clarification (#34).
     public string? CertificateFilePath { get; set; }
     public  Guid IssuedByUserId { get; set; }
 

@@ -1,0 +1,92 @@
+@model List<Infrastructure.DTOs.Certificates.CertificateDto>
+
+@{
+    ViewData["Title"] = "Marriage Certificates";
+}
+
+<div class="container mt-4">
+
+    <div class="mb-4">
+        <h2>Marriage Certificates</h2>
+        <p class="text-muted">
+            View all issued marriage certificates.
+        </p>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            No marriage certificates have been issued yet.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Serial Number</th>
+                                <th>Bride</th>
+                                <th>Bridegroom</th>
+                                <th>Nikah Date</th>
+                                <th>Issue Date</th>
+                                <th>Certificate</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var certificate in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @certificate.SerialNumber
+                                    </td>
+
+                                    <td>
+                                        @certificate.BrideName
+                                    </td>
+
+                                    <td>
+                                        @certificate.BridegroomName
+                                    </td>
+
+                                    <td>
+                                        @certificate.NikahDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @certificate.IssueDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(certificate.CertificateFilePath))
+                                        {
+                                            <a href="@certificate.CertificateFilePath"
+                                               target="_blank"
+                                               class="btn btn-sm btn-primary">
+                                                View Certificate
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Not available
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>
