@@ -10,7 +10,7 @@ namespace Domain.Entities
         
         public string Title { get; set; }
         public string Comment { get; set; }
-        public string MarriageApplicationId { get; set; } = string.Empty;
+        public Guid MarriageApplicationId { get; set; } 
         public string Status { get; set; }
         public string ReviewedAt { get; set; }
         public MarriageApplication? MarriageApplication  { get; set; }
