@@ -14,12 +14,14 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public DbSet<Certificate> Certificates => Set<Certificate>();
     public DbSet<AqeeqahCertificate> AqeeqahCertificates => Set<AqeeqahCertificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
-    public  DbSet<Review> Reviews => Set<Review>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     public DbSet<FormApplication> FormApplications => Set<FormApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
     public DbSet<BrideGroom> BrideGrooms => Set<BrideGroom>();
     public DbSet<Role> JamaatRoles => Set<Role>();
+    public DbSet<BridegroomFormSection> BridegroomFormSections => Set<BridegroomFormSection>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

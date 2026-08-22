@@ -21,6 +21,6 @@ namespace Domain.Entities
         public bool FormerWifeObtainedKhula { get; set; }
         public string BridegroomSignatureTel { get; set; } = string.Empty;
         public string ReferenceNumber { get; set; } = Guid.NewGuid().ToString();
-
+        public BridegroomFormSection FormSection { get; set; }
     }
 }
