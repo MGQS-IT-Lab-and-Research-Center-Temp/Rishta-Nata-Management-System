@@ -13,109 +13,223 @@
 
     <title>Login - Rishta Nata Management System</title>
 
-    <!-- Bootstrap 5 -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
 
-    <link rel="stylesheet" href="wwwroot\css\Login.css">
+    <link rel="stylesheet"
+          href="~/css/Login.css"
+          asp-append-version="true" />
 </head>
 
 <body>
 
-    <div class="container">
-        <div class="row justify-content-center align-items-center login-wrapper">
+    <main class="login-page">
 
-            <div class="col-12">
+        <!-- LEFT SIDE -->
+        <section class="login-hero">
 
-                <div class="card login-card shadow mx-auto">
+            <div class="hero-content">
 
-                    <div class="card-body p-4 p-md-5">
+                <div class="brand">
 
-                        <!-- Logo -->
-                        <div class="text-center">
-                            <div class="logo-circle">
-                                <img src="~/img/logo.png" alt="Rishta Nata logo" />
-                            </div>
+                    <div class="brand-logo">
+                        <img src="~/img/logo.png"
+                             alt="Rishta Nata logo" />
+                    </div>
 
-                            <h2 class="fw-bold mb-2">
-                                Welcome Back
-                            </h2>
+                    <span>Rishta Nata</span>
 
-                            <p class="text-muted mb-4">
-                                Login to your Rishta Nata account
-                            </p>
-                        </div>
+                </div>
 
-                        <!-- Login Form -->
-                        <form asp-controller="Auth" asp-action="Login" method="post">
-                            @Html.AntiForgeryToken()
+                <div class="hero-text">
 
-                        <div class="mb-3">
-                            <label for="chandaNo" class="form-label fw-semibold">
-                                Chanda Number
-                            </label>
+                    <h1>
+                        Connect.
+                        <br />
+                        Build.
+                        <br />
+                        <span>Grow together.</span>
+                    </h1>
 
-                            <input
-                                type="text"
-                                class="form-control form-control-lg"
-                                id="chandaNo"
-                                name="ChandaNo"
-                                placeholder="Enter your Chanda number"
-                                required>
-                        </div>
+                    <p>
+                        Welcome to the Rishta Nata Management System.
+                        Manage your profile, connect with the community,
+                        and build meaningful relationships.
+                    </p>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-semibold">
+                </div>
+
+                <div class="hero-decoration decoration-one"></div>
+                <div class="hero-decoration decoration-two"></div>
+                <div class="hero-decoration decoration-three"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+        <section class="login-section">
+
+            <div class="login-container">
+
+                <!-- LOGIN HEADER -->
+                <div class="login-header">
+
+                    <!-- RIGHT-SIDE LOGO -->
+                    <div class="login-logo">
+                        <img src="~/img/logo.png"
+                             alt="Rishta Nata logo" />
+                    </div>
+
+                    <h2>
+                        Welcome Back
+                    </h2>
+
+                    <p>
+                        Login to your Rishta Nata account
+                    </p>
+
+                </div>
+
+
+                <!-- LOGIN FORM -->
+                <form asp-controller="Auth"
+                      asp-action="Login"
+                      method="post"
+                      class="login-form">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <!-- VALIDATION SUMMARY -->
+                    <div asp-validation-summary="ModelOnly"
+                         class="validation-summary">
+                    </div>
+
+
+                    <!-- CHANDA NUMBER -->
+                    <div class="form-group">
+
+                        <label asp-for="ChandaNo">
+                            Member Chanda Number
+                        </label>
+
+                        <input asp-for="ChandaNo"
+                               type="text"
+                               class="login-input"
+                               placeholder="Enter your Chanda number"
+                               autocomplete="off"
+                               inputmode="numeric"
+                               autofocus />
+
+                        <span asp-validation-for="ChandaNo"
+                              class="field-validation">
+                        </span>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="form-group">
+
+                        <div class="password-label-row">
+
+                            <label asp-for="Password">
                                 Password
                             </label>
 
-                            <input
-                                type="password"
-                                class="form-control form-control-lg"
-                                id="password"
-                                name="Password"
-                                placeholder="Enter your password"
-                                required>
-                        </div>
-
-                        <div class="d-grid">
-                            <button
-                                type="submit"
-                                class="btn btn-success btn-lg login-button">
-                                Login
-                            </button>
-                        </div>
-
-                    </form>
-
-                        <!-- Register -->
-                        <div class="text-center mt-4">
-
-                            <p class="text-muted mb-0">
-                                Don't have an account?
-                                <a
-                                    href="#"
-                                    class="text-success fw-semibold text-decoration-none">
-                                    Create an account
-                                </a>
-                            </p>
+                            <a href="#"
+                               class="forgot-password">
+                                Forgot Password?
+                            </a>
 
                         </div>
+
+                        <input asp-for="Password"
+                               type="password"
+                               class="login-input"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" />
+
+                        <span asp-validation-for="Password"
+                              class="field-validation">
+                        </span>
 
                     </div>
+
+
+                    <!-- REMEMBER ME -->
+                    <div class="remember-row">
+
+                        <label class="remember-label">
+
+                            <input asp-for="RememberMe"
+                                   type="checkbox" />
+
+                            <span>
+                                Remember me
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- RETURN URL -->
+                    @if (!string.IsNullOrWhiteSpace(Model.ReturnUrl))
+                    {
+                        <input type="hidden"
+                               asp-for="ReturnUrl" />
+                    }
+
+
+                    <!-- LOGIN BUTTON -->
+                    <button type="submit"
+                            class="login-button">
+                        Login
+                    </button>
+
+                </form>
+
+
+                <!-- DIVIDER -->
+                <div class="divider">
+
+                    <span></span>
+
+                    <p>OR</p>
+
+                    <span></span>
+
+                </div>
+
+
+                <!-- REGISTER -->
+                <div class="register-section">
+
+                    <p>
+                        Don't have an account?
+                    </p>
+
+                    <a href="#"
+                       class="register-button">
+                        Create an account
+                    </a>
 
                 </div>
 
             </div>
 
-        </div>
-    </div>
+        </section>
 
-    <!-- Bootstrap 5 JavaScript -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
     </script>
+
+    <partial name="_ValidationScriptsPartial" />
 
 </body>
 </html>

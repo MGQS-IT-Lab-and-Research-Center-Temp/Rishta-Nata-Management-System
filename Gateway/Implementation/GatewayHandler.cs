@@ -92,7 +92,6 @@ public class GatewayHandler : IGatewayHandler
             return null;
         }
 
-        throw new HttpRequestException(
-            $"Token API returned " + $"{(int)response.StatusCode} ({response.StatusCode}).");
+        throw new HttpRequestException($"Token API returned " + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 }

@@ -91,8 +91,6 @@ public class JamaatMemberService : IJamaatMemberService
         // existingMember.ResetTokenExpiry
         // existingMember.IsSystemDefault
 
-        existingMember.ModifiedAt = DateTime.UtcNow;
-
         await _context.SaveChangesAsync();
 
         return existingMember;
