@@ -4,6 +4,7 @@ using Infrastructure.DTOs.JamaatMember;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
+using Infrastructure.Mapper;
 
 namespace Application.Services
 {
@@ -35,79 +36,45 @@ namespace Application.Services
 
             return dto;
         }
+
+
         public List<PendingApprovalDto> GetPendingApprovals()
         {
             return _context.MarriageApplicationForms
+                .Include(f => f.MarriageApplication)
                 .Where(f => f.MarriageApplication.Status ==
                             ApplicationStatus.ApplicationPending)
-
-                .Select(f => new PendingApprovalDto
-                {
-                    Id = f.MarriageApplicationId,
-
-                    ApplicationNumber = f.ReferenceNumber,
-
-                    GroomName = f.BridegroomName,
-
-                    BrideName = f.Bride == null ? string.Empty : f.Bride.Name,
-
-                    PresidentName = f.JamaatPresidentName,
-
-                    SubmittedDate = f.CreatedAt,
-
-                    Status = f.MarriageApplication.Status.ToString()
-                })
+                .AsEnumerable()
+                .Select(f => f.ToPendingApprovalDto())
                 .ToList();
         }
+
+
         public ReviewApplicationDto GetById(Guid id)
         {
             var form = _context.MarriageApplicationForms
-                       .Include(x => x.Bride)
-                       .FirstOrDefault(x => x.MarriageApplicationId == id);
+                .Include(f => f.MarriageApplication)
+                .FirstOrDefault(f =>
+                    f.MarriageApplicationId == id);
 
             if (form == null)
                 throw new Exception("Application not found.");
 
-            return new ReviewApplicationDto
-            {
-                Id = form.MarriageApplicationId,
-
-                ApplicationNumber = form.ReferenceNumber,
-
-                GroomName = form.BridegroomName,
-
-                BrideName = form.Bride?.Name ?? string.Empty,
-
-                GroomPhone = form.BridegroomSignatureTel,
-
-                BridePhone = form.Bride?.SignatureTel ?? string.Empty,
-
-                PresidentName = form.JamaatPresidentName,
-
-                SubmittedDate = form.CreatedAt,
-
-                Status = form.MarriageApplication.Status.ToString()
-            };
+            return form.ToReviewApplicationDto();
         }
+
+
         public List<MarriedCoupleDto> GetMarriedCouples()
         {
             return _context.MarriageApplicationForms
-                .Where(x => x.MarriageApplication.Certificate != null)
-                .Select(x => new MarriedCoupleDto
-                {
-                    Id = x.MarriageApplicationId,
-
-                    CertificateNumber = x.MarriageApplication.CertificateId,
-
-                    HusbandName = x.BridegroomName,
-
-                    WifeName = x.Bride == null ? string.Empty : x.Bride.Name,
-                    MarriageDate = x.ApprovedDateOfNikah ?? DateTime.MinValue,
-
-                    Status = x.MarriageApplication.Status.ToString()
-                })
+                .Include(f => f.MarriageApplication)
+                .Where(f => f.MarriageApplication.Certificate != null)
+                .AsEnumerable()
+                .Select(f => f.ToMarriedCoupleDto())
                 .ToList();
         }
+
+
 
         public MemberProfileDto GetMemberProfile(Guid id)
         {

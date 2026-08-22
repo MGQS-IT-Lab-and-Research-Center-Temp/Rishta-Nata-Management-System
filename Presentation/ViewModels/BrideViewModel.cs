@@ -1,12 +1,12 @@
-﻿using Domain.Abstractions;
+﻿using System;
 
-namespace Domain.Entities;
+namespace Presentation.ViewModels.Bride;
 
-public class Bride : AuditableEntity
+public class BrideViewModel
 {
-    public Guid MarriageApplicationFormId { get; set; }
+    public Guid Id { get; set; }
 
-    public MarriageApplicationForm? MarriageApplicationForm { get; set; } = null!;
+    public Guid MarriageApplicationFormId { get; set; }
 
     public string MembershipNo { get; set; } = string.Empty;
 
@@ -27,4 +27,6 @@ public class Bride : AuditableEntity
     public decimal DowerAmountReceivedInCash { get; set; }
 
     public string SignatureTel { get; set; } = string.Empty;
+
+    public string FatherName { get; set; } = string.Empty;
 }
