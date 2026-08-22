@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Identity;
+﻿using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Domain.Entities;
 using Infrastructure.Identity.Tokens;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,14 @@ public class AuthController : Controller
     private readonly IGatewayHandler _gatewayHandler;
     private readonly ICookieAuthenticationService _cookieAuthService;
     private readonly IConfiguration _configuration;
+    private readonly IJamaatMemberService _jamaatMemberService;
 
-    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService, IConfiguration configuration)
+    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService, IConfiguration configuration, IJamaatMemberService jamaatMemberService)
     {
         _gatewayHandler = gatewayHandler;
         _cookieAuthService = cookieAuthService;
         _configuration = configuration;
+        _jamaatMemberService = jamaatMemberService;
     }
 
     // GET: /Auth/Login
@@ -70,10 +73,13 @@ public class AuthController : Controller
             return View(model);
         }
 
+        await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
+
+
         var rishtanataSecretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
 
         var isRishtanataSecretary = !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo)
-            && jamaatMember.chandaNo == rishtanataSecretaryChandaNo;
+            && jamaatMember.ChandaNo == rishtanataSecretaryChandaNo;
 
         await _cookieAuthService.SignInAsync(jamaatMember, isRishtanataSecretary);
 

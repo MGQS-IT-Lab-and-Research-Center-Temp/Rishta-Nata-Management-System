@@ -19,7 +19,7 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
-                new Claim(ClaimTypes.Name, jamaatMember.chandaNo),
+                new Claim(ClaimTypes.Name, jamaatMember.ChandaNo),
                 new Claim(ClaimTypes.Role, role.ToLowerInvariant()),
                 new Claim("HierarchyLevel", jamaatMember.Role.HierarchyLevel.ToString()),
             };
@@ -27,10 +27,10 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         switch (jamaatMember.Role.Name)
         {
             case RoleNames.JamaatSecretary:
-                claims.Add(new Claim("Jamaat", jamaatMember.jamaatName));
+                claims.Add(new Claim("Jamaat", jamaatMember.JamaatName));
                 break;
             case RoleNames.CircuitSecretary:
-                claims.Add(new Claim("Circuit", jamaatMember.circuitName));
+                claims.Add(new Claim("Circuit", jamaatMember.CircuitName));
                 break;
         }
 

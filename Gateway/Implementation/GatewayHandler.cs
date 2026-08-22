@@ -40,9 +40,7 @@ public class GatewayHandler : IGatewayHandler
             return null;
         }
 
-        throw new HttpRequestException(
-            $"Member roles API returned" +
-            $"{(int)response.StatusCode} ({response.StatusCode}).");
+        throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
     public async Task<JamaatMember?> GetMemberByChandaNoAsync(int chandaNo)
@@ -64,9 +62,7 @@ public class GatewayHandler : IGatewayHandler
             return null;
         }
 
-        throw new HttpRequestException(
-            $"Member API returned" +
-            $"{(int)response.StatusCode} ({response.StatusCode}).");
+        throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
     public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
