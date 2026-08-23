@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IInvitationEmailService, InvitationEmailService>();
+        services.AddScoped<IWitnessFormService, WitnessFormService>();
 
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
         services.AddHttpContextAccessor();

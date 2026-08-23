@@ -1,11 +1,10 @@
-﻿using Domain.Enums;
+﻿using Domain.Abstractions;
+using Domain.Enums;
 
 namespace Domain.Entities;
 
-public class Witness
+public class Witness  : AuditableEntity
 {
-    public Guid Id { get; set; }
-
     public Guid MarriageApplicationFormId { get; set; }
 
     public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;

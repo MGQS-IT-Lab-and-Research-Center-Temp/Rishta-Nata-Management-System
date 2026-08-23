@@ -71,7 +71,7 @@ public static class WitnessFormMapper
                 entity.WitnessNumber,
 
             InvitationToken =
-                entity.InvitationToken,
+                entity.InvitationToken ?? string.Empty,
 
             IsCompleted =
                 entity.IsCompleted,

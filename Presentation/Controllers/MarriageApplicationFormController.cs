@@ -36,13 +36,10 @@ public class MarriageApplicationFormController : Controller
 
         try
         {
-            // ViewModel → DTO
             var dto = MarriageApplicationFormMapping.ToDto(model);
 
-            // DTO → Entity
             var entity = MarriageApplicationFormMapping.ToEntity(dto);
 
-            // Send Entity to Service
             var created =
                 await _marriageApplicationFormService.CreateAsync(
                     entity,

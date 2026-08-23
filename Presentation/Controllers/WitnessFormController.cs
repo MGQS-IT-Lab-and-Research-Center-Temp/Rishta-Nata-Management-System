@@ -7,12 +7,12 @@ namespace Presentation.Controllers;
 
 public class WitnessFormController : Controller
 {
-    private readonly IMarriageApplicationFormService _marriageApplicationFormService;
+    private readonly IWitnessFormService _witnessFormService;
 
     public WitnessFormController(
-        IMarriageApplicationFormService marriageApplicationFormService)
+        IWitnessFormService witnessFormService)
     {
-        _marriageApplicationFormService = marriageApplicationFormService;
+        _witnessFormService = witnessFormService;
     }
 
     [HttpGet]
@@ -25,7 +25,7 @@ public class WitnessFormController : Controller
             return BadRequest("Invalid witness link.");
         }
 
-        var witness = await _marriageApplicationFormService
+        var witness = await _witnessFormService
             .GetWitnessByTokenAsync(token, cancellationToken);
 
         if (witness is null)
@@ -71,7 +71,7 @@ public class WitnessFormController : Controller
         };
 
         var existingWitness =
-            await _marriageApplicationFormService
+            await _witnessFormService
                 .GetWitnessByIdAsync(
                     witnessDto.Id,
                     cancellationToken);
@@ -87,7 +87,7 @@ public class WitnessFormController : Controller
         }
 
         var completed =
-            await _marriageApplicationFormService
+            await _witnessFormService
                 .CompleteWitnessAsync(
                     witnessDto,
                     cancellationToken);
