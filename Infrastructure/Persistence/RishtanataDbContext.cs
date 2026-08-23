@@ -14,14 +14,22 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public DbSet<Certificate> Certificates => Set<Certificate>();
     public DbSet<AqeeqahCertificate> AqeeqahCertificates => Set<AqeeqahCertificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     public DbSet<FormApplication> FormApplications => Set<FormApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
+
+    public DbSet<BridegroomFormSection> BridegroomFormSections => Set<BridegroomFormSection>();
+
+    public DbSet<MarriageFormRejection> MarriageFormRejections => Set<MarriageFormRejection>();
     public DbSet<Role> JamaatRoles => Set<Role>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<BridegroomFormSection>().ToTable("BrideGrooms");
 
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(RishtanataDbContext).Assembly);

@@ -1,0 +1,34 @@
+@model Presentation.ViewModel.BrideGuardianViewModel
+
+@{
+    ViewData["Title"] = "Bride Guardian Details";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Bride Guardian Details</h2>
+            <p class="text-muted mb-0">Guardian information for @Model.ReferenceNumber.</p>
+        </div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Back</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Reference Number</dt>
+                <dd class="col-sm-8">@Model.ReferenceNumber</dd>
+                <dt class="col-sm-4">Guardian / Waliyy Name</dt>
+                <dd class="col-sm-8">@Model.GuardianName</dd>
+                <dt class="col-sm-4">Relationship to Bride</dt>
+                <dd class="col-sm-8">@Model.GuardianRelationToBride</dd>
+                <dt class="col-sm-4">Address</dt>
+                <dd class="col-sm-8">@Model.GuardianAddress</dd>
+                <dt class="col-sm-4">Telephone</dt>
+                <dd class="col-sm-8">@Model.GuardianTel</dd>
+                <dt class="col-sm-4">Signature Date</dt>
+                <dd class="col-sm-8">@Model.GuardianSignatureDate</dd>
+            </dl>
+        </div>
+    </div>
+</div>

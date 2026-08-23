@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using Domain.Abstractions;
-
+using Domain.Enums;
+using System.Collections.Generic;
 namespace Domain.Entities
 {
     public class MarriageApplicationForm : AuditableEntity
@@ -9,6 +10,13 @@ namespace Domain.Entities
         public Guid MarriageApplicationId { get; set; }
 
         public FormApplication MarriageApplication { get; set; } = null!;
+
+        /// <summary>
+        /// The workflow stage this form is currently sitting at (policy §5).
+        /// Null means the form has not yet entered the staged review workflow.
+        /// Only designated service methods may write this value.
+        /// </summary>
+        public ApplicationStage? CurrentStage { get; set; }
 
         public string ReferenceNumber { get; set; } = string.Empty;
         public DateTime ProposedNikahDate { get; set; }
@@ -29,6 +37,7 @@ namespace Domain.Entities
         public string BrideSignatureTel { get; set; } = string.Empty;
 
         // ===== Bridegroom =====
+
         public string BridegroomMembershipNo { get; set; } = string.Empty;
         public string BridegroomName { get; set; } = string.Empty;
         public DateTime BridegroomDateOfBirth { get; set; }
@@ -94,5 +103,31 @@ namespace Domain.Entities
         public DateTime? ApprovedDateOfNikah { get; set; }
 
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
+
+        public MarriageFormStage CurrentStage { get; set; }
+            = MarriageFormStage.AwaitingBride;
+
+        public BrideFormSection? BrideSection { get; set; }
+
+        public BridegroomFormSection? BridegroomSection { get; set; }
+
+        public GuardianOrWakeelSection? GuardianOrWakeelSection { get; set; }
+
+        public ImamVerificationSection? ImamVerification { get; set; }
+
+        public JamaatPresidentVerificationSection? JamaatPresidentVerification { get; set; }
+
+        public RishtanataRecommendationSection? RishtanataRecommendation { get; set; }
+
+        public AmirApprovalSection? AmirApproval { get; set; }
+
+        public ICollection<WitnessSignatureSection> WitnessSignatures { get; set; }
+            = new List<WitnessSignatureSection>();
+
+        public ICollection<MarriageFormRejection> Rejections { get; set; }
+            = new List<MarriageFormRejection>();
+        // ===== Rejection Audit Trail =====
+        public ICollection<MarriageFormRejection> Rejections { get; set; } = new List<MarriageFormRejection>();
     }
+
 }
