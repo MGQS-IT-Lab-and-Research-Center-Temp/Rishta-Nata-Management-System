@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,11 +16,10 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
             <div class="container-fluid">
-
+              
                 <a class="navbar-brand"
                    asp-area=""
                    asp-controller="Home"
@@ -34,6 +34,10 @@
                         aria-controls="navbarSupportedContent"
                         aria-expanded="false"
                         aria-label="Toggle navigation">
+
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Presentation</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -52,12 +56,8 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="MemberDashboard"
-                               asp-action="Index">
-                                My Dashboard
-                            </a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="MemberDashboard"
+                               asp-action="Index">My Dashboard</a>
                         </li>
 
                     </ul>
@@ -91,5 +91,10 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+
 </body>
+
 </html>

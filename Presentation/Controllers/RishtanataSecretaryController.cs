@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Presentation.ViewModels;
+using Presentation.Constants.Roles;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Presentation.Controllers
 {
+    [Authorize (Policy = "RequireRishtanataSecretary")]
     public class RishtanataSecretaryController : Controller
     {
         private readonly IRishtanataSecretaryService _service;
