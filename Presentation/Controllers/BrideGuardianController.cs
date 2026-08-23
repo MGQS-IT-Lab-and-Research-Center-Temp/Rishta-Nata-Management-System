@@ -21,6 +21,7 @@ public class BrideGuardianController : Controller
         _guardianService = guardianService;
     }
 
+    /*
 
     [HttpGet("Create/{referenceNumber}")]
     public async Task<IActionResult> Create(string referenceNumber, CancellationToken cancellationToken)
@@ -64,6 +65,7 @@ public class BrideGuardianController : Controller
             application.ReferenceNumber));
     }
 
+    */
     [HttpPost("Create/{referenceNumber}")]
     [ValidateAntiForgeryToken]
     public IActionResult Create(BrideGuardianViewModel model)
@@ -112,6 +114,8 @@ public class BrideGuardianController : Controller
 
         return RedirectToAction(nameof(Details), new { id = guardian.BrideGuardianId });
     }
+
+    
 
     [HttpGet]
     public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken)

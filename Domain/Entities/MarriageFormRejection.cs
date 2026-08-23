@@ -2,7 +2,7 @@ using Domain.Abstractions;
 using Domain.Enums;
 using Domain.Entities;
 using System.Collections.Generic;
-using System.Text
+using System.Text;
 
 namespace Domain.Entities
 {

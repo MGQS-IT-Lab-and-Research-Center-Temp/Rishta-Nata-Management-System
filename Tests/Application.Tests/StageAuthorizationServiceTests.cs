@@ -345,7 +345,7 @@ public sealed class StageAuthorizationServiceTests : IDisposable
             Venue = "Lagos",
             BrideMembershipNo = BrideChandaNo,
             BridegroomMembershipNo = GroomChandaNo,
-            CurrentStage = currentStage
+            ApplicationStage = currentStage
         };
 
         var application = new FormApplication

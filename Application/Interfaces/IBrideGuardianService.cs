@@ -4,7 +4,7 @@ namespace Application.Interfaces;
 
 public interface IBrideGuardianService
 {
-    Task<BrideGuardian> CreateAsync(
+    Task<BrideGuardian?> CreateAsync(
         BrideGuardian guardian,
         CancellationToken cancellationToken = default);
 

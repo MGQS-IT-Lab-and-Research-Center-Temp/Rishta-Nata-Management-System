@@ -310,7 +310,7 @@ public sealed class MarriageApplicationFormDetailServiceTests : IDisposable
             BrideName = "Aisha Bello",
             BridegroomMembershipNo = GroomChandaNo,
             BridegroomName = "Ibrahim Yusuf",
-            CurrentStage = currentStage
+            ApplicationStage = currentStage
         };
 
         var application = new FormApplication
