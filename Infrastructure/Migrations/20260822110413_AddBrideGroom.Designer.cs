@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RishtanataDbContext))]
-    partial class RishtanataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260822110413_AddBrideGroom")]
+    partial class AddBrideGroom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,7 +86,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AqeeqahCertificates", (string)null);
+                    b.ToTable("AqeeqahCertificates");
                 });
 
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
@@ -124,10 +127,10 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("EntityName", "RecordId");
 
-                    b.ToTable("AuditLogs", (string)null);
+                    b.ToTable("AuditLogs");
                 });
 
-            modelBuilder.Entity("Domain.Entities.BridegroomFormSection", b =>
+            modelBuilder.Entity("Domain.Entities.BrideGroom", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -270,7 +273,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
-                    b.ToTable("Certificates", (string)null);
+                    b.ToTable("Certificates");
                 });
 
             modelBuilder.Entity("Domain.Entities.FormApplication", b =>
@@ -306,7 +309,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FormApplications", (string)null);
+                    b.ToTable("FormApplications");
                 });
 
             modelBuilder.Entity("Domain.Entities.Invitation", b =>
@@ -362,9 +365,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("AuxillaryBodyName")
                         .HasColumnType("longtext");
-
-                    b.Property<Guid>("BrideGuardianId")
-                        .HasColumnType("char(36)");
 
                     b.Property<string>("ChandaNo")
                         .IsRequired()
@@ -461,11 +461,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrideGuardianId");
-
                     b.HasIndex("RoleId");
 
-                    b.ToTable("JamaatMembers", (string)null);
+                    b.ToTable("JamaatMembers");
                 });
 
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
@@ -746,7 +744,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
-                    b.ToTable("MarriageApplicationForms", (string)null);
+                    b.ToTable("MarriageApplicationForms");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -783,7 +781,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("JamaatRoles", (string)null);
+                    b.ToTable("JamaatRoles");
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.ApplicationRole", b =>
@@ -1000,19 +998,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
                 {
-                    b.HasOne("Domain.Entities.BrideGuardian", "BrideGuardian")
-                        .WithMany("Brides")
-                        .HasForeignKey("BrideGuardianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("Members")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("BrideGuardian");
 
                     b.Navigation("Role");
                 });
@@ -1077,11 +1067,6 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Entities.BrideGuardian", b =>
-                {
-                    b.Navigation("Brides");
                 });
 
             modelBuilder.Entity("Domain.Entities.FormApplication", b =>

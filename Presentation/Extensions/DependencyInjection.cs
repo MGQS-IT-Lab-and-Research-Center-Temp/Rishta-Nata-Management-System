@@ -22,6 +22,8 @@ public static class DependencyInjection
             configuration.GetConnectionString("DefaultConnection")!);
 
         services.AddScoped<IFormApplicationService, FormApplicationService>();
+        services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
+        services.AddScoped<IBridegroomService, BridegroomService>();
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
         services.AddScoped<ICertificateService, CertificateService>();
         services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();

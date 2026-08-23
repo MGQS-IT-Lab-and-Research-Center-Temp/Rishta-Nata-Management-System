@@ -5,7 +5,7 @@ namespace Domain.Entities
 {
     public class MarriageApplicationForm : AuditableEntity
     {
-        // ===== Application =====
+        
         public Guid MarriageApplicationId { get; set; }
 
         public FormApplication MarriageApplication { get; set; } = null!;
@@ -29,6 +29,7 @@ namespace Domain.Entities
         public string BrideSignatureTel { get; set; } = string.Empty;
 
         // ===== Bridegroom =====
+
         public string BridegroomMembershipNo { get; set; } = string.Empty;
         public string BridegroomName { get; set; } = string.Empty;
         public DateTime BridegroomDateOfBirth { get; set; }
