@@ -41,6 +41,9 @@ public static class DependencyInjection
         services.AddScoped<IInvitationEmailService, InvitationEmailService>();
         services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
+        services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
+        services.AddScoped<IMarriageApplicationFormDetailService, MarriageApplicationFormDetailService>();
+        services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
         services.AddHttpContextAccessor();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
