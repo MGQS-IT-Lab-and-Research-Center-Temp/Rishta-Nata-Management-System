@@ -5,6 +5,8 @@ namespace Domain.Entities
 {
     public class BridegroomFormSection : AuditableEntity
     {
+        public Guid MarriageApplicationId { get; set; }
+
         public string BridegroomMembershipNo { get; set; } = string.Empty;
         public string BridegroomName { get; set; } = string.Empty;
         public DateTime BridegroomDateOfBirth { get; set; }

@@ -1,5 +1,6 @@
-﻿using System;
-using Domain.Abstractions;
+﻿using Domain.Abstractions;
+using Domain.Enums;
+using System;
 using System.Collections.Generic;
 namespace Domain.Entities
 {
@@ -95,6 +96,7 @@ namespace Domain.Entities
         public DateTime? ApprovedDateOfNikah { get; set; }
 
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
+        public MarriageFormStage CurrentStage { get; set; } = MarriageFormStage.AwaitingBride;
 
         // ===== Rejection Audit Trail =====
         public ICollection<MarriageFormRejection> Rejections { get; set; } = new List<MarriageFormRejection>();

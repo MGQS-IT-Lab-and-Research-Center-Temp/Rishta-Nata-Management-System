@@ -1,6 +1,7 @@
-using Application.Interfaces;
+using Application.Interfaces.Auth;
 using Application.Interfaces.Identity;
 using Application.Services;
+using Application.Interfaces;
 using Domain.Interfaces;
 using Gateway.Implementation;
 using Infrastructure.Persistence;
@@ -32,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IInvitationEmailService, InvitationEmailService>();
         services.AddScoped<IJamaatMemberService,JamaatMemberService>();
+        services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
         services.AddHttpContextAccessor();
 

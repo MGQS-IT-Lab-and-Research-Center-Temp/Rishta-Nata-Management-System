@@ -10,12 +10,14 @@ namespace Presentation.ViewModels
         // Application
         // =========================
 
-        
+
 
 
         // =========================
         // Bridegroom Personal Information
         // =========================
+        public Guid MarriageApplicationFormId { get; set; }
+
 
         [Required(ErrorMessage = "⚠️Membership number is required⚠️.")]
         [Display(Name = "Membership Number")]

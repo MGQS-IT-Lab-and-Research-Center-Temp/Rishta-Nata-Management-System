@@ -1,15 +1,18 @@
 using Application.Interfaces;
+using Application.Interfaces.Auth;
+using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ViewModels;
-using Domain.Entities;
 
 public class BridegroomController : Controller
 {
     private readonly IBridegroomService _bridegroomService;
-
-    public BridegroomController(IBridegroomService bridegroomService)
+    private readonly IStageAuthorizationService _stageAuthorizationService;
+    public BridegroomController(IBridegroomService bridegroomService, IStageAuthorizationService stageAuthorizationService)
     {
         _bridegroomService = bridegroomService;
+        _stageAuthorizationService = stageAuthorizationService;
     }
 
     // GET: Show empty form
@@ -25,7 +28,14 @@ public class BridegroomController : Controller
     {
         if (!ModelState.IsValid)
             return View(model);
+        var authResult = await _stageAuthorizationService.AuthorizeAsync(
+            model.MarriageApplicationFormId,
+            MarriageFormStage.AwaitingBridegroom,
+            User,
+            ct);
 
+        if (!authResult.IsAuthorized)
+            return Forbid(); 
         var bridegroom = new BridegroomFormSection
         {
             
@@ -47,6 +57,8 @@ public class BridegroomController : Controller
         };
 
         var savedBridegroom = await _bridegroomService.CreateAsync(bridegroom, ct);
+        await _stageAuthorizationService.AdvanceStageAsync(model.MarriageApplicationFormId, MarriageFormStage.AwaitingWitnesses,
+ct);
         return RedirectToAction(nameof(Confirmation), new { id = savedBridegroom.Id });
 
     }
