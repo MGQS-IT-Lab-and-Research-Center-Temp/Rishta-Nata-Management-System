@@ -1,6 +1,6 @@
 using Domain.Abstractions;
 
-namespace Domain.Entities;
+namespace Domain.Entities;    
 public class JamaatPresidentVerification : AuditableEntity
 {
     public Guid MarriageApplicationFormId { get; set; }

@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
         services.AddScoped<ICertificateService, CertificateService>();
         services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
+        services.AddScoped<IBrideGuardianService, BrideGuardianService>();
         services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IEmailSender, SmtpEmailSender>();
