@@ -1,25 +1,25 @@
-﻿using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Abstractions;
 using Domain.Enums;
+using Domain.Entities;
 using System.Collections.Generic;
-using System.Text;
+using System.Text
 
-public class MarriageFormRejection : AuditableEntity
+namespace Domain.Entities
 {
-        public Guid MarriageApplicationFormId { get; set; }
 
-        public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
+        public class MarriageFormRejection : AuditableEntity
+        {
+                public Guid MarriageApplicationFormId { get; set; }
 
-        // The form this rejection belongs to
-        public Guid MarriageApplicationFormId { get; set; }
-        public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
+                public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
 
-        // Where the problem was found
-        public ApplicationStage RejectedAtStage { get; set; }
+                // Where the problem was found
+                public ApplicationStage RejectedAtStage { get; set; }
 
-        // Where it was sent back to
-        public ApplicationStage RevertedToStage { get; set; }
+                // Where it was sent back to
+                public ApplicationStage RevertedToStage { get; set; }
 
-        // Free-text reason for the rejection
-        public string Reason { get; set; } = string.Empty;
+                // Free-text reason for the rejection
+                public string Reason { get; set; } = string.Empty;
+        }
 }
