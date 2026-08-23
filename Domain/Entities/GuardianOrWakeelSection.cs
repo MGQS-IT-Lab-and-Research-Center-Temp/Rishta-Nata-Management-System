@@ -1,11 +1,15 @@
 ﻿using Domain.Abstractions;
+using Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Domain.Enums;
-
 namespace Domain.Entities;
 
 public class GuardianOrWakeelSection : AuditableEntity
 {
-
+    public Guid MarriageApplicationFormId { get; set; }
+    public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
     public PartyType PartyType { get; set; }
 
     public string Name { get; set; } = string.Empty;
