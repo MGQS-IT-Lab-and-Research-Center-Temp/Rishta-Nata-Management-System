@@ -30,6 +30,7 @@ builder.Services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryServi
 builder.Services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
 builder.Services.AddScoped<IReferenceNumberService, ReferenceNumberService>();
 builder.Services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
+builder.Services.AddScoped<IBrideFormSectionService, BrideFormSectionService>();
 
 builder.Services.AddHttpClient<IGatewayHandler, GatewayHandler>();
 

@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;
 
-public class BrideService : IBrideService
+public class BrideFormSectionService : IBrideFormSectionService
 {
     private readonly RishtanataDbContext _context;
 
-    public BrideService(RishtanataDbContext context)
+    public BrideFormSectionService(RishtanataDbContext context)
     {
         _context = context;
     }
 
-    public async Task<BrideDto> CreateAsync(CreateBrideDto dto)
+    public async Task<BrideDto> CreateAsync(CreateBrideFormSectionDto dto)
     {
         var bride = new BrideFormSection
         {
@@ -32,7 +32,7 @@ public class BrideService : IBrideService
             SignatureTel = dto.SignatureTel
         };
 
-        _context.Brides.Add(bride);
+        _context.BrideFormSections.Add(bride);
         await _context.SaveChangesAsync();
 
         return new BrideDto
@@ -54,7 +54,7 @@ public class BrideService : IBrideService
 
     public async Task<BrideDto?> GetByIdAsync(Guid id)
     {
-        var bride = await _context.Brides.FindAsync(id);
+        var bride = await _context.BrideFormSections.FindAsync(id);
 
         if (bride == null)
             return null;
@@ -78,7 +78,7 @@ public class BrideService : IBrideService
 
     public async Task<BrideDto?> GetByMarriageApplicationFormIdAsync(Guid marriageApplicationFormId)
     {
-        var bride = await _context.Brides
+        var bride = await _context.BrideFormSections
             .FirstOrDefaultAsync(b => b.MarriageApplicationFormId == marriageApplicationFormId);
 
         if (bride == null)
@@ -87,9 +87,9 @@ public class BrideService : IBrideService
         return await GetByIdAsync(bride.Id);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateBrideDto dto)
+    public async Task UpdateAsync(Guid id, UpdateBrideFormSectionDto dto)
     {
-        var bride = await _context.Brides.FindAsync(id);
+        var bride = await _context.BrideFormSections.FindAsync(id);
 
         if (bride == null)
             throw new Exception("Bride not found.");
@@ -110,12 +110,12 @@ public class BrideService : IBrideService
 
     public async Task DeleteAsync(Guid id)
     {
-        var bride = await _context.Brides.FindAsync(id);
+        var bride = await _context.BrideFormSections.FindAsync(id);
 
         if (bride == null)
             return;
 
-        _context.Brides.Remove(bride);
+        _context.BrideFormSections.Remove(bride);
         await _context.SaveChangesAsync();
     }
 }

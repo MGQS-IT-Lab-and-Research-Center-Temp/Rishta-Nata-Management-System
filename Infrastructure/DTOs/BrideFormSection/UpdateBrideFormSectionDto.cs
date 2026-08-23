@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.DTOs.Bride;
 
-public class UpdateBrideDto
+public class UpdateBrideFormSectionDto
 {
     public Guid MarriageApplicationFormId { get; set; }
 

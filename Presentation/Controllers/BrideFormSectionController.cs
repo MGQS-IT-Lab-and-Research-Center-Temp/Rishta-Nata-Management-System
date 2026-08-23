@@ -8,15 +8,15 @@ namespace Presentation.Controllers;
 [Route("api/[controller]")]
 public class BridesController : ControllerBase
 {
-    private readonly IBrideService _brideService;
+    private readonly IBrideFormSectionService _brideService;
 
-    public BridesController(IBrideService brideService)
+    public BridesController(IBrideFormSectionService brideService)
     {
         _brideService = brideService;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateBrideDto dto)
+    public async Task<IActionResult> Create(CreateBrideFormSectionDto dto)
     {
         var result = await _brideService.CreateAsync(dto);
         return Ok(result);
@@ -45,7 +45,7 @@ public class BridesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateBrideDto dto)
+    public async Task<IActionResult> Update(Guid id, UpdateBrideFormSectionDto dto)
     {
         await _brideService.UpdateAsync(id, dto);
         return NoContent();

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Infrastructure.DTOs.Bride
 {
-    public class CreateBrideDto
+    public class CreateBrideFormSectionDto
     {
         public Guid MarriageApplicationFormId { get; set; }
         public string MembershipNo { get; set; } = string.Empty;

@@ -6,15 +6,15 @@ using Infrastructure.DTOs.Bride;
 
 namespace Application.Interfaces.Service
 {
-    public interface IBrideService
+    public interface IBrideFormSectionService
     {
-        Task<BrideDto> CreateAsync(CreateBrideDto dto);
+        Task<BrideDto> CreateAsync(CreateBrideFormSectionDto dto);
 
         Task<BrideDto?> GetByIdAsync(Guid id);
 
         Task<BrideDto?> GetByMarriageApplicationFormIdAsync(Guid marriageApplicationFormId);
 
-        Task UpdateAsync(Guid id, UpdateBrideDto dto);
+        Task UpdateAsync(Guid id, UpdateBrideFormSectionDto dto);
 
         Task DeleteAsync(Guid id);
     }

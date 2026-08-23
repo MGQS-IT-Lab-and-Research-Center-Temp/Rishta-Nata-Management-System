@@ -5,9 +5,9 @@ namespace Presentation.Mapping.MarriageApplicationForm;
 
 public static class MarriageApplicationFormMapping
 {
-    public static BrideViewModel ToViewModel(BrideDto dto)
+    public static BrideFormSectionViewModel ToViewModel(BrideDto dto)
     {
-        return new BrideViewModel
+        return new BrideFormSectionViewModel
         {
             Id = dto.Id,
 

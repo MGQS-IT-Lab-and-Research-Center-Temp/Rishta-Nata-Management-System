@@ -2,7 +2,7 @@
 
 namespace Presentation.ViewModels.Bride;
 
-public class BrideViewModel
+public class BrideFormSectionViewModel
 {
     public Guid Id { get; set; }
 

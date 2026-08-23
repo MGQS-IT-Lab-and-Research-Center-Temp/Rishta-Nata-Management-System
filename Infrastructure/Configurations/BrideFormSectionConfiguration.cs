@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations;
 
-public class BrideConfiguration : IEntityTypeConfiguration<BrideFormSection>
+public class BrideFormSectionConfiguration : IEntityTypeConfiguration<BrideFormSection>
 {
     public void Configure(EntityTypeBuilder<BrideFormSection> builder)
     {
