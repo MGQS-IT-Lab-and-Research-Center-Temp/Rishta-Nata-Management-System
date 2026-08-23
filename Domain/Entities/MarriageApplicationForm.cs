@@ -1,14 +1,22 @@
 ﻿using System;
 using Domain.Abstractions;
+using Domain.Enums;
 using System.Collections.Generic;
 namespace Domain.Entities
 {
     public class MarriageApplicationForm : AuditableEntity
     {
-        
+        // ===== Application =====
         public Guid MarriageApplicationId { get; set; }
 
         public FormApplication MarriageApplication { get; set; } = null!;
+
+        /// <summary>
+        /// The workflow stage this form is currently sitting at (policy §5).
+        /// Null means the form has not yet entered the staged review workflow.
+        /// Only designated service methods may write this value.
+        /// </summary>
+        public ApplicationStage? CurrentStage { get; set; }
 
         public string ReferenceNumber { get; set; } = string.Empty;
         public DateTime ProposedNikahDate { get; set; }
