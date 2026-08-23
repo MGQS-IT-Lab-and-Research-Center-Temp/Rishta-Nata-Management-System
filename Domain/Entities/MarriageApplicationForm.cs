@@ -16,7 +16,7 @@ namespace Domain.Entities
         /// Null means the form has not yet entered the staged review workflow.
         /// Only designated service methods may write this value.
         /// </summary>
-        public ApplicationStage? CurrentStage { get; set; }
+        public ApplicationStage? ApplicationStage { get; set; }
 
         public string ReferenceNumber { get; set; } = string.Empty;
         public DateTime ProposedNikahDate { get; set; }
@@ -104,7 +104,7 @@ namespace Domain.Entities
 
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
 
-        public MarriageFormStage CurrentStage { get; set; }
+        public MarriageFormStage FormStage { get; set; }
             = MarriageFormStage.AwaitingBride;
 
         public BrideFormSection? BrideSection { get; set; }
@@ -126,8 +126,6 @@ namespace Domain.Entities
 
         public ICollection<MarriageFormRejection> Rejections { get; set; }
             = new List<MarriageFormRejection>();
-        // ===== Rejection Audit Trail =====
-        public ICollection<MarriageFormRejection> Rejections { get; set; } = new List<MarriageFormRejection>();
     }
 
 }

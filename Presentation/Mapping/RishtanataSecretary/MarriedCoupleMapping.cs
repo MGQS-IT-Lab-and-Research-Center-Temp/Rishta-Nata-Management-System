@@ -1,5 +1,5 @@
 ﻿using Infrastructure.DTOs.MarriedCoupleDto;
-using Presentation.ViewModels;
+using Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
 
 namespace Presentation.Mapping.RishtanataSecretary;
 

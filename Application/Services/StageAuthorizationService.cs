@@ -36,11 +36,8 @@ public class StageAuthorizationService : IStageAuthorizationService
         _logger = logger;
     }
 
-    public async Task<StageAuthorizationResult> CanUserActAsync(
-        Guid userId,
-        Guid applicationFormId,
-        ApplicationStage targetStage,
-        CancellationToken cancellationToken = default)
+    public async Task<StageAuthorizationResult> CanUserActAsync(Guid userId, Guid applicationFormId, ApplicationStage targetStage,
+    CancellationToken cancellationToken = default)
     {
         var form = await _context.MarriageApplicationForms
             .Include(f => f.MarriageApplication)
@@ -88,12 +85,12 @@ public class StageAuthorizationService : IStageAuthorizationService
                 roleGate.Reason!.Value, roleGate.Message);
         }
 
-        if (form.CurrentStage != targetStage)
+        if (form.ApplicationStage != targetStage)
         {
             return Deny(userId, applicationFormId, targetStage,
                 StageAuthorizationDenyReason.WrongStage,
                 $"Role matches, but the form is currently at " +
-                $"{form.CurrentStage?.ToString() ?? "no stage"}, not {targetStage}.");
+                $"{form.FormStage.ToString() ?? "no stage"}, not {targetStage}.");
         }
 
         _logger.LogDebug(

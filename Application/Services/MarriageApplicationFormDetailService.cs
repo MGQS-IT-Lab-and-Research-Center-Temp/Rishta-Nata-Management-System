@@ -68,7 +68,7 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         Domain.Entities.MarriageApplicationForm form,
         CancellationToken cancellationToken)
     {
-        if (!form.CurrentStage.HasValue)
+        if (!form.ApplicationStage.HasValue)
         {
             // The form has not entered the staged workflow: nobody can act on
             // a section yet.
@@ -84,7 +84,7 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         var result = await _stageAuthorization.CanUserActAsync(
             userId.Value,
             form.Id,
-            form.CurrentStage.Value,
+            form.ApplicationStage.Value,
             cancellationToken);
 
         return result.IsAllowed;

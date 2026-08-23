@@ -36,7 +36,7 @@ public static class MarriageApplicationFormDetailMapper
             AppliedAt = application?.AppliedAt ?? default,
 
             // ===== Workflow =====
-            CurrentStage = form.CurrentStage,
+            CurrentStage = form.ApplicationStage,
 
             // ===== Sections =====
             Bride = HasValue(form.BrideName)
