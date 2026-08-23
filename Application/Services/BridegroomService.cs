@@ -14,8 +14,8 @@ public class BridegroomService : IBridegroomService
         _dbContext = dbContext;
     }
 
-    public async Task<BrideGroom> CreateOrUpdateAsync(
-        BrideGroom bridegroom,
+    public async Task<BridegroomFormSection> CreateOrUpdateAsync(
+        BridegroomFormSection bridegroom,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(bridegroom);
@@ -48,43 +48,43 @@ public class BridegroomService : IBridegroomService
         return existingBridegroom;
     }
 
-    public async Task<BrideGroom> CreateAsync(
-        BrideGroom bridegroom,
+    public async Task<BridegroomFormSection> CreateAsync(
+        BridegroomFormSection bridegroom,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(bridegroom);
 
-        _dbContext.BrideGrooms.Add(bridegroom);
+        _dbContext.BridegroomFormSections.Add(bridegroom);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return bridegroom;
     }
 
-    public async Task<BrideGroom?> GetByIdAsync(
+    public async Task<BridegroomFormSection?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext.BrideGrooms
+        return await _dbContext.BridegroomFormSections
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<BrideGroom?> GetByMembershipNoAsync(
+    public async Task<BridegroomFormSection?> GetByMembershipNoAsync(
         string membershipNo,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext.BrideGrooms
+        return await _dbContext.BridegroomFormSections
             .FirstOrDefaultAsync(
                 x => x.BridegroomMembershipNo == membershipNo,
                 cancellationToken);
     }
 
     public async Task<bool> UpdateAsync(
-        BrideGroom bridegroom,
+        BridegroomFormSection bridegroom,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(bridegroom);
 
-        _dbContext.BrideGrooms.Update(bridegroom);
+        _dbContext.BridegroomFormSections.Update(bridegroom);
         var affected = await _dbContext.SaveChangesAsync(cancellationToken);
 
         return affected > 0;

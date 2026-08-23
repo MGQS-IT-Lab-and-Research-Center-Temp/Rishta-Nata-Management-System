@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using Domain.Abstractions;
+using Domain.Enums;
 using System.Collections.Generic;
 namespace Domain.Entities
 {
@@ -96,7 +97,30 @@ namespace Domain.Entities
 
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
 
+        public MarriageFormStage CurrentStage { get; set; }
+            = MarriageFormStage.AwaitingBride;
+
+        public BrideFormSection? BrideSection { get; set; }
+
+        public BridegroomFormSection? BridegroomSection { get; set; }
+
+        public GuardianOrWakeelSection? GuardianOrWakeelSection { get; set; }
+
+        public ImamVerificationSection? ImamVerification { get; set; }
+
+        public JamaatPresidentVerificationSection? JamaatPresidentVerification { get; set; }
+
+        public RishtanataRecommendationSection? RishtanataRecommendation { get; set; }
+
+        public AmirApprovalSection? AmirApproval { get; set; }
+
+        public ICollection<WitnessSignatureSection> WitnessSignatures { get; set; }
+            = new List<WitnessSignatureSection>();
+
+        public ICollection<MarriageFormRejection> Rejections { get; set; }
+            = new List<MarriageFormRejection>();
         // ===== Rejection Audit Trail =====
         public ICollection<MarriageFormRejection> Rejections { get; set; } = new List<MarriageFormRejection>();
     }
+
 }

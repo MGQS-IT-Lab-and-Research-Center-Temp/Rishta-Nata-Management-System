@@ -18,16 +18,18 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
 
     public DbSet<FormApplication> FormApplications => Set<FormApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
-    public DbSet<BrideGroom> BrideGrooms => Set<BrideGroom>();
+
+    public DbSet<BridegroomFormSection> BridegroomFormSections => Set<BridegroomFormSection>();
 
     public DbSet<MarriageFormRejection> MarriageFormRejections => Set<MarriageFormRejection>();
     public DbSet<Role> JamaatRoles => Set<Role>();
-    public DbSet<BridegroomFormSection> BridegroomFormSections => Set<BridegroomFormSection>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<BridegroomFormSection>().ToTable("BrideGrooms");
 
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(RishtanataDbContext).Assembly);

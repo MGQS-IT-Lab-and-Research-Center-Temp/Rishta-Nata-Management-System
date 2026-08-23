@@ -26,7 +26,7 @@ public class BridegroomController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var bridegroom = new BrideGroom
+        var bridegroom = new BridegroomFormSection
         {
             
             BridegroomName = model.BridegroomName,
