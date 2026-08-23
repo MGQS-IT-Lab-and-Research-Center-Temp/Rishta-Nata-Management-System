@@ -1,11 +1,11 @@
 ﻿using Domain.Abstractions;
 using Domain.Enums;
-
+using System.Collections.Generic;
 namespace Domain.Entities
 {
     public class MarriageApplicationForm : AuditableEntity
     {
-        // ===== Application =====
+        
         public Guid MarriageApplicationId { get; set; }
 
         public FormApplication MarriageApplication { get; set; } = null!;
@@ -29,6 +29,7 @@ namespace Domain.Entities
         public string BrideSignatureTel { get; set; } = string.Empty;
 
         // ===== Bridegroom =====
+
         public string BridegroomMembershipNo { get; set; } = string.Empty;
         public string BridegroomName { get; set; } = string.Empty;
         public DateTime BridegroomDateOfBirth { get; set; }
@@ -95,10 +96,8 @@ namespace Domain.Entities
 
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
 
-
         public MarriageFormStage CurrentStage { get; set; }
             = MarriageFormStage.AwaitingBride;
-
 
         public BrideFormSection? BrideSection { get; set; }
 
@@ -114,12 +113,13 @@ namespace Domain.Entities
 
         public AmirApprovalSection? AmirApproval { get; set; }
 
-
         public ICollection<WitnessSignatureSection> WitnessSignatures { get; set; }
             = new List<WitnessSignatureSection>();
 
         public ICollection<MarriageFormRejection> Rejections { get; set; }
             = new List<MarriageFormRejection>();
+        // ===== Rejection Audit Trail =====
+        public ICollection<MarriageFormRejection> Rejections { get; set; } = new List<MarriageFormRejection>();
     }
 
 }
