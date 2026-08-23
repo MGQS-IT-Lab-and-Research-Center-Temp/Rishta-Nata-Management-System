@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Domain.Abstractions;
 using Domain.Enums;
 using System.Collections.Generic;
