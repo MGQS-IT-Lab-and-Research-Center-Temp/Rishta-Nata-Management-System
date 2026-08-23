@@ -7,17 +7,12 @@ namespace Application.Interfaces
     public interface IFormApplicationService
     {
         Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto);
-
-        Task<List<FormApplication>> GetAllApplicationsAsync();
-
         Task<FormApplicationDto> GetApplicationByIdAsync(Guid id);
-
-        Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId);
-
-        Task<bool> ApproveApplicationAsync(Guid applicationId);
-
-        Task<bool> RejectApplicationAsync(Guid applicationId);
-
+        Task<List<FormApplication>> GetAllApplicationsAsync();
+        Task<List<FormApplication>> GetPendingApplicationsAsync();
+        Task<bool> ApproveApplicationAsync(Guid id);
+        Task<bool> RejectApplicationAsync(Guid id);
         Task<bool> RequestMoreInformationAsync(Guid id);
+        Task<List<FormApplication>> GetApplicationsByJamaatAsync(Guid jamaatId);
     }
 }

@@ -1,0 +1,142 @@
+@model Presentation.ViewModel.BrideGuardianViewModel
+
+@{
+    ViewData["Title"] = "Bride Guardian Form";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold">Bride Guardian Form</h2>
+        <p class="text-muted mb-0">To be completed by the guardian of the bride.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Marriage Application</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Reference Number</span>
+                    <strong>@Model.ReferenceNumber</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Marriage Application ID</span>
+                    <strong>@Model.MarriageApplicationId</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Bride</span>
+                    <strong>@Model.BrideName</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Bride's Father</span>
+                    <strong>@Model.BrideFatherName</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Bride's Date of Birth</span>
+                    <span>@Model.BrideDateOfBirth.ToString("dd MMMM yyyy")</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Bride Resident Of</span>
+                    <span>@Model.BrideResidentOf</span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <span class="text-muted small d-block">Genotype</span>
+                    <span>@Model.BrideGenotype</span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <span class="text-muted small d-block">Blood Group</span>
+                    <span>@Model.BrideBloodGroup</span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <span class="text-muted small d-block">Marital Status</span>
+                    <span>@Model.BrideMaritalStatus</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Proposed Dower</span>
+                    <span>@Model.BrideProposedDowerAmount.ToString("N2")</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Dower Received in Cash</span>
+                    <span>@Model.BrideDowerAmountReceivedInCash.ToString("N2")</span>
+                </div>
+                <div class="col-md-6">
+                    <span class="text-muted small d-block">Proposed Bridegroom</span>
+                    <strong>@Model.BridegroomName</strong>
+                </div>
+                <div class="col-md-6">
+                    <span class="text-muted small d-block">Bridegroom's Father</span>
+                    <span>@Model.BridegroomFatherName</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input asp-for="MarriageApplicationId" type="hidden" />
+        <input asp-for="ReferenceNumber" type="hidden" />
+        @* Hidden fields for read-only data so they round-trip through TempData *@
+        <input asp-for="BrideName" type="hidden" />
+        <input asp-for="BrideFatherName" type="hidden" />
+        <input asp-for="BrideDateOfBirth" type="hidden" />
+        <input asp-for="BrideResidentOf" type="hidden" />
+        <input asp-for="BrideGenotype" type="hidden" />
+        <input asp-for="BrideBloodGroup" type="hidden" />
+        <input asp-for="BrideMaritalStatus" type="hidden" />
+        <input asp-for="BrideProposedDowerAmount" type="hidden" />
+        <input asp-for="BrideDowerAmountReceivedInCash" type="hidden" />
+        <input asp-for="BridegroomName" type="hidden" />
+        <input asp-for="BridegroomFatherName" type="hidden" />
+        <input asp-for="BridegroomDateOfBirth" type="hidden" />
+        <input asp-for="BridegroomResidentOf" type="hidden" />
+
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Guardian / Waliyy Declaration</h5>
+            </div>
+            <div class="card-body">
+                <p>
+                    I am the legitimate Waliyy (guardian) of the proposed bride and consent to
+                    the proposed Nikah and dower stated above.
+                </p>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianName" class="form-label"></label>
+                        <input asp-for="GuardianName" class="form-control" />
+                        <span asp-validation-for="GuardianName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianRelationToBride" class="form-label"></label>
+                        <input asp-for="GuardianRelationToBride" class="form-control" />
+                        <span asp-validation-for="GuardianRelationToBride" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label asp-for="GuardianAddress" class="form-label"></label>
+                        <textarea asp-for="GuardianAddress" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="GuardianAddress" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianTel" class="form-label"></label>
+                        <input asp-for="GuardianTel" class="form-control" />
+                        <span asp-validation-for="GuardianTel" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="GuardianSignatureDate" class="form-label"></label>
+                        <input asp-for="GuardianSignatureDate" type="date" class="form-control" />
+                        <span asp-validation-for="GuardianSignatureDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Review &amp; Confirm</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
