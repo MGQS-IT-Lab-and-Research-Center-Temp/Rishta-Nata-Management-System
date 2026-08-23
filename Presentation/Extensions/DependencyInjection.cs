@@ -3,8 +3,10 @@ using Application.Interfaces.Identity;
 using Application.Services;
 using Domain.Interfaces;
 using Gateway.Implementation;
+using Infrastructure.Identity;         
 using Infrastructure.Persistence;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
@@ -22,6 +24,10 @@ public static class DependencyInjection
         services.AddMySQLServer<RishtanataDbContext>(
             configuration.GetConnectionString("DefaultConnection")!);
 
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
+            .AddEntityFrameworkStores<RishtanataDbContext>()
+            .AddDefaultTokenProviders();
+
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
@@ -33,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IInvitationEmailService, InvitationEmailService>();
+        services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
         services.AddHttpContextAccessor();

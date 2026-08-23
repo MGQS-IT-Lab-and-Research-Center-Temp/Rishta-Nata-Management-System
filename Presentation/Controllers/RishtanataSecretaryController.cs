@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Constants.Roles;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
+using Application.Services;
+using Application.Interfaces;
+using Infrastructure.Mapper;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Presentation.Controllers
@@ -10,10 +13,12 @@ namespace Presentation.Controllers
     public class RishtanataSecretaryController : Controller
     {
         private readonly IRishtanataSecretaryService _service;
+        private readonly IRoleAssignmentService _roleService;
 
-        public RishtanataSecretaryController(IRishtanataSecretaryService service)
+        public RishtanataSecretaryController(IRishtanataSecretaryService service,IRoleAssignmentService roleService)
         {
             _service = service;
+            _roleService = roleService;
         }
 
         // Dashboard page
@@ -62,7 +67,13 @@ namespace Presentation.Controllers
 
             return View(model);
         }
-
+        // Edit Role of a specific Jamaat Member
+        public async Task<IActionResult> EditRoles(Guid id)
+        {
+            var dto = await _roleService.GetRoleManagementAsync(id);
+            var viewModel = RoleManagementMapper.toViewModel(dto);
+            return View(viewModel);
+        }
         [HttpPost]
         public async Task<IActionResult> Approve(Guid id)
         {
