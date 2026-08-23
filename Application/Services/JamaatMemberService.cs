@@ -16,8 +16,7 @@ public class JamaatMemberService : IJamaatMemberService
 
     public async Task<JamaatMember> CreateOrUpdateAsync(JamaatMember member)
     {
-        var existingMember = await _context.JamaatMembers
-            .FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
+        var existingMember = await _context.JamaatMembers.FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
 
         // FIRST LOGIN
         if (existingMember == null)

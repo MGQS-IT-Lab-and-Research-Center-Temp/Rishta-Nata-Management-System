@@ -11,7 +11,10 @@ public class Certificate : AuditableEntity
     public string BrideName { get; set; } = string.Empty;
     public string BrideFatherName { get; set; } = string.Empty;
     public string BrideResidentOf { get; set; } = string.Empty;
-
+    
+    public int MarriageApplicationId { get; set; }
+    public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
+    
     // Bridegroom
     public string BridegroomName { get; set; } = string.Empty;
     public string BridegroomFatherName { get; set; } = string.Empty;
@@ -22,8 +25,8 @@ public class Certificate : AuditableEntity
     public decimal DowryAmount { get; set; }
 
     // Application relationship
-    public Guid MarriageApplicationId { get; set; }
-    public FormApplication MarriageApplication { get; set; } = null!;
+    public Guid FormApplicationId { get; set; }
+    public FormApplication FormApplication { get; set; } = null!;
 
     // Certificate administration
     public DateTime IssueDate { get; set; }

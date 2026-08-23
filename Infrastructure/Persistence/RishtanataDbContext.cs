@@ -5,26 +5,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public class RishtanataDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
-{
-    public RishtanataDbContext(DbContextOptions<RishtanataDbContext> options)
-        : base(options) { }
-    public DbSet<JamaatMember> JamaatMembers { get; set; }
-    public DbSet<Invitation> Invitations => Set<Invitation>();
-    public DbSet<Certificate> Certificates => Set<Certificate>();
-    public DbSet<AqeeqahCertificate> AqeeqahCertificates => Set<AqeeqahCertificate>();
-    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
-    public  DbSet<Review> Reviews => Set<Review>();
 
-    public DbSet<FormApplication> FormApplications => Set<FormApplication>();
-    public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
+
+public class RishtanataDbContext : DbContext
+{
+    public RishtanataDbContext(DbContextOptions<RishtanataDbContext> options): base(options)
+    {
+    }
+
+    public DbSet<Invitation> Invitations =>Set<Invitation>();
+
+    public DbSet<Certificate> Certificates =>Set<Certificate>();
+
+    public DbSet<AqeeqahCertificate> AqeeqahCertificates =>Set<AqeeqahCertificate>();
+
+    public DbSet<AuditLog> AuditLogs =>Set<AuditLog>();
+
+    public DbSet<Review> Reviews =>Set<Review>();
+
+    public DbSet<JamaatMember> JamaatMembers { get; set; }
+
+    public DbSet<FormApplication> FormApplications =>Set<FormApplication>();
+
+    public DbSet<MarriageApplicationForm> MarriageApplicationForms =>Set<MarriageApplicationForm>();
+
     public DbSet<Role> JamaatRoles => Set<Role>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(RishtanataDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(RishtanataDbContext).Assembly);
     }
 }

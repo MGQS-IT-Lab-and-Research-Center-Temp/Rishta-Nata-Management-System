@@ -1,8 +1,6 @@
-using Domain.Abstractions;
+﻿namespace Presentation.ViewModels;
 
-namespace Domain.Entities;
-
-public class AqeeqahCertificate : AuditableEntity
+public class AqeeqahCertificateViewModel
 {
     // Certificate
     public string SerialNumber { get; set; } = string.Empty;
@@ -30,7 +28,7 @@ public class AqeeqahCertificate : AuditableEntity
     public string Address { get; set; } = string.Empty;
 
     // Administration
-    public string OfficiatingMissionary { get; set; }
+    public string OfficiatingMissionary { get; set; } = string.Empty;
 
     public DateTime IssueDate { get; set; }
 
