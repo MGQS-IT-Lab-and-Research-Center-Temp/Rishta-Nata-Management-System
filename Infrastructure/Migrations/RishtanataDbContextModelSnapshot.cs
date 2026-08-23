@@ -16,7 +16,7 @@ namespace Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Domain.Entities.AqeeqahCertificate", b =>
@@ -127,6 +127,80 @@ namespace Infrastructure.Migrations
                     b.ToTable("AuditLogs", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.BridegroomFormSection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("BridegroomBloodGroup")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("BridegroomDateOfBirth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("BridegroomDowerAmountPaidInCash")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BridegroomDowerAmountToBePaid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BridegroomGenotype")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BridegroomMembershipNo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BridegroomName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BridegroomResidentOf")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BridegroomSignatureTel")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("FormerWifeIsDead")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("FormerWifeIsPresent")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("FormerWifeObtainedKhula")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("HasDivorcedFormerWife")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsFirstNikah")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsSecondThirdOrFourthNikah")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrideGrooms");
+                });
+
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -235,6 +309,48 @@ namespace Infrastructure.Migrations
                     b.ToTable("FormApplications", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Invitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("MarriageApplicationId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("MarriageReferenceNumber")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("RecipientJamaatMemberId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("RecipientMembershipNo")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Invitations");
+                });
+
             modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
                 {
                     b.Property<Guid>("Id")
@@ -246,6 +362,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("AuxillaryBodyName")
                         .HasColumnType("longtext");
+
+                    b.Property<Guid>("BrideGuardianId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ChandaNo")
                         .IsRequired()
@@ -341,6 +460,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BrideGuardianId");
 
                     b.HasIndex("RoleId");
 
@@ -879,11 +1000,19 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
                 {
+                    b.HasOne("Domain.Entities.BrideGuardian", "BrideGuardian")
+                        .WithMany("Brides")
+                        .HasForeignKey("BrideGuardianId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("Members")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("BrideGuardian");
 
                     b.Navigation("Role");
                 });
@@ -948,6 +1077,11 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.BrideGuardian", b =>
+                {
+                    b.Navigation("Brides");
                 });
 
             modelBuilder.Entity("Domain.Entities.FormApplication", b =>
