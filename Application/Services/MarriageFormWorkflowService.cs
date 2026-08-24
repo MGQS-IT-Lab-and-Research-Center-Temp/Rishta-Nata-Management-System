@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-/// <summary>
 /// Implements the verification/approval chain (backlog D3). Every method:
 ///   1. re-checks authorization through IStageAuthorizationService for the
 ///      stage it is responsible for — immediately before writing, never
@@ -19,10 +18,6 @@ namespace Application.Services;
 ///
 /// ApproveByAmirAsync additionally sets ApprovedDateOfNikah and moves the
 /// form to Completed, locking it against further edits.
-///
-/// Denied requests produce NO side effects: the authorization check runs
-/// before any entity is mutated, so a denial leaves the database untouched.
-/// </summary>
 public class MarriageFormWorkflowService : IMarriageFormWorkflowService
 {
     private readonly RishtanataDbContext _context;
@@ -224,7 +219,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         }
 
         // Final approval: record the approved Nikah date on the form itself
-        // and lock the workflow (backlog D3 AC).
+        // and lock the workflow
         form.ApprovedDateOfNikah = submission.ApprovedDateOfNikah;
 
         return await AdvanceAsync(
