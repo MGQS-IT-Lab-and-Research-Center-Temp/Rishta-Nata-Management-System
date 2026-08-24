@@ -45,6 +45,8 @@ public class JamaatMemberService : IJamaatMemberService
                 NextOfKinAddress = member.NextOfKinAddress,
                 Nationality = member.Nationality,
 
+                // These should normally be handled by your application,
+                // not copied blindly from the gateway.
                 RoleId = member.RoleId,
                 IsSystemDefault = false,
 
@@ -59,6 +61,8 @@ public class JamaatMemberService : IJamaatMemberService
         }
 
         // SUBSEQUENT LOGINS
+        // Update only properties that can change in real time.
+
         existingMember.Surname = member.Surname;
         existingMember.FirstName = member.FirstName;
         existingMember.Email = member.Email;

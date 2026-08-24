@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Presentation.ViewModels;
 
 namespace Presentation.ViewModel;
 
@@ -72,7 +73,7 @@ public class MarriageApplicationFormViewModel
     public string GuardianRelationToBride { get; set; } = string.Empty;
     public string GuardianAddress { get; set; } = string.Empty;
     public string GuardianTel { get; set; } = string.Empty;
-    public string GuardianSignatureDate { get; set; } = string.Empty;
+    public DateTime GuardianSignatureDate { get; set; }
 
     // Representative / Wakeel
     public string RepresentativeName { get; set; } = string.Empty;

@@ -1,17 +1,15 @@
-﻿using Application.Interfaces;
 using Domain.Enums;
 using Infrastructure.DTOs.JamaatMember;
+using Infrastructure.DTOs.MarriedCoupleDto;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
-using Domain.Entities;
 using Infrastructure.Mapper;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
     public class RishtanataSecretaryService : IRishtanataSecretaryService
-    
-
     {
         private readonly RishtanataDbContext _context;
 
@@ -87,10 +85,15 @@ namespace Application.Services
                 .Select(x => new MarriedCoupleDto
                 {
                     Id = x.MarriageApplicationId,
-                    CertificateNumber = x.MarriageApplication.CertificateId,
-                    HusbandName = x.BridegroomName,
-                    WifeName = x.BrideName,
-                    MarriageDate = x.ApprovedDateOfNikah ?? DateTime.MinValue,
+                    ApplicationNumber = x.ReferenceNumber,
+                    GroomName = x.BridegroomName,
+                    GroomMembershipNo = x.BridegroomMembershipNo,
+                    GroomDateOfBirth = x.BridegroomDateOfBirth,
+                    BrideName = x.BrideName,
+                    BrideMembershipNo = x.BrideMembershipNo,
+                    BrideDateOfBirth = x.BrideDateOfBirth,
+                    NikahDate = x.ApprovedDateOfNikah ?? DateTime.MinValue,
+                    Venue = x.Venue,
                     Status = x.MarriageApplication.Status.ToString()
                 })
                 .ToList();
@@ -148,7 +151,7 @@ namespace Application.Services
 
         public List<JamaatMemberDto> GetMembers()
         {
-            return _context.Set<JamaatMember>()
+            return _context.JamaatMembers
                 .Select(x => JamaatMemberMapper.ToDto(x))
                 .ToList();
         }

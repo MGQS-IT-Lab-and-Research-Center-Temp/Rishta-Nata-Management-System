@@ -1,0 +1,115 @@
+@model Presentation.ViewModel.BrideGuardianViewModel
+
+@if (Model == null)
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> BrideGuardianViewModel is null.
+    </div>
+    return;
+}
+
+@{
+    ViewData["Title"] = "Confirm Guardian Submission";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold">Confirm Guardian Submission</h2>
+        <p class="text-muted mb-0">Please review the details below before saving. This action cannot be undone.</p>
+    </div>
+
+    <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+             class="bi bi-exclamation-triangle-fill flex-shrink-0" viewBox="0 0 16 16">
+            <path
+            d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+        </svg>
+        <strong>Are you sure you want to save this guardian record?</strong>
+    </div>
+
+    @* Marriage Application info (read-only) *@
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Marriage Application</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Reference Number</span>
+                    <strong>@Model.ReferenceNumber</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Bride</span>
+                    <strong>@Model.BrideName</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Bridegroom</span>
+                    <strong>@Model.BridegroomName</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Guardian details (read-only) *@
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Guardian / Waliyy Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Guardian / Waliyy Name</span>
+                    <strong>@Model.GuardianName</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Relationship to Bride</span>
+                    <span>@Model.GuardianRelationToBride</span>
+                </div>
+                <div class="col-12 mb-3">
+                    <span class="text-muted small d-block">Guardian Address</span>
+                    <span>@Model.GuardianAddress</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Telephone</span>
+                    <span>@Model.GuardianTel</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Signature Date</span>
+                    <span>@Model.GuardianSignatureDate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Confirmation form: hidden fields carry the full model to the POST *@
+    <form asp-action="Confirm" method="post" class="d-flex gap-2">
+        @Html.AntiForgeryToken()
+        <input asp-for="MarriageApplicationId" type="hidden" />
+        <input asp-for="ReferenceNumber" type="hidden" />
+        <input asp-for="BrideName" type="hidden" />
+        <input asp-for="BrideFatherName" type="hidden" />
+        <input asp-for="BrideDateOfBirth" type="hidden" />
+        <input asp-for="BrideResidentOf" type="hidden" />
+        <input asp-for="BrideGenotype" type="hidden" />
+        <input asp-for="BrideBloodGroup" type="hidden" />
+        <input asp-for="BrideMaritalStatus" type="hidden" />
+        <input asp-for="BrideProposedDowerAmount" type="hidden" />
+        <input asp-for="BrideDowerAmountReceivedInCash" type="hidden" />
+        <input asp-for="BridegroomName" type="hidden" />
+        <input asp-for="BridegroomFatherName" type="hidden" />
+        <input asp-for="BridegroomDateOfBirth" type="hidden" />
+        <input asp-for="BridegroomResidentOf" type="hidden" />
+        <input asp-for="GuardianName" type="hidden" />
+        <input asp-for="GuardianRelationToBride" type="hidden" />
+        <input asp-for="GuardianAddress" type="hidden" />
+        <input asp-for="GuardianTel" type="hidden" />
+        <input asp-for="GuardianSignatureDate" type="hidden" />
+
+        <button type="submit" class="btn btn-success">
+            &#10003; Confirm and Save
+        </button>
+        <a asp-action="Create" asp-route-referenceNumber="@Model.ReferenceNumber" class="btn btn-secondary">
+            &#8592; Cancel &#8211; Go Back
+        </a>
+    </form>
+</div>

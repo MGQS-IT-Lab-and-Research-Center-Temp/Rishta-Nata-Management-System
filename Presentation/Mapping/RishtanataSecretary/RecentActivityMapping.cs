@@ -10,7 +10,7 @@ public static class RecentActivityMapping
         return new RecentActivityViewModel
         {
             ApplicationNumber = dto.ActivityType,
-            Description = dto.Description,
+            Description = dto.Description!,
             Date = dto.ActivityDate
         };
     }
