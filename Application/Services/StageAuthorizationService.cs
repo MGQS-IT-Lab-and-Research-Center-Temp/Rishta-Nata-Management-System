@@ -15,6 +15,7 @@ namespace Application.Services;
 //   4. Role gate              → WrongRole / AmbiguousIdentityMatch
 //   5. Stage gate             → WrongStage
 // Denied requests produce no side effects — this service never writes.
+
 public class StageAuthorizationService : IStageAuthorizationService
 {
     // Canonical mapping from ApplicationStage to the office-holder's role,
@@ -28,9 +29,7 @@ public class StageAuthorizationService : IStageAuthorizationService
     private readonly RishtanataDbContext _context;
     private readonly ILogger<StageAuthorizationService> _logger;
 
-    public StageAuthorizationService(
-        RishtanataDbContext context,
-        ILogger<StageAuthorizationService> logger)
+    public StageAuthorizationService(RishtanataDbContext context, ILogger<StageAuthorizationService> logger)
     {
         _context = context;
         _logger = logger;
@@ -144,8 +143,7 @@ public class StageAuthorizationService : IStageAuthorizationService
     // Shared gates
     // =====================================================================
 
-    private async Task<MarriageApplicationForm?> LoadFormAsync(
-        Guid applicationFormId, CancellationToken cancellationToken) =>
+    private async Task<MarriageApplicationForm?> LoadFormAsync(Guid applicationFormId, CancellationToken cancellationToken) =>
         await _context.MarriageApplicationForms
             .Include(f => f.MarriageApplication)
             .FirstOrDefaultAsync(
@@ -188,10 +186,7 @@ public class StageAuthorizationService : IStageAuthorizationService
         return new ResolvedMember(member, true);
     }
 
-    private static StageAuthorizationResult MatchesRequiredRole(
-        JamaatMember member,
-        MarriageApplicationForm form,
-        ApplicationStage targetStage)
+    private static StageAuthorizationResult MatchesRequiredRole(JamaatMember member, MarriageApplicationForm form, ApplicationStage targetStage)
     {
         switch (targetStage)
         {
@@ -225,16 +220,6 @@ public class StageAuthorizationService : IStageAuthorizationService
         }
     }
 
-    /// <summary>
-    /// Role gate for the paper-form workflow stages (policy §4):
-    ///   - Kind A (bride/groom): exact membership-number match on the form.
-    ///   - Kind B (witnesses): normalized full name + telephone match against
-    ///     the witness slots recorded on the form; multiple candidate members
-    ///     → AmbiguousIdentityMatch rather than guessing (§4.2).
-    ///   - Kind C offices: imam/missionary by role name (v1 heuristic — TODO
-    ///     policy §8 Q3: confirm exact member-API role strings), the other
-    ///     offices via Role.HierarchyLevel.
-    /// </summary>
     private async Task<StageAuthorizationResult> MatchesRequiredWorkflowRoleAsync(
         JamaatMember member,
         MarriageApplicationForm form,
@@ -261,8 +246,7 @@ public class StageAuthorizationService : IStageAuthorizationService
                 return await MatchesWitnessSlotAsync(member, form, cancellationToken);
 
             case MarriageFormStage.AwaitingImamVerification:
-                // TODO(policy §8 Q3): v1 matches the office by role name until
-                // the exact member-API role strings are confirmed and recorded.
+                // matches the office by role name until the exact member-API role strings are confirmed and recorded.
                 var roleName = member.Role?.Name ?? string.Empty;
                 var isImamOrMissionary =
                     roleName.Contains("imam", StringComparison.OrdinalIgnoreCase) ||
@@ -295,13 +279,6 @@ public class StageAuthorizationService : IStageAuthorizationService
                     $"Stage {targetStage} has no responsible role mapped.");
         }
     }
-
-    /// <summary>
-    /// §4.2 fallback for witnesses (recorded by name + telephone only): the
-    /// acting member's normalized full name and telephone must match a witness
-    /// slot on the form. If more than one member record matches the slot,
-    /// treat as unresolved → AmbiguousIdentityMatch rather than guessing.
-    /// </summary>
     private async Task<StageAuthorizationResult> MatchesWitnessSlotAsync(
         JamaatMember member,
         MarriageApplicationForm form,
@@ -352,7 +329,6 @@ public class StageAuthorizationService : IStageAuthorizationService
         string.Equals(memberPhone.Trim(), recordedPhone.Trim(),
             StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>Collapse internal whitespace so "First  Last" matches "First Last".</summary>
     private static string NormalizeName(string value) =>
         string.Join(' ', value.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 

@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Domain.Entities;
+/// Section row created by the National Rishtanata Secretary with the national-level recommendation. 
+// Maps to the "National Rishtanata Secretary" section of the paper form.
 
-/// <summary>
-/// Section row created by the National Rishtanata Secretary with the
-/// national-level recommendation. Maps to the "National Rishtanata Secretary"
-/// section of the paper form.
-/// </summary>
 public class RishtanataRecommendationSection : AuditableEntity
 {
     public Guid MarriageApplicationFormId { get; set; }

@@ -11,13 +11,10 @@ public interface IStageAuthorizationService
         ApplicationStage targetStage,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Authorizes against the full paper-form workflow stage
-    /// (<see cref="MarriageFormStage"/>) tracked on the form's FormStage
-    /// field. Used by the Epic D workflow methods whose stages — e.g.
-    /// AwaitingImamVerification, AwaitingWitnesses — have no counterpart in
-    /// the review-chain <see cref="ApplicationStage"/> enum.
-    /// </summary>
+    /// Authorizes against the full paper-form workflow stage tracked on the form's FormStage field. 
+    /// Used by workflow methods whose stages — e.g.
+    /// AwaitingImamVerification, AwaitingWitnesses — have no counterpart in the review-chain
+    
     Task<StageAuthorizationResult> CanUserActAsync(
         Guid userId,
         Guid applicationFormId,
