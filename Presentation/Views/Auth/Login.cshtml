@@ -16,12 +16,6 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
 
-    <!--
-        Only the handful of rules Bootstrap can't express, kept inline on this
-        page instead of a separate stylesheet. This page sets Layout = null,
-        so nothing else in the app (site-wide resets, other page CSS) can
-        load into it or override these rules by load order/specificity.
-    -->
     <style>
             .login-hero {
                 background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
@@ -105,66 +99,14 @@
 
                 </div>
 
-                <div class="hero-text" style="max-width:540px;">
-
-                    <h1 class="fw-bold mb-4" style="font-size:clamp(48px, 5vw, 78px); line-height:1.03; letter-spacing:-3px;">
-                        Connect.
-                        <br />
-                        Build.
-                        <br />
-                        <span class="text-emerald-100" style="color:#d1fae5;">Grow together.</span>
-                    </h1>
-
-                    <p class="mb-0 fs-5" style="max-width:500px; line-height:1.7; color:rgba(255,255,255,.88);">
-                        Welcome to the Rishta Nata Management System.
-                        Manage your profile, connect with the community,
-                        and build meaningful relationships.
-                    </p>
-
-                </div>
-
-                <div class="hero-decoration decoration-one"></div>
-                <div class="hero-decoration decoration-two"></div>
-                <div class="hero-decoration decoration-three"></div>
-
-            </div>
-
-        </section>
-
-
-        <!-- RIGHT SIDE / LOGIN -->
-        <section class="col-lg-6 col-12 d-flex justify-content-center align-items-center align-items-lg-center align-items-start bg-white">
-
-            <div class="w-100 px-4 px-sm-5 py-5" style="max-width:500px;">
-
-                <!-- LOGIN HEADER -->
-                <div class="text-center mb-4">
-
-                    <!-- LOGO (shown on all sizes here; hidden on lg via hero above) -->
-                    <div class="login-logo mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center overflow-hidden"
-                         style="width:82px; height:82px; background:#ecfdf5; border:1px solid #d1fae5;">
-                        <img src="~/img/logo.png"
-                             alt="Rishta Nata logo"
-                             style="width:68px; height:68px; object-fit:contain;" />
-                    </div>
-
-                    <h2 class="fw-bold mb-2" style="color:#111827; letter-spacing:-1px;">
-                        Welcome Back
-                    </h2>
-
-                    <p class="text-secondary mb-0">
-                        Login to your Rishta Nata account
-                    </p>
-
-                </div>
-
-
-                <!-- LOGIN FORM -->
-                <form asp-controller="Auth"
-                      asp-action="Login"
-                      method="post">
-
-                    @Html.AntiForgeryToken()
+                        <!-- Login Form -->
+                        <form asp-controller="Auth" asp-action="Login" method="post">
+                            @Html.AntiForgeryToken()
+                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="mb-3">
+                            <label for="chandaNo" class="form-label fw-semibold">
+                                Chanda Number
+                            </label>
 
 
                     <!-- VALIDATION SUMMARY -->

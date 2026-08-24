@@ -1,4 +1,6 @@
-﻿namespace Presentation.ViewModels.JamaatMember;
+﻿
+namespace Presentation.ViewModels.JamaatMember;
+
 
 public class JamaatMemberVM
 {
@@ -13,10 +15,10 @@ public class JamaatMemberVM
     public string MiddleName { get; set; } = string.Empty!;
     public string MaidenName { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
-    public string PhoneNo { get; set; } = string.Empty!;
+    public string PhoneNumber { get; set; } = string.Empty!;
     public string JamaatName { get; set; } = string.Empty;
     public string CircuitName { get; set; } = string.Empty!;
-    public string Sex { get; set; } = string.Empty!;
+    public string Gender { get; set; } = string.Empty!;
     public string MaritalStatus { get; set; } = string.Empty!;
     public string Address { get; set; } = string.Empty!;
     public string NextOfKinPhoneNo { get; set; } = string.Empty!;
@@ -30,4 +32,8 @@ public class JamaatMemberVM
     public string NewRole { get; set; } = string.Empty;
     public string? ResetToken { get; set; }
     public DateTime? ResetTokenExpiry { get; set; }
+
+    // ✅ Added properties
+    public string MemberNumber { get; set; } = string.Empty;
+    public string Occupation { get; set; } = string.Empty;
 }

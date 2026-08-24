@@ -1,5 +1,5 @@
 ﻿@page
-@model IEnumerable<Presentation.ViewModels.MarriedCoupleViewModel>
+@model IEnumerable<Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.MarriedCoupleViewModel>
 
 @{
     ViewData["Title"] = "Married Couples";
@@ -123,15 +123,13 @@
 
                     <tr>
 
-                        <th>Certificate No.</th>
+                        <th>Application No.</th>
 
-                        <th>Husband</th>
+                        <th>Groom Name</th>
 
-                        <th>Wife</th>
+                        <th>Bride Name</th>
 
-                        <th>Jama'at</th>
-
-                        <th>Marriage Date</th>
+                        <th>Nikah Date</th>
 
                         <th>Status</th>
 
@@ -153,7 +151,7 @@
 
                                     <strong class="text-primary">
 
-                                        @couple.CertificateNumber
+                                        @couple.ApplicationNumber
 
                                     </strong>
 
@@ -161,25 +159,19 @@
 
                                 <td>
 
-                                    @couple.HusbandName
+                                    @couple.GroomName
 
                                 </td>
 
                                 <td>
 
-                                    @couple.WifeName
+                                    @couple.BrideName
 
                                 </td>
 
                                 <td>
 
-                                    @couple.JamaatName
-
-                                </td>
-
-                                <td>
-
-                                    @couple.MarriageDate.ToString("dd MMM yyyy")
+                                    @couple.NikahDate.ToString("dd MMM yyyy")
 
                                 </td>
 
@@ -273,7 +265,7 @@
 
                     <h5 class="fw-bold">
 
-                        @Model.OrderByDescending(x => x.MarriageDate)
+                        @Model.OrderByDescending(x => x.NikahDate)
                         .FirstOrDefault()?.MarriageDate
                         .ToString("dd MMM yyyy")
 

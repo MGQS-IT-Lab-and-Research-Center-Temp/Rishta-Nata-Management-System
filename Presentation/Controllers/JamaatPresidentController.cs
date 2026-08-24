@@ -8,20 +8,22 @@
 //use the respective service to do all db operation in this controller
 
 
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.Persistence;
 using Infrastructure.DTOs.Certificates;
+using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Presentation.Constants.Roles;
 using Presentation.ViewModels;
 using System.Security.Claims;
-using Application.Interfaces;
 
 namespace Presentation.Controllers;
 
-// TODO: Restore [Authorize(Roles = "JamaatPresident")] once authentication is built.
-// Temporarily removed to allow testing this dashboard without a working login flow.
+[Authorize(Policy = "RequireJamaatSecretary")]
+
 public class JamaatPresidentController : Controller
 {
     private readonly RishtanataDbContext _context;
@@ -40,7 +42,7 @@ public class JamaatPresidentController : Controller
     public async Task<IActionResult> Dashboard()
     {
         var pendingStatus = ApplicationStatus.ApplicationPending;
-        
+
         var pendingApplications = await _context.FormApplications
             .Where(x => x.Status == pendingStatus)
             .Include(x => x.MarriageApplicationForm)
@@ -434,7 +436,7 @@ public class JamaatPresidentController : Controller
 
         return View(certificates);
     }
-    
+
     // ============================================================
     // AQEEQAH CERTIFICATES
     // ============================================================
