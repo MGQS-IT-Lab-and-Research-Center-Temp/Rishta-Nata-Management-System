@@ -83,7 +83,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AqeeqahCertificates", (string)null);
+                    b.ToTable("AqeeqahCertificates");
                 });
 
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
@@ -124,7 +124,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("EntityName", "RecordId");
 
-                    b.ToTable("AuditLogs", (string)null);
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("Domain.Entities.BridegroomFormSection", b =>
@@ -196,9 +196,13 @@ namespace Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("ReferenceNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
-                    b.ToTable("BrideGrooms");
+                    b.ToTable("BrideGrooms", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
@@ -270,7 +274,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
-                    b.ToTable("Certificates", (string)null);
+                    b.ToTable("Certificates");
                 });
 
             modelBuilder.Entity("Domain.Entities.FormApplication", b =>
@@ -306,7 +310,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FormApplications", (string)null);
+                    b.ToTable("FormApplications");
                 });
 
             modelBuilder.Entity("Domain.Entities.Invitation", b =>
@@ -465,7 +469,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("JamaatMembers", (string)null);
+                    b.ToTable("JamaatMembers");
                 });
 
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
@@ -575,6 +579,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
+
+                    b.Property<int?>("CurrentStage")
+                        .HasColumnType("int");
 
                     b.Property<bool>("FormerWifeIsDead")
                         .HasColumnType("tinyint(1)");
@@ -746,7 +753,95 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
-                    b.ToTable("MarriageApplicationForms", (string)null);
+                    b.ToTable("MarriageApplicationForms");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MarriageFormRejection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MarriageApplicationFormId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<int>("RejectedAtStage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RevertedToStage")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarriageApplicationFormId");
+
+                    b.ToTable("MarriageFormRejections");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MarriageApplicationId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ReviewedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("ReviewerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarriageApplicationId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -783,7 +878,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("JamaatRoles", (string)null);
+                    b.ToTable("JamaatRoles");
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.ApplicationRole", b =>
@@ -1028,6 +1123,28 @@ namespace Infrastructure.Migrations
                     b.Navigation("MarriageApplication");
                 });
 
+            modelBuilder.Entity("Domain.Entities.MarriageFormRejection", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithMany("Rejections")
+                        .HasForeignKey("MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
+                        .WithMany()
+                        .HasForeignKey("MarriageApplicationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplication");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Infrastructure.Identity.ApplicationRole", null)
@@ -1091,6 +1208,11 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("MarriageApplicationForm")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
+                {
+                    b.Navigation("Rejections");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>

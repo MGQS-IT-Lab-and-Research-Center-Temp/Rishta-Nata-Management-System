@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Infrastructure.DTOs.MarriedCoupleDto;
 
-namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
+public class MarriedCoupleDto
 {
-    public class MarriedCoupleDto
-    {
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
+    public string ApplicationNumber { get; set; } = string.Empty;
 
-        public Guid CertificateNumber { get; set; }
+    public string GroomName { get; set; } = string.Empty;
+    public string GroomMembershipNo { get; set; } = string.Empty;
+    public DateTime GroomDateOfBirth { get; set; }
 
-        public string? HusbandName { get; set; }
+    public string BrideName { get; set; } = string.Empty;
+    public string BrideMembershipNo { get; set; } = string.Empty;
+    public DateTime BrideDateOfBirth { get; set; }
 
-        public string? WifeName { get; set; }
+    public DateTime NikahDate { get; set; }
+    public string Venue { get; set; } = string.Empty;
 
-        public string? JamaatName { get; set; }
-
-        public DateTime MarriageDate { get; set; }
-
-        public string? Status { get; set; }
-    }
+    public string Status { get; set; } = string.Empty;
 }

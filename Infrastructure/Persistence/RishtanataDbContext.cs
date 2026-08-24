@@ -18,6 +18,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
 
     public DbSet<FormApplication> FormApplications => Set<FormApplication>();
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
+
     public DbSet<BridegroomFormSection> BridegroomFormSections => Set<BridegroomFormSection>();
 
     public DbSet<MarriageFormRejection> MarriageFormRejections => Set<MarriageFormRejection>();

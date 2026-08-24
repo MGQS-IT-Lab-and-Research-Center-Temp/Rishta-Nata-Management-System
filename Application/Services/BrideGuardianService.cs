@@ -15,22 +15,23 @@ public class BrideGuardianService : IBrideGuardianService
     }
 
     // Creates new bride guardian record in the database and returns the created entity.
-    public async Task<BrideGuardian> CreateAsync(
+    public async Task<BrideGuardian?> CreateAsync(
         BrideGuardian guardian,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(guardian);
 
-        _context.BrideGuardians.Add(guardian);
+        _context.Set<BrideGuardian>().Add(guardian);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return guardian;
+        return await _context.Set<BrideGuardian>()
+            .FirstOrDefaultAsync(x => x.BrideGuardianId == guardian.BrideGuardianId, cancellationToken);
     }
 
     // Retrieves a bride guardian record by its unique identifier (ID) from the database.
     public async Task<BrideGuardian?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.BrideGuardians
+        return await _context.Set<BrideGuardian>()
             .FirstOrDefaultAsync(x => x.BrideGuardianId == id, cancellationToken);
     }
 
@@ -56,7 +57,7 @@ public class BrideGuardianService : IBrideGuardianService
             return false;
         }
 
-        var guardianExists = await _context.BrideGuardians
+        var guardianExists = await _context.Set<BrideGuardian>()
             .AnyAsync(x => x.BrideGuardianId == guardianId, cancellationToken);
 
         if (!guardianExists)
@@ -73,7 +74,7 @@ public class BrideGuardianService : IBrideGuardianService
     // Retrieve a bride guardian record associated with a specific marriage application ID from the database.
     public async Task<BrideGuardian?> GetByMarriageApplicationIdAsync(Guid marriageApplicationId, CancellationToken cancellationToken = default)
     {
-        return await _context.BrideGuardians
+        return await _context.Set<BrideGuardian>()
             .FirstOrDefaultAsync(
                 x => x.MarriageApplicationId == marriageApplicationId,
                 cancellationToken);

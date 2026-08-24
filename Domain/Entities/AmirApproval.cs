@@ -2,8 +2,6 @@ using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public class AmirApproval : AuditableEntity
-{
     
 /// <summary>
 /// Final approval by the National Amir / Missionary In-charge.

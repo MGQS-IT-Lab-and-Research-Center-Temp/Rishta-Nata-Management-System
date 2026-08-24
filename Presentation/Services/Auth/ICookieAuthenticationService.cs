@@ -4,6 +4,7 @@ namespace Presentation.Services.Auth;
 
 public interface ICookieAuthenticationService
 {
-    Task SignInAsync(JamaatMember jamaatMember, bool isRishtanataSecretary);
+    Task<string> SignInAsync(JamaatMember jamaatMember);
     Task SignOutAsync();
+
 }
