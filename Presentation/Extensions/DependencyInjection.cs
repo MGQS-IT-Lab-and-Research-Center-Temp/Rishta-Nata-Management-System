@@ -30,6 +30,8 @@ public static class DependencyInjection
 
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
+        services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
+        services.AddScoped<IMarriageApplicationFormDetailService, MarriageApplicationFormDetailService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
         services.AddScoped<ICertificateService, CertificateService>();
@@ -39,6 +41,7 @@ public static class DependencyInjection
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IInvitationEmailService, InvitationEmailService>();
+        services.AddScoped<IMarriageFormNotificationService, MarriageFormNotificationService>();
         services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
