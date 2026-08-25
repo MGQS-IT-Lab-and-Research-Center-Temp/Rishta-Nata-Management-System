@@ -12,8 +12,8 @@ public class Certificate : AuditableEntity
     public string BrideFatherName { get; set; } = string.Empty;
     public string BrideResidentOf { get; set; } = string.Empty;
     
-    public int MarriageApplicationId { get; set; }
-    public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
+    public int MarriageApplicationFormId { get; set; }
+    public MarriageApplicationForm MarriageApplicationForm { get; set; } = default!;
     
     // Bridegroom
     public string BridegroomName { get; set; } = string.Empty;
