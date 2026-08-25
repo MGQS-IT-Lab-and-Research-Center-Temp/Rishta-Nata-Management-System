@@ -1,11 +1,11 @@
-﻿using Application.Interfaces.Identity;
+﻿using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Domain.Entities;
 using Infrastructure.Identity.Tokens;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Presentation.ViewModels;
-using Presentation.ViewModels.JamaatMember;
 
 
 namespace Presentation.Controllers;
@@ -15,12 +15,14 @@ public class AuthController : Controller
     private readonly IGatewayHandler _gatewayHandler;
     private readonly ICookieAuthenticationService _cookieAuthService;
     private readonly IConfiguration _configuration;
+    private readonly IJamaatMemberService _jamaatMemberService;
 
-    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService, IConfiguration configuration)
+    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService, IConfiguration configuration, IJamaatMemberService jamaatMemberService)
     {
         _gatewayHandler = gatewayHandler;
         _cookieAuthService = cookieAuthService;
         _configuration = configuration;
+        _jamaatMemberService = jamaatMemberService;
     }
 
     // GET: /Auth/Login
@@ -45,19 +47,24 @@ public class AuthController : Controller
             return View(model);
         }
 
-        var tokenRequest = new TokenRequest(
-            model.ChandaNo,
-            model.Password);
-
-        var tokenResponse = await _gatewayHandler.GenerateToken(tokenRequest);
-
-        if (tokenResponse is null)
+        var tokenRequest = new TokenRequest(model.ChandaNo, model.Password);
+        try
         {
-            ModelState.AddModelError(
-                string.Empty,
-                "Invalid Chanda number or password.");
 
+            var tokenResponse = await _gatewayHandler.GenerateToken(tokenRequest);
+
+            if (tokenResponse is null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
+
+                return View(model);
+            }
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
             return View(model);
+
         }
 
         var chandaNoInt = Convert.ToInt32(model.ChandaNo);
@@ -70,21 +77,14 @@ public class AuthController : Controller
             return View(model);
         }
 
-        var rishtanataSecretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
+        await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
 
-        var isRishtanataSecretary = !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo)
-            && jamaatMember.chandaNo == rishtanataSecretaryChandaNo;
 
-        await _cookieAuthService.SignInAsync(jamaatMember, isRishtanataSecretary);
+        await _cookieAuthService.SignInAsync(jamaatMember);
 
         if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
         {
             return Redirect(model.ReturnUrl);
-        }
-
-        if (isRishtanataSecretary)
-        {
-            return RedirectToAction("Dashboard", "RishtanataSecretary");
         }
 
         return RedirectUserToDashboard(jamaatMember);
@@ -104,7 +104,7 @@ public class AuthController : Controller
         return memberViewModel.Role.Name switch
         {
             RoleNames.JamaatSecretary =>
-            RedirectToAction("Dashboard", "JamaatSecretary"),
+            RedirectToAction("Dashboard", "JamaatPresidentDashboard"),
 
             RoleNames.CircuitSecretary =>
                 RedirectToAction("Dashboard", "CircuitSecretary"),
@@ -113,7 +113,7 @@ public class AuthController : Controller
             RedirectToAction("Dashboard", "RishtanataSecretary"),
 
             _ =>
-                RedirectToAction("Dashboard", "Home")
+                RedirectToAction("Dashboard", "MemberDashboard")
         };
     }
 }

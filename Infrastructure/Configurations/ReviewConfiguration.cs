@@ -1,33 +1,48 @@
-﻿using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Infrastructure.Configurations;
-
-public class ReviewConfiguration : IEntityTypeConfiguration<Review>
+namespace Infrastructure.Configurations
 {
-    public void Configure(EntityTypeBuilder<Review> builder)
+    using Domain.Entities;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+    public class ReviewConfiguration : IEntityTypeConfiguration<Review>
     {
-        builder.HasKey(r => r.Id);
+        public void Configure(EntityTypeBuilder<Review> builder)
+        {
+            builder.Property(r => r.Title)
+                .IsRequired()
+                .HasMaxLength(200);
 
-        builder.Property(r => r.ReviewerId)
-            .IsRequired();
+            // Comment
+            builder.Property(r => r.Comment)
+                .IsRequired()
+                .HasMaxLength(1000);
 
-        builder.Property(r => r.Status)
-            .IsRequired()
-            .HasMaxLength(50);
+            // Marriage Application ID
+            builder.Property(r => r.MarriageApplicationId)
+                .IsRequired();
 
-        builder.Property(r => r.Comment)
-            .HasMaxLength(1000);
+            // Status
+            builder.Property(r => r.Status)
+                .IsRequired()
+                .HasMaxLength(50);
 
-        builder.Property(r => r.ReviewedAt)
-            .IsRequired();
+            // Reviewed At
+            builder.Property(r => r.ReviewedAt)
+                .IsRequired();
 
-        builder.HasOne(r => r.MarriageApplicationForm)
-            .WithMany(f => f.Reviews)
-            .HasForeignKey(r => r.MarriageApplicationFormId)
-            .OnDelete(DeleteBehavior.Restrict);
+            // Relationship with MarriageApplication
+            builder.HasOne(r => r.MarriageApplication)
+                .WithMany()
+                .HasForeignKey(r => r.MarriageApplicationId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(r => r.MarriageApplicationFormId);
+            // Reviewer
+            builder.Property(r => r.ReviewerId)
+                .IsRequired();
+        }
     }
 }

@@ -1,21 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Presentation.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.Constants.Roles;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
+using Application.Services;
+using Application.Interfaces;
+using Infrastructure.Mapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Presentation.Controllers
 {
+    [Authorize (Policy = "RequireRishtanataSecretary")]
     public class RishtanataSecretaryController : Controller
     {
         private readonly IRishtanataSecretaryService _service;
+        private readonly IRoleAssignmentService _roleService;
 
-        public RishtanataSecretaryController(IRishtanataSecretaryService service)
+        public RishtanataSecretaryController(IRishtanataSecretaryService service,IRoleAssignmentService roleService)
         {
             _service = service;
+            _roleService = roleService;
         }
-
-
-
 
         // Dashboard page
         public IActionResult Dashboard()
@@ -32,8 +36,13 @@ namespace Presentation.Controllers
         {
             var pendingApprovals = _service.GetPendingApprovals();
 
-            return View(pendingApprovals);
+            var viewModels = pendingApprovals
+                .Select(PendingApprovalMapping.ToViewModel)
+                .ToList();
+
+            return View(viewModels);
         }
+
         // MarriedCouples Page
         public async Task<IActionResult> MarriedCouples()
         {
@@ -49,6 +58,22 @@ namespace Presentation.Controllers
             return View(application);
         }
 
+        // Full member profile page
+        public async Task<IActionResult> MemberProfile(Guid id)
+        {
+            var dto = _service.GetMemberProfile(id);
+
+            var model = MemberProfileMapping.ToViewModel(dto);
+
+            return View(model);
+        }
+        // Edit Role of a specific Jamaat Member
+        public async Task<IActionResult> EditRoles(Guid id)
+        {
+            var dto = await _roleService.GetRoleManagementAsync(id);
+            var viewModel = RoleManagementMapper.toViewModel(dto);
+            return View(viewModel);
+        }
         [HttpPost]
         public async Task<IActionResult> Approve(Guid id)
         {

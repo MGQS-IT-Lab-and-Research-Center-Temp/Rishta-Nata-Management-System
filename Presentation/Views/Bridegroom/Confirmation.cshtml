@@ -1,0 +1,24 @@
+@model Domain.Entities.BridegroomFormSection
+
+
+<h2>Application Confirmation</h2>
+
+<p>✅ Thank you for submitting your marriage application.</p>
+
+<div style="margin-top:20px;">
+    <p><strong>Bridegroom Name:</strong> @Model.BridegroomName</p>
+    <p><strong>Membership No:</strong> @Model.BridegroomMembershipNo</p>
+    <p><strong>Date of Birth:</strong> @Model.BridegroomDateOfBirth.ToShortDateString()</p>
+    <p><strong>Resident Of:</strong> @Model.BridegroomResidentOf</p>
+    <p><strong>Genotype:</strong> @Model.BridegroomGenotype</p>
+    <p><strong>Blood Group:</strong> @Model.BridegroomBloodGroup</p>
+    <p><strong>Dower Amount Paid in Cash:</strong> @Model.BridegroomDowerAmountPaidInCash</p>
+    <p><strong>Dower Amount To Be Paid:</strong> @Model.BridegroomDowerAmountToBePaid</p>
+</div>
+
+<hr />
+
+<p>Your application has been successfully recorded. You can use the reference number above for any future correspondence.</p>
+
+<a asp-action="Create" class="btn btn-primary">Submit Another Application</a>
+<a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Return to Home</a>

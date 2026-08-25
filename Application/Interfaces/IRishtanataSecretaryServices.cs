@@ -1,4 +1,5 @@
-﻿using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
+﻿using Infrastructure.DTOs.MarriedCoupleDto;
+using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 
 public interface IRishtanataSecretaryService
 {
@@ -9,6 +10,7 @@ public interface IRishtanataSecretaryService
     ReviewApplicationDto GetById(Guid id);
 
     List<MarriedCoupleDto> GetMarriedCouples();
+    MemberProfileDto GetMemberProfile(Guid id);
 
     //List<JamaatMemberDto> GetMembers();
 

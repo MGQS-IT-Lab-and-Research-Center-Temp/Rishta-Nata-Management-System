@@ -17,7 +17,6 @@ namespace Application.Services
             _context = context;
         }
 
-
         public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)
         {
             var application = new FormApplication
