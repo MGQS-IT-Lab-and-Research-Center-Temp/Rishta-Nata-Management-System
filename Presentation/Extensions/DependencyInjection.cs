@@ -3,7 +3,7 @@ using Application.Interfaces.Identity;
 using Application.Services;
 using Domain.Interfaces;
 using Gateway.Implementation;
-using Infrastructure.Identity;         
+using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +31,7 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<RishtanataDbContext>()
             .AddDefaultTokenProviders();
 
+        // services.AddScoped<INotificationService, NotificationService>(); -- uncomment me...later!
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
         services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
