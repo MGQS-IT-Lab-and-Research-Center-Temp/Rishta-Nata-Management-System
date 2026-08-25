@@ -218,7 +218,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         // Save witness signature
         witness.Signature = signature;
-        witness.SignatureDate = DateTime.UtcNow;
+        witness.Date = DateTime.UtcNow;
 
         // Check guardian/wakeel
         bool guardianOrWakeelSigned =
