@@ -1,3 +1,5 @@
+using Application.Interfaces.Service;
+using Application.Services;
 using Presentation.Extensions;
 
 
@@ -7,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 
 var app = builder.Build();
 

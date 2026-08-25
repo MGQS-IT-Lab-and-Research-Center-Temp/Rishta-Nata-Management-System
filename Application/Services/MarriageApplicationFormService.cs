@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Application.Interfaces.Service;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Persistence;
@@ -11,13 +12,16 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 {
     private readonly RishtanataDbContext _dbContext;
     private readonly ILogger<MarriageApplicationFormService> _logger;
+    private readonly INotificationService _notificationService;
 
     public MarriageApplicationFormService(
         RishtanataDbContext dbContext,
-        ILogger<MarriageApplicationFormService> logger)
+        ILogger<MarriageApplicationFormService> logger,
+        INotificationService notificationService)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     // =========================================================
@@ -159,11 +163,25 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             application.WitnessSignatures.All(
                 w => !string.IsNullOrWhiteSpace(w.Signature));
 
-        // Only advance when EVERYONE has signed
+        // Advance only when EVERYONE has signed
         if (guardianOrWakeelSigned && bothWitnessesSigned)
         {
             application.FormStage =
                 MarriageFormStage.AwaitingImamVerification;
+
+            // -------------------------------------------------
+            // NOTIFICATION
+            // -------------------------------------------------
+            //The next responsible user's ID still needs to
+            // come from your application/ user relationship.
+
+
+            // Once that ID is available:
+            
+            // await NotifyNextStageAsync(
+            //     responsibleUserId,
+            //     application.Id,
+            //     cancellationToken);
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -218,7 +236,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         // Save witness signature
         witness.Signature = signature;
-        witness.Date = DateTime.UtcNow;
+        witness.SignatureDate = DateTime.UtcNow;
 
         // Check guardian/wakeel
         bool guardianOrWakeelSigned =
@@ -237,10 +255,41 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         {
             application.FormStage =
                 MarriageFormStage.AwaitingImamVerification;
+
+            // -------------------------------------------------
+            // NOTIFICATION
+            // -------------------------------------------------
+            // The next responsible user's ID still needs to
+            // come from your application/user relationship.
+            //
+            // Once that ID is available:
+            //
+            // await NotifyNextStageAsync(
+            //     responsibleUserId,
+            //     application.Id,
+            //     cancellationToken);
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return true;
+    }
+
+
+    // =========================================================
+    // NOTIFY NEXT STAGE
+    // =========================================================
+
+    private async Task NotifyNextStageAsync(
+        Guid userId,
+        Guid applicationId,
+        CancellationToken cancellationToken)
+    {
+        await _notificationService.NotifyTurnAsync(
+            userId,
+            "It's your turn",
+            "The marriage application is now waiting for your verification.",
+            $"/marriage-application/{applicationId}/imam-verification",
+            cancellationToken);
     }
 }
