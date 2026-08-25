@@ -12,6 +12,8 @@ public class WitnessSignatureSection : AuditableEntity
     public string Tel { get; set; }
 
     public DateTime SignatureDate { get; set; }
+    public string? Signature { get; set; }
+
 
     public WitnessContext WitnessContext { get; set; }
 
