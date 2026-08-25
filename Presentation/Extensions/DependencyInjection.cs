@@ -3,7 +3,7 @@ using Application.Interfaces.Identity;
 using Application.Services;
 using Domain.Interfaces;
 using Gateway.Implementation;
-using Infrastructure.Identity;         
+using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +12,10 @@ using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
+using Domain.Abstractions;
+using Domain.Events;
+// using Application.EventHandlers; -- uncomment me...later!
+// using Application.Interfaces.Service; -- uncomment me...later too!
 
 namespace Presentation.Extensions;
 
@@ -28,6 +32,7 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<RishtanataDbContext>()
             .AddDefaultTokenProviders();
 
+        // services.AddScoped<INotificationService, NotificationService>(); -- uncomment me...later!
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
