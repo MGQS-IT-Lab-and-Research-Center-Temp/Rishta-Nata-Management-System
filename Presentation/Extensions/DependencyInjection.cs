@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddMySQLServer<RishtanataDbContext>(
             configuration.GetConnectionString("DefaultConnection")!);
 
+        services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
         services.AddScoped<ICertificateService, CertificateService>();

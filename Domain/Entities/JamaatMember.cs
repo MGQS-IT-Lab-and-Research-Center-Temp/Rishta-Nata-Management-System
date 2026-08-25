@@ -24,7 +24,6 @@ public class JamaatMember : AuditableEntity
     public string? NextOfKinName { get; set; } = string.Empty!;
     public string? NextOfKinAddress { get; set; } = string.Empty!;
     public string? Nationality { get; set; }
-    public string Password { get; set; } = string.Empty;
     public Guid RoleId { get; set; }
     public Role Role { get; set; } = default!;
     public string FullName => $"{FirstName} {Surname}".Trim();
