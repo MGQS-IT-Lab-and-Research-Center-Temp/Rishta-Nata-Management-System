@@ -75,13 +75,6 @@ public class AuthController : Controller
 
                 return View(model);
             }
-        }
-        catch (Exception)
-        {
-            ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
-            return View(model);
-
-        }
 
         // Get member using EMAIL
         var jamaatMember =
@@ -109,8 +102,7 @@ public class AuthController : Controller
 
         // Create authentication cookie
         await _cookieAuthService.SignInAsync(
-            jamaatMember,
-            isRishtanataSecretary);
+            jamaatMember);
 
         // Return URL
         if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
