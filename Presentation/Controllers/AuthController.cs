@@ -1,97 +1,119 @@
-﻿using Application.Interfaces.Identity;
+﻿using Application.Interfaces;
+using Application.Interfaces.Identity;
 using Domain.Entities;
-using Gateway.Extensions;
 using Infrastructure.Identity.Tokens;
-using Infrastructure.Identity.Users;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using System.Net;
-using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.Constants.Roles;
+using Presentation.Services.Auth;
+using Presentation.ViewModels;
 
-namespace Gateway.Implementation;
 
-public class GatewayHandler : IGatewayHandler
+namespace Presentation.Controllers;
+
+public class AuthController : Controller
 {
-    private readonly HttpClient _client;
-    private readonly string _apiUrl;
+    private readonly IGatewayHandler _gatewayHandler;
+    private readonly ICookieAuthenticationService _cookieAuthService;
+    private readonly IConfiguration _configuration;
+    private readonly IJamaatMemberService _jamaatMemberService;
 
-    public GatewayHandler(HttpClient client, IConfiguration config)
+    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService, IConfiguration configuration, IJamaatMemberService jamaatMemberService)
     {
-        _client = client;
-        _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
+        _gatewayHandler = gatewayHandler;
+        _cookieAuthService = cookieAuthService;
+        _configuration = configuration;
+        _jamaatMemberService = jamaatMemberService;
     }
 
-    public async Task<string[]?> GetMemberRoleAsync(int chandaNo)
+    // GET: /Auth/Login
+    [HttpGet]
+    public IActionResult Login(string? returnUrl = null)
     {
-        var url = $"{_apiUrl}{chandaNo}/userRoles";
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url
-            );
-
-        var response = await _client.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
+        var model = new LoginViewModel
         {
-            return await response.ReadContentAs<string[]>();
-        }
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-
-        throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
-    }
-
-    public async Task<JamaatMember?> GetMemberByChandaNoAsync(int chandaNo)
-    {
-        var url = $"{_apiUrl}members/{chandaNo}";
-
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url);
-
-        var response = await _client.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            return await response.ReadContentAs<JamaatMember>();
-        }
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-
-        throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
-    }
-
-    public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
-    {
-        var url = $"{_apiUrl}token";
-
-        var credentials = new TokenConstant
-        {
-            Username = tokenRequest.ChandaNo,
-            Password = tokenRequest.Password
+            ReturnUrl = returnUrl
         };
-        var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
-        var request = new HttpRequestMessage(HttpMethod.Post, url)
+
+        return View(model);
+    }
+
+    // POST: /Auth/Login
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            Content = jsonContent
-        };
-        
-        var response = await _client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
-        }
-        
-        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
+            return View(model);
         }
 
-        throw new HttpRequestException($"Token API returned " + $"{(int)response.StatusCode} ({response.StatusCode}).");
+        var tokenRequest = new TokenRequest(model.ChandaNo, model.Password);
+        try
+        {
+
+            var tokenResponse = await _gatewayHandler.GenerateToken(tokenRequest);
+
+            if (tokenResponse is null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
+
+                return View(model);
+            }
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
+            return View(model);
+
+        }
+
+        var chandaNoInt = Convert.ToInt32(model.ChandaNo);
+        var jamaatMember = await _gatewayHandler.GetMemberByChandaNoAsync(chandaNoInt);
+
+        if (jamaatMember is null)
+        {
+            ModelState.AddModelError(string.Empty, "We could not find your member account.");
+
+            return View(model);
+        }
+
+        await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
+
+
+        await _cookieAuthService.SignInAsync(jamaatMember);
+
+        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+        {
+            return Redirect(model.ReturnUrl);
+        }
+
+        return RedirectUserToDashboard(jamaatMember);
+    }
+
+    // POST: /Auth/Logout
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await _cookieAuthService.SignOutAsync();
+        return RedirectToAction("Login", "Auth");
+    }
+
+    private IActionResult RedirectUserToDashboard(JamaatMember memberViewModel)
+    {
+        return memberViewModel.Role.Name switch
+        {
+            RoleNames.JamaatSecretary =>
+            RedirectToAction("Dashboard", "JamaatPresidentDashboard"),
+
+            RoleNames.CircuitSecretary =>
+                RedirectToAction("Dashboard", "CircuitSecretary"),
+
+            RoleNames.RishtanataSecretary =>
+            RedirectToAction("Dashboard", "RishtanataSecretary"),
+
+            _ =>
+                RedirectToAction("Dashboard", "MemberDashboard")
+        };
     }
 }
