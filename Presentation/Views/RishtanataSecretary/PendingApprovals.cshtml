@@ -1,11 +1,10 @@
-﻿@model IEnumerable<Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.PendingApprovalViewModel>
+@model IEnumerable<Presentation.ViewModels.PendingApprovalViewModel>
 
 @{
     Layout = "_SecretaryLayout";
     ViewData["Title"] = "Pending Approvals";
 }
 
- 
 <div class="container py-4">
 
     <!-- Header -->
@@ -22,7 +21,6 @@
     </div>
 
     <!-- Search and Filter -->
-
     <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-body">
@@ -42,13 +40,9 @@
                     <select class="form-select">
 
                         <option>All Jama'ats</option>
-
                         <option>Kano Central</option>
-
                         <option>Kaduna North</option>
-
                         <option>Abuja Central</option>
-
                         <option>Ibadan West</option>
 
                     </select>
@@ -60,11 +54,8 @@
                     <select class="form-select">
 
                         <option>All Status</option>
-
                         <option>Pending Secretary Review</option>
-
                         <option>Approved</option>
-
                         <option>Rejected</option>
 
                     </select>
@@ -74,9 +65,7 @@
                 <div class="col-md-2">
 
                     <button class="btn btn-primary w-100">
-
                         Search
-
                     </button>
 
                 </div>
@@ -88,7 +77,6 @@
     </div>
 
     <!-- Pending Applications -->
-
     <div class="card shadow-sm border-0">
 
         <div class="card-header bg-white">
@@ -98,23 +86,17 @@
                 <div>
 
                     <h4 class="mb-1">
-
                         Applications Awaiting Secretary Review
-
                     </h4>
 
                     <small class="text-muted">
-
                         These applications have already been reviewed by the Jama'at President.
-
                     </small>
 
                 </div>
 
                 <span class="badge bg-warning text-dark fs-6">
-
                     @Model.Count() Pending
-
                 </span>
 
             </div>
@@ -128,25 +110,15 @@
                 <thead class="table-light">
 
                     <tr>
-
                         <th>Application No.</th>
-
                         <th>Groom</th>
-
                         <th>Bride</th>
-
                         <th>Jama'at</th>
-
                         <th>President</th>
-
                         <th>Submitted</th>
-
                         <th>Recommendation</th>
-
                         <th>Status</th>
-
                         <th width="150">Action</th>
-
                     </tr>
 
                 </thead>
@@ -160,43 +132,29 @@
                             <tr>
 
                                 <td>
-
                                     <strong class="text-primary">
-
                                         @item.ApplicationNumber
-
                                     </strong>
-
                                 </td>
 
                                 <td>
-
                                     @item.GroomName
-
                                 </td>
 
                                 <td>
-
                                     @item.BrideName
-
                                 </td>
 
                                 <td>
-
                                     @item.JamaatName
-
                                 </td>
 
                                 <td>
-
                                     @item.PresidentName
-
                                 </td>
 
                                 <td>
-
                                     @item.SubmittedDate.ToString("dd MMM yyyy")
-
                                 </td>
 
                                 <td>
@@ -204,17 +162,13 @@
                                     @if (item.PresidentRecommendation == "Recommended")
                                     {
                                         <span class="badge bg-success">
-
                                             Recommended
-
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-danger">
-
                                             Not Recommended
-
                                         </span>
                                     }
 
@@ -223,9 +177,7 @@
                                 <td>
 
                                     <span class="badge bg-warning text-dark">
-
                                         @item.Status
-
                                     </span>
 
                                 </td>
@@ -236,9 +188,7 @@
                                        asp-action="Review"
                                        asp-route-id="@item.Id"
                                        class="btn btn-primary btn-sm">
-
                                         Review
-
                                     </a>
 
                                 </td>
@@ -253,9 +203,7 @@
                             <td colspan="9" class="text-center py-5">
 
                                 <h5 class="text-muted">
-
                                     No pending applications.
-
                                 </h5>
 
                             </td>
@@ -272,15 +220,12 @@
     </div>
 
     <!-- Workflow Information -->
-
     <div class="card shadow-sm border-0 mt-5">
 
         <div class="card-body">
 
             <h4 class="mb-4">
-
                 Approval Workflow
-
             </h4>
 
             <div class="row text-center">
@@ -294,9 +239,7 @@
                         <strong>Application Submitted</strong>
 
                         <p class="small text-muted mt-2">
-
                             Applicant submits Nikah application.
-
                         </p>
 
                     </div>
@@ -312,9 +255,7 @@
                         <strong>Jama'at President Review</strong>
 
                         <p class="small text-muted mt-2">
-
                             President reviews and recommends.
-
                         </p>
 
                     </div>
@@ -326,21 +267,15 @@
                     <div class="border border-primary rounded p-3">
 
                         <h5 class="text-primary">
-
                             3
-
                         </h5>
 
                         <strong>
-
                             Secretary Review
-
                         </strong>
 
                         <p class="small text-muted mt-2">
-
                             Current review stage.
-
                         </p>
 
                     </div>
@@ -354,15 +289,11 @@
                         <h5>4</h5>
 
                         <strong>
-
                             Final Approval
-
                         </strong>
 
                         <p class="small text-muted mt-2">
-
                             Marriage registration completed.
-
                         </p>
 
                     </div>
