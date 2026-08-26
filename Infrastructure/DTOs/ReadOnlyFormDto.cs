@@ -6,12 +6,12 @@ namespace Infrastructure.DTOs;
 public class ReadOnlyFormDto
 {
     // ===== Application =====
-    public Guid Id { get; init; }
-    public Guid MarriageApplicationId { get; init; }
+    public Guid Id { get;set; }
+    public Guid MarriageApplicationId { get; set; }
 
-    public ApplicationStage? ApplicationStage { get; init; }
+    public ApplicationStage? ApplicationStage { get; set; }
 
-    public string ReferenceNumber { get; init; } = string.Empty;
+    public string ReferenceNumber { get; set; } = string.Empty;
     public DateTime ProposedNikahDate { get; set; }
     public string Venue { get; set; } = string.Empty;
 
