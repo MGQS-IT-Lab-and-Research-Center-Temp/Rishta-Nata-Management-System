@@ -21,9 +21,9 @@ public class GatewayHandler : IGatewayHandler
         _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
     }
 
-    public async Task<string[]?> GetMemberRoleAsync(string email)
+    public async Task<string[]?> GetMemberRoleAsync(int chandaNo)
     {
-        var url = $"{_apiUrl}{email}/userRoles";
+        var url = $"{_apiUrl}{chandaNo}/userRoles";
         using var request = new HttpRequestMessage(
             HttpMethod.Get,
             url
@@ -43,6 +43,29 @@ public class GatewayHandler : IGatewayHandler
         throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
+    public async Task<JamaatMember?> GetMemberByChandaNoAsync(int chandaNo)
+    {
+        var url = $"{_apiUrl}members/{chandaNo}";
+
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            url);
+
+        var response = await _client.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.ReadContentAs<JamaatMember>();
+        }
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
+    }
+
+/*
     public async Task<JamaatMember?> GetMemberByEmailAsync(string email)
     {
         var url = $"{_apiUrl}members/email/{email}";
@@ -64,14 +87,14 @@ public class GatewayHandler : IGatewayHandler
 
         throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
-
+*/
     public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
     {
         var url = $"{_apiUrl.TrimEnd('/')}/token";
 
         var credentials = new TokenConstant
         {
-            Username = tokenRequest.Email,
+            Username = tokenRequest.ChandaNo,
             Password = tokenRequest.Password
         };
 
