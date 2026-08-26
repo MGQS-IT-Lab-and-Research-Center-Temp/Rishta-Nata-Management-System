@@ -30,14 +30,21 @@ public class AuthController : Controller
     }
 
     // GET: /Auth/Login
+    /// <summary>
+    /// Handles GET requests for the login page
+    /// </summary>
+    /// <param name="returnUrl">Optional URL to redirect to after successful login</param>
+    /// <returns>Returns the login view with the model containing return URL</returns>
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
+        // Create a new LoginViewModel instance with the provided return URL
         var model = new LoginViewModel
         {
             ReturnUrl = returnUrl
         };
 
+        // Return the login view with the populated model
         return View(model);
     }
 
@@ -51,15 +58,23 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // Authenticate using EMAIL + PASSWORD
-        var tokenRequest = new TokenRequest(model.Email,model.Password);
+        try
+        {
+            // Authenticate using chandano and password
+            var tokenRequest = new TokenRequest(
+                model.ChandaNo,
+                model.Password);
+            // Authenticate using EMAIL + PASSWORD
+            // var tokenRequest = new TokenRequest(model.Email,model.Password);
 
         var tokenResponse =
             await _gatewayHandler.GenerateToken(tokenRequest);
 
         if (tokenResponse is null)
         {
-            ModelState.AddModelError( string.Empty,"Invalid email or password.");
+            ModelState.AddModelError(
+                string.Empty,
+                "Invalid Chanda Number or password.");
 
             return View(model);
         }
@@ -78,9 +93,11 @@ public class AuthController : Controller
         }
         catch (Exception)
         {
-            ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
-            return View(model);
+            ModelState.AddModelError(
+                string.Empty, 
+                "Invalid Chanda number or password.");
 
+            return View(model);
         }
 
         // Get member using EMAIL
@@ -108,9 +125,7 @@ public class AuthController : Controller
             jamaatMember.ChandaNo == rishtanataSecretaryChandaNo;
 
         // Create authentication cookie
-        await _cookieAuthService.SignInAsync(
-            jamaatMember,
-            isRishtanataSecretary);
+        await _cookieAuthService.SignInAsync(jamaatMember);
 
         // Return URL
         if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
