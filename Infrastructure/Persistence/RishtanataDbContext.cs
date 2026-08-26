@@ -9,6 +9,7 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
 {
     public RishtanataDbContext(DbContextOptions<RishtanataDbContext> options)
         : base(options) { }
+
     public DbSet<JamaatMember> JamaatMembers { get; set; }
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<Certificate> Certificates => Set<Certificate>();
@@ -23,7 +24,6 @@ public class RishtanataDbContext : IdentityDbContext<ApplicationUser, Applicatio
 
     public DbSet<MarriageFormRejection> MarriageFormRejections => Set<MarriageFormRejection>();
     public DbSet<Role> JamaatRoles => Set<Role>();
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

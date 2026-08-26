@@ -59,13 +59,6 @@ public class AuthController : Controller
 
                 return View(model);
             }
-        }
-        catch (Exception)
-        {
-            ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
-            return View(model);
-
-        }
 
         var chandaNoInt = Convert.ToInt32(model.ChandaNo);
         var jamaatMember = await _gatewayHandler.GetMemberByChandaNoAsync(chandaNoInt);
@@ -82,7 +75,13 @@ public class AuthController : Controller
 
         await _cookieAuthService.SignInAsync(jamaatMember);
 
-        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+        // Create authentication cookie
+        await _cookieAuthService.SignInAsync(
+            jamaatMember);
+
+        // Return URL
+        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
+            Url.IsLocalUrl(model.ReturnUrl))
         {
             return Redirect(model.ReturnUrl);
         }

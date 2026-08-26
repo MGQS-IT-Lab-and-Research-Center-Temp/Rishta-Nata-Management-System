@@ -78,17 +78,6 @@ public class JamaatMemberService : IJamaatMemberService
         existingMember.NextOfKinName = member.NextOfKinName;
         existingMember.NextOfKinAddress = member.NextOfKinAddress;
         existingMember.Nationality = member.Nationality;
-
-        // Don't change:
-        // existingMember.Id
-        // existingMember.chandaNo
-        // existingMember.Password
-        // existingMember.CreatedAt
-        // existingMember.CreatedBy
-        // existingMember.ResetToken
-        // existingMember.ResetTokenExpiry
-        // existingMember.IsSystemDefault
-
         existingMember.ModifiedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
