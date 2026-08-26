@@ -1,9 +1,15 @@
+using Application.Authorization;
 using Domain.Entities;
+using Infrastructure.DTOs;
 
 namespace Application.Interfaces;
 
 public interface IBrideGuardianService
 {
+    Task<StageAuthorizationResult> SubmitBrideSectionAsync(
+        Guid userId, Guid applicationFormId, BrideSectionDto dto,
+        CancellationToken cancellationToken = default);
+
     Task<BrideGuardian?> CreateAsync(
         BrideGuardian guardian,
         CancellationToken cancellationToken = default);

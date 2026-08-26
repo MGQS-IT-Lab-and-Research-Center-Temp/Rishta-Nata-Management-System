@@ -17,7 +17,11 @@ public class AuthController : Controller
     private readonly IConfiguration _configuration;
     private readonly IJamaatMemberService _jamaatMemberService;
 
-    public AuthController(IGatewayHandler gatewayHandler, ICookieAuthenticationService cookieAuthService, IConfiguration configuration, IJamaatMemberService jamaatMemberService)
+    public AuthController(
+        IGatewayHandler gatewayHandler,
+        ICookieAuthenticationService cookieAuthService,
+        IConfiguration configuration,
+        IJamaatMemberService jamaatMemberService)
     {
         _gatewayHandler = gatewayHandler;
         _cookieAuthService = cookieAuthService;
@@ -47,15 +51,27 @@ public class AuthController : Controller
             return View(model);
         }
 
-        var tokenRequest = new TokenRequest(model.ChandaNo, model.Password);
-        try
+        // Authenticate using EMAIL + PASSWORD
+        var tokenRequest = new TokenRequest(model.Email,model.Password);
+
+        var tokenResponse =
+            await _gatewayHandler.GenerateToken(tokenRequest);
+
+        if (tokenResponse is null)
         {
+            ModelState.AddModelError( string.Empty,"Invalid email or password.");
 
-            var tokenResponse = await _gatewayHandler.GenerateToken(tokenRequest);
+            return View(model);
+        }
 
-            if (tokenResponse is null)
-            {
-                ModelState.AddModelError(string.Empty, "Invalid Chanda number or password.");
+        if (!tokenResponse.Status ||
+            string.IsNullOrWhiteSpace(tokenResponse.Token))
+        {
+            ModelState.AddModelError(
+                string.Empty,
+                string.IsNullOrWhiteSpace(tokenResponse.Message)
+                    ? "Login failed."
+                    : tokenResponse.Message);
 
                 return View(model);
             }
@@ -67,26 +83,51 @@ public class AuthController : Controller
 
         }
 
-        var chandaNoInt = Convert.ToInt32(model.ChandaNo);
-        var jamaatMember = await _gatewayHandler.GetMemberByChandaNoAsync(chandaNoInt);
+        // Get member using EMAIL
+        var jamaatMember =
+            await _gatewayHandler.GetMemberByEmailAsync(model.Email);
 
         if (jamaatMember is null)
         {
-            ModelState.AddModelError(string.Empty, "We could not find your member account.");
+            ModelState.AddModelError(
+                string.Empty,
+                "We could not find your member account.");
 
             return View(model);
         }
 
+        // Create/update local member
         await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
 
+        // Check Rishtanata Secretary
+        var rishtanataSecretaryChandaNo =
+            _configuration["RishtanataSecretary:ChandaNo"];
 
-        await _cookieAuthService.SignInAsync(jamaatMember);
+        var isRishtanataSecretary =
+            !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo) &&
+            jamaatMember.ChandaNo == rishtanataSecretaryChandaNo;
 
-        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+        // Create authentication cookie
+        await _cookieAuthService.SignInAsync(
+            jamaatMember,
+            isRishtanataSecretary);
+
+        // Return URL
+        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
+            Url.IsLocalUrl(model.ReturnUrl))
         {
             return Redirect(model.ReturnUrl);
         }
 
+        // Rishtanata Secretary
+        if (isRishtanataSecretary)
+        {
+            return RedirectToAction(
+                "Dashboard",
+                "RishtanataSecretary");
+        }
+
+        // Other roles
         return RedirectUserToDashboard(jamaatMember);
     }
 
@@ -96,24 +137,26 @@ public class AuthController : Controller
     public async Task<IActionResult> Logout()
     {
         await _cookieAuthService.SignOutAsync();
-        return RedirectToAction("Login", "Auth");
+
+        return RedirectToAction("Login","Auth");
     }
 
-    private IActionResult RedirectUserToDashboard(JamaatMember memberViewModel)
+    private IActionResult RedirectUserToDashboard(
+        JamaatMember member)
     {
-        return memberViewModel.Role.Name switch
+        return member.Role.Name switch
         {
             RoleNames.JamaatSecretary =>
-            RedirectToAction("Dashboard", "JamaatPresidentDashboard"),
+                RedirectToAction("Dashboard","JamaatSecretary"),
 
             RoleNames.CircuitSecretary =>
                 RedirectToAction("Dashboard", "CircuitSecretary"),
 
             RoleNames.RishtanataSecretary =>
-            RedirectToAction("Dashboard", "RishtanataSecretary"),
+                RedirectToAction("Dashboard","RishtanataSecretary"),
 
             _ =>
-                RedirectToAction("Dashboard", "MemberDashboard")
+                RedirectToAction("Dashboard","JamaatSecretary")
         };
     }
 }
