@@ -33,7 +33,7 @@ namespace Application.Interfaces
         /// Reverts a form to an earlier workflow stage and removes data from
         /// stages after the selected target.
         /// </summary>
-        Task<bool> RevertStageAsync(
+        Task<RevertStageResult> RevertStageAsync(
             Guid formId,
             ApplicationStage targetStage,
             string reason,
