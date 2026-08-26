@@ -21,7 +21,7 @@ public class GatewayHandler : IGatewayHandler
         _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
     }
 
-    public async Task<string[]?> GetMemberRoleAsync(int chandaNo)
+    public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
     {
         var url = $"{_apiUrl}{chandaNo}/userRoles";
         using var request = new HttpRequestMessage(
@@ -43,7 +43,7 @@ public class GatewayHandler : IGatewayHandler
         throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
-    public async Task<JamaatMember?> GetMemberByChandaNoAsync(int chandaNo)
+    public async Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo)
     {
         var url = $"{_apiUrl}members/{chandaNo}";
 
