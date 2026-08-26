@@ -64,71 +64,36 @@ public class GatewayHandler : IGatewayHandler
 
         throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
-
-/*
-    public async Task<JamaatMember?> GetMemberByEmailAsync(string email)
-    {
-        var url = $"{_apiUrl}members/email/{email}";
-
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url);
-
-        var response = await _client.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            return await response.ReadContentAs<JamaatMember>();
-        }
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-
-        throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
-    }
-*/
     public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
     {
-        var url = $"{_apiUrl.TrimEnd('/')}/token";
+        var url = $"{_apiUrl}token";
 
         var credentials = new TokenConstant
         {
             Username = tokenRequest.ChandaNo,
             Password = tokenRequest.Password
         };
-
-        var json = JsonConvert.SerializeObject(credentials);
-
-        var jsonContent = new StringContent(
-            json,
-            Encoding.UTF8,
+        var jsonContent = new StringContent
+            (JsonConvert.SerializeObject(credentials), 
+            Encoding.UTF8, 
             "application/json");
 
-        var request = new HttpRequestMessage(
-            HttpMethod.Post,
+        var request = new HttpRequestMessage
+            (HttpMethod.Post, 
             url)
         {
             Content = jsonContent
         };
-
-        Console.WriteLine($"TOKEN API URL: {url}");
-        Console.WriteLine($"TOKEN API BODY: {json}");
-
+        
         var response = await _client.SendAsync(request);
-
-        Console.WriteLine($"TOKEN API STATUS: {(int)response.StatusCode}");
-
+        
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine($"TOKEN API RESPONSE: {content}");
-
             return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
         }
-
-        if (response.StatusCode == HttpStatusCode.Unauthorized ||
+        
+        if (response.StatusCode == HttpStatusCode.Unauthorized || 
             response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
@@ -136,8 +101,8 @@ public class GatewayHandler : IGatewayHandler
 
         var errorContent = await response.Content.ReadAsStringAsync();
 
-        throw new HttpRequestException(
+         throw new HttpRequestException(
             $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). " +
             $"Response: {errorContent}");
-     }
+    }
 }
