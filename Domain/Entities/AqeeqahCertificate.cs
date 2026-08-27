@@ -4,26 +4,45 @@ namespace Domain.Entities;
 
 public class AqeeqahCertificate : AuditableEntity
 {
-    // Certificate number/serial number
+    // Certificate
     public string SerialNumber { get; set; } = string.Empty;
 
     // Child Information
     public string ChildName { get; set; } = string.Empty;
-    public string FatherName { get; set; } = string.Empty;
-    public string MotherName { get; set; } = string.Empty;
+
     public DateTime DateOfBirth { get; set; }
-    public string Gender { get; set; } = string.Empty; // Male or Female
 
-    // Aqeeqah Details
-    public DateTime AqeeqahDate { get; set; }
-    public string? AqeeqahLocation { get; set; }
-    public int? AnimalCount { get; set; } // Number of animals sacrificed
+    public string Gender { get; set; } = string.Empty;
 
-    // Certificate Administration
-    public DateTime IssueDate { get; set; }
-    public Guid IssuedByUserId { get; set; }
+    public string PlaceOfBirth { get; set; } = string.Empty;
+
+    // Parents
+    public string FatherName { get; set; } = string.Empty;
+
+    public string MotherName { get; set; } = string.Empty;
+
+    // Jamaat
     public Guid JamaatId { get; set; }
 
-    // Certificate File
+    public string JamaatName { get; set; } = string.Empty;
+
+    // Address
+    public string Address { get; set; } = string.Empty;
+
+    // Administration
+    public string OfficiatingMissionary { get; set; }
+
+    public DateTime IssueDate { get; set; }
+
+    public Guid IssuedByUserId { get; set; }
+
+    // Aqeeqah
+    public DateTime AqeeqahDate { get; set; }
+
+    public string AqeeqahLocation { get; set; } = string.Empty;
+
+    public int AnimalCount { get; set; }
+
+    // Certificate file
     public string? CertificateFilePath { get; set; }
 }

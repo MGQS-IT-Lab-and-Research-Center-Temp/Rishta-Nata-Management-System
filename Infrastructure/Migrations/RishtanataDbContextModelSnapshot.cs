@@ -314,6 +314,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsSecondThirdOrFourthNikah")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<Guid>("MarriageApplicationFormId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
@@ -325,6 +328,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MarriageApplicationFormId")
+                        .IsUnique();
 
                     b.ToTable("BrideGrooms", (string)null);
                 });
@@ -592,14 +598,14 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("BrideGuardianId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Address")
                         .HasColumnType("longtext");
 
                     b.Property<string>("AuxillaryBodyName")
                         .HasColumnType("longtext");
-
-                    b.Property<Guid>("BrideGuardianId")
-                        .HasColumnType("char(36)");
 
                     b.Property<string>("ChandaNo")
                         .IsRequired()
@@ -702,6 +708,24 @@ namespace Infrastructure.Migrations
 
                     b.ToTable("JamaatMembers");
                 });
+
+            modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
+            {
+                b.HasOne("Domain.Entities.BrideGuardian", "BrideGuardian")
+                    .WithMany("Brides")
+                    .HasForeignKey("BrideGuardianId")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne("Domain.Entities.Role", "Role")
+                    .WithMany("Members")
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("BrideGuardian");
+
+                b.Navigation("Role");
+            });
 
             modelBuilder.Entity("Domain.Entities.JamaatPresidentVerificationSection", b =>
                 {
@@ -1453,6 +1477,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("MarriageApplicationForm");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BridegroomFormSection", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("BridegroomSection")
+                        .HasForeignKey("Domain.Entities.BridegroomFormSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
                 {
                     b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
@@ -1496,21 +1531,43 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
                 {
-                    b.HasOne("Domain.Entities.BrideGuardian", "BrideGuardian")
-                        .WithMany("Brides")
-                        .HasForeignKey("BrideGuardianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Role", "Role")
-                        .WithMany("Members")
-                        .HasForeignKey("RoleId")
+                    b.HasOne("Domain.Entities.JamaatMember", "JamaatMember")
+                        .WithMany()
+                        .HasForeignKey("JamaatMemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BrideGuardian");
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("GuardianOrWakeelSection")
+                        .HasForeignKey("Domain.Entities.GuardianOrWakeelSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Role");
+                    b.Navigation("JamaatMember");
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ImamVerificationSection", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("ImamVerification")
+                        .HasForeignKey("Domain.Entities.ImamVerificationSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
+            modelBuilder.Entity("Domain.Entities.JamaatPresidentVerificationSection", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("JamaatPresidentVerification")
+                        .HasForeignKey("Domain.Entities.JamaatPresidentVerificationSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
                 });
 
             modelBuilder.Entity("Domain.Entities.JamaatPresidentVerificationSection", b =>
@@ -1655,6 +1712,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("AmirApproval");
 
                     b.Navigation("BrideSection");
+
+                    b.Navigation("BridegroomSection");
 
                     b.Navigation("GuardianOrWakeelSection");
 

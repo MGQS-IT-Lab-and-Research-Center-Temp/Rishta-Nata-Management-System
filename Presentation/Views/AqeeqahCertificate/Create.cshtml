@@ -1,0 +1,350 @@
+﻿@model Presentation.ViewModels.AqeeqahCertificateViewModel
+
+@{
+    ViewData["Title"] = "Create Aqeeqah Certificate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Create Aqeeqah Certificate</h2>
+            <p class="text-muted mb-0">
+                Enter the child's Aqeeqah certificate information.
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>
+            Back
+        </a>
+    </div>
+
+    <form asp-action="Create" method="post">
+
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly"
+             class="alert alert-danger">
+        </div>
+
+        <!-- Certificate Information -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-certificate me-2"></i>
+                    Certificate Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="SerialNumber"
+                               class="form-label fw-semibold">
+                            Certificate Number
+                        </label>
+
+                        <input asp-for="SerialNumber"
+                               class="form-control"
+                               placeholder="e.g. 03527" />
+
+                        <span asp-validation-for="SerialNumber"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="IssueDate"
+                               class="form-label fw-semibold">
+                            Issue Date
+                        </label>
+
+                        <input asp-for="IssueDate"
+                               type="date"
+                               class="form-control" />
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Child Information -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-baby me-2"></i>
+                    Child Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-12">
+                        <label asp-for="ChildName"
+                               class="form-label fw-semibold">
+                            Full Name of Child
+                        </label>
+
+                        <input asp-for="ChildName"
+                               class="form-control"
+                               placeholder="Enter child's full name" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="DateOfBirth"
+                               class="form-label fw-semibold">
+                            Date of Birth
+                        </label>
+
+                        <input asp-for="DateOfBirth"
+                               type="date"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Gender"
+                               class="form-label fw-semibold">
+                            Sex
+                        </label>
+
+                        <select asp-for="Gender"
+                                class="form-select">
+
+                            <option value="">
+                                Select sex
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="PlaceOfBirth"
+                               class="form-label fw-semibold">
+                            Place of Birth
+                        </label>
+
+                        <input asp-for="PlaceOfBirth"
+                               class="form-control"
+                               placeholder="Place of birth" />
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Jamaat -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-mosque me-2"></i>
+                    Jama'at Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label asp-for="JamaatName"
+                               class="form-label fw-semibold">
+                            Jama'at
+                        </label>
+
+                        <input asp-for="JamaatName"
+                               class="form-control"
+                               placeholder="Enter Jama'at name" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label asp-for="JamaatId"
+                               class="form-label fw-semibold">
+                            Jama'at ID
+                        </label>
+
+                        <input asp-for="JamaatId"
+                               class="form-control"
+                               placeholder="Jama'at ID" />
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Parents -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Parents' Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label asp-for="FatherName"
+                               class="form-label fw-semibold">
+                            Father's Full Name
+                        </label>
+
+                        <input asp-for="FatherName"
+                               class="form-control"
+                               placeholder="Father's full name" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label asp-for="MotherName"
+                               class="form-label fw-semibold">
+                            Mother's Name
+                        </label>
+
+                        <input asp-for="MotherName"
+                               class="form-control"
+                               placeholder="Mother's name" />
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label asp-for="Address"
+                               class="form-label fw-semibold">
+                            Address
+                        </label>
+
+                        <textarea asp-for="Address"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Enter full address">
+                        </textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Aqeeqah -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-drumstick-bite me-2"></i>
+                    Aqeeqah Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label asp-for="AqeeqahDate"
+                               class="form-label fw-semibold">
+                            Aqeeqah Date
+                        </label>
+
+                        <input asp-for="AqeeqahDate"
+                               type="date"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label asp-for="AqeeqahLocation"
+                               class="form-label fw-semibold">
+                            Aqeeqah Location
+                        </label>
+
+                        <input asp-for="AqeeqahLocation"
+                               class="form-control"
+                               placeholder="Location" />
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Missionary -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-tie me-2"></i>
+                    Officiating Missionary
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <label asp-for="OfficiatingMissionary"
+                       class="form-label fw-semibold">
+                    Name & Signature of Officiating Missionary
+                </label>
+
+                <input asp-for="OfficiatingMissionary"
+                       class="form-control"
+                       placeholder="Enter missionary's name" />
+
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="btn btn-primary px-4">
+
+                <i class="fas fa-save me-1"></i>
+                Save Certificate
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

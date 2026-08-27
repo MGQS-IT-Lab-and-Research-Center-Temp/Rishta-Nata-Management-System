@@ -1,21 +1,23 @@
-﻿using Domain.Enums;
+using Domain.Enums;
 using Infrastructure.DTOs.JamaatMember;
-using Microsoft.EntityFrameworkCore;
 using Infrastructure.DTOs.MarriedCoupleDto;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
 using Infrastructure.Mapper;
+using Microsoft.EntityFrameworkCore;
+using Application.Interfaces;
+
 namespace Application.Services
 {
-   public class RishtanataSecretaryService : IRishtanataSecretaryService
-{
-
+    public class RishtanataSecretaryService : IRishtanataSecretaryService
+    {
         private readonly RishtanataDbContext _context;
 
         public RishtanataSecretaryService(RishtanataDbContext context)
         {
             _context = context;
         }
+
         public RishtanataSecretaryDashboardDto GetDashboard()
         {
             var pendingApplications = _context.FormApplications
@@ -35,30 +37,25 @@ namespace Application.Services
 
             return dto;
         }
+
         public List<PendingApprovalDto> GetPendingApprovals()
         {
             return _context.MarriageApplicationForms
                 .Where(f => f.MarriageApplication.Status ==
                             ApplicationStatus.ApplicationPending)
-
                 .Select(f => new PendingApprovalDto
                 {
                     Id = f.MarriageApplicationId,
-
                     ApplicationNumber = f.ReferenceNumber,
-
                     GroomName = f.BridegroomName,
-
                     BrideName = f.BrideName,
-
                     PresidentName = f.JamaatPresidentName,
-
                     SubmittedDate = f.CreatedAt,
-
                     Status = f.MarriageApplication.Status.ToString()
                 })
                 .ToList();
         }
+
         public ReviewApplicationDto GetById(Guid id)
         {
             var form = _context.MarriageApplicationForms
@@ -70,24 +67,17 @@ namespace Application.Services
             return new ReviewApplicationDto
             {
                 Id = form.MarriageApplicationId,
-
                 ApplicationNumber = form.ReferenceNumber,
-
                 GroomName = form.BridegroomName,
-
                 BrideName = form.BrideName,
-
                 GroomPhone = form.BridegroomSignatureTel,
-
                 BridePhone = form.BrideSignatureTel,
-
                 PresidentName = form.JamaatPresidentName,
-
                 SubmittedDate = form.CreatedAt,
-
                 Status = form.MarriageApplication.Status.ToString()
             };
         }
+
         public List<MarriedCoupleDto> GetMarriedCouples()
         {
             return _context.MarriageApplicationForms
@@ -145,6 +135,7 @@ namespace Application.Services
                 RoleName = member.Role?.Name
             };
         }
+
         public void ReturnToPresident(Guid id)
         {
             var application = _context.FormApplications
@@ -164,6 +155,7 @@ namespace Application.Services
                 .Select(x => JamaatMemberMapper.ToDto(x))
                 .ToList();
         }
+
         public void Reject(Guid id)
         {
             var application = _context.FormApplications
@@ -176,6 +168,7 @@ namespace Application.Services
 
             _context.SaveChangesAsync();
         }
+
         public void Approve(Guid id)
         {
             var application = _context.FormApplications
