@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - Rishtanata
+    </title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/jamatpresidentdashboard.css" />
+
+</head>
+
+
+<body>
+
+    <div class="president-layout">
+
+
+        <!-- SIDEBAR -->
+        <aside class="president-sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-name">
+                    Rishtanata
+                </div>
+
+                <div class="brand-role">
+                    Jama'at President
+                </div>
+
+            </div>
+
+
+            <nav class="president-navigation">
+
+                <a asp-controller="JamaatPresident"
+                   asp-action="Dashboard"
+                   class="sidebar-link">
+
+                    <span>Dashboard</span>
+
+                </a>
+
+
+                <a asp-controller="JamaatPresident"
+                   asp-action="PendingApplications"
+                   class="sidebar-link">
+
+                    <span>Pending Reviews</span>
+
+                </a>
+
+
+                <a asp-controller="JamaatPresident"
+                   asp-action="ReviewedApplications"
+                   class="sidebar-link">
+
+                    <span>Reviewed Applications</span>
+
+                </a>
+
+
+                <a asp-controller="JamaatPresident"
+                   asp-action="Certificates"
+                   class="sidebar-link">
+
+                    <span>Marriage Certificates</span>
+
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <a asp-controller="Account"
+                   asp-action="Logout"
+                   class="sidebar-link logout-link">
+
+                    <span>Logout</span>
+
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="president-content">
+
+            @RenderBody()
+
+        </main>
+
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

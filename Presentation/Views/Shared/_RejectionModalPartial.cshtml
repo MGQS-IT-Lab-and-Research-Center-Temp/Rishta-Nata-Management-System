@@ -1,0 +1,174 @@
+@* Rejection Modal - Used by Jamaat President and Secretary Review pages *@
+
+@{
+    // Expected in ViewData: 
+    // "FormId" (Guid) - The form ID
+    // "CurrentStage" (ApplicationStage?) - Current stage for determining valid revert destinations
+}
+
+<div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="rejectionModalLabel">
+                    ✕ Reject Application
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Warning:</strong> Rejecting this application will revert it to an earlier stage. 
+                    All information entered after that stage will be cleared.
+                </div>
+
+                <form id="rejectionForm">
+                    <input type="hidden" id="formId" value="@ViewData["FormId"]" />
+
+                    <!-- Rejection Reason -->
+                    <div class="mb-3">
+                        <label for="rejectionReason" class="form-label">
+                            Rejection Reason <span class="text-danger">*</span>
+                        </label>
+                        <textarea 
+                            id="rejectionReason" 
+                            class="form-control" 
+                            rows="4"
+                            placeholder="Provide a detailed reason for rejecting this application..."
+                            required></textarea>
+                        <div class="invalid-feedback">
+                            A rejection reason is required.
+                        </div>
+                        <small class="form-text text-muted">
+                            This reason will be recorded in the rejection history and communicated to the applicant.
+                        </small>
+                    </div>
+
+                    <!-- Target Stage Selection -->
+                    <div class="mb-3">
+                        <label for="targetStage" class="form-label">
+                            Revert To <span class="text-danger">*</span>
+                        </label>
+                        <select id="targetStage" class="form-select" required>
+                            <option value="">-- Select a stage --</option>
+                            <option value="0">Applicant Initial Entry</option>
+                            <option value="1">Jamaat President Review</option>
+                            <option value="2">National Secretary Verification</option>
+                            <option value="3">Amir Approval</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a target stage to revert to.
+                        </div>
+                        <small class="form-text text-muted">
+                            Select which stage to revert the application to.
+                        </small>
+                    </div>
+                </form>
+
+                <!-- Loading State -->
+                <div id="rejectionLoading" class="d-none">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Processing rejection...</span>
+                </div>
+
+                <!-- Error Alert -->
+                <div id="rejectionError" class="alert alert-danger d-none" role="alert"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="submitRejectBtn" class="btn btn-danger">
+                    Confirm Rejection
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rejectionModal = document.getElementById('rejectionModal');
+        if (!rejectionModal) return;
+
+        const rejectionForm = document.getElementById('rejectionForm');
+        const submitBtn = document.getElementById('submitRejectBtn');
+        const loadingDiv = document.getElementById('rejectionLoading');
+        const errorDiv = document.getElementById('rejectionError');
+
+        // Submit rejection
+        submitBtn.addEventListener('click', async function() {
+            if (!rejectionForm.checkValidity()) {
+                rejectionForm.classList.add('was-validated');
+                return;
+            }
+
+            const formId = document.getElementById('formId').value;
+            const reason = document.getElementById('rejectionReason').value.trim();
+            const targetStageValue = document.getElementById('targetStage').value;
+            const targetStage = parseInt(targetStageValue);
+
+            if (!reason || isNaN(targetStage)) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            loadingDiv.classList.remove('d-none');
+            errorDiv.classList.add('d-none');
+
+            try {
+                const response = await fetch(`/api/marriage-forms/${formId}/revert`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        targetStage: targetStage,
+                        reason: reason
+                    })
+                });
+
+                if (response.status === 204) {
+                    // Success - close modal and reload
+                    alert('Application rejected successfully.');
+                    location.reload();
+                } else if (response.status === 400) {
+                    const data = await response.json();
+                    errorDiv.textContent = data.message || 'Invalid target stage. Cannot revert to the selected stage from current state.';
+                    errorDiv.classList.remove('d-none');
+                } else if (response.status === 403) {
+                    errorDiv.textContent = 'You do not have permission to reject this application.';
+                    errorDiv.classList.remove('d-none');
+                } else if (response.status === 404) {
+                    errorDiv.textContent = 'Application not found.';
+                    errorDiv.classList.remove('d-none');
+                } else if (response.status === 401) {
+                    errorDiv.textContent = 'You are not authenticated. Please log in again.';
+                    errorDiv.classList.remove('d-none');
+                } else {
+                    errorDiv.textContent = 'An error occurred while processing the rejection. Please try again.';
+                    errorDiv.classList.remove('d-none');
+                }
+            } catch (error) {
+                console.error('Rejection error:', error);
+                errorDiv.textContent = 'Network error: ' + error.message;
+                errorDiv.classList.remove('d-none');
+            } finally {
+                submitBtn.disabled = false;
+                loadingDiv.classList.add('d-none');
+            }
+        });
+
+        // Reset form when modal is hidden
+        rejectionModal.addEventListener('hidden.bs.modal', function() {
+            rejectionForm.reset();
+            rejectionForm.classList.remove('was-validated');
+            errorDiv.classList.add('d-none');
+            loadingDiv.classList.add('d-none');
+        });
+    });
+</script>

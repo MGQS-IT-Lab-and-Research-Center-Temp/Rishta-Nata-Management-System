@@ -129,5 +129,4 @@ namespace Domain.Entities
         public ICollection<MarriageFormRejection> Rejections { get; set; }
             = new List<MarriageFormRejection>();
     }
-
 }

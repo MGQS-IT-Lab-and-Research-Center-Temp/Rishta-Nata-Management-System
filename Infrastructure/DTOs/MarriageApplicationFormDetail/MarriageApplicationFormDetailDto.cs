@@ -46,4 +46,10 @@ public class MarriageApplicationFormDetailDto
 
     // ===== Authorization (Epic B parity) =====
     public bool CanCurrentUserEdit { get; set; }
+
+    /// <summary>
+    /// Indicates whether the current user can initiate a rejection at the current stage.
+    /// Only users with appropriate verification role at the current stage can reject.
+    /// </summary>
+    public bool CanCurrentUserReject { get; set; }
 }

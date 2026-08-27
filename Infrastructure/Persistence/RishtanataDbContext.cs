@@ -35,7 +35,6 @@ public class RishtanataDbContext : DbContext
 
     public DbSet<Role> JamaatRoles => Set<Role>();
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
