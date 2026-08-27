@@ -4,8 +4,8 @@ using Infrastructure.DTOs.MarriedCoupleDto;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Infrastructure.Persistence;
 using Infrastructure.Mapper;
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Application.Interfaces;
 
 namespace Application.Services
 {
