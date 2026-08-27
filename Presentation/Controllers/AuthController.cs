@@ -7,7 +7,6 @@ using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Presentation.ViewModels;
 
-
 namespace Presentation.Controllers;
 
 public class AuthController : Controller
@@ -51,34 +50,49 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // Authenticate using EMAIL + PASSWORD
-        var tokenRequest = new TokenRequest(model.Email,model.Password);
-
-        var tokenResponse =
-            await _gatewayHandler.GenerateToken(tokenRequest);
-
-        if (tokenResponse is null)
+        try
         {
-            ModelState.AddModelError( string.Empty,"Invalid email or password.");
+            // Authenticate using ChandaNo + PASSWORD
+            var tokenRequest = new TokenRequest(
+                model.ChandaNo,
+                model.Password);
 
-            return View(model);
-        }
+            var tokenResponse =
+                await _gatewayHandler.GenerateToken(tokenRequest);
 
-        if (!tokenResponse.Status ||
-            string.IsNullOrWhiteSpace(tokenResponse.Token))
-        {
-            ModelState.AddModelError(
-                string.Empty,
-                string.IsNullOrWhiteSpace(tokenResponse.Message)
-                    ? "Login failed."
-                    : tokenResponse.Message);
+            if (tokenResponse is null)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Invalid ChandaNo or Password.");
 
                 return View(model);
             }
 
-        // Get member using EMAIL
+            if (!tokenResponse.Status ||
+                string.IsNullOrWhiteSpace(tokenResponse.Token))
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    string.IsNullOrWhiteSpace(tokenResponse.Message)
+                        ? "Login failed."
+                        : tokenResponse.Message);
+
+                return View(model);
+            }
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError(
+                string.Empty,
+                "Invalid Chanda number or password.");
+
+            return View(model);
+        }
+
+        // Get member using chandaNo
         var jamaatMember =
-            await _gatewayHandler.GetMemberByEmailAsync(model.Email);
+            await _gatewayHandler.GetMemberByChandaNoAsync(model.ChandaNo);
 
         if (jamaatMember is null)
         {
@@ -101,8 +115,7 @@ public class AuthController : Controller
             jamaatMember.ChandaNo == rishtanataSecretaryChandaNo;
 
         // Create authentication cookie
-        await _cookieAuthService.SignInAsync(
-            jamaatMember);
+        await _cookieAuthService.SignInAsync(jamaatMember);
 
         // Return URL
         if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
@@ -130,25 +143,32 @@ public class AuthController : Controller
     {
         await _cookieAuthService.SignOutAsync();
 
-        return RedirectToAction("Login","Auth");
+        return RedirectToAction("Login", "Auth");
     }
 
-    private IActionResult RedirectUserToDashboard(
-        JamaatMember member)
+    private IActionResult RedirectUserToDashboard(JamaatMember member)
     {
         return member.Role.Name switch
         {
             RoleNames.JamaatSecretary =>
-                RedirectToAction("Dashboard","JamaatSecretary"),
+                RedirectToAction(
+                    "Dashboard",
+                    "JamaatSecretary"),
 
             RoleNames.CircuitSecretary =>
-                RedirectToAction("Dashboard", "CircuitSecretary"),
+                RedirectToAction(
+                    "Dashboard",
+                    "CircuitSecretary"),
 
             RoleNames.RishtanataSecretary =>
-                RedirectToAction("Dashboard","RishtanataSecretary"),
+                RedirectToAction(
+                    "Dashboard",
+                    "RishtanataSecretary"),
 
             _ =>
-                RedirectToAction("Dashboard","JamaatSecretary")
+                RedirectToAction(
+                    "Dashboard",
+                    "JamaatSecretary")
         };
     }
 }

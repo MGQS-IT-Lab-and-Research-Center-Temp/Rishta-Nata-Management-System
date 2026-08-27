@@ -38,7 +38,8 @@ public sealed class MarriageApplicationFormServiceTests : IDisposable
             .Include(x => x.Rejections)
             .SingleAsync(x => x.Id == seed.FormId);
 
-        Assert.True(result);
+        Assert.Equal(RevertStageResult.Success, result);
+
         Assert.Equal(ApplicationStage.JamaatPresidentReview, form.ApplicationStage);
         var rejection = Assert.Single(form.Rejections);
         Assert.Equal(ApplicationStage.NationalRishtanataSecretaryVerification, rejection.RejectedAtStage);
@@ -56,7 +57,8 @@ public sealed class MarriageApplicationFormServiceTests : IDisposable
             "Please correct the recommendation.",
             seed.MemberId);
 
-        Assert.False(result);
+        Assert.Equal(RevertStageResult.Unauthorized, result);
+
         Assert.Empty(await _context.MarriageFormRejections.ToListAsync());
         Assert.Empty(_notifications.Calls);
     }
