@@ -670,10 +670,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("NextOfKinPhoneNo")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("PhoneNo")
                         .HasColumnType("longtext");
 
@@ -1620,6 +1616,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("MarriageApplication");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
+                        .WithMany()
+                        .HasForeignKey("MarriageApplicationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplication");
             modelBuilder.Entity("Domain.Entities.RishtanataRecommendationSection", b =>
                 {
                     b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")

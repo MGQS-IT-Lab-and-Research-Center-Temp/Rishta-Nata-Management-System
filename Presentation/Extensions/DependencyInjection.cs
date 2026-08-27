@@ -26,12 +26,13 @@ public static class DependencyInjection
     {
         services.AddMySQLServer<RishtanataDbContext>(
             configuration.GetConnectionString("DefaultConnection")!);
-
+      
         services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<RishtanataDbContext>()
             .AddDefaultTokenProviders();
 
         // services.AddScoped<INotificationService, NotificationService>(); -- uncomment me...later!
+        services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
         services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
