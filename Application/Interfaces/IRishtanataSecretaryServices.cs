@@ -12,7 +12,7 @@ public interface IRishtanataSecretaryService
     List<MarriedCoupleDto> GetMarriedCouples();
     MemberProfileDto GetMemberProfile(Guid id);
 
-    //List<JamaatMemberDto> GetMembers();
+    List<JamaatMemberDto> GetMembers();
 
     void Approve(Guid id);
 
