@@ -230,6 +230,61 @@ namespace Infrastructure.Configurations
 
             builder.Property(f => f.NationalAmirOrMissionarySignatureDate)
                 .HasMaxLength(50);
+
+            // Bride
+            builder.HasOne(f => f.BrideSection)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<BrideFormSection>(
+                    s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Bridegroom
+            builder.HasOne(f => f.BridegroomSection)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<BridegroomFormSection>(
+                    s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Guardian / Wakeel
+            builder.HasOne(f => f.GuardianOrWakeelSection)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<GuardianOrWakeelSection>(
+                    s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Imam
+            builder.HasOne(f => f.ImamVerification)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<ImamVerificationSection>(
+                    s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Jamaat President
+            builder.HasOne(f => f.JamaatPresidentVerification)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<JamaatPresidentVerificationSection>(
+                    s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Rishtanata Recommendation
+            builder.HasOne(f => f.RishtanataRecommendation)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<RishtanataRecommendationSection>(
+                    s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Amir Approval
+            builder.HasOne(f => f.AmirApproval)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<AmirApprovalSection>(
+                    s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Witnesses
+            builder.HasMany(f => f.WitnessSignatures)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey(s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
