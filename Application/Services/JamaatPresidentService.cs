@@ -69,8 +69,8 @@ public class JamaatPresidentService : IJamaatPresidentService
         return new JamaatPresidentDashboardDto
         {
             PresidentName = presidentDisplayName ?? "Jama'at President",
-            JamaatName = jamaatMember.jamaatName ?? "Jama'at",
-            CircuitName = jamaatMember.circuitName ?? "Circuit",
+            JamaatName = jamaatMember.JamaatName ?? "Jama'at",
+            CircuitName = jamaatMember.CircuitName ?? "Circuit",
             PendingNikahReviews = pendingApplications.Count,
             ReviewedToday = reviewedToday,
             TotalNikahApplications = totalApplications,
@@ -93,7 +93,8 @@ public class JamaatPresidentService : IJamaatPresidentService
     public async Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id)
     {
         var review = await _context.Reviews
-            .Include(r => r.MarriageApplicationForm)
+            .Include(r => r.MarriageApplication)
+                .ThenInclude(r => r.MarriageApplicationForm)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (review == null)
@@ -102,7 +103,7 @@ public class JamaatPresidentService : IJamaatPresidentService
                 $"No review was found with ID '{id}'.");
         }
 
-        var form = review.MarriageApplicationForm;
+        var form = review.MarriageApplication?.MarriageApplicationForm;
 
         if (form == null)
         {
