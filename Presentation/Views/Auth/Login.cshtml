@@ -13,109 +13,224 @@
 
     <title>Login - Rishta Nata Management System</title>
 
-    <!-- Bootstrap 5 -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
 
-    <link rel="stylesheet" href="wwwroot\css\Login.css">
+    <style>
+            .login-hero {
+                background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+            }
+
+            .hero-decoration {
+                position: absolute;
+                border-radius: 50%;
+                pointer-events: none;
+            }
+
+            .decoration-one {
+                width: 350px;
+                height: 350px;
+                right: -130px;
+                top: 80px;
+                border: 60px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .decoration-two {
+                width: 250px;
+                height: 250px;
+                left: -100px;
+                bottom: -60px;
+                background: rgba(255, 255, 255, 0.07);
+            }
+
+            .decoration-three {
+                width: 100px;
+                height: 100px;
+                right: 100px;
+                bottom: 80px;
+                background: rgba(255, 255, 255, 0.08);
+            }
+
+            /* Brand-colored focus ring on inputs (Bootstrap defaults to blue) */
+            .form-control:focus {
+                border-color: #047857;
+                box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+            }
+
+            /* Brand-colored checkbox */
+            .form-check-input:checked {
+                background-color: #047857;
+                border-color: #047857;
+            }
+
+            /* Login button hover/press */
+            .btn-login-brand:hover {
+                background: #065f46 !important;
+                box-shadow: 0 8px 20px rgba(4, 120, 87, 0.22);
+            }
+
+            /* Outline "Create an account" button hover */
+            .btn-outline-brand:hover {
+                background: #ecfdf5;
+                color: #065f46 !important;
+            }
+    </style>
 </head>
 
-<body>
+<body class="bg-white">
 
-    <div class="container">
-        <div class="row justify-content-center align-items-center login-wrapper">
+    <main class="d-flex min-vh-100">
 
-            <div class="col-12">
+        <!-- LEFT SIDE / HERO -->
+        <section class="login-hero d-none d-lg-flex align-items-center col-lg-6 text-white position-relative overflow-hidden">
 
-                <div class="card login-card shadow mx-auto">
+            <div class="hero-content position-relative w-100 px-5 py-5" style="z-index:2; max-width:650px;">
 
-                    <div class="card-body p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 fs-3 fw-bold mb-5">
 
-                        <!-- Logo -->
-                        <div class="text-center">
-                            <div class="logo-circle">
-                                <img src="~/img/logo.png" alt="Rishta Nata logo" />
-                            </div>
+                    <div class="brand-logo bg-white rounded-3 d-flex justify-content-center align-items-center overflow-hidden" style="width:58px; height:58px;">
+                        <img src="~/img/logo.png"
+                             alt="Rishta Nata logo"
+                             class="w-75 h-75"
+                             style="object-fit:contain;" />
+                    </div>
 
-                            <h2 class="fw-bold mb-2">
-                                Welcome Back
-                            </h2>
+                    <span>Rishta Nata</span>
 
-                            <p class="text-muted mb-4">
-                                Login to your Rishta Nata account
-                            </p>
-                        </div>
+                </div>
 
                         <!-- Login Form -->
                         <form asp-controller="Auth" asp-action="Login" method="post">
                             @Html.AntiForgeryToken()
-                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                         <div class="mb-3">
-                            <label for="chandaNo" class="form-label fw-semibold">
+                            @* <label for="chandaNo" class="form-label fw-semibold">
                                 Chanda Number
-                            </label>
+                            </label> *@
 
-                            <input
-                                type="text"
-                                class="form-control form-control-lg"
-                                id="chandaNo"
-                                name="ChandaNo"
-                                placeholder="Enter your Chanda number"
-                                required>
-                        </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-semibold">
+                    <!-- VALIDATION SUMMARY -->
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger py-2 px-3 small">
+                    </div>
+
+
+                    <!-- CHANDA NUMBER -->
+                    <div class="mb-3">
+
+                        <label asp-for="ChandaNo" class="form-label fw-semibold">
+                            Member Chanda Number
+                        </label>
+
+                        <input asp-for="ChandaNo"
+                               type="text"
+                               class="form-control form-control-lg"
+                               placeholder="Enter your Chanda number"
+                               autocomplete="off"
+                               inputmode="numeric"
+                               autofocus />
+
+                        <span asp-validation-for="ChandaNo"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="mb-3">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <label asp-for="Password" class="form-label fw-semibold mb-0">
                                 Password
                             </label>
 
-                            <input
-                                type="password"
-                                class="form-control form-control-lg"
-                                id="password"
-                                name="Password"
-                                placeholder="Enter your password"
-                                required>
-                        </div>
-
-                        <div class="d-grid">
-                            <button
-                                type="submit"
-                                class="btn btn-success btn-lg login-button">
-                                Login
-                            </button>
-                        </div>
-
-                    </form>
-
-                        <!-- Register -->
-                        <div class="text-center mt-4">
-
-                            <p class="text-muted mb-0">
-                                Don't have an account?
-                                <a
-                                    href="#"
-                                    class="text-success fw-semibold text-decoration-none">
-                                    Create an account
-                                </a>
-                            </p>
+                            <a href="#" class="small fw-semibold text-decoration-none" style="color:#047857;">
+                                Forgot Password?
+                            </a>
 
                         </div>
+
+                        <input asp-for="Password"
+                               type="password"
+                               class="form-control form-control-lg mt-2"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" />
+
+                        <span asp-validation-for="Password"
+                              class="text-danger small">
+                        </span>
 
                     </div>
+
+
+                    <!-- REMEMBER ME -->
+                    <div class="form-check mb-4">
+
+                        <input asp-for="RememberMe"
+                               type="checkbox"
+                               class="form-check-input" />
+
+                        <label asp-for="RememberMe" class="form-check-label text-secondary small">
+                            Remember me
+                        </label>
+
+                    </div>
+
+
+                    <!-- RETURN URL -->
+                    @if (!string.IsNullOrWhiteSpace(Model.ReturnUrl))
+                    {
+                        <input type="hidden"
+                               asp-for="ReturnUrl" />
+                    }
+
+
+                    <!-- LOGIN BUTTON -->
+                    <button type="submit"
+                            class="btn btn-lg btn-login-brand w-100 fw-bold text-white"
+                            style="background:#047857;">
+                        Login
+                    </button>
+
+                </form>
+
+
+                <!-- DIVIDER -->
+                <div class="d-flex align-items-center gap-3 my-4">
+                    <hr class="flex-grow-1 m-0" />
+                    <span class="small fw-semibold text-secondary">OR</span>
+                    <hr class="flex-grow-1 m-0" />
+                </div>
+
+
+                <!-- REGISTER -->
+                <div class="text-center">
+
+                    <p class="text-secondary mb-3">
+                        Don't have an account?
+                    </p>
+
+                    <a href="#"
+                       class="btn btn-lg btn-outline-brand w-100 fw-bold"
+                       style="border:1px solid #047857; color:#047857;">
+                        Create an account
+                    </a>
 
                 </div>
 
             </div>
 
-        </div>
-    </div>
+        </section>
 
-    <!-- Bootstrap 5 JavaScript -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
     </script>
+
+    <partial name="_ValidationScriptsPartial" />
 
 </body>
 </html>

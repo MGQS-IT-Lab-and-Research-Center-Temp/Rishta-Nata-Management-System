@@ -1,37 +1,32 @@
-// do page for review - azeez
 // do page for review for individual nikkah form - azeez
 // do page for viewing aqeeqah certificates - yusroh - done
 // do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
 // fix all errors under your dto - faridah -done
 // fix all errors under service and interface - yusroh
 // ensure that dto namespace is infrastructure not application - done
-//use the respective service to do all db operation in this controller
-
+// use the respective service to do all db operation in this controller
 
 using Application.Interfaces;
-using Domain.Entities;
-using Domain.Enums;
-using Infrastructure.DTOs.Certificates;
-using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Presentation.Constants.Roles;
-using Presentation.ViewModels;
 using System.Security.Claims;
 
 namespace Presentation.Controllers;
 
 [Authorize(Policy = "RequireJamaatSecretary")]
-
 public class JamaatPresidentController : Controller
 {
-    private readonly RishtanataDbContext _context;
+    private readonly IJamaatPresidentService _service;
+    private readonly ICertificateService _certificateService;
     private readonly IAqeeqahCertificateService _aqeeqahService;
 
-    public JamaatPresidentController(RishtanataDbContext context, IAqeeqahCertificateService aqeeqahService)
+    public JamaatPresidentController(
+        IJamaatPresidentService service,
+        ICertificateService certificateService,
+        IAqeeqahCertificateService aqeeqahService)
     {
-        _context = context;
+        _service = service;
+        _certificateService = certificateService;
         _aqeeqahService = aqeeqahService;
     }
 
@@ -41,86 +36,11 @@ public class JamaatPresidentController : Controller
 
     public async Task<IActionResult> Dashboard()
     {
-        var pendingStatus = ApplicationStatus.ApplicationPending;
+        var dto = await _service.GetDashboardAsync(
+            User.Identity?.Name,
+            GetCurrentUserId());
 
-        var pendingApplications = await _context.FormApplications
-            .Where(x => x.Status == pendingStatus)
-            .Include(x => x.MarriageApplicationForm)
-            .OrderByDescending(x => x.CreatedAt)
-            .ToListAsync();
-
-        var totalApplications =
-            await _context.FormApplications.CountAsync();
-
-        var today = DateTime.UtcNow.Date;
-        var tomorrow = today.AddDays(1);
-
-        var reviewedToday = await _context.AuditLogs
-            .CountAsync(x =>
-                x.Timestamp >= today &&
-                x.Timestamp < tomorrow &&
-                (
-                    x.Action == "Approved Nikah Application" ||
-                    x.Action == "Rejected Nikah Application" ||
-                    x.Action == "Requested More Information"
-                ));
-
-        var recentActivities = await _context.AuditLogs
-            .OrderByDescending(x => x.Timestamp)
-            .Take(10)
-            .Select(x => new RecentActivityViewModel
-            {
-                ApplicationNumber = x.EntityName,
-                Description = x.Action,
-                Date = x.Timestamp
-            })
-            .ToListAsync();
-
-        var dashboard = new JamaatPresidentDashboardViewModel
-        {
-            PresidentName = User.Identity?.Name ?? "Jama'at President",
-
-            // These can later come from the President's actual Jama'at profile.
-            JamaatName = "Jama'at",
-            CircuitName = "Circuit",
-
-            PendingNikahReviews = pendingApplications.Count,
-
-            ReviewedToday = reviewedToday,
-
-            TotalNikahApplications = totalApplications,
-
-            PendingApplications = pendingApplications
-                .Select(x => new NikahApplicationViewModel
-                {
-                    Id = x.Id,
-
-                    ReferenceNumber =
-                        x.MarriageApplicationForm?.ReferenceNumber
-                        ?? "N/A",
-
-                    GroomName =
-                        x.MarriageApplicationForm?.BridegroomName
-                        ?? "Not provided",
-
-                    BrideName =
-                        x.MarriageApplicationForm?.BrideName
-                        ?? "Not provided",
-
-                    JamaatName =
-                        x.MarriageApplicationForm?.Venue
-                        ?? "Not provided",
-
-                    SubmittedDate = x.CreatedAt,
-
-                    Status = x.Status.ToString()
-                })
-                .ToList(),
-
-            RecentActivities = recentActivities
-        };
-
-        return View(dashboard);
+        return View(dto);
     }
 
     // ============================================================
@@ -130,97 +50,14 @@ public class JamaatPresidentController : Controller
     [HttpGet]
     public async Task<IActionResult> Review(Guid id)
     {
-        var application = await _context.FormApplications
-            .Include(x => x.MarriageApplicationForm)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var dto = await _service.GetReviewByIdAsync(id);
 
-        if (application == null)
+        if (dto == null)
         {
-            return NotFound();
+            return NotFound("Marriage application or its form was not found.");
         }
 
-        var form = application.MarriageApplicationForm;
-
-        if (form == null)
-        {
-            return NotFound("Marriage application form was not found.");
-        }
-
-        var model = new JamaatPresidentReviewViewModel
-        {
-            Id = application.Id,
-            ReferenceNumber = form.ReferenceNumber,
-            Status = application.Status.ToString(),
-            SubmittedDate = application.CreatedAt,
-            ProposedNikahDate = form.ProposedNikahDate,
-            Venue = form.Venue,
-
-            BrideMembershipNo = form.BrideMembershipNo,
-            BrideName = form.BrideName,
-            BrideDateOfBirth = form.BrideDateOfBirth,
-            BrideResidentOf = form.BrideResidentOf,
-            BrideGenotype = form.BrideGenotype,
-            BrideBloodGroup = form.BrideBloodGroup,
-            BrideMaritalStatus = form.BrideMaritalStatus,
-            BrideProposedDowerAmount = form.BrideProposedDowerAmount,
-            BrideDowerAmountReceivedInCash = form.BrideDowerAmountReceivedInCash,
-            BrideSignatureTel = form.BrideSignatureTel,
-
-            BridegroomMembershipNo = form.BridegroomMembershipNo,
-            BridegroomName = form.BridegroomName,
-            BridegroomDateOfBirth = form.BridegroomDateOfBirth,
-            BridegroomResidentOf = form.BridegroomResidentOf,
-            BridegroomGenotype = form.BridegroomGenotype,
-            BridegroomBloodGroup = form.BridegroomBloodGroup,
-            BridegroomDowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
-            BridegroomDowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
-            IsFirstNikah = form.IsFirstNikah,
-            IsSecondThirdOrFourthNikah = form.IsSecondThirdOrFourthNikah,
-            FormerWifeIsDead = form.FormerWifeIsDead,
-            HasDivorcedFormerWife = form.HasDivorcedFormerWife,
-            FormerWifeIsPresent = form.FormerWifeIsPresent,
-            FormerWifeObtainedKhula = form.FormerWifeObtainedKhula,
-            BridegroomSignatureTel = form.BridegroomSignatureTel,
-
-            BrideFatherName = form.BrideFatherName,
-            BridegroomFatherName = form.BridegroomFatherName,
-
-            GuardianName = form.GuardianName,
-            GuardianRelationToBride = form.GuardianRelationToBride,
-            GuardianAddress = form.GuardianAddress,
-            GuardianTel = form.GuardianTel,
-            GuardianSignatureDate = form.GuardianSignatureDate,
-
-            RepresentativeName = form.RepresentativeName,
-            RepresentativeAddress = form.RepresentativeAddress,
-            RepresentativeActingFor = form.RepresentativeActingFor,
-            RepresentativeSignatureDate = form.RepresentativeSignatureDate,
-
-            WitnessOneName = form.WitnessOneName,
-            WitnessOneAddress = form.WitnessOneAddress,
-            WitnessOneTel = form.WitnessOneTel,
-            WitnessOneSignatureDate = form.WitnessOneSignatureDate,
-
-            WitnessTwoName = form.WitnessTwoName,
-            WitnessTwoAddress = form.WitnessTwoAddress,
-            WitnessTwoTel = form.WitnessTwoTel,
-            WitnessTwoSignatureDate = form.WitnessTwoSignatureDate,
-
-            OfficiatingImamName = form.OfficiatingImamName,
-            OfficiatingImamAddressJamaat = form.OfficiatingImamAddressJamaat,
-            OfficiatingImamSignatureDate = form.OfficiatingImamSignatureDate,
-
-            JamaatPresidentName = form.JamaatPresidentName,
-            JamaatPresidentSignatureDate = form.JamaatPresidentSignatureDate,
-
-            NationalRishtanataSecretaryName = form.NationalRishtanataSecretaryName,
-            NationalRishtanataSecretarySignatureDate = form.NationalRishtanataSecretarySignatureDate,
-
-            ApprovedDateOfNikah = form.ApprovedDateOfNikah,
-            NationalAmirOrMissionarySignatureDate = form.NationalAmirOrMissionarySignatureDate
-        };
-
-        return View(model);
+        return View(dto);
     }
 
     // ============================================================
@@ -231,56 +68,15 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(Guid id)
     {
-        var application = await _context.FormApplications
-            .Include(x => x.MarriageApplicationForm)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var success = await _service.ApproveAsync(id, GetCurrentUserId());
 
-        if (application == null)
-        {
-            return NotFound();
-        }
+        TempData["Success"] = success
+            ? "Nikah application approved and forwarded to the National Rishtanata Secretary."
+            : null;
 
-        if (application.Status !=
-            ApplicationStatus.ApplicationPending)
-        {
-            TempData["Error"] =
-                "This application is no longer awaiting Jama'at President review.";
-
-            return RedirectToAction(nameof(Dashboard));
-        }
-
-        application.Status =
-            ApplicationStatus.ApplicationApproved;
-
-        application.ModifiedAt = DateTime.UtcNow;
-        application.ModifiedBy = GetCurrentUserId();
-
-        var auditLog = new AuditLog
-        {
-            Id = Guid.NewGuid(),
-
-            UserId = GetCurrentUserId() ?? Guid.Empty,
-
-            Action = "Approved Nikah Application",
-
-            EntityName = "MarriageApplication",
-
-            RecordId = application.Id,
-
-            Timestamp = DateTime.UtcNow,
-
-            ChangeDetails =
-                $"Jama'at President approved application " +
-                $"{application.MarriageApplicationForm?.ReferenceNumber ?? application.Id.ToString()} " +
-                $"and forwarded it for National Rishtanata Secretary review."
-        };
-
-        _context.AuditLogs.Add(auditLog);
-
-        await _context.SaveChangesAsync();
-
-        TempData["Success"] =
-            "Nikah application approved and forwarded to the National Rishtanata Secretary.";
+        TempData["Error"] = success
+            ? null
+            : "This application is no longer awaiting Jama'at President review.";
 
         return RedirectToAction(nameof(Dashboard));
     }
@@ -293,55 +89,15 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(Guid id)
     {
-        var application = await _context.FormApplications
-            .Include(x => x.MarriageApplicationForm)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var success = await _service.RejectAsync(id, GetCurrentUserId());
 
-        if (application == null)
-        {
-            return NotFound();
-        }
+        TempData["Success"] = success
+            ? "Nikah application has been rejected."
+            : null;
 
-        if (application.Status !=
-            ApplicationStatus.ApplicationPending)
-        {
-            TempData["Error"] =
-                "This application is no longer awaiting Jama'at President review.";
-
-            return RedirectToAction(nameof(Dashboard));
-        }
-
-        application.Status =
-            ApplicationStatus.ApplicationRejected;
-
-        application.ModifiedAt = DateTime.UtcNow;
-        application.ModifiedBy = GetCurrentUserId();
-
-        var auditLog = new AuditLog
-        {
-            Id = Guid.NewGuid(),
-
-            UserId = GetCurrentUserId() ?? Guid.Empty,
-
-            Action = "Rejected Nikah Application",
-
-            EntityName = "MarriageApplication",
-
-            RecordId = application.Id,
-
-            Timestamp = DateTime.UtcNow,
-
-            ChangeDetails =
-                $"Jama'at President rejected application " +
-                $"{application.MarriageApplicationForm?.ReferenceNumber ?? application.Id.ToString()}."
-        };
-
-        _context.AuditLogs.Add(auditLog);
-
-        await _context.SaveChangesAsync();
-
-        TempData["Success"] =
-            "Nikah application has been rejected.";
+        TempData["Error"] = success
+            ? null
+            : "This application is no longer awaiting Jama'at President review.";
 
         return RedirectToAction(nameof(Dashboard));
     }
@@ -354,55 +110,15 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RequestMoreInformation(Guid id)
     {
-        var application = await _context.FormApplications
-            .Include(x => x.MarriageApplicationForm)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var success = await _service.RequestMoreInformationAsync(id, GetCurrentUserId());
 
-        if (application == null)
-        {
-            return NotFound();
-        }
+        TempData["Success"] = success
+            ? "More information has been requested for this Nikah application."
+            : null;
 
-        if (application.Status !=
-            ApplicationStatus.ApplicationPending)
-        {
-            TempData["Error"] =
-                "This application is no longer awaiting Jama'at President review.";
-
-            return RedirectToAction(nameof(Dashboard));
-        }
-
-        application.Status =
-            ApplicationStatus.ApplicationPending;
-
-        application.ModifiedAt = DateTime.UtcNow;
-        application.ModifiedBy = GetCurrentUserId();
-
-        var auditLog = new AuditLog
-        {
-            Id = Guid.NewGuid(),
-
-            UserId = GetCurrentUserId() ?? Guid.Empty,
-
-            Action = "Requested More Information",
-
-            EntityName = "MarriageApplication",
-
-            RecordId = application.Id,
-
-            Timestamp = DateTime.UtcNow,
-
-            ChangeDetails =
-                $"Jama'at President requested more information for application " +
-                $"{application.MarriageApplicationForm?.ReferenceNumber ?? application.Id.ToString()}."
-        };
-
-        _context.AuditLogs.Add(auditLog);
-
-        await _context.SaveChangesAsync();
-
-        TempData["Success"] =
-            "More information has been requested for this Nikah application.";
+        TempData["Error"] = success
+            ? null
+            : "This application is no longer awaiting Jama'at President review.";
 
         return RedirectToAction(nameof(Dashboard));
     }
@@ -413,26 +129,13 @@ public class JamaatPresidentController : Controller
 
     /// <summary>
     /// Displays all marriage certificates.
-    /// 
+    ///
     /// For now, all certificates are displayed.
     /// Later, this can be filtered by the Jama'at President's Jama'at.
     /// </summary>
     public async Task<IActionResult> Certificates()
     {
-        var certificates = await _context.Certificates
-            .AsNoTracking()
-            .Select(c => new CertificateDto
-            {
-                Id = c.Id,
-                SerialNumber = c.SerialNumber,
-                BrideName = c.BrideName,
-                BridegroomName = c.BridegroomName,
-                NikahDate = c.NikahDate,
-                IssueDate = c.IssueDate,
-                CertificateFilePath = c.CertificateFilePath
-            })
-            .OrderByDescending(c => c.IssueDate)
-            .ToListAsync();
+        var certificates = await _certificateService.GetAllCertificatesAsync();
 
         return View(certificates);
     }

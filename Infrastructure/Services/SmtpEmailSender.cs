@@ -17,12 +17,12 @@ namespace Infrastructure.Services
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            var smtpSection = _configuration.GetSection("Smtp");
-            var host = smtpSection["Host"];
-            var port = int.TryParse(smtpSection["Port"], out var p) ? p : 25;
-            var username = smtpSection["Username"];
-            var password = smtpSection["Password"];
-            var from = smtpSection["From"] ?? username;
+            var smtpSection = _configuration.GetSection("EmailSettings");
+            var host = smtpSection["SmtpServer"];
+            var port = int.TryParse(smtpSection["SmtpPort"], out var p) ? p : 25;
+            var username = smtpSection["SmtpUsername"];
+            var password = smtpSection["SmtpPassword"];
+            var from = smtpSection["FromEmail"] ?? username;
 
             using var client = new SmtpClient(host, port)
             {

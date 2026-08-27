@@ -5,7 +5,10 @@ namespace Application.Interfaces.Identity;
 
 public interface IGatewayHandler
 {
-    Task<string[]?> GetMemberRoleAsync(int chandaNo);
-    Task<JamaatMember?> GetMemberByChandaNoAsync(int chandaNo);
+    Task<string[]?> GetMemberRoleAsync(string chandaNo);
+
+    Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo);
+    
+    // Task<JamaatMember?> GetMemberByEmailAsync(string email);
     Task<MemberApiLoginResponse?> GenerateToken(TokenRequest request);
 }

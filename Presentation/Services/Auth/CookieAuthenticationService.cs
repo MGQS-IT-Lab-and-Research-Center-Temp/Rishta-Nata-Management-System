@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace Presentation.Services.Auth;
 
+
 public class CookieAuthenticationService : ICookieAuthenticationService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;

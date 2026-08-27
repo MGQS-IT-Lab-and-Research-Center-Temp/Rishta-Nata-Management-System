@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Interfaces
 {
@@ -39,6 +40,17 @@ namespace Application.Interfaces
             Guid marriageApplicationFormId,
             Guid witnessSignatureId,
             string signature,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Reverts a form to an earlier workflow stage and removes data from
+        /// stages after the selected target.
+        /// </summary>
+        Task<RevertStageResult> RevertStageAsync(
+            Guid formId,
+            ApplicationStage targetStage,
+            string reason,
+            Guid verifierId,
             CancellationToken cancellationToken = default);
     }
 }

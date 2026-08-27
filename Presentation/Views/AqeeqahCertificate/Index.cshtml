@@ -1,0 +1,488 @@
+﻿@model Presentation.ViewModels.AqeeqahCertificateViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"content="width=device-width, initial-scale=1" />
+
+    <title>
+        Aqeeqah Certificate - @Model.SerialNumber
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #e5e5e5;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .print-button button {
+            background: #198754;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .certificate {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 25px auto;
+            padding: 13mm;
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff 0%,
+                    #f9fff9 50%,
+                    #ffffff 100%
+                );
+            position: relative;
+            border: 8px solid #e9f2e9;
+            box-shadow:
+                0 0 0 2px #1c8c52,
+                0 0 0 7px #f1b928,
+                0 0 0 10px #198754;
+            overflow: hidden;
+        }
+        /* Decorative border */
+        .certificate::before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 3px solid #198754;
+            pointer-events: none;
+        }
+        .inner-border {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            border: 2px solid #d4a72c;
+            pointer-events: none;
+        }
+        /* Header */
+        .header {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .bismillah {
+            font-size: 22px;
+            margin-bottom: 5px;
+            font-family: "Times New Roman", serif;
+        }
+        .organization {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #198754;
+            text-transform: uppercase;
+        }
+        .incorporated {
+            color: #c51f45;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 3px;
+        }
+        .certificate-number {
+            text-align: right;
+            font-size: 22px;
+            font-weight: bold;
+            color: #555;
+            margin-top: 4px;
+            margin-right: 20px;
+        }
+        /* Arabic explanation */
+        .instruction {
+            text-align: center;
+            margin: 8px 25px 0;
+            font-family: "Times New Roman", serif;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .instruction-english {
+            text-align: center;
+            font-size: 10px;
+            color: #555;
+            font-style: italic;
+            margin: 5px 25px 0;
+        }
+        /* Title */
+        .certificate-title {
+            text-align: center;
+            margin: 14px 0 20px;
+            font-family: "Brush Script MT","Segoe Script",
+                         cursive;
+            font-size: 48px;
+            font-weight: 500;
+            color: #c62d75;
+        }
+        /* Fields */
+        .field-row {
+            display: flex;
+            align-items: flex-end;
+            margin: 15px 30px;
+            min-height: 27px;
+        }
+        .field {
+            display: flex;
+            align-items: flex-end;
+            width: 100%;
+        }
+        .field-label {
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+            margin-right: 8px;
+        }
+        .field-value {
+            flex: 1;
+            min-height: 23px;
+            border-bottom: 1px solid #555;
+            padding: 0 6px 3px;
+            font-size: 16px;
+            color: #222;
+        }
+        .half {
+            width: 50%;
+        }
+        .gap {
+            margin-right: 25px;
+        }
+        /* Footer */
+        .missionary {
+            margin: 55px 30px 0;
+            width: 55%;
+        }
+        .missionary-label {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        .missionary-value {
+            margin-top: 5px;
+            border-bottom: 1px solid #555;
+            min-height: 27px;
+            font-size: 15px;
+        }
+        .date {
+            margin-top: 7px;
+        }
+        /* Seal */
+        .seal {
+            position: absolute;
+            right: 43px;
+            bottom: 45px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #b4231c;
+            opacity: .85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            border: 5px double #8b1813;
+        }
+        /* Decorative mosque watermark */
+        .watermark {
+            position: absolute;
+            right: 30px;
+            top: 280px;
+            font-size: 130px;
+            color: #198754;
+            opacity: .035;
+            user-select: none;
+        }
+        /* Print */
+            @@media print {
+                html, body {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .print-container {
+                    width: 210mm; /* A4 portrait width */
+                    min-height: 297mm; /* A4 portrait height */
+                    margin: 0 auto;
+                }
+            }
+        media print {
+            html,
+            body {
+                background: white;
+            }
+            .print-button {
+                display: none;
+            }
+            .certificate {
+                margin: 0;
+                width: 210mm;
+                min-height: 297mm;
+                box-shadow: none;
+                page-break-after: always;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="print-button">
+
+        <button onclick="window.print()">
+            🖨 Print Certificate
+        </button>
+
+    </div>
+
+    <div class="certificate">
+
+        <div class="inner-border"></div>
+
+        <div class="watermark">
+            🕌
+        </div>
+
+        <!-- Header -->
+
+        <div class="header">
+
+            <div class="bismillah">
+                بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+            </div>
+
+            <div class="organization">
+                AHMADIYYA MUSLIM JAMA'AT, NIGERIA
+            </div>
+
+            <div class="incorporated">
+                Incorporated Trustee RC:132
+            </div>
+
+            <div class="certificate-number">
+                @Model.SerialNumber
+            </div>
+
+        </div>
+
+        <!-- Instruction -->
+
+        <div class="instruction">
+            كُلُّ غُلَامٍ مُرْتَهَنٌ بِعَقِيقَتِهِ، تُذْبَحُ عَنْهُ يَوْمَ سَابِعِهِ،
+            وَيُسَمَّى وَيُحْلَقُ رَأْسُهُ
+        </div>
+
+        <div class="instruction-english">
+
+            "Every New-born is under a Pledge of Aqeeqah which should be
+            performed by slaughtering a Goat or a Ram(one for female and
+            two for male child) on His Behalf on the seventh day and His Hair
+            Should be cut and he should be given name."
+
+        </div>
+
+        <!-- Title -->
+
+        <div class="certificate-title">
+            Aqiqah (Naming) Certificate
+        </div>
+
+        <!-- Child -->
+
+        <div class="field-row">
+
+            <div class="field">
+
+                <span class="field-label">
+                    Full Name of the Child
+                </span>
+
+                <span class="field-value">
+                    @Model.ChildName
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- DOB + Sex -->
+
+        <div class="field-row">
+
+            <div class="field half gap">
+
+                <span class="field-label">
+                    Date Of Birth:
+                </span>
+
+                <span class="field-value">
+                    @Model.DateOfBirth.ToString("dd/MM/yyyy")
+                </span>
+
+            </div>
+
+            <div class="field half">
+
+                <span class="field-label">
+                    Sex:
+                </span>
+
+                <span class="field-value">
+                    @Model.Gender
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Place + Jamaat -->
+
+        <div class="field-row">
+
+            <div class="field half gap">
+
+                <span class="field-label">
+                    Place Of Birth:
+                </span>
+
+                <span class="field-value">
+                    @Model.PlaceOfBirth
+                </span>
+
+            </div>
+
+            <div class="field half">
+
+                <span class="field-label">
+                    Jama'at:
+                </span>
+
+                <span class="field-value">
+                    @Model.JamaatName
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Father -->
+
+        <div class="field-row">
+
+            <div class="field">
+
+                <span class="field-label">
+                    FATHER'S FULL NAME:
+                </span>
+
+                <span class="field-value">
+                    @Model.FatherName
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Mother -->
+
+        <div class="field-row">
+
+            <div class="field">
+
+                <span class="field-label">
+                    MOTHER'S NAME:
+                </span>
+
+                <span class="field-value">
+                    @Model.MotherName
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Address -->
+
+        <div class="field-row">
+
+            <div class="field">
+
+                <span class="field-label">
+                    ADDRESS:
+                </span>
+
+                <span class="field-value">
+                    @Model.Address
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Missionary -->
+
+        <div class="missionary">
+
+            <div class="missionary-label">
+
+                NAME & SIGNATURE OF THE OFFICIATING<br />
+
+                MISSIONARY & DATE:
+
+            </div>
+
+            <div class="missionary-value">
+                @Model.OfficiatingMissionary
+            </div>
+
+            <div class="date">
+
+                @Model.IssueDate.ToString("dd/MM/yyyy")
+
+            </div>
+
+        </div>
+
+        <!-- Seal -->
+
+        <div class="seal">
+            AHMADIYYA<br />
+            MUSLIM<br />
+            JAMA'AT
+        </div>
+
+    </div>
+
+</body>
+
+</html>
