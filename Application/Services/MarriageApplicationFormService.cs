@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Interfaces;
+// using Infrastructure.DTOs.ReadOnlyFormDto;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,8 +44,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return application;
-    }
-
+    }  
 
     // =========================================================
     // GET BY ID
@@ -112,7 +113,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
     }
 
     /// <inheritdoc />
-    public async Task<bool> RevertStageAsync(
+    public async Task<RevertStageResult> RevertStageAsync(
         Guid formId,
         ApplicationStage targetStage,
         string reason,
@@ -130,18 +131,19 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             .FirstOrDefaultAsync(x => x.Id == formId, cancellationToken);
 
         if (form is null || !form.ApplicationStage.HasValue)
-            return false;
+            return RevertStageResult.FormNotFound;
 
         var currentStage = form.ApplicationStage.Value;
-        if (targetStage >= currentStage ||
-            form.MarriageApplication?.Status == ApplicationStatus.ApplicationApproved)
-            return false;
+        if (targetStage >= currentStage )
+            return RevertStageResult.InvalidTargetStage;
+        if (form.MarriageApplication?.Status == ApplicationStatus.ApplicationApproved)
+            return RevertStageResult.ApplicationAlreadyApproved; 
 
         var authorization = await _stageAuthorization.CanUserActAsync(
             verifierId, form.Id, currentStage, cancellationToken);
 
         if (!authorization.IsAllowed)
-            return false;
+            return RevertStageResult.Unauthorized;
 
         var rejection = new MarriageFormRejection
         {
@@ -159,7 +161,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         await _notificationService.NotifyRevertedAsync(form, rejection, cancellationToken);
-        return true;
+        return RevertStageResult.Success;
     }
 
     private async Task ClearSectionsAfterAsync(
@@ -196,8 +198,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         _dbContext.RemoveRange(sections);
     }
-}
-
+    
     // =========================================================
     // GUARDIAN / WAKEEL SIGNATURE
     // =========================================================
@@ -310,7 +311,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         // Save witness signature
         witness.Signature = signature;
-        witness.Date = DateTime.UtcNow;
+        witness.SignatureDate = DateTime.UtcNow;
 
         // Check guardian/wakeel
         bool guardianOrWakeelSigned =

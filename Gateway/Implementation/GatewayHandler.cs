@@ -21,7 +21,7 @@ public class GatewayHandler : IGatewayHandler
         _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
     }
 
-    public async Task<string[]?> GetMemberRoleAsync(int chandaNo)
+    public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
     {
         var url = $"{_apiUrl}{chandaNo}/userRoles";
         using var request = new HttpRequestMessage(
@@ -43,7 +43,7 @@ public class GatewayHandler : IGatewayHandler
         throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
-    public async Task<JamaatMember?> GetMemberByChandaNoAsync(int chandaNo)
+    public async Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo)
     {
         var url = $"{_apiUrl}members/{chandaNo}";
 
@@ -64,7 +64,6 @@ public class GatewayHandler : IGatewayHandler
 
         throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
-
     public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
     {
         var url = $"{_apiUrl}token";
@@ -74,25 +73,36 @@ public class GatewayHandler : IGatewayHandler
             Username = tokenRequest.ChandaNo,
             Password = tokenRequest.Password
         };
-        var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
-        var request = new HttpRequestMessage(HttpMethod.Post, url)
+        var jsonContent = new StringContent
+            (JsonConvert.SerializeObject(credentials), 
+            Encoding.UTF8, 
+            "application/json");
+
+        var request = new HttpRequestMessage
+            (HttpMethod.Post, 
+            url)
         {
             Content = jsonContent
         };
         
         var response = await _client.SendAsync(request);
+        
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
         }
         
-        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.NotFound)
+        if (response.StatusCode == HttpStatusCode.Unauthorized || 
+            response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
         }
 
-        throw new HttpRequestException(
-            $"Token API returned " + $"{(int)response.StatusCode} ({response.StatusCode}).");
+        var errorContent = await response.Content.ReadAsStringAsync();
+
+         throw new HttpRequestException(
+            $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). " +
+            $"Response: {errorContent}");
     }
 }

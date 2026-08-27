@@ -10,4 +10,14 @@ public interface IStageAuthorizationService
         Guid applicationFormId,
         ApplicationStage targetStage,
         CancellationToken cancellationToken = default);
+
+    /// Authorizes against the full paper-form workflow stage tracked on the form's FormStage field. 
+    /// Used by workflow methods whose stages — e.g.
+    /// AwaitingImamVerification, AwaitingWitnesses — have no counterpart in the review-chain
+    
+    Task<StageAuthorizationResult> CanUserActAsync(
+        Guid userId,
+        Guid applicationFormId,
+        MarriageFormStage targetStage,
+        CancellationToken cancellationToken = default);
 }

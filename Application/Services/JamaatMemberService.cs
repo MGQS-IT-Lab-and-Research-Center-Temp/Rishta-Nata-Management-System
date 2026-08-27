@@ -1,3 +1,4 @@
+
 using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -44,10 +45,9 @@ public class JamaatMemberService : IJamaatMemberService
                 NextOfKinName = member.NextOfKinName,
                 NextOfKinAddress = member.NextOfKinAddress,
                 Nationality = member.Nationality,
-
             // These should normally be handled by your application,
-            // not copied blindly from the gateway.
-            RoleId = member.RoleId,
+            // not copied blindly from the gateway
+                RoleId = member.RoleId,
                 IsSystemDefault = false,
 
                 CreatedAt = DateTime.UtcNow
@@ -61,8 +61,6 @@ public class JamaatMemberService : IJamaatMemberService
         }
 
         // SUBSEQUENT LOGINS
-        // Update only properties that can change in real time.
-
         existingMember.Surname = member.Surname;
         existingMember.FirstName = member.FirstName;
         existingMember.Email = member.Email;
@@ -80,17 +78,6 @@ public class JamaatMemberService : IJamaatMemberService
         existingMember.NextOfKinName = member.NextOfKinName;
         existingMember.NextOfKinAddress = member.NextOfKinAddress;
         existingMember.Nationality = member.Nationality;
-
-        // Don't change:
-        // existingMember.Id
-        // existingMember.chandaNo
-        // existingMember.Password
-        // existingMember.CreatedAt
-        // existingMember.CreatedBy
-        // existingMember.ResetToken
-        // existingMember.ResetTokenExpiry
-        // existingMember.IsSystemDefault
-
         existingMember.ModifiedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
