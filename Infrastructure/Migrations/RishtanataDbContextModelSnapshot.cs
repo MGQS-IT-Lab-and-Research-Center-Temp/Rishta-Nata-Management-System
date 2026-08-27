@@ -1625,119 +1625,120 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("MarriageApplication");
-            modelBuilder.Entity("Domain.Entities.RishtanataRecommendationSection", b =>
-                {
-                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
-                        .WithOne("RishtanataRecommendation")
-                        .HasForeignKey("Domain.Entities.RishtanataRecommendationSection", "MarriageApplicationFormId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("Domain.Entities.RishtanataRecommendationSection", b =>
+                        {
+                            b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                                .WithOne("RishtanataRecommendation")
+                                .HasForeignKey("Domain.Entities.RishtanataRecommendationSection", "MarriageApplicationFormId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.Navigation("MarriageApplicationForm");
-                });
+                            b.Navigation("MarriageApplicationForm");
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.HasOne("Infrastructure.Identity.ApplicationRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                        {
+                            b.HasOne("Infrastructure.Identity.ApplicationRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-                {
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                        {
+                            b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-                {
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                        {
+                            b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.HasOne("Infrastructure.Identity.ApplicationRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                        {
+                            b.HasOne("Infrastructure.Identity.ApplicationRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                            b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                        {
+                            b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("WitnessSignatureSection", b =>
-                {
-                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
-                        .WithMany("WitnessSignatures")
-                        .HasForeignKey("MarriageApplicationFormId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("WitnessSignatureSection", b =>
+                        {
+                            b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                                .WithMany("WitnessSignatures")
+                                .HasForeignKey("MarriageApplicationFormId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.Navigation("MarriageApplicationForm");
-                });
+                            b.Navigation("MarriageApplicationForm");
+                        });
 
-            modelBuilder.Entity("Domain.Entities.BrideGuardian", b =>
-                {
-                    b.Navigation("Brides");
-                });
+                    modelBuilder.Entity("Domain.Entities.BrideGuardian", b =>
+                        {
+                            b.Navigation("Brides");
+                        });
 
-            modelBuilder.Entity("Domain.Entities.FormApplication", b =>
-                {
-                    b.Navigation("Certificate")
-                        .IsRequired();
+                    modelBuilder.Entity("Domain.Entities.FormApplication", b =>
+                        {
+                            b.Navigation("Certificate")
+                                .IsRequired();
 
-                    b.Navigation("MarriageApplicationForm")
-                        .IsRequired();
-                });
+                            b.Navigation("MarriageApplicationForm")
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
-                {
-                    b.Navigation("AmirApproval");
+                    modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
+                        {
+                            b.Navigation("AmirApproval");
 
-                    b.Navigation("BrideSection");
+                            b.Navigation("BrideSection");
 
-                    b.Navigation("BridegroomSection");
+                            b.Navigation("BridegroomSection");
 
-                    b.Navigation("GuardianOrWakeelSection");
+                            b.Navigation("GuardianOrWakeelSection");
 
-                    b.Navigation("ImamVerification");
+                            b.Navigation("ImamVerification");
 
-                    b.Navigation("JamaatPresidentVerification");
+                            b.Navigation("JamaatPresidentVerification");
 
-                    b.Navigation("Rejections");
+                            b.Navigation("Rejections");
 
-                    b.Navigation("RishtanataRecommendation");
+                            b.Navigation("RishtanataRecommendation");
 
-                    b.Navigation("WitnessSignatures");
-                });
+                            b.Navigation("WitnessSignatures");
+                        });
 
-            modelBuilder.Entity("Domain.Entities.Role", b =>
-                {
-                    b.Navigation("Members");
-                });
+                    modelBuilder.Entity("Domain.Entities.Role", b =>
+                        {
+                            b.Navigation("Members");
+                        });
 #pragma warning restore 612, 618
+                });
         }
     }
 }
