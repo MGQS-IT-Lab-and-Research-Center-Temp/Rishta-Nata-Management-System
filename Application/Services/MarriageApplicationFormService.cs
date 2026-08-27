@@ -2,9 +2,11 @@
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
+using Infrastructure.DTOs;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Infrastructure.Mapper;
 
 namespace Application.Services;
 
@@ -44,7 +46,14 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         return application;
     }
-    
+    public async Task<ReadOnlyFormDto?> GetReadOnlyFormAsync(
+    Guid formId,
+    CancellationToken cancellationToken = default)
+    {
+        var form = await GetByIdAsync(formId, cancellationToken);
+
+        return form == null? null: ReadOnlyFormMapper.MapToReadOnlyDto(form);
+    }
     // =========================================================
     // GET BY ID
     // =========================================================
