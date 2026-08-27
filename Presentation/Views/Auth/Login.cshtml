@@ -50,7 +50,7 @@
                         <!-- Login Form -->
                         <form asp-controller="Auth" asp-action="Login" method="post">
                             @Html.AntiForgeryToken()
-                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                         <div class="mb-3">
                             <label for="chandaNo" class="form-label fw-semibold">
                                 Chanda Number
@@ -65,19 +65,7 @@
                                 required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-semibold">
-                                Password
-                            </label>
-
-                            <input
-                                type="password"
-                                class="form-control form-control-lg"
-                                id="password"
-                                name="Password"
-                                placeholder="Enter your password"
-                                required>
-                        </div>
+                            </div>
 
                         <div class="d-grid">
                             <button
@@ -87,7 +75,7 @@
                             </button>
                         </div>
 
-                    </form>
+                        </form>
 
                         <!-- Register -->
                         <div class="text-center mt-4">

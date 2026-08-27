@@ -28,6 +28,36 @@ namespace Infrastructure.Configurations
                     .OnDelete(DeleteBehavior.Cascade);
 
             // =====================================================
+            // Verification & approval section relationships (D3).
+            // Configured explicitly so convention discovery cannot pair the
+            // shared FK property with more than one relationship.
+            // =====================================================
+
+            builder.HasOne(f => f.ImamVerification)
+                    .WithOne(s => s.MarriageApplicationForm)
+                    .HasForeignKey<ImamVerificationSection>(
+                         s => s.MarriageApplicationFormId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(f => f.JamaatPresidentVerification)
+                    .WithOne(s => s.MarriageApplicationForm)
+                    .HasForeignKey<JamaatPresidentVerificationSection>(
+                         s => s.MarriageApplicationFormId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(f => f.RishtanataRecommendation)
+                    .WithOne(s => s.MarriageApplicationForm)
+                    .HasForeignKey<RishtanataRecommendationSection>(
+                         s => s.MarriageApplicationFormId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(f => f.AmirApproval)
+                    .WithOne(s => s.MarriageApplicationForm)
+                    .HasForeignKey<AmirApprovalSection>(
+                         s => s.MarriageApplicationFormId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            // =====================================================
             // Application
             // =====================================================
 

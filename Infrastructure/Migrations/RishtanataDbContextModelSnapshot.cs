@@ -54,6 +54,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime?>("ApprovedDateOfNikah")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -68,6 +71,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("SignatureDate")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -504,6 +511,10 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("AddressJamaat")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -518,6 +529,18 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SignatureDate")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Tel")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -725,6 +748,18 @@ namespace Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SignatureDate")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Tel")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MarriageApplicationFormId")
@@ -832,6 +867,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");
+
+                    b.Property<Guid?>("BridegroomSectionId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("BridegroomSignatureTel")
                         .IsRequired()
@@ -1014,6 +1052,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BridegroomSectionId");
+
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
@@ -1128,6 +1168,18 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("SignatureDate")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("WakeelDeclaration")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("WakeelName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -1477,6 +1529,47 @@ namespace Infrastructure.Migrations
                     b.Navigation("MarriageApplicationForm");
                 });
 
+            modelBuilder.Entity("Domain.Entities.JamaatMember", b =>
+                {
+                    b.HasOne("Domain.Entities.JamaatMember", "JamaatMember")
+                        .WithMany()
+                        .HasForeignKey("JamaatMemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("GuardianOrWakeelSection")
+                        .HasForeignKey("Domain.Entities.GuardianOrWakeelSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JamaatMember");
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ImamVerificationSection", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("ImamVerification")
+                        .HasForeignKey("Domain.Entities.ImamVerificationSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
+            modelBuilder.Entity("Domain.Entities.JamaatPresidentVerificationSection", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("JamaatPresidentVerification")
+                        .HasForeignKey("Domain.Entities.JamaatPresidentVerificationSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
             modelBuilder.Entity("Domain.Entities.JamaatPresidentVerificationSection", b =>
                 {
                     b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
@@ -1490,11 +1583,17 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
                 {
+                    b.HasOne("Domain.Entities.BridegroomFormSection", "BridegroomSection")
+                        .WithMany()
+                        .HasForeignKey("BridegroomSectionId");
+
                     b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
                         .WithOne("MarriageApplicationForm")
                         .HasForeignKey("Domain.Entities.MarriageApplicationForm", "MarriageApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("BridegroomSection");
 
                     b.Navigation("MarriageApplication");
                 });
