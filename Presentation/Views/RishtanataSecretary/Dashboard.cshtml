@@ -1,431 +1,309 @@
-﻿
-@model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel
+@model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.RishtanataSecretaryDashboardViewModel
+
 
 @{
+    Layout = "_SecretaryLayout";
     ViewData["Title"] = "Rishtanata Secretary Dashboard";
 }
 
-<div class="secretary-layout">
+<div class="container-fluid py-4">
 
-    <!-- Sidebar -->
-    <aside class="secretary-sidebar">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div class="sidebar-title">
-            Rishtanata
+        <div>
+            <h2 class="fw-bold mb-1">
+                Rishtanata Secretary Dashboard
+            </h2>
+
+            <p class="text-muted mb-0">
+                Welcome,
+                <strong>@Model.SecretaryName</strong>
+            </p>
         </div>
 
-        <nav class="nav flex-column">
+        <div>
+            <span class="badge bg-primary fs-6 px-3 py-2">
+                @DateTime.Now.ToString("dddd, dd MMMM yyyy")
+            </span>
+        </div>
 
-            <a class="nav-link"
-               asp-controller="RishtanataSecretary"
-               asp-action="Dashboard">
-                 Dashboard
-            </a>
+    </div>
 
-            <a class="nav-link"
-               asp-controller="RishtanataSecretary"
-               asp-action="PendingApprovals">
-                 Pending Approvals
-            </a>
+    <!-- Statistics -->
+    <div class="row g-4 mb-5">
 
-            <a class="nav-link"
-               asp-controller="RishtanataSecretary"
-               asp-action="MarriedCouples">
-                 Married Couples
-            </a>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
 
-            <a class="nav-link"
-               asp-controller="RishtanataSecretary"
-               asp-action="JamaatMembers">
-                 Jama'at Members
-            </a>
+                    <small class="text-muted">
+                        Pending President Approvals
+                    </small>
 
-            <a class="nav-link"
-               asp-controller="Reports"
-               asp-action="Index">
-                 Reports
-            </a>
-
-            <a class="nav-link logout-link"
-               asp-controller="Account"
-               asp-action="Logout">
-                 Logout
-            </a>
-
-        </nav>
-
-    </aside>
-
-    <!-- Main Dashboard Content -->
-    <main class="secretary-content">
-
-        <div class="container-fluid py-4">
-
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-
-                <div>
-                    <h2 class="fw-bold mb-1">
-                        Rishtanata Secretary Dashboard
+                    <h2 class="fw-bold text-warning mt-2">
+                        @Model.PendingApprovals
                     </h2>
 
-                    <p class="text-muted mb-0">
-                        Welcome,
-                        <strong>@Model.SecretaryName</strong>
-                    </p>
-                </div>
+                    <small class="text-muted">
+                        Awaiting Secretary Review
+                    </small>
 
-                <div>
-                    <span class="badge bg-primary fs-6 px-3 py-2">
-                        @DateTime.Now.ToString("dddd, dd MMMM yyyy")
-                    </span>
                 </div>
-
             </div>
+        </div>
 
-            <!-- Statistics -->
-
-            <div class="row g-4 mb-5">
-
-                <div class="col-lg-3 col-md-6">
-
-                    <div class="card border-0 shadow-sm h-100">
-
-                        <div class="card-body">
-
-                            <small class="text-muted">
-                                Pending President Approvals
-                            </small>
-
-                            <h2 class="fw-bold text-warning mt-2">
-                                @Model.PendingApprovals
-                            </h2>
-
-                            <small class="text-muted">
-                                Awaiting Secretary Review
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-
-                    <div class="card border-0 shadow-sm h-100">
-
-                        <div class="card-body">
-
-                            <small class="text-muted">
-                                Approved Applications
-                            </small>
-
-                            <h2 class="fw-bold text-success mt-2">
-                                @Model.ApprovedApplications
-                            </h2>
-
-                            <small class="text-muted">
-                                Successfully Approved
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-
-                    <div class="card border-0 shadow-sm h-100">
-
-                        <div class="card-body">
-
-                            <small class="text-muted">
-                                Married Couples
-                            </small>
-
-                            <h2 class="fw-bold text-primary mt-2">
-                                @Model.MarriedCouples
-                            </h2>
-
-                            <small class="text-muted">
-                                Registered Marriages
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-
-                    <div class="card border-0 shadow-sm h-100">
-
-                        <div class="card-body">
-
-                            <small class="text-muted">
-                                Jama'at Members
-                            </small>
-
-                            <h2 class="fw-bold text-dark mt-2">
-                                @Model.TotalMembers
-                            </h2>
-
-                            <small class="text-muted">
-                                Registered Members
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- Quick Actions -->
-
-            <div class="card shadow-sm border-0 mb-5">
-
-                <div class="card-header bg-white">
-
-                    <h5 class="mb-0">
-                        Quick Actions
-                    </h5>
-
-                </div>
-
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
 
-                    <div class="row g-3">
+                    <small class="text-muted">
+                        Approved Applications
+                    </small>
 
-                        <div class="col-md-3">
+                    <h2 class="fw-bold text-success mt-2">
+                        @Model.ApprovedApplications
+                    </h2>
 
-                            <a asp-controller="RishtanataSecretary"
-                               asp-action="PendingApprovals"
-                               class="btn btn-outline-primary w-100 py-3">
-
-                                Review Pending Applications
-
-                            </a>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <a asp-controller="RishtanataSecretary"
-                               asp-action="MarriedCouples"
-                               class="btn btn-outline-success w-100 py-3">
-
-                                View Married Couples
-
-                            </a>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <a asp-controller="RishtanataSecretary"
-                               asp-action="JamaatMembers"
-                               class="btn btn-outline-secondary w-100 py-3">
-
-                                Jama'at Members
-
-                            </a>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <a asp-controller="Reports"
-                               asp-action="Index"
-                               class="btn btn-outline-dark w-100 py-3">
-
-                                Reports
-
-                            </a>
-
-                        </div>
-
-                    </div>
+                    <small class="text-muted">
+                        Successfully Approved
+                    </small>
 
                 </div>
-
             </div>
+        </div>
 
-            <!-- Pending Applications -->
-
-            <div class="card shadow-sm border-0 mb-5">
-
-                <div class="card-header bg-white">
-
-                    <div class="d-flex justify-content-between align-items-center">
-
-                        <div>
-
-                            <h4 class="mb-1">
-                                Pending Applications
-                            </h4>
-
-                            <small class="text-muted">
-                                Applications forwarded by Jama'at Presidents awaiting your decision.
-                            </small>
-
-                        </div>
-
-                        <span class="badge bg-warning text-dark fs-6">
-                            @Model.PendingApprovals Pending
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="table-responsive">
-
-                    <table class="table table-hover align-middle mb-0">
-
-                        <thead class="table-light">
-
-                            <tr>
-
-                                <th>ID</th>
-
-                                <th>Groom</th>
-
-                                <th>Bride</th>
-
-                                <th>Jama'at</th>
-
-                                <th>President</th>
-
-                                <th>Date Submitted</th>
-
-                                <th>Status</th>
-
-                                <th></th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            @foreach (var item in Model.PendingApplications)
-                            {
-
-                                <tr>
-
-                                    <td>
-
-                                        <strong>
-                                            @item.ApplicationNumber
-                                        </strong>
-
-                                    </td>
-
-                                    <td>@item.GroomName</td>
-
-                                    <td>@item.BrideName</td>
-
-                                    <td>@item.JamaatName</td>
-
-                                    <td>@item.PresidentName</td>
-
-                                    <td>
-                                        @item.SubmittedDate.ToString("dd MMM yyyy")
-                                    </td>
-
-                                    <td>
-
-                                        <span class="badge bg-warning text-dark">
-
-                                            Pending Review
-
-                                        </span>
-
-                                    </td>
-
-                                    <td>
-
-                                        <a asp-controller="RishtanataSecretary"
-                                           asp-action="Review"
-                                           asp-route-id="@item.Id"
-                                           class="btn btn-primary btn-sm">
-
-                                            Review
-
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-
-                            }
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-            <!-- Recently Approved -->
-
-            <div class="card shadow-sm border-0">
-
-                <div class="card-header bg-white">
-
-                    <h4 class="mb-0">
-
-                        Recent Decisions
-
-                    </h4>
-
-                </div>
-
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
 
-                    @foreach (var activity in Model.RecentActivities)
-                    {
+                    <small class="text-muted">
+                        Married Couples
+                    </small>
 
-                        <div class="d-flex justify-content-between border-bottom py-3">
+                    <h2 class="fw-bold text-primary mt-2">
+                        @Model.MarriedCouples
+                    </h2>
 
-                            <div>
+                    <small class="text-muted">
+                        Registered Marriages
+                    </small>
 
-                                <strong>
+                </div>
+            </div>
+        </div>
 
-                                    @activity.Description
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
 
-                                </strong>
+                    <small class="text-muted">
+                        Jama'at Members
+                    </small>
 
-                                <div class="text-muted">
+                    <h2 class="fw-bold text-dark mt-2">
+                        @Model.TotalMembers
+                    </h2>
 
-                                    @activity.ApplicationNumber
+                    <small class="text-muted">
+                        Registered Members
+                    </small>
 
-                                </div>
+                </div>
+            </div>
+        </div>
 
-                            </div>
+    </div>
 
-                            <small class="text-muted">
+    <!-- Quick Actions -->
+    <div class="card shadow-sm border-0 mb-5">
 
-                                @activity.Date.ToString("dd MMM yyyy hh:mm tt")
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                Quick Actions
+            </h5>
+        </div>
 
-                            </small>
+        <div class="card-body">
 
-                        </div>
+            <div class="row g-3">
 
-                    }
+                <div class="col-md-3">
+                    <a asp-controller="RishtanataSecretary"
+                       asp-action="PendingApprovals"
+                       class="btn btn-outline-primary w-100 py-3">
+                        Review Pending Applications
+                    </a>
+                </div>
 
+                <div class="col-md-3">
+                    <a asp-controller="RishtanataSecretary"
+                       asp-action="MarriedCouples"
+                       class="btn btn-outline-success w-100 py-3">
+                        View Married Couples
+                    </a>
+                </div>
+
+                <div class="col-md-3">
+                    <a asp-controller="RishtanataSecretary"
+                       asp-action="JamaatMembers"
+                       class="btn btn-outline-secondary w-100 py-3">
+                        Jama'at Members
+                    </a>
+                </div>
+
+                <div class="col-md-3">
+                    <a asp-controller="Reports"
+                       asp-action="Index"
+                       class="btn btn-outline-dark w-100 py-3">
+                        Reports
+                    </a>
                 </div>
 
             </div>
 
         </div>
 
-    </main>
+    </div>
+
+    <!-- Pending Applications -->
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-header bg-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+                    <h4 class="mb-1">
+                        Pending Applications
+                    </h4>
+
+                    <small class="text-muted">
+                        Applications forwarded by Jama'at Presidents awaiting your decision.
+                    </small>
+                </div>
+
+                <span class="badge bg-warning text-dark fs-6">
+                    @Model.PendingApprovals Pending
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Groom</th>
+                        <th>Bride</th>
+                        <th>Jama'at</th>
+                        <th>President</th>
+                        <th>Date Submitted</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model.PendingApplications)
+                    {
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    @item.ApplicationNumber
+                                </strong>
+                            </td>
+
+                            <td>
+                                @item.GroomName
+                            </td>
+
+                            <td>
+                                @item.BrideName
+                            </td>
+
+                            <td>
+                                @item.JamaatName
+                            </td>
+
+                            <td>
+                                @item.PresidentName
+                            </td>
+
+                            <td>
+                                @item.SubmittedDate.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    Pending Review
+                                </span>
+                            </td>
+
+                            <td>
+                                <a asp-controller="RishtanataSecretary"
+                                   asp-action="Review"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-primary btn-sm">
+                                    Review
+                                </a>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Recently Approved -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white">
+
+            <h4 class="mb-0">
+                Recent Decisions
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            @foreach (var activity in Model.RecentActivities)
+            {
+                <div class="d-flex justify-content-between border-bottom py-3">
+
+                    <div>
+
+                        <strong>
+                            @activity.Description
+                        </strong>
+
+                        <div class="text-muted">
+                            @activity.ApplicationNumber
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+                        @activity.Date.ToString("dd MMM yyyy hh:mm tt")
+                    </small>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
 
 </div>

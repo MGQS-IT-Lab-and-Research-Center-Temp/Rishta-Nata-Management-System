@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.DTOs.MarriageApplication;
+using Infrastructure.DTOs.FormApplication;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +15,6 @@ namespace Application.Services
         public FormApplicationService(RishtanataDbContext context)
         {
             _context = context;
-        }
-
-        public async Task<List<FormApplication>> GetAllApplicationsAsync()
-        {
-            return new List<FormApplication>();
         }
 
         public async Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto)

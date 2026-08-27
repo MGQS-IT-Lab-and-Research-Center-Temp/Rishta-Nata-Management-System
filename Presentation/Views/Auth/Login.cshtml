@@ -48,68 +48,46 @@
                         </div>
 
                         <!-- Login Form -->
-                        <form>
+                        <form asp-controller="Auth" asp-action="Login" method="post">
+                            @Html.AntiForgeryToken()
 
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label for="email" class="form-label fw-semibold">
-                                    Email Address
-                                </label>
+                        <div class="mb-3">
+                            <label for="chandaNo" class="form-label fw-semibold">
+                                Chanda Number
+                            </label>
 
-                                <input
-                                    type="email"
-                                    class="form-control form-control-lg"
-                                    id="email"
-                                    placeholder="Enter your email"
-                                    required>
-                            </div>
+                            <input
+                                type="text"
+                                class="form-control form-control-lg"
+                                id="chandaNo"
+                                name="ChandaNo"
+                                placeholder="Enter your Chanda number"
+                                required>
+                        </div>
 
-                            <!-- Password -->
-                            <div class="mb-3">
-                                <label for="password" class="form-label fw-semibold">
-                                    Password
-                                </label>
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">
+                                Password
+                            </label>
 
-                                <input
-                                    type="password"
-                                    class="form-control form-control-lg"
-                                    id="password"
-                                    placeholder="Enter your password"
-                                    required>
-                            </div>
+                            <input
+                                type="password"
+                                class="form-control form-control-lg"
+                                id="password"
+                                name="Password"
+                                placeholder="Enter your password"
+                                required>
+                        </div>
 
-                            <!-- Remember + Forgot -->
-                            <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-grid">
+                            <button
+                                type="submit"
+                                class="btn btn-success btn-lg login-button">
+                                Login
+                            </button>
+                        </div>
 
-                                <div class="form-check">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="rememberMe">
-
-                                    <label
-                                        class="form-check-label"
-                                        for="rememberMe">
-                                        Remember me
-                                    </label>
-                                </div>
-
-                                <a href="#" class="text-success text-decoration-none">
-                                    Forgot Password?
-                                </a>
-
-                            </div>
-
-                            <!-- Login Button -->
-                            <div class="d-grid">
-                                <button
-                                    type="submit"
-                                    class="btn btn-success btn-lg login-button">
-                                    Login
-                                </button>
-                            </div>
-
-                        </form>
+                    </form>
 
                         <!-- Register -->
                         <div class="text-center mt-4">

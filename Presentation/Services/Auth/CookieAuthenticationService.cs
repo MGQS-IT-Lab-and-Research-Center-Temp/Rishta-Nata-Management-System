@@ -1,48 +1,65 @@
 ﻿using Domain.Entities;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Presentation.Constants.Roles;
+using System.Security.Claims;
+
 namespace Presentation.Services.Auth;
+
 
 public class CookieAuthenticationService : ICookieAuthenticationService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IConfiguration _configuration;
 
-    public CookieAuthenticationService(IHttpContextAccessor httpContextAccessor)
+    public CookieAuthenticationService(
+        IHttpContextAccessor httpContextAccessor,
+        IConfiguration configuration)
     {
         _httpContextAccessor = httpContextAccessor;
+        _configuration = configuration;
     }
 
-    public async Task SignInAsync(JamaatMember jamaatMember, bool isRishtanataSecretary)
+    public async Task<string> SignInAsync(JamaatMember jamaatMember)
     {
-        var role = isRishtanataSecretary ? RoleNames.RishtanataSecretary : jamaatMember.Role.Name;
+        var secretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
+
+        var role = !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo ? RoleNames.RishtanataSecretary : jamaatMember.Role.Name;
+
+        var identity = new ClaimsIdentity(BuildClaims(jamaatMember, role), CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var principal = new ClaimsPrincipal(identity);
+
+        await _httpContextAccessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        return role;
+    }
+    public async Task SignOutAsync()
+    {
+        await _httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    }
+    static  List<Claim> BuildClaims(JamaatMember jamaatMember, string role)
+    {
         var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
-                new Claim(ClaimTypes.Name, jamaatMember.chandaNo),
-                new Claim(ClaimTypes.Role, role.ToLowerInvariant()),
-                new Claim("HierarchyLevel", jamaatMember.Role.HierarchyLevel.ToString()),
-            };
+        {
+            new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
+            new(ClaimTypes.Name, jamaatMember.ChandaNo),
+            new(ClaimTypes.Role, role),
+            new("HierarchyLevel", jamaatMember.Role.HierarchyLevel.ToString())
+        };
 
         switch (jamaatMember.Role.Name)
         {
             case RoleNames.JamaatSecretary:
-                claims.Add(new Claim("Jamaat", jamaatMember.jamaatName));
+                claims.Add(new Claim("Jamaat", jamaatMember.JamaatName));
                 break;
             case RoleNames.CircuitSecretary:
-                claims.Add(new Claim("Circuit", jamaatMember.circuitName));
+                claims.Add(new Claim("Circuit", jamaatMember.CircuitName));
                 break;
         }
 
-        var identity = new ClaimsIdentity(claims, "MyCookieAuth");
-        var principal = new ClaimsPrincipal(identity);
-
-        await _httpContextAccessor.HttpContext!.SignInAsync("MyCookieAuth", principal);
+        return claims;
     }
 
-    public async Task SignOutAsync()
-    {
-        await _httpContextAccessor.HttpContext!.SignOutAsync();
-    }
 
 }
