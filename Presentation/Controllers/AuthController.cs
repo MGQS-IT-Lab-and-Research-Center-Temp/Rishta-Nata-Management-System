@@ -90,7 +90,7 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // Get member using EMAIL
+        // Get member using chandaNo
         var jamaatMember =
             await _gatewayHandler.GetMemberByChandaNoAsync(model.ChandaNo);
 
