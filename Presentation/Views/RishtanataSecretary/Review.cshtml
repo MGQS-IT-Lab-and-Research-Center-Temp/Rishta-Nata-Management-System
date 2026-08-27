@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.ReviewApplicationViewModel
 
 @{
@@ -15,7 +15,7 @@
            asp-action="PendingApprovals"
            class="btn btn-outline-secondary btn-sm mb-3">
 
-            ← Back to Pending Approvals
+            ? Back to Pending Approvals
 
         </a>
 
@@ -348,27 +348,18 @@
 
                     <button class="btn btn-success">
 
-                        ✓ Approve Application
+                        ? Approve Application
 
                     </button>
 
                 </form>
 
-                <form asp-action="Reject"
-                      asp-controller="RishtanataSecretary"
-                      method="post">
-
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.Id" />
-
-                    <button class="btn btn-danger">
-
-                        ✕ Reject Application
-
-                    </button>
-
-                </form>
+                                <button type="button" 
+                        class="btn btn-danger" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#rejectionModal">
+                    ? Reject Application
+                </button>
 
                 <form asp-action="ReturnToPresident"
                       asp-controller="RishtanataSecretary"
@@ -380,7 +371,7 @@
 
                     <button class="btn btn-warning">
 
-                        ↺ Return to President
+                        ? Return to President
 
                     </button>
 
@@ -416,7 +407,7 @@
 
                         <div class="text-success mt-2">
 
-                            ✓ Completed
+                            ? Completed
 
                         </div>
 
@@ -434,7 +425,7 @@
 
                         <div class="text-success mt-2">
 
-                            ✓ Completed
+                            ? Completed
 
                         </div>
 
@@ -460,7 +451,7 @@
 
                         <div class="text-primary mt-2">
 
-                            ● Current
+                            ? Current
 
                         </div>
 
@@ -497,3 +488,7 @@
     </div>
 
 </div>
+
+@* Rejection Modal *@
+@{ ViewData["FormId"] = Model.Id; }
+@await Html.PartialAsync("_RejectionModalPartial")
