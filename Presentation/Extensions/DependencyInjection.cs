@@ -15,6 +15,7 @@ using Presentation.Services.Auth;
 using Domain.Abstractions;
 using Domain.Events;
 using Application.EventHandlers;
+using Application.Roles;
 
 namespace Presentation.Extensions;
 
@@ -26,8 +27,8 @@ public static class DependencyInjection
     {
         services.AddMySQLServer<RishtanataDbContext>(
             configuration.GetConnectionString("DefaultConnection")!);
-      
-        services.AddIdentity<ApplicationUser, ApplicationRole>()
+            
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<RishtanataDbContext>()
             .AddDefaultTokenProviders();
 
