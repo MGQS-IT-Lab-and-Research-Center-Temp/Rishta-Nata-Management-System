@@ -43,25 +43,8 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return application;
-    }  
-
-    // =========================================================
-    // GET BY ID
-    // =========================================================
-
-    public async Task<MarriageApplicationForm?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.MarriageApplicationForms
-            .Include(x => x.GuardianOrWakeelSection)
-            .Include(x => x.WitnessSignatures)
-            .FirstOrDefaultAsync(
-                x => x.Id == id,
-                cancellationToken);
     }
-
-
+    
     // =========================================================
     // GET BY ID
     // =========================================================
