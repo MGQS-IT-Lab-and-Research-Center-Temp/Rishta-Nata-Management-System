@@ -1,17 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Presentation.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Presentation.Constants.Roles;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
+using Presentation.Mapping.JamaatMember;
+using Application.Services;
+using Application.Interfaces;
+using Infrastructure.Mapper;
 
 namespace Presentation.Controllers
 {
+    [Authorize(Policy = "RequireRishtanataSecretary")]
     public class RishtanataSecretaryController : Controller
     {
         private readonly IRishtanataSecretaryService _service;
+        private readonly IRoleAssignmentService _roleService;
 
-        public RishtanataSecretaryController(IRishtanataSecretaryService service)
+        public RishtanataSecretaryController(
+            IRishtanataSecretaryService service,
+            IRoleAssignmentService roleService)
         {
             _service = service;
+            _roleService = roleService;
         }
 
         // Dashboard page
@@ -40,7 +50,20 @@ namespace Presentation.Controllers
         public async Task<IActionResult> MarriedCouples()
         {
             var marriedCouples = _service.GetMarriedCouples();
+
             return View(marriedCouples);
+        }
+
+        // View all Jama'at members
+        public IActionResult JamaatMembers()
+        {
+            var members = _service.GetMembers();
+
+            var viewModels = members
+                .Select(JamaatMemberMapping.ToViewModel)
+                .ToList();
+
+            return View(viewModels);
         }
 
         // Review a specific application
@@ -59,6 +82,16 @@ namespace Presentation.Controllers
             var model = MemberProfileMapping.ToViewModel(dto);
 
             return View(model);
+        }
+
+        // Edit Role of a specific Jamaat Member
+        public async Task<IActionResult> EditRoles(Guid id)
+        {
+            var dto = await _roleService.GetRoleManagementAsync(id);
+
+            var viewModel = RoleManagementMapper.toViewModel(dto);
+
+            return View(viewModel);
         }
 
         [HttpPost]

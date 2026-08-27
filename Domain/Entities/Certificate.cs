@@ -11,7 +11,10 @@ public class Certificate : AuditableEntity
     public string BrideName { get; set; } = string.Empty;
     public string BrideFatherName { get; set; } = string.Empty;
     public string BrideResidentOf { get; set; } = string.Empty;
-
+    
+    public int MarriageApplicationFormId { get; set; }
+    public MarriageApplicationForm MarriageApplicationForm { get; set; } = default!;
+    
     // Bridegroom
     public string BridegroomName { get; set; } = string.Empty;
     public string BridegroomFatherName { get; set; } = string.Empty;
@@ -22,14 +25,16 @@ public class Certificate : AuditableEntity
     public decimal DowryAmount { get; set; }
 
     // Application relationship
-    public Guid MarriageApplicationId { get; set; }
-    public FormApplication MarriageApplication { get; set; } = null!;
+    public Guid FormApplicationId { get; set; }
+    public FormApplication FormApplication { get; set; } = null!;
 
     // Certificate administration
     public DateTime IssueDate { get; set; }
 
     public Guid IssuedByUserId { get; set; }
 
-    public string? CertificateFilePath { get; set; } 
+    public string? CertificateFilePath { get; set; }
    
-   }
+    // Deliberately NOT declared here: Nikah serial number.
+    // It belongs to MarriageApplication; read it through the relationship once wired up.
+}

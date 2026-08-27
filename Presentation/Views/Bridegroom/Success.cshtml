@@ -1,0 +1,115 @@
+
+@model Presentation.ViewModel.MarriageApplicationFormViewModel
+
+@{
+    ViewData["Title"] = "Application Submitted";
+}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            <div class="card shadow-sm border-0 text-center">
+
+                <div class="card-body p-5">
+
+                    <div class="mb-4">
+                        <div class="rounded-circle bg-success bg-opacity-10
+                            d-inline-flex align-items-center
+                            justify-content-center" style="width: 80px; height: 80px;">
+
+                            <span class="text-success fs-1">
+                                ✓
+                            </span>
+
+                        </div>
+                    </div>
+
+                    <h2 class="fw-bold mb-3">
+                        Application Submitted Successfully
+                    </h2>
+
+                    <p class="text-muted mb-4">
+                        Your marriage application has been submitted
+                        successfully. Please keep your reference number
+                        for future enquiries and application tracking.
+                    </p>
+
+                    <div class="bg-light rounded p-4 mb-4">
+
+                        <div class="text-muted small mb-1">
+                            Application Reference Number
+                        </div>
+
+                        <div class="fs-4 fw-bold">
+                            @Model.ReferenceNumber
+                        </div>
+
+                    </div>
+
+                    <div class="row text-start mb-4">
+
+                        <div class="col-md-6 mb-3">
+                            <div class="text-muted small">
+                                Bride
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.BrideName
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="text-muted small">
+                                Bridegroom
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.BridegroomName
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="text-muted small">
+                                Proposed Nikah Date
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.ProposedNikahDate.ToString("dd MMMM yyyy")
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="text-muted small">
+                                Venue
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.Venue
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-2">
+
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary px-4">
+                            Back to Home
+                        </a>
+
+                        <a asp-action="Detail" asp-route-id="@Model.MarriageApplicationId" class="btn btn-primary px-4">
+                            View Application
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+```
