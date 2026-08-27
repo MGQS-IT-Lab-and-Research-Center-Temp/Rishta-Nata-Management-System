@@ -197,7 +197,6 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         _dbContext.RemoveRange(sections);
     }
-
     
     // =========================================================
     // GUARDIAN / WAKEEL SIGNATURE
@@ -337,4 +336,3 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         return true;
     }
 }
-
