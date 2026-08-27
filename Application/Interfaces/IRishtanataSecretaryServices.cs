@@ -1,5 +1,6 @@
 ﻿using Infrastructure.DTOs.MarriedCoupleDto;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
+using Infrastructure.DTOs.JamaatMember;
 
 public interface IRishtanataSecretaryService
 {

@@ -112,19 +112,7 @@
                                     Forgot Password?
                                 </a>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-semibold">
-                                Password
-                            </label>
-
-                            <input
-                                type="password"
-                                class="form-control form-control-lg"
-                                id="password"
-                                name="Password"
-                                placeholder="Enter your password"
-                                required>
-                        </div>
+                            </div>
 
                             <!-- Return URL -->
                             @if (!string.IsNullOrWhiteSpace(Model.ReturnUrl))
@@ -136,12 +124,12 @@
                             <!-- Login Button -->
                             <div class="d-grid">
                                 <button type="submit"
-                                        class="btn btn-success btn-lg login-button">
+                                        class="btn btn-success login-button">
                                     Login
                                 </button>
                             </div>
 
-                    </form>
+                        </form>
 
                         <!-- Register -->
                         <div class="text-center mt-4">
