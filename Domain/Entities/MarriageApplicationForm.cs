@@ -21,7 +21,9 @@ namespace Domain.Entities
         public string ReferenceNumber { get; set; } = string.Empty;
         public DateTime ProposedNikahDate { get; set; }
         public string Venue { get; set; } = string.Empty;
-
+        
+        public Certificate? Certificate { get; set; }
+        
         // ===== Bride =====
         public string BrideMembershipNo { get; set; } = string.Empty;
         public string BrideName { get; set; } = string.Empty;

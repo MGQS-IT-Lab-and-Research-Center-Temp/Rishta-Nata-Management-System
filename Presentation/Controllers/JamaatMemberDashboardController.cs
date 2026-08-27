@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Presentation.Controllers
 {
-    public class MemberDashboardController : Controller
+    public class JamaatMemberDashboardController : Controller
     {
         public IActionResult Index()
         {
