@@ -392,7 +392,7 @@ public sealed class StageAuthorizationServiceTests : IDisposable
         JamaatName = "Lagos",
         CircuitName = "Lagos Circuit",
         Sex = sex,
-        Password = "seed-only",
+      
         RoleId = role.Id,
         Role = role
     };
