@@ -1,4 +1,4 @@
-@model Presentation.ViewModels.JamaatPresidentReviewViewModel
+@model Infrastructure.DTOs.JamaatPresidentDashboardDto.JamaatPresidentReviewDto
 
 @{
     ViewData["Title"] = "Review Nikah Application";
@@ -894,27 +894,14 @@
                 </form>
 
 
-                <!-- REJECT -->
-                <form asp-controller="JamaatPresident"
-                      asp-action="Reject"
-                      method="post">
-
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.Id" />
-
-                    <button type="submit"
-                            class="btn btn-danger"
-                            onclick="return confirm('Are you sure you want to reject this application?');">
-
-                        ✕ Reject Application
-
-                    </button>
-
-                </form>
-
-
-                <!-- MORE INFORMATION -->
+                                <!-- REJECT -->
+                <button type="button" 
+                        class="btn btn-danger" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#rejectionModal">
+                    ? Reject Application
+                </button>
+<!-- MORE INFORMATION -->
                 <form asp-controller="JamaatPresident"
                       asp-action="RequestMoreInformation"
                       method="post">
@@ -1026,3 +1013,6 @@
     </div>
 
 </div>
+@* Rejection Modal *@
+@{ ViewData["FormId"] = Model.Id; }
+@await Html.PartialAsync("_RejectionModalPartial")

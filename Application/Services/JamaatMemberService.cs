@@ -1,3 +1,4 @@
+
 using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -16,12 +17,13 @@ public class JamaatMemberService : IJamaatMemberService
 
     public async Task<JamaatMember> CreateOrUpdateAsync(JamaatMember member)
     {
-        var existingMember = await _context.JamaatMembers
-            .FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
+        var existingMember = await _context.JamaatMembers.FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
 
         // FIRST LOGIN
         if (existingMember == null)
         {
+            var resolvedRoleId = await ResolveRoleIdAsync(member);
+
             var newMember = new JamaatMember
             {
                 Surname = member.Surname,
@@ -44,10 +46,9 @@ public class JamaatMemberService : IJamaatMemberService
                 NextOfKinName = member.NextOfKinName,
                 NextOfKinAddress = member.NextOfKinAddress,
                 Nationality = member.Nationality,
-
             // These should normally be handled by your application,
-            // not copied blindly from the gateway.
-            RoleId = member.RoleId,
+            // not copied blindly from the gateway
+                RoleId = resolvedRoleId ?? Guid.Empty,
                 IsSystemDefault = false,
 
                 CreatedAt = DateTime.UtcNow
@@ -61,8 +62,6 @@ public class JamaatMemberService : IJamaatMemberService
         }
 
         // SUBSEQUENT LOGINS
-        // Update only properties that can change in real time.
-
         existingMember.Surname = member.Surname;
         existingMember.FirstName = member.FirstName;
         existingMember.Email = member.Email;
@@ -80,21 +79,41 @@ public class JamaatMemberService : IJamaatMemberService
         existingMember.NextOfKinName = member.NextOfKinName;
         existingMember.NextOfKinAddress = member.NextOfKinAddress;
         existingMember.Nationality = member.Nationality;
-
-        // Don't change:
-        // existingMember.Id
-        // existingMember.chandaNo
-        // existingMember.Password
-        // existingMember.CreatedAt
-        // existingMember.CreatedBy
-        // existingMember.ResetToken
-        // existingMember.ResetTokenExpiry
-        // existingMember.IsSystemDefault
-
         existingMember.ModifiedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 
         return existingMember;
+    }
+
+    /// <summary>
+    /// Resolves the local role to assign to a newly-imported member.
+    /// Prefers the role already carried on the payload; otherwise matches the
+    /// role by name; finally falls back to the baseline
+    /// (HierarchyLevel = 1 "Jama'at Member") role. Returns null only when no
+    /// roles exist in the database at all.
+    /// </summary>
+    private async Task<Guid?> ResolveRoleIdAsync(JamaatMember member)
+    {
+        if (member.RoleId != Guid.Empty)
+        {
+            return member.RoleId;
+        }
+
+        var roleName = member.Role?.Name?.Trim();
+        if (!string.IsNullOrWhiteSpace(roleName))
+        {
+            var byName = await _context.JamaatRoles
+                .FirstOrDefaultAsync(r => r.Name == roleName);
+            if (byName is not null)
+            {
+                return byName.Id;
+            }
+        }
+
+        var baseline = await _context.JamaatRoles
+            .FirstOrDefaultAsync(r => r.HierarchyLevel == 1);
+
+        return baseline?.Id;
     }
 }

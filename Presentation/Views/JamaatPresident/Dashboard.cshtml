@@ -1,139 +1,55 @@
-@model Presentation.ViewModels.JamaatPresidentDashboardViewModel
+@model Infrastructure.DTOs.JamaatPresidentDashboardDto.JamaatPresidentDashboardDto
 
 @{
-    ViewData["Title"] = "Jamaat President Dashboard";
+    Layout = "_JamaatPresidentLayout";
+    ViewData["Title"] = "Jama'at President Dashboard";
 }
 
-<div class="container py-4">
+<div class="president-dashboard">
 
-    <!-- Header -->
-    <div class="mb-4">
-        <h1 class="fw-bold">Jamaat President Dashboard</h1>
+    <!-- HEADER -->
+    <div class="dashboard-header">
 
-        <p class="text-muted mb-1">
-            Welcome, <strong>@Model.PresidentName</strong>
-        </p>
+        <div>
+            <h2>Jama'at President Dashboard</h2>
 
-        <p class="text-muted">
-            @Model.JamaatName • @Model.CircuitName Circuit
-        </p>
-    </div>
+            <p>
+                Welcome, <strong>@Model.PresidentName</strong>
+            </p>
 
-
-    <!-- Statistics -->
-    <div class="row g-4 mb-5">
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        Pending Nikah Reviews
-                    </h6>
-
-                    <h2 class="fw-bold text-warning">
-                        @Model.PendingNikahReviews
-                    </h2>
-
-                    <p class="mb-0 text-muted">
-                        Applications awaiting your review
-                    </p>
-                </div>
-            </div>
+            <span class="location-info">
+                @Model.JamaatName
+                @if (!string.IsNullOrWhiteSpace(Model.CircuitName))
+                {
+                    <span>• @Model.CircuitName</span>
+                }
+            </span>
         </div>
 
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        Reviewed Today
-                    </h6>
-
-                    <h2 class="fw-bold text-success">
-                        @Model.ReviewedToday
-                    </h2>
-
-                    <p class="mb-0 text-muted">
-                        Applications reviewed today
-                    </p>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        Total Applications
-                    </h6>
-
-                    <h2 class="fw-bold">
-                        @Model.TotalNikahApplications
-                    </h2>
-
-                    <p class="mb-0 text-muted">
-                        Total Nikah applications
-                    </p>
-                </div>
-            </div>
+        <div class="dashboard-date">
+            @DateTime.Now.ToString("dddd, dd MMMM yyyy")
         </div>
 
     </div>
 
 
-    <!-- Marriage Certificates -->
-    <div class="card shadow-sm border-0 mb-5">
+    <!-- STATISTICS -->
+    <div class="statistics-grid">
 
-        <div class="card-body">
+        <div class="stat-card">
 
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="stat-card-content">
 
-                <div>
-                    <h4 class="mb-1">
-                        Marriage Certificates
-                    </h4>
+                <span class="stat-label">
+                    Pending Nikah Reviews
+                </span>
 
-                    <p class="text-muted mb-0">
-                        View all issued marriage certificates.
-                    </p>
-                </div>
+                <h2 class="stat-number">
+                    @Model.PendingNikahReviews
+                </h2>
 
-                <div>
-                    <a asp-controller="JamaatPresident" asp-action="Certificates" class="btn btn-primary">
-                        View Marriage Certificates
-                    </a>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Pending Nikah Applications -->
-
-    <!-- Pending Nikah Applications -->
-    <div class="card shadow-sm border-0 mb-5">
-
-        <div class="card-header bg-white py-3">
-
-            <div class="d-flex justify-content-between align-items-center">
-
-                <div>
-                    <h4 class="mb-1">
-                        Nikah Applications Awaiting Review
-                    </h4>
-
-                    <small class="text-muted">
-                        Review these applications before they proceed
-                        to other administrators.
-                    </small>
-                </div>
-
-                <span class="badge bg-warning text-dark">
-                    @Model.PendingNikahReviews Pending
+                <span class="stat-description">
+                    Applications awaiting your review
                 </span>
 
             </div>
@@ -141,164 +57,281 @@
         </div>
 
 
-        <div class="card-body p-0">
+        <div class="stat-card">
 
-            <div class="table-responsive">
+            <div class="stat-card-content">
 
-                <table class="table table-hover mb-0">
+                <span class="stat-label">
+                    Reviewed Today
+                </span>
 
-                    <thead class="table-light">
+                <h2 class="stat-number">
+                    @Model.ReviewedToday
+                </h2>
 
-                        <tr>
-                            <th>Groom</th>
-                            <th>Bride</th>
-                            <th>Jamaat</th>
-                            <th>Submitted</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
+                <span class="stat-description">
+                    Applications reviewed today
+                </span>
 
-                    </thead>
+            </div>
 
-                    <tbody>
+        </div>
 
-                        @foreach (var application in Model.PendingApplications)
+
+        <div class="stat-card">
+
+            <div class="stat-card-content">
+
+                <span class="stat-label">
+                    Total Nikah Applications
+                </span>
+
+                <h2 class="stat-number">
+                    @Model.TotalNikahApplications
+                </h2>
+
+                <span class="stat-description">
+                    Total applications submitted
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+    <div class="dashboard-card quick-actions-card">
+
+        <div class="card-heading">
+
+            <div>
+                <h4>Quick Actions</h4>
+
+                <p>
+                    Access frequently used Jama'at President functions.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="quick-actions-grid">
+
+            <a asp-controller="JamaatPresident"
+               asp-action="PendingApplications"
+               class="quick-action">
+
+                <span class="quick-action-title">
+                    Review Pending Applications
+                </span>
+
+                <span class="quick-action-description">
+                    Review Nikah applications awaiting your decision.
+                </span>
+
+            </a>
+
+
+            <a asp-controller="JamaatPresident"
+               asp-action="ReviewedApplications"
+               class="quick-action">
+
+                <span class="quick-action-title">
+                    Reviewed Applications
+                </span>
+
+                <span class="quick-action-description">
+                    View applications you have already reviewed.
+                </span>
+
+            </a>
+
+
+            <a asp-controller="JamaatPresident"
+               asp-action="Certificates"
+               class="quick-action">
+
+                <span class="quick-action-title">
+                    Marriage Certificates
+                </span>
+
+                <span class="quick-action-description">
+                    View issued marriage certificates.
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- PENDING APPLICATIONS -->
+    <div class="dashboard-card">
+
+        <div class="card-heading card-heading-row">
+
+            <div>
+
+                <h4>
+                    Nikah Applications Awaiting Review
+                </h4>
+
+                <p>
+                    Review these applications before they proceed to other administrators.
+                </p>
+
+            </div>
+
+            <span class="pending-badge">
+                @Model.PendingNikahReviews Pending
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="president-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Reference</th>
+                        <th>Groom</th>
+                        <th>Bride</th>
+                        <th>Jama'at</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @if (Model.PendingApplications != null &&
+                         Model.PendingApplications.Any())
+                    {
+                        foreach (var item in Model.PendingApplications)
                         {
                             <tr>
 
                                 <td>
                                     <strong>
-                                        @application.GroomName
+                                        @item.ReferenceNumber
                                     </strong>
                                 </td>
 
                                 <td>
-                                    @application.BrideName
+                                    @item.GroomName
                                 </td>
 
                                 <td>
-                                    @application.JamaatName
+                                    @item.BrideName
                                 </td>
 
                                 <td>
-                                    @application.SubmittedDate.ToString("dd MMM yyyy")
+                                    @item.JamaatName
                                 </td>
 
                                 <td>
-                                    <span class="badge bg-warning text-dark">
-                                        @application.Status
+                                    @item.SubmittedDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    <span class="status-badge">
+                                        @item.Status
                                     </span>
                                 </td>
 
                                 <td>
-                                    <a asp-controller="JamaatPresident" asp-action="Review" asp-route-id="@application.Id"
-                                       class="btn btn-primary btn-sm">
+
+                                    <a asp-controller="JamaatPresident"
+                                       asp-action="Review"
+                                       asp-route-id="@item.Id"
+                                       class="review-button">
                                         Review
                                     </a>
+
                                 </td>
 
                             </tr>
                         }
+                    }
+                    else
+                    {
+                        <tr>
 
-                    </tbody>
+                            <td colspan="7" class="empty-state">
+                                No pending Nikah applications.
+                            </td>
 
-                </table>
+                        </tr>
+                    }
 
-            </div>
+                </tbody>
+
+            </table>
 
         </div>
 
     </div>
 
 
-    <!-- Review Workflow -->
-    <div class="card shadow-sm border-0 mb-5">
+    <!-- RECENT ACTIVITY -->
+    <div class="dashboard-card">
 
-        <div class="card-body">
+        <div class="card-heading">
 
-            <h4 class="mb-2">
-                Nikah Review Workflow
-            </h4>
+            <h4>Recent Activity</h4>
 
-            <p class="text-muted mb-4">
-                The Jamaat President performs the first review
-                before the application proceeds to other administrators.
+            <p>
+                Your latest Jama'at President activities.
             </p>
 
-
-            <div class="row text-center">
-
-                <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3 h-100">
-                        <h5>1</h5>
-                        <strong>Application Submitted</strong>
-                        <p class="small text-muted mt-2">
-                            Applicant submits the Nikah form.
-                        </p>
-                    </div>
-                </div>
-
-
-                <div class="col-md-3 mb-3">
-                    <div class="border border-primary rounded p-3 h-100">
-                        <h5 class="text-primary">2</h5>
-                        <strong>Jamaat President Review</strong>
-                        <p class="small text-muted mt-2">
-                            President reviews the application.
-                        </p>
-                    </div>
-                </div>
-
-
-                <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3 h-100">
-                        <h5>3</h5>
-                        <strong>Admin Review</strong>
-                        <p class="small text-muted mt-2">
-                            Application proceeds to administrators.
-                        </p>
-                    </div>
-                </div>
-
-
-                <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3 h-100">
-                        <h5>4</h5>
-                        <strong>Final Approval</strong>
-                        <p class="small text-muted mt-2">
-                            Application completes the process.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-
         </div>
 
-    </div>
 
+        <div class="activity-list">
 
-    <!-- Recent Activity -->
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-body">
-
-            <h4 class="mb-3">
-                Recent Activity
-            </h4>
-
-            @foreach (var activity in Model.RecentActivities)
+            @if (Model.RecentActivities != null &&
+                 Model.RecentActivities.Any())
             {
-                <div class="border-bottom py-3">
+                foreach (var activity in Model.RecentActivities)
+                {
+                    <div class="activity-item">
 
-                    <strong>
-                        @activity.Description
-                    </strong>
+                        <div class="activity-details">
 
-                    <div class="text-muted small mt-1">
-                        @activity.Date.ToString("dd MMM yyyy, hh:mm tt")
+                            <strong>
+                                @activity.Description
+                            </strong>
+
+                            @if (!string.IsNullOrWhiteSpace(activity.ApplicationNumber))
+                            {
+                                <span>
+                                    @activity.ApplicationNumber
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <time>
+                            @activity.Date.ToString("dd MMM yyyy hh:mm tt")
+                        </time>
+
                     </div>
-
+                }
+            }
+            else
+            {
+                <div class="empty-activity">
+                    No recent activity.
                 </div>
             }
 
