@@ -27,8 +27,8 @@ public static class DependencyInjection
     {
         services.AddMySQLServer<RishtanataDbContext>(
             configuration.GetConnectionString("DefaultConnection")!);
-            
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
+
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<RishtanataDbContext>()
             .AddDefaultTokenProviders();
 
@@ -67,16 +67,13 @@ public static class DependencyInjection
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
     });
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("RequireRishtanataSecretary", p => p.RequireRole(RoleNames.RishtanataSecretary));
-            options.AddPolicy("RequireJamaatSecretary", p => p.RequireRole(RoleNames.JamaatSecretary));
-            options.AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitSecretary));
-            options.AddPolicy("RequireAmir", p => p.RequireRole(RoleNames.Amir));
-            options.AddPolicy("StageVerifier", p => p.RequireRole( RoleNames.RishtanataSecretary,RoleNames.JamaatSecretary,RoleNames.CircuitSecretary,
+        services.AddAuthorizationBuilder()
+            .AddPolicy("RequireRishtanataSecretary", p => p.RequireRole(RoleNames.RishtanataSecretary))
+            .AddPolicy("RequireJamaatSecretary", p => p.RequireRole(RoleNames.JamaatSecretary))
+            .AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitSecretary))
+            .AddPolicy("RequireAmir", p => p.RequireRole(RoleNames.Amir))
+            .AddPolicy("StageVerifier", p => p.RequireRole( RoleNames.RishtanataSecretary,RoleNames.JamaatSecretary,RoleNames.CircuitSecretary,
       RoleNames.Amir));
-
-        });
 
 
         return services;
