@@ -11,15 +11,27 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_JamaatMembers_BrideGuardian_BrideGuardianId",
+                table: "JamaatMembers");
+
             migrationBuilder.AlterColumn<Guid>(
                 name: "BrideGuardianId",
                 table: "JamaatMembers",
                 type: "char(36)",
                 nullable: true,
-                collation: "ascii_general_ci",
+                collation: "utf8mb4_0900_ai_ci",
                 oldClrType: typeof(Guid),
                 oldType: "char(36)")
                 .OldAnnotation("Relational:Collation", "ascii_general_ci");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_JamaatMembers_BrideGuardian_BrideGuardianId",
+                table: "JamaatMembers",
+                column: "BrideGuardianId",
+                principalTable: "BrideGuardian",
+                principalColumn: "BrideGuardianId",
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "DowryAmount",
@@ -44,12 +56,15 @@ namespace Infrastructure.Migrations
                 nullable: false,
                 oldClrType: typeof(decimal),
                 oldType: "decimal(18,2)");
-
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_JamaatMembers_BrideGuardian_BrideGuardianId",
+                table: "JamaatMembers");
+
             migrationBuilder.AlterColumn<Guid>(
                 name: "BrideGuardianId",
                 table: "JamaatMembers",
@@ -60,7 +75,15 @@ namespace Infrastructure.Migrations
                 oldClrType: typeof(Guid),
                 oldType: "char(36)",
                 oldNullable: true)
-                .OldAnnotation("Relational:Collation", "ascii_general_ci");
+                .OldAnnotation("Relational:Collation", "utf8mb4_0900_ai_ci");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_JamaatMembers_BrideGuardian_BrideGuardianId",
+                table: "JamaatMembers",
+                column: "BrideGuardianId",
+                principalTable: "BrideGuardian",
+                principalColumn: "BrideGuardianId",
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "DowryAmount",
