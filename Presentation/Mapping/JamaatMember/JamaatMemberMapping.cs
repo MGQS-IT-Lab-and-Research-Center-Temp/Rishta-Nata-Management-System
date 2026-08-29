@@ -1,89 +1,89 @@
 ﻿using Infrastructure.DTOs.JamaatMember;
 using Presentation.ViewModels.JamaatMember;
 
-namespace Presentation.Mapping.JamaatMember
+namespace Presentation.Mapping.JamaatMember;
+
+public static class JamaatMemberMapping
 {
-    public static class JamaatMemberMapping
+    public static JamaatMemberVM ToViewModel(JamaatMemberDto dto)
     {
-        public static JamaatMemberVM ToViewModel(JamaatMemberDto dto)
+        return new JamaatMemberVM
         {
-            return new JamaatMemberVM
-            {
-                Id = dto.Id,
-                Surname = dto.Surname,
-                FirstName = dto.FirstName,
-                Email = dto.Email,
-                ChandaNo = dto.ChandaNo,
-                WasiyatNo = dto.WasiyatNo,
-                Title = dto.Title,
-                AuxillaryBodyName = dto.AuxillaryBodyName,
-                MiddleName = dto.MiddleName,
-                MaidenName = dto.MaidenName,
-                DateOfBirth = dto.DateOfBirth,
+            Id = dto.Id,
+            Surname = dto.Surname,
+            FirstName = dto.FirstName,
+            Email = dto.Email,
+            ChandaNo = dto.ChandaNo,
+            WasiyatNo = dto.WasiyatNo,
+            Title = dto.Title,
+            AuxillaryBodyName = dto.AuxillaryBodyName,
+            MiddleName = dto.MiddleName,
+            MaidenName = dto.MaidenName,
+            DateOfBirth = dto.DateOfBirth,
 
-                // ✅ fixed property names
-                PhoneNumber = dto.PhoneNo,
-                JamaatName = dto.JamaatName,
-                CircuitName = dto.CircuitName,
-                Gender = dto.Sex,
-                MaritalStatus = dto.MaritalStatus,
-                Address = dto.Address,
+            // ✅ fixed property names
+            PhoneNumber = dto.PhoneNo,
+            JamaatName = dto.JamaatName,
+            CircuitName = dto.CircuitName,
+            Gender = dto.Sex,
+            MaritalStatus = dto.MaritalStatus,
+            Address = dto.Address,
 
-                NextOfKinPhoneNo = dto.NextOfKinPhoneNo,
-                NextOfKinName = dto.NextOfKinName,
-                NextOfKinAddress = dto.NextOfKinAddress,
-                Nationality = dto.Nationality,
+            NextOfKinPhoneNo = dto.NextOfKinPhoneNo,
+            NextOfKinName = dto.NextOfKinName,
+            NextOfKinAddress = dto.NextOfKinAddress,
+            Nationality = dto.Nationality,
 
-                RoleId = dto.RoleId,
-                IsSystemDefault = dto.IsSystemDefault,
-                NewRole = dto.NewRole,
+            RoleId = dto.RoleId,
+            IsSystemDefault = dto.IsSystemDefault,
+            NewRole = dto.NewRole,
 
-                
-                MemberNumber = dto.MemberNumber,
-                Occupation = dto.Occupation
-            };
-        }
-
-    public static List<JamaatMemberVM> ToViewModelList(IEnumerable<JamaatMemberDto> dtos)
-    {
-        return dtos?.Select(ToViewModel).ToList() ?? new List<JamaatMemberVM>();
+            
+            MemberNumber = dto.MemberNumber,
+            Occupation = dto.Occupation
+        };
     }
 
-    public static JamaatMemberDto ToDto(JamaatMemberVM vm)
+public static List<JamaatMemberVM> ToViewModelList(IEnumerable<JamaatMemberDto> dtos)
+{
+    return dtos?.Select(ToViewModel).ToList() ?? new List<JamaatMemberVM>();
+}
+
+public static JamaatMemberDto ToDto(JamaatMemberVM vm)
+{
+    return new JamaatMemberDto
     {
-        return new JamaatMemberDto
-        {
-            Id = vm.Id,
+        Id = vm.Id,
 
-            Surname = vm.Surname,
-            FirstName = vm.FirstName,
-            Email = vm.Email,
-            ChandaNo = vm.ChandaNo,
+        Surname = vm.Surname,
+        FirstName = vm.FirstName,
+        Email = vm.Email,
+        ChandaNo = vm.ChandaNo,
 
-            WasiyatNo = vm.WasiyatNo,
-            Title = vm.Title,
-            AuxillaryBodyName = vm.AuxillaryBodyName,
-            MiddleName = vm.MiddleName,
-            MaidenName = vm.MaidenName,
+        WasiyatNo = vm.WasiyatNo,
+        Title = vm.Title,
+        AuxillaryBodyName = vm.AuxillaryBodyName,
+        MiddleName = vm.MiddleName,
+        MaidenName = vm.MaidenName,
 
-            DateOfBirth = vm.DateOfBirth,
+        DateOfBirth = vm.DateOfBirth,
 
-            PhoneNo = vm.PhoneNumber,
-            JamaatName = vm.JamaatName,
-            CircuitName = vm.CircuitName,
-            Sex = vm.Gender,
-            MaritalStatus = vm.MaritalStatus,
-            Address = vm.Address,
+        PhoneNo = vm.PhoneNumber,
+        JamaatName = vm.JamaatName,
+        CircuitName = vm.CircuitName,
+        Sex = vm.Gender,
+        MaritalStatus = vm.MaritalStatus,
+        Address = vm.Address,
 
-            NextOfKinPhoneNo = vm.NextOfKinPhoneNo,
-            NextOfKinName = vm.NextOfKinName,
-            NextOfKinAddress = vm.NextOfKinAddress,
+        NextOfKinPhoneNo = vm.NextOfKinPhoneNo,
+        NextOfKinName = vm.NextOfKinName,
+        NextOfKinAddress = vm.NextOfKinAddress,
 
-            Nationality = vm.Nationality,
+        Nationality = vm.Nationality,
 
-            RoleId = vm.RoleId,
+        RoleId = vm.RoleId,
 
-            IsSystemDefault = vm.IsSystemDefault,
-            NewRole = vm.NewRole
-        };
-    }}}
+        IsSystemDefault = vm.IsSystemDefault,
+        NewRole = vm.NewRole
+    };
+}}

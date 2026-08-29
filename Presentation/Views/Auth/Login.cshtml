@@ -1,236 +1,2229 @@
-﻿@model Presentation.ViewModels.LoginViewModel
+@model Presentation.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
-    Layout = null;
+ViewData["Title"] = "Login";
+Layout = null;
+
+var hasModelErrors = !ViewData.ModelState.IsValid;
+var hasServerError = ViewData.ModelState[string.Empty]?.Errors.Count > 0;
+
 }
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Login - Rishta Nata Management System</title>
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+<title>Login - Rishta Nata</title>
 
-    <style>
-            .login-hero {
-                background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
-            }
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-            .hero-decoration {
-                position: absolute;
-                border-radius: 50%;
-                pointer-events: none;
-            }
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet" />
 
-            .decoration-one {
-                width: 350px;
-                height: 350px;
-                right: -130px;
-                top: 80px;
-                border: 60px solid rgba(255, 255, 255, 0.08);
-            }
+<style>
+    /* =========================================================
+       RESET / BASE
+       ========================================================= */
 
-            .decoration-two {
-                width: 250px;
-                height: 250px;
-                left: -100px;
-                bottom: -60px;
-                background: rgba(255, 255, 255, 0.07);
-            }
+    html,
+    body {
+        min-height: 100%;
+        margin: 0;
+        font-family: 'Outfit', sans-serif;
+    }
 
-            .decoration-three {
-                width: 100px;
-                height: 100px;
-                right: 100px;
-                bottom: 80px;
-                background: rgba(255, 255, 255, 0.08);
-            }
+    body {
+        overflow-x: hidden;
+    }
 
-            /* Brand-colored focus ring on inputs (Bootstrap defaults to blue) */
-            .form-control:focus {
-                border-color: #047857;
-                box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
-            }
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
 
-            /* Brand-colored checkbox */
-            .form-check-input:checked {
-                background-color: #047857;
-                border-color: #047857;
-            }
+    button,
+    input {
+        font-family: inherit;
+    }
 
-            /* Login button hover/press */
-            .btn-login-brand:hover {
-                background: #065f46 !important;
-                box-shadow: 0 8px 20px rgba(4, 120, 87, 0.22);
-            }
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
 
-            /* Outline "Create an account" button hover */
-            .btn-outline-brand:hover {
-                background: #ecfdf5;
-                color: #065f46 !important;
-            }
-    </style>
+    @@keyframes gradientShift {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    @@keyframes floatOrb {
+        0%, 100% {
+            transform: translateY(0px) scale(1);
+        }
+
+        50% {
+            transform: translateY(-28px) scale(1.04);
+        }
+    }
+
+    @@keyframes floatOrbReverse {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(22px);
+        }
+    }
+
+    @@keyframes fadeSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeSlideRight {
+        from {
+            opacity: 0;
+            transform: translateX(-24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.93);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes shimmer {
+        0% {
+            background-position: -200% center;
+        }
+
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    @@keyframes pulseRing {
+        0% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45);
+        }
+
+        70% {
+            box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+    @@keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+
+        15% {
+            transform: translateX(-6px);
+        }
+
+        30% {
+            transform: translateX(5px);
+        }
+
+        45% {
+            transform: translateX(-4px);
+        }
+
+        60% {
+            transform: translateX(3px);
+        }
+
+        75% {
+            transform: translateX(-2px);
+        }
+    }
+
+    @@keyframes toastIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.97);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* =========================================================
+       ANIMATION UTILITIES
+       ========================================================= */
+
+    .animate-fade-up {
+        animation: fadeSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .animate-fade-right {
+        animation: fadeSlideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .d1 {
+        animation-delay: 0.08s;
+    }
+
+    .d2 {
+        animation-delay: 0.16s;
+    }
+
+    .d3 {
+        animation-delay: 0.24s;
+    }
+
+    .d4 {
+        animation-delay: 0.32s;
+    }
+
+    .d5 {
+        animation-delay: 0.40s;
+    }
+
+    .d6 {
+        animation-delay: 0.50s;
+    }
+
+    .orb-a {
+        animation: floatOrb 7s ease-in-out infinite;
+    }
+
+    .orb-b {
+        animation: floatOrbReverse 9s ease-in-out infinite;
+    }
+
+    .orb-c {
+        animation: floatOrb 12s ease-in-out infinite;
+        animation-delay: -4s;
+    }
+
+    .logo-pulse {
+        animation: pulseRing 2.8s ease infinite;
+    }
+
+    /* =========================================================
+       PAGE
+       ========================================================= */
+
+    .login-page {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        position: relative;
+        overflow: hidden;
+
+        background: linear-gradient(
+            145deg,
+            #f0fdf4 0%,
+            #dcfce7 50%,
+            #d1fae5 100%
+        );
+    }
+
+    .ambient-orb {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .ambient-orb-a {
+        width: 256px;
+        height: 256px;
+        top: -10%;
+        left: -5%;
+
+        background: radial-gradient(
+            circle,
+            rgba(16, 185, 129, 0.13) 0%,
+            transparent 70%
+        );
+    }
+
+    .ambient-orb-b {
+        width: 288px;
+        height: 288px;
+        right: -5%;
+        bottom: -8%;
+
+        background: radial-gradient(
+            circle,
+            rgba(52, 211, 153, 0.1) 0%,
+            transparent 70%
+        );
+    }
+
+    .ambient-orb-c {
+        width: 192px;
+        height: 192px;
+        left: 40%;
+        top: 50%;
+
+        background: radial-gradient(
+            circle,
+            rgba(6, 95, 70, 0.06) 0%,
+            transparent 70%
+        );
+    }
+
+    /* =========================================================
+       LOGIN CONTAINER / CARD
+       ========================================================= */
+
+    .login-container {
+        width: 100%;
+        max-width: 26rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .login-card {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 16px;
+
+        box-shadow:
+            0 20px 70px rgba(0, 0, 0, 0.13),
+            0 4px 16px rgba(0, 0, 0, 0.07);
+    }
+
+    /* =========================================================
+       GREEN PANEL
+       ========================================================= */
+
+    .panel-green {
+        background:
+            linear-gradient(
+                150deg,
+                #022c22 0%,
+                #064e3b 40%,
+                #065f46 70%,
+                #0a7a5a 100%
+            );
+
+        background-size: 250% 250%;
+        animation: gradientShift 12s ease infinite;
+    }
+
+    /* =========================================================
+       TABLET BANNER
+       ========================================================= */
+
+    .tablet-banner {
+        display: none;
+    }
+
+    /* =========================================================
+       DESKTOP LEFT PANEL
+       ========================================================= */
+
+    .desktop-panel {
+        display: none;
+    }
+
+    .desktop-brand {
+        position: relative;
+        z-index: 10;
+    }
+
+    .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .brand-logo svg {
+        display: block;
+    }
+
+    .brand-name {
+        margin: 0;
+
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1;
+    }
+
+    .brand-subtitle {
+        margin: 4px 0 0;
+
+        color: #6ee7b7;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        line-height: 1;
+        text-transform: uppercase;
+        opacity: 0.75;
+    }
+
+    .hero-copy {
+        position: relative;
+        z-index: 10;
+
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+
+        padding: 48px 0;
+    }
+
+    .hero-label {
+        margin: 0 0 12px;
+
+        color: #34d399;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+
+    .hero-title {
+        margin: 0 0 20px;
+
+        color: white;
+        font-family: 'DM Serif Display', serif;
+        font-size: clamp(1.9rem, 2.8vw, 2.6rem);
+        line-height: 1.15;
+    }
+
+    .shimmer-text {
+        background: linear-gradient(
+            90deg,
+            #34d399,
+            #6ee7b7,
+            #ffffff,
+            #34d399
+        );
+
+        background-size: 250% auto;
+
+        -webkit-background-clip: text;
+        background-clip: text;
+
+        -webkit-text-fill-color: transparent;
+
+        animation: shimmer 3.5s linear infinite;
+    }
+
+    .hero-description {
+        max-width: 280px;
+        margin: 0;
+
+        color: white;
+        font-size: 14px;
+        line-height: 1.7;
+        opacity: 0.5;
+    }
+
+    /* =========================================================
+       FEATURE PILLS
+       ========================================================= */
+
+    .features {
+        position: relative;
+        z-index: 10;
+
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .feature-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        padding: 10px 14px;
+
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+
+        transition: background 0.2s ease;
+    }
+
+    .feature-pill:hover {
+        background: rgba(255, 255, 255, 0.11);
+    }
+
+    .feature-icon {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .feature-label {
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.7;
+    }
+
+    .decorative-ring {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .decorative-ring-one {
+        width: 240px;
+        height: 240px;
+        right: -50px;
+        bottom: -50px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .decorative-ring-two {
+        width: 144px;
+        height: 144px;
+        right: -20px;
+        bottom: -20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* =========================================================
+       WHITE PANEL
+       ========================================================= */
+
+    .panel-white {
+        width: 100%;
+        padding: 24px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        background: white;
+    }
+
+    /* =========================================================
+       MOBILE BRAND
+       ========================================================= */
+
+    .mobile-brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        margin-bottom: 28px;
+
+        text-align: center;
+    }
+
+    .mobile-brand .brand-logo {
+        width: 56px;
+        height: 56px;
+        margin-bottom: 12px;
+
+        border-radius: 16px;
+
+        background: linear-gradient(
+            135deg,
+            #059669,
+            #34d399
+        );
+    }
+
+    .mobile-brand .brand-logo svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    .mobile-brand .brand-name {
+        color: #1e293b;
+        font-size: 20px;
+    }
+
+    .mobile-brand .brand-subtitle {
+        margin-top: 5px;
+
+        color: #059669;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        opacity: 1;
+    }
+
+    /* =========================================================
+       ERROR TOAST
+       ========================================================= */
+
+    .server-error {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+
+        margin-bottom: 20px;
+        padding: 12px 16px;
+
+        background: #fff1f2;
+        border: 1.5px solid #fecaca;
+        border-radius: 12px;
+
+        animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .server-error-icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+        color: #f87171;
+    }
+
+    .server-error-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .server-error-title {
+        margin: 0 0 3px;
+
+        color: #dc2626;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    .server-error-message {
+        margin: 0;
+
+        color: #f87171;
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    .server-error-close {
+        flex-shrink: 0;
+
+        padding: 0;
+
+        border: 0;
+        background: transparent;
+
+        color: #fca5a5;
+
+        cursor: pointer;
+    }
+
+    .server-error-close:hover {
+        color: #ef4444;
+    }
+
+    /* =========================================================
+       FORM HEADING
+       ========================================================= */
+
+    .form-heading {
+        margin-bottom: 24px;
+    }
+
+    .form-heading h2 {
+        margin: 0 0 4px;
+
+        color: #1e293b;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+
+    .form-heading p {
+        margin: 0;
+
+        color: #94a3b8;
+        font-size: 14px;
+    }
+
+    /* =========================================================
+       VALIDATION
+       ========================================================= */
+
+    .validation-summary {
+        margin-bottom: 18px;
+    }
+
+    .validation-summary ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    .validation-summary li {
+        color: #dc2626;
+        font-size: 13px;
+    }
+
+    .validation-summary.valid {
+        display: none;
+    }
+
+    .field-validation {
+        display: block;
+        margin-top: 5px;
+
+        color: #ef4444;
+        font-size: 12px;
+    }
+
+    /* =========================================================
+       FORM
+       ========================================================= */
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-group {
+        width: 100%;
+    }
+
+    .field-label {
+        display: block;
+
+        margin-bottom: 6px;
+
+        color: #475569;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .field-wrapper {
+        position: relative;
+    }
+
+    .field-icon {
+        position: absolute;
+        z-index: 2;
+        left: 14px;
+        top: 50%;
+
+        display: flex;
+        align-items: center;
+
+        color: #94a3b8;
+
+        transform: translateY(-50%);
+
+        pointer-events: none;
+    }
+
+    .field-input {
+        width: 100%;
+
+        padding: 12px 16px 12px 40px;
+
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+
+        background: #f8fafc;
+        color: #0f172a;
+
+        font-size: 14px;
+
+        outline: none;
+
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.2s ease;
+    }
+
+    .field-input::placeholder {
+        color: #94a3b8;
+    }
+
+    .field-input:focus {
+        border-color: #10b981;
+        background: #ffffff;
+
+        box-shadow:
+            0 0 0 3px rgba(16, 185, 129, 0.12);
+    }
+
+    .password-input {
+        padding-right: 44px;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+
+        display: flex;
+        align-items: center;
+
+        padding: 0;
+
+        border: 0;
+        background: transparent;
+
+        color: #94a3b8;
+
+        cursor: pointer;
+
+        transform: translateY(-50%);
+    }
+
+    .password-toggle:hover {
+        color: #475569;
+    }
+
+    /* =========================================================
+       REMEMBER / FORGOT
+       ========================================================= */
+
+    .form-options {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        padding-top: 1px;
+    }
+
+    .remember-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .checkbox-field {
+        appearance: none;
+
+        width: 17px;
+        height: 17px;
+
+        flex-shrink: 0;
+
+        margin: 0;
+
+        border: 1.5px solid #cbd5e1;
+        border-radius: 4px;
+
+        background: white;
+
+        cursor: pointer;
+
+        position: relative;
+
+        transition: all 0.18s ease;
+    }
+
+    .checkbox-field:checked {
+        background: #10b981;
+        border-color: #10b981;
+    }
+
+    .checkbox-field:checked::after {
+        content: '';
+
+        position: absolute;
+
+        left: 4px;
+        top: 1px;
+
+        width: 5px;
+        height: 9px;
+
+        border: 2px solid white;
+        border-top: none;
+        border-left: none;
+
+        transform: rotate(45deg);
+    }
+
+    .remember-text {
+        color: #64748b;
+        font-size: 14px;
+
+        transition: color 0.2s ease;
+    }
+
+    .remember-label:hover .remember-text {
+        color: #334155;
+    }
+
+    .forgot-link {
+        padding: 0;
+
+        border: 0;
+        background: transparent;
+
+        color: #059669;
+
+        font-size: 14px;
+        font-weight: 500;
+
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .forgot-link:hover {
+        color: #047857;
+        text-decoration: underline;
+    }
+
+    /* =========================================================
+       LOGIN BUTTON
+       ========================================================= */
+
+    .btn-green {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        padding: 14px;
+
+        border: 0;
+        border-radius: 12px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #059669 0%,
+                #10b981 60%,
+                #34d399 100%
+            );
+
+        background-size: 200% auto;
+
+        color: white;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        box-shadow:
+            0 4px 18px rgba(16, 185, 129, 0.32);
+
+        transition:
+            background-position 0.4s ease,
+            transform 0.15s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .btn-green:hover {
+        background-position: right center;
+
+        transform: translateY(-1px);
+
+        box-shadow:
+            0 8px 26px rgba(16, 185, 129, 0.45);
+    }
+
+    .btn-green:active {
+        transform: translateY(0);
+    }
+
+    .btn-green:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .spinner {
+        width: 15px;
+        height: 15px;
+
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: white;
+
+        border-radius: 50%;
+
+        animation: spin 0.7s linear infinite;
+    }
+
+    /* =========================================================
+       DIVIDER
+       ========================================================= */
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        margin: 20px 0;
+    }
+
+    .divider-line {
+        flex: 1;
+        height: 1px;
+
+        background: #f1f5f9;
+    }
+
+    .divider-text {
+        color: #cbd5e1;
+
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    /* =========================================================
+       REGISTER
+       ========================================================= */
+
+    .register-section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .register-text {
+        margin: 0;
+
+        color: #94a3b8;
+        font-size: 14px;
+
+        text-align: center;
+    }
+
+    .btn-ghost {
+        width: 100%;
+
+        display: block;
+
+        padding: 13px 14px;
+
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+
+        background: transparent;
+
+        color: #334155;
+
+        font-size: 14px;
+        font-weight: 500;
+
+        text-align: center;
+        text-decoration: none;
+
+        cursor: pointer;
+
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.15s ease;
+    }
+
+    .btn-ghost:hover {
+        border-color: #10b981;
+        background: #f0fdf4;
+
+        color: #059669;
+
+        transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       TABLET FEATURE PILLS
+       ========================================================= */
+
+    .tablet-features {
+        display: none;
+    }
+
+    .tablet-feature {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        padding: 6px 12px;
+
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+
+        background: #f0fdf4;
+
+        color: #047857;
+
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    /* =========================================================
+       COPYRIGHT
+       ========================================================= */
+
+    .copyright {
+        margin: 24px 0 0;
+
+        color: #cbd5e1;
+
+        font-size: 12px;
+        text-align: center;
+    }
+
+    /* =========================================================
+       TABLET — 640px+
+       ========================================================= */
+
+    @@media (min-width: 640px) {
+
+        .login-page {
+            padding: 24px;
+        }
+
+        .login-container {
+            max-width: 42rem;
+        }
+
+        .login-card {
+            border-radius: 24px;
+        }
+
+        .tablet-banner {
+            min-height: 88px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 24px 32px;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tablet-banner-orb-one {
+            position: absolute;
+
+            width: 256px;
+            height: 256px;
+
+            right: 0;
+            top: -60%;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(52, 211, 153, 0.18) 0%,
+                    transparent 65%
+                );
+        }
+
+        .tablet-banner-orb-two {
+            position: absolute;
+
+            width: 192px;
+            height: 192px;
+
+            left: 30%;
+            bottom: -80%;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(13, 148, 136, 0.2) 0%,
+                    transparent 65%
+                );
+        }
+
+        .tablet-brand {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tablet-brand .brand-logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .tablet-brand .brand-logo svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .tablet-brand .brand-name {
+            font-size: 16px;
+        }
+
+        .tablet-tagline {
+            position: relative;
+            z-index: 2;
+
+            text-align: right;
+        }
+
+        .tablet-tagline-main {
+            margin: 0;
+
+            color: white;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            line-height: 1.3;
+
+            opacity: 0.75;
+        }
+
+        .tablet-tagline-sub {
+            margin: 4px 0 0;
+
+            color: #6ee7b7;
+
+            font-size: 12px;
+
+            opacity: 0.6;
+        }
+
+        .panel-white {
+            padding: 40px;
+        }
+
+        .mobile-brand {
+            display: none;
+        }
+
+        .form-heading {
+            margin-bottom: 28px;
+        }
+
+        .form-heading h2 {
+            font-size: 28px;
+        }
+
+        .tablet-features {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+
+            margin-top: 28px;
+        }
+    }
+
+    /* =========================================================
+       DESKTOP — 1024px+
+       ========================================================= */
+
+    @@media (min-width: 1024px) {
+
+        .login-page {
+            padding: 32px;
+        }
+
+        .login-container {
+            max-width: 64rem;
+        }
+
+        .login-card {
+            display: flex;
+            flex-direction: row;
+
+            min-height: 650px;
+        }
+
+        .tablet-banner {
+            display: none;
+        }
+
+        .desktop-panel {
+            width: 48%;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            padding: 40px;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .desktop-panel .panel-orb-one {
+            position: absolute;
+
+            width: 288px;
+            height: 288px;
+
+            right: -15%;
+            top: -10%;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(52, 211, 153, 0.15) 0%,
+                    transparent 65%
+                );
+        }
+
+        .desktop-panel .panel-orb-two {
+            position: absolute;
+
+            width: 256px;
+            height: 256px;
+
+            left: -10%;
+            bottom: -15%;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(13, 148, 136, 0.18) 0%,
+                    transparent 65%
+                );
+        }
+
+        .panel-white {
+            width: 52%;
+            flex: 1;
+
+            padding: 48px;
+        }
+
+        .tablet-features {
+            display: none;
+        }
+    }
+
+    /* =========================================================
+       LARGE DESKTOP — 1280px+
+       ========================================================= */
+
+    @@media (min-width: 1280px) {
+
+        .login-container {
+            max-width: 72rem;
+        }
+
+        .desktop-panel {
+            padding: 56px;
+        }
+
+        .panel-white {
+            padding: 56px;
+        }
+    }
+
+    /* =========================================================
+       ACCESSIBILITY
+       ========================================================= */
+
+    @@media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+        }
+    }
+</style>
+
+
 </head>
 
-<body class="bg-white">
+<body>
 
-    <main class="d-flex min-vh-100">
+<div class="login-page">
 
-        <!-- LEFT SIDE / HERO -->
-        <section class="login-hero d-none d-lg-flex align-items-center col-lg-6 text-white position-relative overflow-hidden">
 
-            <div class="hero-content position-relative w-100 px-5 py-5" style="z-index:2; max-width:650px;">
+<!-- Ambient background orbs -->
+<div class="ambient-orb ambient-orb-a orb-a"></div>
+<div class="ambient-orb ambient-orb-b orb-b"></div>
+<div class="ambient-orb ambient-orb-c orb-c"></div>
 
-                <div class="d-flex align-items-center gap-3 fs-3 fw-bold mb-5">
 
-                    <div class="brand-logo bg-white rounded-3 d-flex justify-content-center align-items-center overflow-hidden" style="width:58px; height:58px;">
-                        <img src="~/img/logo.png"
-                             alt="Rishta Nata logo"
-                             class="w-75 h-75"
-                             style="object-fit:contain;" />
-                    </div>
+<div class="login-container">
 
-                    <span>Rishta Nata</span>
+    <div class="login-card">
+
+
+        <!-- =====================================================
+             TABLET TOP BANNER
+             Visible: 640px - 1023px
+             ===================================================== -->
+
+        <div class="tablet-banner panel-green">
+
+            <div class="tablet-banner-orb-one"></div>
+            <div class="tablet-banner-orb-two"></div>
+
+            <div class="tablet-brand animate-fade-right">
+
+                <div class="brand-logo logo-pulse">
+
+                    <svg width="20"
+                         height="20"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         aria-hidden="true">
+
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 2.61 1.39 4.89 3.47 6.17L12 22l3.53-6.83A7 7 0 0 0 19 9c0-3.87-3.13-7-7-7z"
+                              fill="white"
+                              opacity="0.95" />
+
+                        <circle cx="12"
+                                cy="9"
+                                r="2.5"
+                                fill="white"
+                                opacity="0.5" />
+
+                    </svg>
 
                 </div>
 
-                        <!-- Login Form -->
-                        <form asp-controller="Auth" asp-action="Login" method="post">
-                            @Html.AntiForgeryToken()
+                <div>
 
-                        <div class="mb-3">
-                            @* <label for="chandaNo" class="form-label fw-semibold">
-                                Chanda Number
-                            </label> *@
-
-
-                    <!-- VALIDATION SUMMARY -->
-                    <div asp-validation-summary="ModelOnly"
-                         class="alert alert-danger py-2 px-3 small">
-                    </div>
-
-
-                    <!-- CHANDA NUMBER -->
-                    <div class="mb-3">
-
-                        <label asp-for="ChandaNo" class="form-label fw-semibold">
-                            Member Chanda Number
-                        </label>
-
-                        <input asp-for="ChandaNo"
-                               type="text"
-                               class="form-control form-control-lg"
-                               placeholder="Enter your Chanda number"
-                               autocomplete="off"
-                               inputmode="numeric"
-                               autofocus />
-
-                        <span asp-validation-for="ChandaNo"
-                              class="text-danger small">
-                        </span>
-
-                    </div>
-
-
-                    <!-- PASSWORD -->
-                    <div class="mb-3">
-
-                        <div class="d-flex justify-content-between align-items-center">
-
-                            <label asp-for="Password" class="form-label fw-semibold mb-0">
-                                Password
-                            </label>
-
-                            <a href="#" class="small fw-semibold text-decoration-none" style="color:#047857;">
-                                Forgot Password?
-                            </a>
-
-                        </div>
-
-                        <input asp-for="Password"
-                               type="password"
-                               class="form-control form-control-lg mt-2"
-                               placeholder="Enter your password"
-                               autocomplete="current-password" />
-
-                        <span asp-validation-for="Password"
-                              class="text-danger small">
-                        </span>
-
-                    </div>
-
-
-                    <!-- REMEMBER ME -->
-                    <div class="form-check mb-4">
-
-                        <input asp-for="RememberMe"
-                               type="checkbox"
-                               class="form-check-input" />
-
-                        <label asp-for="RememberMe" class="form-check-label text-secondary small">
-                            Remember me
-                        </label>
-
-                    </div>
-
-
-                    <!-- RETURN URL -->
-                    @if (!string.IsNullOrWhiteSpace(Model.ReturnUrl))
-                    {
-                        <input type="hidden"
-                               asp-for="ReturnUrl" />
-                    }
-
-
-                    <!-- LOGIN BUTTON -->
-                    <button type="submit"
-                            class="btn btn-lg btn-login-brand w-100 fw-bold text-white"
-                            style="background:#047857;">
-                        Login
-                    </button>
-
-                </form>
-
-
-                <!-- DIVIDER -->
-                <div class="d-flex align-items-center gap-3 my-4">
-                    <hr class="flex-grow-1 m-0" />
-                    <span class="small fw-semibold text-secondary">OR</span>
-                    <hr class="flex-grow-1 m-0" />
-                </div>
-
-
-                <!-- REGISTER -->
-                <div class="text-center">
-
-                    <p class="text-secondary mb-3">
-                        Don't have an account?
+                    <p class="brand-name">
+                        Rishta Nata
                     </p>
 
-                    <a href="#"
-                       class="btn btn-lg btn-outline-brand w-100 fw-bold"
-                       style="border:1px solid #047857; color:#047857;">
-                        Create an account
-                    </a>
+                    <p class="brand-subtitle">
+                        Portal
+                    </p>
 
                 </div>
 
             </div>
 
+
+            <div class="tablet-tagline animate-fade-right d2">
+
+                <p class="tablet-tagline-main">
+                    Your community,
+                    <span class="shimmer-text">
+                        always connected.
+                    </span>
+                </p>
+
+                <p class="tablet-tagline-sub">
+                    Sign in to access your membership
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             DESKTOP LEFT PANEL
+             Visible: 1024px+
+             ===================================================== -->
+
+        <section class="desktop-panel panel-green">
+
+            <div class="panel-orb-one orb-c"></div>
+            <div class="panel-orb-two orb-b"></div>
+
+
+            <!-- Brand -->
+
+            <div class="desktop-brand animate-fade-right">
+
+                <div class="brand-row">
+
+                    <div class="brand-logo logo-pulse">
+
+                        <svg width="22"
+                             height="22"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             aria-hidden="true">
+
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 2.61 1.39 4.89 3.47 6.17L12 22l3.53-6.83A7 7 0 0 0 19 9c0-3.87-3.13-7-7-7z"
+                                  fill="white"
+                                  opacity="0.95" />
+
+                            <circle cx="12"
+                                    cy="9"
+                                    r="2.5"
+                                    fill="white"
+                                    opacity="0.5" />
+
+                        </svg>
+
+                    </div>
+
+                    <div>
+
+                        <p class="brand-name">
+                            Rishta Nata
+                        </p>
+
+                        <p class="brand-subtitle">
+                             Portal
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Hero -->
+
+            <div class="hero-copy animate-fade-right d2">
+
+                <p class="hero-label">
+                    Welcome back
+                </p>
+
+                <h1 class="hero-title">
+
+                    Your community,
+                    <em class="shimmer-text">
+                        always connected.
+                    </em>
+
+                </h1>
+
+                <p class="hero-description">
+                    Access your membership profile, track contributions,
+                    and stay updated with your Jamā'at family.
+                </p>
+
+            </div>
+
+
+            <!-- Feature pills -->
+
+            <div class="features animate-fade-right d4">
+
+                <div class="feature-pill">
+
+                    <span class="feature-icon">
+                        💳
+                    </span>
+
+                    <span class="feature-label">
+                        Manage Chanda contributions
+                    </span>
+
+                </div>
+
+                <div class="feature-pill">
+
+                    <span class="feature-icon">
+                        👥
+                    </span>
+
+                    <span class="feature-label">
+                        Connect with Jamā'at members
+                    </span>
+
+                </div>
+
+                <div class="feature-pill">
+
+                    <span class="feature-icon">
+                        📢
+                    </span>
+
+                    <span class="feature-label">
+                        Real-time announcements
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Decorative rings -->
+
+            <div class="decorative-ring decorative-ring-one"></div>
+            <div class="decorative-ring decorative-ring-two"></div>
+
         </section>
 
-    </main>
+
+        <!-- =====================================================
+             WHITE FORM PANEL
+             ===================================================== -->
+
+        <section class="panel-white">
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
-    </script>
+            <!-- Mobile brand -->
 
-    <partial name="_ValidationScriptsPartial" />
+            <div class="mobile-brand animate-scale-in">
+
+                <div class="brand-logo logo-pulse">
+
+                    <svg width="26"
+                         height="26"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         aria-hidden="true">
+
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 2.61 1.39 4.89 3.47 6.17L12 22l3.53-6.83A7 7 0 0 0 19 9c0-3.87-3.13-7-7-7z"
+                              fill="white"
+                              opacity="0.95" />
+
+                        <circle cx="12"
+                                cy="9"
+                                r="2.5"
+                                fill="white"
+                                opacity="0.5" />
+
+                    </svg>
+
+                </div>
+
+                <p class="brand-name">
+                    Rishta Nata
+                </p>
+
+                <p class="brand-subtitle">
+                    Portal
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 SERVER ERROR TOAST
+
+                 This appears only when AuthController adds a
+                 ModelState error to the empty key.
+                 ================================================= -->
+
+            @if (hasServerError)
+            {
+                var serverError =
+                    ViewData.ModelState[string.Empty]!
+                        .Errors
+                        .FirstOrDefault()?.ErrorMessage;
+
+                <div id="serverError"
+                     class="server-error">
+
+                    <span class="server-error-icon">
+
+                        <svg width="16"
+                             height="16"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2.5"
+                             stroke-linecap="round"
+                             stroke-linejoin="round"
+                             aria-hidden="true">
+
+                            <circle cx="12"
+                                    cy="12"
+                                    r="10" />
+
+                            <line x1="12"
+                                  y1="8"
+                                  x2="12"
+                                  y2="12" />
+
+                            <line x1="12"
+                                  y1="16"
+                                  x2="12.01"
+                                  y2="16" />
+
+                        </svg>
+
+                    </span>
+
+                    <div class="server-error-content">
+
+                        <p class="server-error-title">
+                            Unable to sign in
+                        </p>
+
+                        <p class="server-error-message">
+                            @(string.IsNullOrWhiteSpace(serverError)
+                                ? "The Chanda number or password you entered is incorrect. Please try again."
+                                : serverError)
+                        </p>
+
+                    </div>
+
+                    <button type="button"
+                            class="server-error-close"
+                            onclick="dismissServerError()"
+                            aria-label="Dismiss error">
+
+                        <svg width="14"
+                             height="14"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2.5"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
+
+                            <line x1="18"
+                                  y1="6"
+                                  x2="6"
+                                  y2="18" />
+
+                            <line x1="6"
+                                  y1="6"
+                                  x2="18"
+                                  y2="18" />
+
+                        </svg>
+
+                    </button>
+
+                </div>
+            }
+
+
+            <!-- Form heading -->
+
+            <div class="form-heading animate-fade-up">
+
+                <h2>
+                    Sign in
+                </h2>
+
+                <p>
+                    Enter your credentials to continue
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 LOGIN FORM
+                 ================================================= -->
+
+            <form asp-controller="Auth"
+                  asp-action="Login"
+                  method="post"
+                  class="login-form"
+                  id="loginForm">
+
+                @Html.AntiForgeryToken()
+
+
+                <!-- =============================================
+                     CHANDA NUMBER
+                     ============================================= -->
+
+                <div class="form-group animate-fade-up d1">
+
+                    <label asp-for="ChandaNo"
+                           class="field-label">
+                        Member Chanda Number
+                    </label>
+
+                    <div class="field-wrapper">
+
+                        <span class="field-icon">
+
+                            <svg width="15"
+                                 height="15"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+
+                                <circle cx="12"
+                                        cy="7"
+                                        r="4" />
+
+                            </svg>
+
+                        </span>
+
+                        <input asp-for="ChandaNo"
+                               type="text"
+                               class="field-input"
+                               placeholder="Enter your Chanda number"
+                               autocomplete="off"
+                               inputmode="numeric"
+                               autofocus />
+
+                    </div>
+
+                    <span asp-validation-for="ChandaNo"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <!-- =============================================
+                     PASSWORD
+                     ============================================= -->
+
+                <div class="form-group animate-fade-up d2">
+
+                    <label asp-for="Password"
+                           class="field-label">
+                        Password
+                    </label>
+
+                    <div class="field-wrapper">
+
+                        <span class="field-icon">
+
+                            <svg width="15"
+                                 height="15"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+
+                                <rect x="3"
+                                      y="11"
+                                      width="18"
+                                      height="11"
+                                      rx="2" />
+
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+
+                            </svg>
+
+                        </span>
+
+                        <input asp-for="Password"
+                               id="Password"
+                               type="password"
+                               class="field-input password-input"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" />
+
+                        <button type="button"
+                                class="password-toggle"
+                                id="passwordToggle"
+                                onclick="togglePassword()"
+                                aria-label="Show password">
+
+                            <svg id="eyeIcon"
+                                 width="15"
+                                 height="15"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+
+                                <circle cx="12"
+                                        cy="12"
+                                        r="3" />
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                    <span asp-validation-for="Password"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <!-- =============================================
+                     REMEMBER ME / FORGOT PASSWORD
+                     ============================================= -->
+
+                <div class="form-group animate-fade-up d3">
+
+                    <div class="form-options">
+
+                        <label class="remember-label">
+
+                            <input asp-for="RememberMe"
+                                   type="checkbox"
+                                   class="checkbox-field" />
+
+                            <span class="remember-text">
+                                Remember me
+                            </span>
+
+                        </label>
+
+
+                        <!--
+                            No ForgotPassword action exists in the
+                            current AuthController, so this remains
+                            a placeholder for now.
+                        -->
+
+                        <a href="#"
+                           class="forgot-link">
+                            Forgot password?
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     RETURN URL
+                     ============================================= -->
+
+                @if (!string.IsNullOrWhiteSpace(Model.ReturnUrl))
+                {
+                    <input asp-for="ReturnUrl"
+                           type="hidden" />
+                }
+
+
+                <!-- =============================================
+                     LOGIN BUTTON
+                     ============================================= -->
+
+                <div class="form-group animate-fade-up d4">
+
+                    <button type="submit"
+                            class="btn-green"
+                            id="loginButton">
+
+                        <span id="loginButtonText">
+                            Sign in
+                        </span>
+
+                        <svg id="loginArrow"
+                             width="15"
+                             height="15"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="white"
+                             stroke-width="2.5"
+                             stroke-linecap="round"
+                             stroke-linejoin="round"
+                             aria-hidden="true">
+
+                            <path d="M5 12h14" />
+
+                            <path d="M12 5l7 7-7 7" />
+
+                        </svg>
+
+                        <span id="loginSpinner"
+                              class="spinner"
+                              style="display:none;">
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- =============================================
+                 DIVIDER
+                 ============================================= -->
+
+            @* <div class="divider animate-fade-up d5">
+
+                <span class="divider-line"></span>
+
+                <span class="divider-text">
+                    or
+                </span>
+
+                <span class="divider-line"></span>
+
+            </div> *@
+
+
+            <!-- =============================================
+                 CREATE ACCOUNT
+                 ============================================= -->
+
+            @* <div class="register-section animate-fade-up d6">
+
+                <p class="register-text">
+                    Don't have an account?
+                </p>
+
+                <!--
+                    No Register action exists in the current
+                    AuthController, so this is intentionally
+                    left as a placeholder.
+                -->
+
+                <a href="#"
+                   class="btn-ghost">
+                    Create an account
+                </a>
+
+            </div> *@
+
+
+            <!-- =============================================
+                 TABLET FEATURE PILLS
+                 ============================================= -->
+
+            <div class="tablet-features">
+
+                <div class="tablet-feature">
+                    <span>💳</span>
+                    <span>Chanda</span>
+                </div>
+
+                <div class="tablet-feature">
+                    <span>👥</span>
+                    <span>Members</span>
+                </div>
+
+                <div class="tablet-feature">
+                    <span>📢</span>
+                    <span>Announcements</span>
+                </div>
+
+            </div>
+
+
+            <!-- Copyright -->
+
+            <p class="copyright animate-fade-up d6">
+                © @DateTime.Now.Year Rishta Nata · All rights reserved
+            </p>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =============================================================
+     JAVASCRIPT
+     ============================================================= -->
+
+<script>
+
+    /* =============================================================
+       PASSWORD VISIBILITY
+       ============================================================= */
+
+    function togglePassword() {
+
+        const passwordInput =
+            document.getElementById("Password");
+
+        const eyeIcon =
+            document.getElementById("eyeIcon");
+
+        const toggleButton =
+            document.getElementById("passwordToggle");
+
+        if (!passwordInput || !eyeIcon) {
+            return;
+        }
+
+        if (passwordInput.type === "password") {
+
+            passwordInput.type = "text";
+
+            toggleButton.setAttribute(
+                "aria-label",
+                "Hide password"
+            );
+
+            eyeIcon.innerHTML = `
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+            `;
+
+        } else {
+
+            passwordInput.type = "password";
+
+            toggleButton.setAttribute(
+                "aria-label",
+                "Show password"
+            );
+
+            eyeIcon.innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+            `;
+        }
+    }
+
+
+    /* =============================================================
+       SERVER ERROR DISMISS
+       ============================================================= */
+
+    function dismissServerError() {
+
+        const error =
+            document.getElementById("serverError");
+
+        if (!error) {
+            return;
+        }
+
+        error.style.transition =
+            "opacity 0.25s ease, transform 0.25s ease";
+
+        error.style.opacity = "0";
+        error.style.transform =
+            "translateY(-8px) scale(0.97)";
+
+        setTimeout(() => {
+            error.remove();
+        }, 250);
+    }
+
+
+    /* =============================================================
+       LOGIN LOADING STATE
+       
+       This provides the same visual loading behavior as the
+       React design while the browser submits the MVC form.
+       
+       IMPORTANT:
+       We only trigger it when the form passes the browser's
+       basic validation. ASP.NET server validation remains intact.
+       ============================================================= */
+
+    document
+        .getElementById("loginForm")
+        ?.addEventListener("submit", function (event) {
+
+            const form = event.target;
+
+            if (!form.checkValidity()) {
+                return;
+            }
+
+            const button =
+                document.getElementById("loginButton");
+
+            const buttonText =
+                document.getElementById("loginButtonText");
+
+            const arrow =
+                document.getElementById("loginArrow");
+
+            const spinner =
+                document.getElementById("loginSpinner");
+
+            if (!button) {
+                return;
+            }
+
+            button.disabled = true;
+
+            if (buttonText) {
+                buttonText.textContent = "Signing in…";
+            }
+
+            if (arrow) {
+                arrow.style.display = "none";
+            }
+
+            if (spinner) {
+                spinner.style.display = "block";
+            }
+        });
+
+</script>
+
+<partial name="_ValidationScriptsPartial" />
 
 </body>
 </html>
