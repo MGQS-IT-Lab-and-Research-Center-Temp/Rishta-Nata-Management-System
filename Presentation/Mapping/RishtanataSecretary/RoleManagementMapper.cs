@@ -1,21 +1,19 @@
 ﻿using Infrastructure.DTOs;
 using Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
-
-namespace Presentation.Mapping.RishtanataSecretary;
-
-public static class RoleManagementMapper
+namespace Presentation.Mapping.RishtanataSecretary
 {
-    public static RoleManagementViewModel toViewModel(RoleManagementDto dto)
+    public static class RoleManagementMapper
     {
-        return new RoleManagementViewModel
+        public static RoleManagementViewModel toViewModel(RoleManagementDto dto)
         {
-            MemberId = dto.MemberId,
-            ChandaNo = dto.ChandaNo,
-            FullName = dto.FullName,
-            CurrentRole = dto.CurrentRole,
-            AvailableRoles = dto.AvailableRoles
-
-        };
+            return new RoleManagementViewModel
+            {
+                MemberId = dto.MemberId,
+                ChandaNo = dto.ChandaNo,
+                FullName = dto.FullName,
+                CurrentRoles = dto.CurrentRoles,
+                AvailableRoles = dto.AvailableRoles
+            };
+        }
     }
-
 }

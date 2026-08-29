@@ -1,106 +1,35 @@
-﻿@page
-@model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.RoleManagementViewModel
-
-@{
-    ViewData["Title"] = "Manage Role";
-}
-
-<div class="container py-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-            <h2 class="fw-bold">Manage Role</h2>
-            <p class="text-muted mb-0">
-                @Model.FullName <span class="text-muted">(@Model.ChandaNo)</span>
-            </p>
-        </div>
-
-        <a asp-controller="RishtanataSecretary"
-           asp-action="JamaatMembers"
-           class="btn btn-outline-secondary">
-            Back to Members
-        </a>
-
+﻿<!-- Current Roles -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Current Roles</h5>
     </div>
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
-
-    <!-- Current Role -->
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-white">
-            <h5 class="mb-0">Current Role</h5>
-        </div>
-
-        <div class="card-body d-flex justify-content-between align-items-center">
-
-            <div>
-                <span class="badge @(Model.IsAtBaseRole ? "bg-primary" : "bg-dark") fs-6">
-                    @Model.CurrentRole.Name
-                </span>
-                <small class="text-muted ms-2">Hierarchy level @Model.CurrentRole.HierarchyLevel</small>
+    <div class="card-body">
+        @foreach (var role in Model.CurrentRoles)
+        {
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <span class="badge @(role.HierarchyLevel == 1 ? "bg-primary" : "bg-dark") fs-6">
+                        @role.Name
+                    </span>
+                    <small class="text-muted ms-2">Hierarchy level @role.HierarchyLevel</small>
+                </div>
+                @if (role.HierarchyLevel != 1)
+                {
+                    <form asp-action="RemoveRole" method="post" class="mb-0">
+                        <input type="hidden" name="memberId" value="@Model.MemberId" />
+                        <input type="hidden" name="roleId" value="@role.Id" />
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Remove this role?');">
+                            Remove
+                        </button>
+                    </form>
+                }
             </div>
-
-            @if (Model.IsAtBaseRole)
-            {
-                <small class="text-muted">baseline · cannot be reset further</small>
-            }
-            else
-            {
-                <form asp-action="RemoveRole" method="post" class="mb-0">
-                    <input type="hidden" name="memberId" value="@Model.MemberId" />
-                    <button type="submit"
-                            class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Reset this member to Jama\'at Member?');">
-                        Reset to Jama'at Member
-                    </button>
-                </form>
-            }
-
-        </div>
-
+        }
+        @if (Model.IsAtBaseRole)
+        {
+            <small class="text-muted">baseline &middot; cannot be reset further</small>
+        }
     </div>
-
-    <!-- Change Role -->
-    <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-white">
-            <h5 class="mb-0">Change Role</h5>
-        </div>
-
-        <div class="card-body">
-
-            <form asp-action="ChangeRole" method="post" class="row g-3 align-items-end">
-
-                <input type="hidden" name="memberId" value="@Model.MemberId" />
-
-                <div class="col-md-6">
-                    <label class="form-label">New Role</label>
-                    <select name="roleId" class="form-select" required>
-                        <option value="" selected disabled>Select a role...</option>
-                        @foreach (var role in Model.AvailableRoles)
-                        {
-                            <option value="@role.Id">@role.Name (Level @role.HierarchyLevel)</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">Update Role</button>
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
 </div>

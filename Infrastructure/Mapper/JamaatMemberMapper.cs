@@ -3,7 +3,7 @@ using Infrastructure.DTOs.JamaatMember;
 
 namespace Infrastructure.Mapper;
 
-public static class   JamaatMemberMapper
+public static class JamaatMemberMapper
 {
     public static JamaatMemberDto ToDto(JamaatMember entity)
     {
@@ -30,12 +30,16 @@ public static class   JamaatMemberMapper
             NextOfKinName = entity.NextOfKinName ?? string.Empty,
             NextOfKinAddress = entity.NextOfKinAddress ?? string.Empty,
             Nationality = entity.Nationality ?? string.Empty,
-            RoleId = entity.RoleId,
+            RoleIds = entity.MemberRoles.Select(mr => mr.RoleId).ToList(),
             IsSystemDefault = entity.IsSystemDefault,
             NewRole = entity.NewRole,
         };
     }
 
+    // NOTE: ToEntity no longer populates MemberRoles — role assignment must
+    // go through RoleAssignmentService (AssignRoleAsync), not this mapper,
+    // since roles are now a managed collection with audit fields
+    // (AssignedAt/AssignedBy), not a plain field copy.
     public static JamaatMember ToEntity(JamaatMemberDto dto)
     {
         return new JamaatMember
@@ -61,7 +65,6 @@ public static class   JamaatMemberMapper
             NextOfKinName = dto.NextOfKinName,
             NextOfKinAddress = dto.NextOfKinAddress,
             Nationality = dto.Nationality,
-            RoleId = dto.RoleId,
             IsSystemDefault = dto.IsSystemDefault,
             NewRole = dto.NewRole,
         };

@@ -24,8 +24,12 @@ public class JamaatMember : AuditableEntity
     public string? NextOfKinName { get; set; } = string.Empty!;
     public string? NextOfKinAddress { get; set; } = string.Empty!;
     public string? Nationality { get; set; }
-    public Guid RoleId { get; set; }
-    public Role Role { get; set; } = default!;
+
+    // Replaced single RoleId/Role with a many-to-many relationship —
+    // a member can now hold multiple roles simultaneously
+    // (e.g. Jama'at Member + Jamaat President).
+    public ICollection<JamaatMemberRole> MemberRoles { get; set; } = new List<JamaatMemberRole>();
+
     public string FullName => $"{FirstName} {Surname}".Trim();
     public bool IsSystemDefault { get; set; } = false;
     public string NewRole { get; set; } = string.Empty;
