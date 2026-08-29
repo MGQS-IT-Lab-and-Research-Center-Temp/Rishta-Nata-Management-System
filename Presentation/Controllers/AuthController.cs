@@ -148,27 +148,41 @@ public class AuthController : Controller
 
     private IActionResult RedirectUserToDashboard(JamaatMember member)
     {
-        return member.Role.Name switch
+        // Role name comes from the gateway/DB and may be missing or
+        // capitalized (e.g. "Jamaat Secretary"); normalize before matching.
+        var roleName = (member.Role?.Name ?? string.Empty)
+            .Trim()
+            .ToLowerInvariant();
+
+        return roleName switch
         {
-            RoleNames.JamaatSecretary =>
-                RedirectToAction(
-                    "Dashboard",
-                    "JamaatSecretary"),
-
-            RoleNames.CircuitSecretary =>
-                RedirectToAction(
-                    "Dashboard",
-                    "CircuitSecretary"),
-
             RoleNames.RishtanataSecretary =>
                 RedirectToAction(
                     "Dashboard",
                     "RishtanataSecretary"),
 
-            _ =>
+            // The "Jama'at Secretary" dashboard is currently implemented by
+            // JamaatPresidentController, which is gated by the
+            // RequireJamaatSecretary policy (i.e. the "jamaat secretary"
+            // role), so point jama'at secretaries at the action they are
+            // actually allowed to open.
+            RoleNames.JamaatSecretary =>
                 RedirectToAction(
                     "Dashboard",
-                    "JamaatSecretary")
+                    "JamaatPresident"),
+
+            // No CircuitSecretaryController exists yet; fall back to the
+            // member dashboard instead of a 404.
+            RoleNames.CircuitSecretary =>
+                RedirectToAction(
+                    "Index",
+                    "JamaatMemberDashboard"),
+
+            // Ordinary members and any unrecognized/null role land here.
+            _ =>
+                RedirectToAction(
+                    "Index",
+                    "JamaatMemberDashboard")
         };
     }
 }

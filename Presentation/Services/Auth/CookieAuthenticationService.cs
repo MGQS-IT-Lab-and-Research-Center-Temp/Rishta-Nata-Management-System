@@ -24,7 +24,9 @@ public class CookieAuthenticationService : ICookieAuthenticationService
     {
         var secretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
 
-        var role = !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo ? RoleNames.RishtanataSecretary : jamaatMember.Role.Name;
+        var role = !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo
+            ? RoleNames.RishtanataSecretary
+            : jamaatMember.Role?.Name ?? string.Empty;
 
         var identity = new ClaimsIdentity(BuildClaims(jamaatMember, role), CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -38,17 +40,23 @@ public class CookieAuthenticationService : ICookieAuthenticationService
     {
         await _httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
-    static  List<Claim> BuildClaims(JamaatMember jamaatMember, string role)
+    static List<Claim> BuildClaims(JamaatMember jamaatMember, string role)
     {
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
             new(ClaimTypes.Name, jamaatMember.ChandaNo),
-            new(ClaimTypes.Role, role),
-            new("HierarchyLevel", jamaatMember.Role.HierarchyLevel.ToString())
+            // Tajneed does not return our local Role entity, so the role may
+            // be absent; default the hierarchy to a regular member.
+            new("HierarchyLevel", (jamaatMember.Role?.HierarchyLevel ?? 1).ToString())
         };
 
-        switch (jamaatMember.Role.Name)
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        switch (jamaatMember.Role?.Name)
         {
             case RoleNames.JamaatSecretary:
                 claims.Add(new Claim("Jamaat", jamaatMember.JamaatName));

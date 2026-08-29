@@ -9,7 +9,7 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Domain.Abstractions;
@@ -25,10 +25,12 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddMySQLServer<RishtanataDbContext>(
-            configuration.GetConnectionString("DefaultConnection")!);
-            
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
+        services.AddDbContext<RishtanataDbContext>(options =>
+            options.UseMySql(
+                configuration.GetConnectionString("DefaultConnection")!,
+                ServerVersion.AutoDetect(configuration.GetConnectionString("DefaultConnection")!)));
+
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<RishtanataDbContext>()
             .AddDefaultTokenProviders();
 
@@ -67,16 +69,13 @@ public static class DependencyInjection
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
     });
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("RequireRishtanataSecretary", p => p.RequireRole(RoleNames.RishtanataSecretary));
-            options.AddPolicy("RequireJamaatSecretary", p => p.RequireRole(RoleNames.JamaatSecretary));
-            options.AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitSecretary));
-            options.AddPolicy("RequireAmir", p => p.RequireRole(RoleNames.Amir));
-            options.AddPolicy("StageVerifier", p => p.RequireRole( RoleNames.RishtanataSecretary,RoleNames.JamaatSecretary,RoleNames.CircuitSecretary,
+        services.AddAuthorizationBuilder()
+            .AddPolicy("RequireRishtanataSecretary", p => p.RequireRole(RoleNames.RishtanataSecretary))
+            .AddPolicy("RequireJamaatSecretary", p => p.RequireRole(RoleNames.JamaatSecretary))
+            .AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitSecretary))
+            .AddPolicy("RequireAmir", p => p.RequireRole(RoleNames.Amir))
+            .AddPolicy("StageVerifier", p => p.RequireRole( RoleNames.RishtanataSecretary,RoleNames.JamaatSecretary,RoleNames.CircuitSecretary,
       RoleNames.Amir));
-
-        });
 
 
         return services;

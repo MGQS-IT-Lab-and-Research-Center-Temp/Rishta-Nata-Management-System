@@ -22,6 +22,8 @@ public class JamaatMemberService : IJamaatMemberService
         // FIRST LOGIN
         if (existingMember == null)
         {
+            var resolvedRoleId = await ResolveRoleIdAsync(member);
+
             var newMember = new JamaatMember
             {
                 Surname = member.Surname,
@@ -46,7 +48,7 @@ public class JamaatMemberService : IJamaatMemberService
                 Nationality = member.Nationality,
             // These should normally be handled by your application,
             // not copied blindly from the gateway
-                RoleId = member.RoleId,
+                RoleId = resolvedRoleId ?? Guid.Empty,
                 IsSystemDefault = false,
 
                 CreatedAt = DateTime.UtcNow
@@ -82,5 +84,36 @@ public class JamaatMemberService : IJamaatMemberService
         await _context.SaveChangesAsync();
 
         return existingMember;
+    }
+
+    /// <summary>
+    /// Resolves the local role to assign to a newly-imported member.
+    /// Prefers the role already carried on the payload; otherwise matches the
+    /// role by name; finally falls back to the baseline
+    /// (HierarchyLevel = 1 "Jama'at Member") role. Returns null only when no
+    /// roles exist in the database at all.
+    /// </summary>
+    private async Task<Guid?> ResolveRoleIdAsync(JamaatMember member)
+    {
+        if (member.RoleId != Guid.Empty)
+        {
+            return member.RoleId;
+        }
+
+        var roleName = member.Role?.Name?.Trim();
+        if (!string.IsNullOrWhiteSpace(roleName))
+        {
+            var byName = await _context.JamaatRoles
+                .FirstOrDefaultAsync(r => r.Name == roleName);
+            if (byName is not null)
+            {
+                return byName.Id;
+            }
+        }
+
+        var baseline = await _context.JamaatRoles
+            .FirstOrDefaultAsync(r => r.HierarchyLevel == 1);
+
+        return baseline?.Id;
     }
 }
