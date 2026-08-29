@@ -4,42 +4,35 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Persistence;
 
-
 public class RishtanataDbContextFactory
     : IDesignTimeDbContextFactory<RishtanataDbContext>
 {
     public RishtanataDbContext CreateDbContext(string[] args)
     {
+        var basePath = Directory.GetCurrentDirectory();
+        var presentationPath = Path.Combine(basePath, "Presentation");
+        if (!Directory.Exists(presentationPath))
+        {
+            presentationPath = Path.Combine(basePath, "..", "Presentation");
+        }
+        var resolvedPath = Path.GetFullPath(presentationPath);
+
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(
-                Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "../Presentation"))
-            .AddJsonFile(
-                "appsettings.json",
-                optional: false)
-            .AddJsonFile(
-                "appsettings.Development.json",
-                optional: true)
+            .SetBasePath(resolvedPath)
+            .AddJsonFile("appsettings.json", optional: false)
+            .AddJsonFile("appsettings.Development.json", optional: true)
             .Build();
 
-        var connectionString =
-            configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            throw new InvalidOperationException(
-                "DefaultConnection was not found.");
+            throw new InvalidOperationException("DefaultConnection was not found.");
         }
 
-        var optionsBuilder =
-            new DbContextOptionsBuilder<RishtanataDbContext>();
-
+        var optionsBuilder = new DbContextOptionsBuilder<RishtanataDbContext>();
         optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
-        return new RishtanataDbContext(
-            optionsBuilder.Options);
+        return new RishtanataDbContext(optionsBuilder.Options);
     }
-
-
 }
