@@ -22,8 +22,8 @@ namespace Infrastructure.Configurations
                 .HasMaxLength(1000);
 
             // Marriage Application ID
-            builder.Property(r => r.FormApplicationId)
-                .IsRequired();
+            //builder.Property(r => r.FormApplicationId)
+            //    .IsRequired();
 
             // Status
             builder.Property(r => r.Status)
@@ -35,10 +35,10 @@ namespace Infrastructure.Configurations
                 .IsRequired();
 
             // Relationship with MarriageApplication
-            builder.HasOne(r => r.FormApplication)
-                .WithMany()
-                .HasForeignKey(r => r.FormApplicationId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(r => r.FormApplication)
+            //    .WithMany()
+            //    .HasForeignKey(r => r.FormApplicationId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // Reviewer
             builder.Property(r => r.ReviewerId)

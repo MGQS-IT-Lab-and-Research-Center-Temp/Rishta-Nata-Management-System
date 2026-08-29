@@ -31,7 +31,8 @@ public class RishtanataDbContextFactory
         }
 
         var optionsBuilder = new DbContextOptionsBuilder<RishtanataDbContext>();
-        optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        
+        optionsBuilder.UseMySQL(connectionString);
 
         return new RishtanataDbContext(optionsBuilder.Options);
     }

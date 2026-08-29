@@ -9,7 +9,6 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Domain.Abstractions;
@@ -26,9 +25,8 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddDbContext<RishtanataDbContext>(options =>
-            options.UseMySql(
-                configuration.GetConnectionString("DefaultConnection")!,
-                ServerVersion.AutoDetect(configuration.GetConnectionString("DefaultConnection")!)));
+        options.UseMySQL(
+            configuration.GetConnectionString("DefaultConnection")!));
 
         services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<RishtanataDbContext>()
@@ -38,7 +36,6 @@ public static class DependencyInjection
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
-        services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
         services.AddScoped<IMarriageApplicationFormDetailService, MarriageApplicationFormDetailService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
@@ -54,9 +51,6 @@ public static class DependencyInjection
         services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
-        services.AddScoped<IMarriageApplicationFormDetailService, MarriageApplicationFormDetailService>();
-        services.AddScoped<IEmailSender, SmtpEmailSender>();
-        services.AddScoped<IMarriageFormNotificationService, MarriageFormNotificationService>();
         services.AddScoped<IEventHandler<MarriageFormStageRevertedEvent>, MarriageFormStageRevertedEventHandler>();
         services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
@@ -74,7 +68,7 @@ public static class DependencyInjection
             .AddPolicy("RequireJamaatSecretary", p => p.RequireRole(RoleNames.JamaatSecretary))
             .AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitSecretary))
             .AddPolicy("RequireAmir", p => p.RequireRole(RoleNames.Amir))
-            .AddPolicy("StageVerifier", p => p.RequireRole( RoleNames.RishtanataSecretary,RoleNames.JamaatSecretary,RoleNames.CircuitSecretary,
+            .AddPolicy("StageVerifier", p => p.RequireRole(RoleNames.RishtanataSecretary, RoleNames.JamaatSecretary, RoleNames.CircuitSecretary,
       RoleNames.Amir));
 
 

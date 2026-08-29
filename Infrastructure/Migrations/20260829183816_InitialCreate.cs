@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialRebuild : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -274,17 +274,10 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     Title = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     Comment = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false),
-<<<<<<<< HEAD:Infrastructure/Migrations/20260822105252_InitialCreate.cs
-                    Status = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
-                    ReviewedAt = table.Column<string>(type: "longtext", nullable: false),
-                    FormApplicationId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    ReviewerId = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-========
                     MarriageApplicationId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Status = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     ReviewedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ReviewerId = table.Column<Guid>(type: "char(36)", nullable: false),
->>>>>>>> 634f3862ce4e681bf39b8f47a8cc3ae363ab4c06:Infrastructure/Migrations/20260828222546_InitialRebuild.cs
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -294,16 +287,11 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
                     table.ForeignKey(
-<<<<<<<< HEAD:Infrastructure/Migrations/20260822105252_InitialCreate.cs
-                        name: "FK_Reviews_FormApplications_FormApplicationId",
-                        column: x => x.FormApplicationId,
-========
                         name: "FK_Reviews_FormApplications_MarriageApplicationId",
                         column: x => x.MarriageApplicationId,
->>>>>>>> 634f3862ce4e681bf39b8f47a8cc3ae363ab4c06:Infrastructure/Migrations/20260828222546_InitialRebuild.cs
                         principalTable: "FormApplications",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -337,7 +325,7 @@ namespace Infrastructure.Migrations
                     NewRole = table.Column<string>(type: "longtext", nullable: false),
                     ResetToken = table.Column<string>(type: "longtext", nullable: true),
                     ResetTokenExpiry = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    BrideGuardianId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    BrideGuardianId = table.Column<Guid>(type: "char(36)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -700,11 +688,6 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-<<<<<<<< HEAD:Infrastructure/Migrations/20260822105252_InitialCreate.cs
-                name: "IX_Reviews_FormApplicationId",
-                table: "Reviews",
-                column: "FormApplicationId");
-========
                 name: "IX_MarriageFormRejections_MarriageApplicationFormId",
                 table: "MarriageFormRejections",
                 column: "MarriageApplicationFormId");
@@ -724,7 +707,6 @@ namespace Infrastructure.Migrations
                 name: "IX_WitnessSignatureSection_MarriageApplicationFormId",
                 table: "WitnessSignatureSection",
                 column: "MarriageApplicationFormId");
->>>>>>>> 634f3862ce4e681bf39b8f47a8cc3ae363ab4c06:Infrastructure/Migrations/20260828222546_InitialRebuild.cs
         }
 
         /// <inheritdoc />
@@ -749,11 +731,6 @@ namespace Infrastructure.Migrations
                 name: "Certificates");
 
             migrationBuilder.DropTable(
-<<<<<<<< HEAD:Infrastructure/Migrations/20260822105252_InitialCreate.cs
-                name: "Invitations");
-
-            migrationBuilder.DropTable(
-========
                 name: "GuardianOrWakeelSection");
 
             migrationBuilder.DropTable(
@@ -778,24 +755,13 @@ namespace Infrastructure.Migrations
                 name: "WitnessSignatureSection");
 
             migrationBuilder.DropTable(
->>>>>>>> 634f3862ce4e681bf39b8f47a8cc3ae363ab4c06:Infrastructure/Migrations/20260828222546_InitialRebuild.cs
                 name: "JamaatMembers");
 
             migrationBuilder.DropTable(
                 name: "MarriageApplicationForms");
 
             migrationBuilder.DropTable(
-<<<<<<<< HEAD:Infrastructure/Migrations/20260822105252_InitialCreate.cs
-                name: "Reviews");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-========
                 name: "BrideGuardian");
->>>>>>>> 634f3862ce4e681bf39b8f47a8cc3ae363ab4c06:Infrastructure/Migrations/20260828222546_InitialRebuild.cs
 
             migrationBuilder.DropTable(
                 name: "JamaatRoles");
