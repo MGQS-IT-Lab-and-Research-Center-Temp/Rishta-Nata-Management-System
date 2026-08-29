@@ -9,7 +9,7 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Domain.Abstractions;
@@ -25,8 +25,10 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddMySQLServer<RishtanataDbContext>(
-            configuration.GetConnectionString("DefaultConnection")!);
+        services.AddDbContext<RishtanataDbContext>(options =>
+            options.UseMySql(
+                configuration.GetConnectionString("DefaultConnection")!,
+                ServerVersion.AutoDetect(configuration.GetConnectionString("DefaultConnection")!)));
 
         services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<RishtanataDbContext>()
