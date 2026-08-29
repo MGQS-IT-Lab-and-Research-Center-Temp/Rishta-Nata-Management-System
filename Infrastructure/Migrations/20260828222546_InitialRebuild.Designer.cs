@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RishtanataDbContext))]
-    partial class RishtanataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260828222546_InitialRebuild")]
+    partial class InitialRebuild
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1349,7 +1352,7 @@ namespace Infrastructure.Migrations
                         .WithMany("Brides")
                         .HasForeignKey("BrideGuardianId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired(false);
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("Members")
