@@ -102,7 +102,8 @@ namespace Application.Services
         public MemberProfileDto GetMemberProfile(Guid id)
         {
             var member = _context.JamaatMembers
-                .Include(x => x.Role)
+                .Include(x => x.MemberRoles)
+                    .ThenInclude(mr => mr.Role)
                 .FirstOrDefault(x => x.Id == id);
 
             if (member == null)
@@ -132,7 +133,9 @@ namespace Application.Services
                 NextOfKinPhoneNo = member.NextOfKinPhoneNo,
                 NextOfKinAddress = member.NextOfKinAddress,
                 Nationality = member.Nationality,
-                RoleName = member.Role?.Name
+                RoleName = member.MemberRoles.Any()
+                    ? string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))
+                    : null
             };
         }
 
