@@ -41,5 +41,4 @@ public class RishtanataDbContextFactory
             optionsBuilder.Options);
     }
 
-
 }

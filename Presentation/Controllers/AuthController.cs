@@ -50,6 +50,7 @@ public class AuthController : Controller
             return View(model);
         }
 
+
         try
         {
             // Authenticate using ChandaNo + PASSWORD
@@ -104,7 +105,7 @@ public class AuthController : Controller
         }
 
         // Create/update local member
-        await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
+        var localMember = await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
 
         // Check Rishtanata Secretary
         var rishtanataSecretaryChandaNo =
@@ -112,14 +113,13 @@ public class AuthController : Controller
 
         var isRishtanataSecretary =
             !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo) &&
-            jamaatMember.ChandaNo == rishtanataSecretaryChandaNo;
+            localMember.ChandaNo == rishtanataSecretaryChandaNo;
 
         // Create authentication cookie
-        await _cookieAuthService.SignInAsync(jamaatMember);
+        await _cookieAuthService.SignInAsync(localMember);
 
         // Return URL
-        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
-            Url.IsLocalUrl(model.ReturnUrl))
+        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
         {
             return Redirect(model.ReturnUrl);
         }
@@ -127,13 +127,11 @@ public class AuthController : Controller
         // Rishtanata Secretary
         if (isRishtanataSecretary)
         {
-            return RedirectToAction(
-                "Dashboard",
-                "RishtanataSecretary");
+            return RedirectToAction("Dashboard", "RishtanataSecretary");
         }
 
         // Other roles
-        return RedirectUserToDashboard(jamaatMember);
+        return RedirectUserToDashboard(localMember);
     }
 
     // POST: /Auth/Logout
@@ -148,7 +146,7 @@ public class AuthController : Controller
 
     private IActionResult RedirectUserToDashboard(JamaatMember member)
     {
-        return member.Role.Name switch
+        return member.Role?.Name switch
         {
             RoleNames.JamaatSecretary =>
                 RedirectToAction(

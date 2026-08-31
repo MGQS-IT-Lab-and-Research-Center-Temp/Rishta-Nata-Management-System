@@ -398,7 +398,6 @@ public sealed class MarriageApplicationFormDetailServiceTests : IDisposable
         JamaatName = "Lagos",
         CircuitName = "Lagos Circuit",
         Sex = "M",
-        Password = "seed-only",
         RoleId = role.Id,
         Role = role
     };

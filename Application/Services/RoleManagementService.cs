@@ -3,9 +3,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.DTOs;
 using Infrastructure.DTOs.Roles;
-using Infrastructure.Identity;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
@@ -15,12 +13,10 @@ public class RoleAssignmentService : IRoleAssignmentService
     private const int BaselineHierarchyLevel = 1; // Jama'at Member
 
     private readonly RishtanataDbContext _context;
-    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public RoleAssignmentService(RishtanataDbContext context, RoleManager<ApplicationRole> roleManager)
+    public RoleAssignmentService(RishtanataDbContext context)
     {
         _context = context;
-        _roleManager = roleManager;
     }
 
     public async Task<IEnumerable<RoleDto>> GetAllRolesAsync()
@@ -56,15 +52,15 @@ public class RoleAssignmentService : IRoleAssignmentService
         if (member == null)
             return (false, "Member not found.");
 
-        var role = await _roleManager.FindByIdAsync(roleId.ToString());
+        var role = await _context.JamaatRoles.FirstOrDefaultAsync(r => r.Id == roleId);
         if (role == null)
             return (false, "Selected role does not exist.");
 
         if (member.RoleId == roleId)
             return (false, "Member already holds that role.");
 
-        member.RoleId = role.Id;
-        member.Role.UpdatedBy = changedBy;
+        member.RoleId = roleId;
+        member.ModifiedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         return (true, null);
     }
@@ -88,7 +84,7 @@ public class RoleAssignmentService : IRoleAssignmentService
             return (false, "Baseline Jama'at Member role is not configured.");
 
         member.RoleId = baseRole.Id;
-        member.Role.UpdatedBy = changedBy;
+        member.ModifiedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
         return (true, null);

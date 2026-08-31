@@ -23,3 +23,21 @@ public class Data
     public int JamaatId { get; set; }
     public string PhoneNo { get; set; } = default!;
 }
+
+
+//Original Login Response
+//public class Rootobject
+//{
+//    public Data data { get; set; }
+//    public string token { get; set; }
+//    public DateTime expiry { get; set; }
+//    public string message { get; set; }
+//    public bool status { get; set; }
+//}
+
+//public class Data
+//{
+//    public int userId { get; set; }
+//    public string userName { get; set; }
+//    public string[] roles { get; set; }
+//}

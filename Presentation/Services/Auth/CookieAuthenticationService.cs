@@ -24,7 +24,8 @@ public class CookieAuthenticationService : ICookieAuthenticationService
     {
         var secretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
 
-        var role = !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo ? RoleNames.RishtanataSecretary : jamaatMember.Role.Name;
+        var isRishtanataSecretary = !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo;
+        var role = isRishtanataSecretary ? RoleNames.RishtanataSecretary : jamaatMember.Role?.Name ?? string.Empty;
 
         var identity = new ClaimsIdentity(BuildClaims(jamaatMember, role), CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -45,10 +46,10 @@ public class CookieAuthenticationService : ICookieAuthenticationService
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
             new(ClaimTypes.Name, jamaatMember.ChandaNo),
             new(ClaimTypes.Role, role),
-            new("HierarchyLevel", jamaatMember.Role.HierarchyLevel.ToString())
+            new("HierarchyLevel", (jamaatMember.Role?.HierarchyLevel ?? 1).ToString())
         };
 
-        switch (jamaatMember.Role.Name)
+        switch (jamaatMember.Role?.Name)
         {
             case RoleNames.JamaatSecretary:
                 claims.Add(new Claim("Jamaat", jamaatMember.JamaatName));
