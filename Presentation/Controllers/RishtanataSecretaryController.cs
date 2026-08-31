@@ -8,106 +8,105 @@ using Application.Services;
 using Application.Interfaces;
 using Infrastructure.Mapper;
 
-namespace Presentation.Controllers
+namespace Presentation.Controllers;
+
+[Authorize(Policy = "RequireRishtanataSecretary")]
+public class RishtanataSecretaryController : Controller
 {
-    [Authorize(Policy = "RequireRishtanataSecretary")]
-    public class RishtanataSecretaryController : Controller
+    private readonly IRishtanataSecretaryService _service;
+    private readonly IRoleAssignmentService _roleService;
+
+    public RishtanataSecretaryController(
+        IRishtanataSecretaryService service,
+        IRoleAssignmentService roleService)
     {
-        private readonly IRishtanataSecretaryService _service;
-        private readonly IRoleAssignmentService _roleService;
+        _service = service;
+        _roleService = roleService;
+    }
 
-        public RishtanataSecretaryController(
-            IRishtanataSecretaryService service,
-            IRoleAssignmentService roleService)
-        {
-            _service = service;
-            _roleService = roleService;
-        }
+    // Dashboard page
+    public IActionResult Dashboard()
+    {
+        var dto = _service.GetDashboard();
 
-        // Dashboard page
-        public IActionResult Dashboard()
-        {
-            var dto = _service.GetDashboard();
+        var model = RishtanataSecretaryDashboardMapping.ToViewModel(dto);
 
-            var model = RishtanataSecretaryDashboardMapping.ToViewModel(dto);
+        return View(model);
+    }
 
-            return View(model);
-        }
+    // Pending approvals page
+    public async Task<IActionResult> PendingApprovals()
+    {
+        var pendingApprovals = _service.GetPendingApprovals();
 
-        // Pending approvals page
-        public async Task<IActionResult> PendingApprovals()
-        {
-            var pendingApprovals = _service.GetPendingApprovals();
+        var viewModels = pendingApprovals
+            .Select(PendingApprovalMapping.ToViewModel)
+            .ToList();
 
-            var viewModels = pendingApprovals
-                .Select(PendingApprovalMapping.ToViewModel)
-                .ToList();
+        return View(viewModels);
+    }
 
-            return View(viewModels);
-        }
+    // MarriedCouples Page
+    public async Task<IActionResult> MarriedCouples()
+    {
+        var marriedCouples = _service.GetMarriedCouples();
 
-        // MarriedCouples Page
-        public async Task<IActionResult> MarriedCouples()
-        {
-            var marriedCouples = _service.GetMarriedCouples();
+        return View(marriedCouples);
+    }
 
-            return View(marriedCouples);
-        }
+    // View all Jama'at members
+    public IActionResult JamaatMembers()
+    {
+        var members = _service.GetMembers();
 
-        // View all Jama'at members
-        public IActionResult JamaatMembers()
-        {
-            var members = _service.GetMembers();
+        var viewModels = members
+            .Select(JamaatMemberMapping.ToViewModel)
+            .ToList();
 
-            var viewModels = members
-                .Select(JamaatMemberMapping.ToViewModel)
-                .ToList();
+        return View(viewModels);
+    }
 
-            return View(viewModels);
-        }
+    // Review a specific application
+    public async Task<IActionResult> Review(Guid id)
+    {
+        var application = _service.GetById(id);
 
-        // Review a specific application
-        public async Task<IActionResult> Review(Guid id)
-        {
-            var application = _service.GetById(id);
+        return View(application);
+    }
 
-            return View(application);
-        }
+    // Full member profile page
+    public async Task<IActionResult> MemberProfile(Guid id)
+    {
+        var dto = _service.GetMemberProfile(id);
 
-        // Full member profile page
-        public async Task<IActionResult> MemberProfile(Guid id)
-        {
-            var dto = _service.GetMemberProfile(id);
+        var model = MemberProfileMapping.ToViewModel(dto);
 
-            var model = MemberProfileMapping.ToViewModel(dto);
+        return View(model);
+    }
 
-            return View(model);
-        }
+    // Edit Role of a specific Jamaat Member
+    public async Task<IActionResult> EditRoles(Guid id)
+    {
+        var dto = await _roleService.GetRoleManagementAsync(id);
 
-        // Edit Role of a specific Jamaat Member
-        public async Task<IActionResult> EditRoles(Guid id)
-        {
-            var dto = await _roleService.GetRoleManagementAsync(id);
+        var viewModel = RoleManagementMapper.toViewModel(dto);
 
-            var viewModel = RoleManagementMapper.toViewModel(dto);
+        return View(viewModel);
+    }
 
-            return View(viewModel);
-        }
+    [HttpPost]
+    public async Task<IActionResult> Approve(Guid id)
+    {
+        _service.Approve(id);
 
-        [HttpPost]
-        public async Task<IActionResult> Approve(Guid id)
-        {
-            _service.Approve(id);
+        return RedirectToAction(nameof(PendingApprovals));
+    }
 
-            return RedirectToAction(nameof(PendingApprovals));
-        }
+    [HttpPost]
+    public async Task<IActionResult> Reject(Guid id)
+    {
+        _service.Reject(id);
 
-        [HttpPost]
-        public async Task<IActionResult> Reject(Guid id)
-        {
-            _service.Reject(id);
-
-            return RedirectToAction(nameof(PendingApprovals));
-        }
+        return RedirectToAction(nameof(PendingApprovals));
     }
 }

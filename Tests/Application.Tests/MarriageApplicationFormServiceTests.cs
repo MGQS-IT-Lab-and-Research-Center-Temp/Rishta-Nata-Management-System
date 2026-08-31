@@ -105,8 +105,10 @@ public sealed class MarriageApplicationFormServiceTests : IDisposable
         FirstName = "Test",
         Surname = "Member",
         Email = $"{chandaNo}@test.local",
-        Role = role,
-        RoleId = role.Id,
+        MemberRoles = new List<JamaatMemberRole>
+    {
+        new() { RoleId = role.Id, Role = role }
+    },
         JamaatName = "Lagos"
     };
 

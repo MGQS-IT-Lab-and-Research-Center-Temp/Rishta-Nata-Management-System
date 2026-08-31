@@ -2,9 +2,9 @@
 using Domain.Entities;
 using Gateway.Extensions;
 using Infrastructure.Identity.Tokens;
-using Infrastructure.Identity.Users;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
 
@@ -55,7 +55,18 @@ public class GatewayHandler : IGatewayHandler
 
         if (response.IsSuccessStatusCode)
         {
-            return await response.ReadContentAs<JamaatMember>();
+            var content = await response.Content.ReadAsStringAsync();
+
+            var member = DeserializeMember(content);
+
+            // The Tajneed member payload does not (reliably) carry the chanda
+            // number, so stamp it from the identifier we queried with.
+            if (member is not null)
+            {
+                member.ChandaNo = chandaNo;
+            }
+
+            return member;
         }
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
@@ -82,16 +93,20 @@ public class GatewayHandler : IGatewayHandler
         {
             Content = jsonContent
         };
-        
+
         var response = await _client.SendAsync(request);
-        
+
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
         }
-        
-        if (response.StatusCode == HttpStatusCode.Unauthorized || 
+
+        // The Tajneed API reports invalid credentials as 400 Bad Request
+        // ({"message":"Invalid Credential","status":false}), alongside the
+        // conventional 401/404 — all mean "not authenticated".
+        if (response.StatusCode == HttpStatusCode.BadRequest ||
+            response.StatusCode == HttpStatusCode.Unauthorized ||
             response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
@@ -99,8 +114,38 @@ public class GatewayHandler : IGatewayHandler
 
         var errorContent = await response.Content.ReadAsStringAsync();
 
-         throw new HttpRequestException(
+        throw new HttpRequestException(
             $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). " +
             $"Response: {errorContent}");
+    }
+
+    /// <summary>
+    /// Parses a member payload that may be returned either as the raw member
+    /// object or wrapped inside the API's { message, status, data } envelope.
+    /// </summary>
+    private static JamaatMember? DeserializeMember(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return null;
+        }
+
+        var token = JToken.Parse(content);
+
+        // Guard against an array body (the API returns a string array for
+        // validation errors / not-found cases).
+        if (token is JArray)
+        {
+            return null;
+        }
+
+        if (token is JObject obj &&
+            obj.TryGetValue("data", StringComparison.OrdinalIgnoreCase, out var data) &&
+            data.Type == JTokenType.Object)
+        {
+            token = data;
+        }
+
+        return token.ToObject<JamaatMember>();
     }
 }

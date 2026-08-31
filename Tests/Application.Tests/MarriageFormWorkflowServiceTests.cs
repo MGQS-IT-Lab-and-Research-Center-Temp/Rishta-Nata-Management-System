@@ -384,7 +384,9 @@ public sealed class MarriageFormWorkflowServiceTests : IDisposable
         CircuitName = "Lagos Circuit",
         Sex = "M",
         PhoneNo = "08010000000",
-        RoleId = role.Id,
-        Role = role
+        MemberRoles = new List<JamaatMemberRole>
+        {
+            new() { RoleId = role.Id, Role = role }
+        }
     };
 }

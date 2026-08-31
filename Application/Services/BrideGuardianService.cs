@@ -5,7 +5,6 @@ using Domain.Enums;
 using Infrastructure.DTOs;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using MySqlX.XDevAPI.Common;
 
 namespace Application.Services;
 

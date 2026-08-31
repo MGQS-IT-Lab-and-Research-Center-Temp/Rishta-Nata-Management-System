@@ -2,77 +2,76 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Presentation.ViewModels
+namespace Presentation.ViewModels;
+
+public class BridegroomFormViewModel
 {
-    public class BridegroomFormViewModel
-    {
-        // =========================
-        // Application
-        // =========================
+    // =========================
+    // Application
+    // =========================
 
-        
+    
 
 
-        // =========================
-        // Bridegroom Personal Information
-        // =========================
+    // =========================
+    // Bridegroom Personal Information
+    // =========================
 
-        [Required(ErrorMessage = "⚠️Membership number is required⚠️.")]
-        [Display(Name = "Membership Number")]
-        public string BridegroomMembershipNo { get; set; } = string.Empty;
+    [Required(ErrorMessage = "⚠️Membership number is required⚠️.")]
+    [Display(Name = "Membership Number")]
+    public string BridegroomMembershipNo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "⚠️Full name is required⚠️.")]
-        [Display(Name = "Full Name")]
-        public string BridegroomName { get; set; } = string.Empty;
+    [Required(ErrorMessage = "⚠️Full name is required⚠️.")]
+    [Display(Name = "Full Name")]
+    public string BridegroomName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "⚠️Date of birth is required⚠️.")]
-        [DataType(DataType.Date)]
-        [Display(Name = "Date of Birth")]
-        public DateTime BridegroomDateOfBirth { get; set; }
+    [Required(ErrorMessage = "⚠️Date of birth is required⚠️.")]
+    [DataType(DataType.Date)]
+    [Display(Name = "Date of Birth")]
+    public DateTime BridegroomDateOfBirth { get; set; }
 
-        [Required(ErrorMessage = "⚠️Residential address is required⚠️.")]
-        [Display(Name = "Residential Address")]
-        public string BridegroomResidentOf { get; set; } = string.Empty;
+    [Required(ErrorMessage = "⚠️Residential address is required⚠️.")]
+    [Display(Name = "Residential Address")]
+    public string BridegroomResidentOf { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "⚠️Phone number is required⚠️.")]
-        [RegularExpression(@"^\d{11}$", ErrorMessage = "⚠️Phone number must contain exactly 11 digits⚠️.")]
-        [Display(Name = "Phone Number")]
-        public string BridegroomPhoneNumber { get; set; } = string.Empty;
+    [Required(ErrorMessage = "⚠️Phone number is required⚠️.")]
+    [RegularExpression(@"^\d{11}$", ErrorMessage = "⚠️Phone number must contain exactly 11 digits⚠️.")]
+    [Display(Name = "Phone Number")]
+    public string BridegroomPhoneNumber { get; set; } = string.Empty;
 
-        public string BridegroomGenotype { get; set; } = string.Empty;
+    public string BridegroomGenotype { get; set; } = string.Empty;
 
-        public string BridegroomBloodGroup { get; set; } = string.Empty;
-
-
-        // =========================
-        // Dower Information
-        // =========================
-
-        public decimal BridegroomDowerAmountPaidInCash { get; set; }
-
-        public decimal BridegroomDowerAmountToBePaid { get; set; }
+    public string BridegroomBloodGroup { get; set; } = string.Empty;
 
 
-        // =========================
-        // Nikah Information
-        // =========================
+    // =========================
+    // Dower Information
+    // =========================
 
-        public bool IsFirstNikah { get; set; }
+    public decimal BridegroomDowerAmountPaidInCash { get; set; }
 
-        public bool IsSecondThirdOrFourthNikah { get; set; }
+    public decimal BridegroomDowerAmountToBePaid { get; set; }
 
 
-        // =========================
-        // Previous Wife Information
-        // =========================
+    // =========================
+    // Nikah Information
+    // =========================
 
-        public bool FormerWifeIsDead { get; set; }
+    public bool IsFirstNikah { get; set; }
 
-        public bool HasDivorcedFormerWife { get; set; }
+    public bool IsSecondThirdOrFourthNikah { get; set; }
 
-        public bool FormerWifeIsPresent { get; set; }
 
-        public bool FormerWifeObtainedKhula { get; set; }
-    }
+    // =========================
+    // Previous Wife Information
+    // =========================
+
+    public bool FormerWifeIsDead { get; set; }
+
+    public bool HasDivorcedFormerWife { get; set; }
+
+    public bool FormerWifeIsPresent { get; set; }
+
+    public bool FormerWifeObtainedKhula { get; set; }
 }
 

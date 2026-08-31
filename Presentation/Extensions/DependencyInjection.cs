@@ -7,7 +7,6 @@ using Infrastructure.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Domain.Abstractions;
@@ -27,7 +26,6 @@ public static class DependencyInjection
         services.AddScoped<IRoleService, RoleService>(); // remove
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
-        services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
         services.AddScoped<IMarriageApplicationFormDetailService, MarriageApplicationFormDetailService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();

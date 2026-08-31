@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Presentation.ViewModels;
-
 namespace Presentation.Controllers;
 
 public class AuthController : Controller
@@ -15,7 +14,6 @@ public class AuthController : Controller
     private readonly ICookieAuthenticationService _cookieAuthService;
     private readonly IConfiguration _configuration;
     private readonly IJamaatMemberService _jamaatMemberService;
-
     public AuthController(
         IGatewayHandler gatewayHandler,
         ICookieAuthenticationService cookieAuthService,
@@ -27,8 +25,6 @@ public class AuthController : Controller
         _configuration = configuration;
         _jamaatMemberService = jamaatMemberService;
     }
-
-    // GET: /Auth/Login
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -36,11 +32,8 @@ public class AuthController : Controller
         {
             ReturnUrl = returnUrl
         };
-
         return View(model);
     }
-
-    // POST: /Auth/Login
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -53,23 +46,18 @@ public class AuthController : Controller
 
         try
         {
-            // Authenticate using ChandaNo + PASSWORD
             var tokenRequest = new TokenRequest(
                 model.ChandaNo,
                 model.Password);
-
             var tokenResponse =
                 await _gatewayHandler.GenerateToken(tokenRequest);
-
             if (tokenResponse is null)
             {
                 ModelState.AddModelError(
                     string.Empty,
                     "Invalid ChandaNo or Password.");
-
                 return View(model);
             }
-
             if (!tokenResponse.Status ||
                 string.IsNullOrWhiteSpace(tokenResponse.Token))
             {
@@ -78,7 +66,6 @@ public class AuthController : Controller
                     string.IsNullOrWhiteSpace(tokenResponse.Message)
                         ? "Login failed."
                         : tokenResponse.Message);
-
                 return View(model);
             }
         }
@@ -87,20 +74,15 @@ public class AuthController : Controller
             ModelState.AddModelError(
                 string.Empty,
                 "Invalid Chanda number or password.");
-
             return View(model);
         }
-
-        // Get member using chandaNo
         var jamaatMember =
             await _gatewayHandler.GetMemberByChandaNoAsync(model.ChandaNo);
-
         if (jamaatMember is null)
         {
             ModelState.AddModelError(
                 string.Empty,
                 "We could not find your member account.");
-
             return View(model);
         }
 
@@ -110,7 +92,6 @@ public class AuthController : Controller
         // Check Rishtanata Secretary
         var rishtanataSecretaryChandaNo =
             _configuration["RishtanataSecretary:ChandaNo"];
-
         var isRishtanataSecretary =
             !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo) &&
             localMember.ChandaNo == rishtanataSecretaryChandaNo;
@@ -123,8 +104,6 @@ public class AuthController : Controller
         {
             return Redirect(model.ReturnUrl);
         }
-
-        // Rishtanata Secretary
         if (isRishtanataSecretary)
         {
             return RedirectToAction("Dashboard", "RishtanataSecretary");
@@ -133,40 +112,30 @@ public class AuthController : Controller
         // Other roles
         return RedirectUserToDashboard(localMember);
     }
-
-    // POST: /Auth/Logout
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await _cookieAuthService.SignOutAsync();
-
         return RedirectToAction("Login", "Auth");
     }
-
     private IActionResult RedirectUserToDashboard(JamaatMember member)
     {
         return member.Role?.Name switch
         {
-            RoleNames.JamaatSecretary =>
-                RedirectToAction(
-                    "Dashboard",
-                    "JamaatSecretary"),
+            return RedirectToAction("Dashboard", "RishtanataSecretary");
+        }
 
-            RoleNames.CircuitSecretary =>
-                RedirectToAction(
-                    "Dashboard",
-                    "CircuitSecretary"),
+        if (roleNames.Contains(RoleNames.JamaatSecretary))
+        {
+            return RedirectToAction("Dashboard", "JamaatPresident");
+        }
 
-            RoleNames.RishtanataSecretary =>
-                RedirectToAction(
-                    "Dashboard",
-                    "RishtanataSecretary"),
+        if (roleNames.Contains(RoleNames.CircuitSecretary))
+        {
+            return RedirectToAction("Index", "JamaatMemberDashboard");
+        }
 
-            _ =>
-                RedirectToAction(
-                    "Dashboard",
-                    "JamaatSecretary")
-        };
+        return RedirectToAction("Index", "JamaatMemberDashboard");
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Infrastructure.DTOs;
 using Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
-
 namespace Presentation.Mapping.RishtanataSecretary
 {
     public static class RoleManagementMapper
@@ -12,11 +11,9 @@ namespace Presentation.Mapping.RishtanataSecretary
                 MemberId = dto.MemberId,
                 ChandaNo = dto.ChandaNo,
                 FullName = dto.FullName,
-                CurrentRole = dto.CurrentRole,
+                CurrentRoles = dto.CurrentRoles,
                 AvailableRoles = dto.AvailableRoles
-
             };
         }
-
     }
 }

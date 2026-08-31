@@ -1,98 +1,198 @@
+@using System.Security.Claims
+@{
+    // The display name is not hard-coded. At sign-in the authentication
+    // cookie is issued with a "FullName" claim taken from the logged-in
+    // JamaatMember record in the database (FirstName + Surname).
+    // Cookies issued before that claim existed are rebuilt automatically
+    // during validation (see OnValidatePrincipal in DependencyInjection.cs),
+    // so User.Identity.Name — which only ever holds the ChandaNo — is
+    // deliberately NOT used as a display-name fallback.
+    
+    var displayName = User?.FindFirst("FullName")?.Value;
+    
+    Console.WriteLine(displayName); // For debugging purposes
+
+    displayName = string.IsNullOrWhiteSpace(displayName)
+        ? "Member"
+        : displayName.Trim();
+
+    Console.WriteLine(displayName);
+
+    var firstName = displayName
+        .Split(separator: ' ', StringSplitOptions.RemoveEmptyEntries)
+        .FirstOrDefault() ?? "Member";
+
+    Console.WriteLine(firstName);
+
+    // Sidebar role comes from the role claim written at sign-in.
+    var profileRole = User?.FindFirst(ClaimTypes.Role)?.Value;
+
+    if (string.IsNullOrWhiteSpace(profileRole))
+    {
+        profileRole = "Member";
+    }
+
+    Console.WriteLine(profileRole);
+
+
+    // Highlights the sidebar entry that matches the page being served.
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    bool IsActive(string controller, string? action = null) =>
+        string.Equals(controller, currentController, StringComparison.OrdinalIgnoreCase) &&
+        (action is null ||
+         string.Equals(action, currentAction, StringComparison.OrdinalIgnoreCase));
+}
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Rishta-Nata-Management-System</title>
 
-    <script type="importmap"></script>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/member-dashboard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/secretary-dashboard.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Presentation.styles.css" asp-append-version="true" />
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body>
+    <div class="app-shell">
 
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
-            <div class="container-fluid">
+        <!-- TOP HEADER -->
+        <header class="topbar">
+            <a class="brand-area"
+               asp-controller="Home"
+               asp-action="Index">
+                <div class="brand-icon">
+                    <img src="~/img/logo.png" alt="Rishta-Nata logo" />
+                </div>
 
-                <a class="navbar-brand"
-                   asp-area=""
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Presentation
-                </a>
+                <div>
+                    <div class="brand-name">Rishta-Nata</div>
+                    <div class="brand-subtitle">MANAGEMENT SYSTEM</div>
+                </div>
+            </a>
 
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
+            <div class="topbar-user">
+                <div class="greeting">
+                    <div>As-salaamu alaykum,</div>
+                    <strong>@firstName</strong>
+                </div>
 
-                    <span class="navbar-toggler-icon"></span>
+                <button class="icon-button notification-button" type="button" aria-label="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="notification-dot">3</span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-
-                    <ul class="navbar-nav flex-grow-1">
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="MemberDashboard"
-                               asp-action="Index">
-                                My Dashboard
-                            </a>
-                        </li>
-
-                    </ul>
-
+                <div class="header-avatar" title="@displayName">
+                    <i class="bi bi-person-fill"></i>
                 </div>
             </div>
-        </nav>
-    </header>
+        </header>
 
-    <div class="messages">
-        <!-- shared messages location -->
+        <div class="app-body">
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="profile-block">
+                    <div class="sidebar-avatar" title="@displayName">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="profile-info">
+                        <div class="profile-name">@displayName</div>
+                        <div class="profile-role">@profileRole</div>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav" aria-label="Main navigation">
+                    <a class="nav-item @(IsActive("JamaatMemberDashboard") ? "active" : "")"
+                       asp-controller="JamaatMemberDashboard"
+                       asp-action="Index">
+                        <i class="bi bi-grid-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a class="nav-item" asp-controller="Applications" asp-action="Index">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>My Applications</span>
+                    </a>
+
+                    <a class="nav-item" asp-controller="Applications" asp-action="Create">
+                        <i class="bi bi-file-earmark-plus"></i>
+                        <span>New Application</span>
+                    </a>
+
+                    <a class="nav-item" asp-controller="Profile" asp-action="Index">
+                        <i class="bi bi-person-circle"></i>
+                        <span>My Profile</span>
+                    </a>
+
+                    <a class="nav-item" asp-controller="Messages" asp-action="Index">
+                        <i class="bi bi-chat-square"></i>
+                        <span>Messages</span>
+                    </a>
+
+                    <a class="nav-item" asp-controller="Settings" asp-action="Index">
+                        <i class="bi bi-gear"></i>
+                        <span>Settings</span>
+                    </a>
+
+                    <a class="nav-item" asp-controller="Support" asp-action="Index">
+                        <i class="bi bi-question-circle"></i>
+                        <span>Help &amp; Support</span>
+                    </a>
+                </nav>
+
+                <div class="sidebar-bottom">
+                    <form class="logout-form"
+                          asp-controller="Auth"
+                          asp-action="Logout"
+                          method="post">
+                        <button type="submit" class="nav-item logout-link">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="main-content">
+                <div class="messages">
+                    <!-- shared messages location -->
+                </div>
+
+                @RenderBody()
+            </main>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <span>
+                &copy; @DateTime.Now.Year Rishta-Nata Management System. All rights reserved.
+                &middot;
+                <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </span>
+
+            <span class="footer-mark">
+                <i class="bi bi-stars"></i>
+                <i class="bi bi-three-dots"></i>
+            </span>
+        </footer>
     </div>
 
-    <main role="main" class="flex-grow-1">
-        @RenderBody()
-    </main>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Presentation -
-            <a asp-area=""
-               asp-controller="Home"
-               asp-action="Privacy">
-                Privacy
-            </a>
-        </div>
-    </footer>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
-
 </html>

@@ -1,4 +1,3 @@
-
 using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -8,6 +7,8 @@ namespace Application.Services;
 
 public class JamaatMemberService : IJamaatMemberService
 {
+    private const int BaselineHierarchyLevel = 1; // Jama'at Member
+
     private readonly RishtanataDbContext _context;
 
     public JamaatMemberService(RishtanataDbContext context)
@@ -17,11 +18,15 @@ public class JamaatMemberService : IJamaatMemberService
 
     public async Task<JamaatMember> CreateOrUpdateAsync(JamaatMember member)
     {
-        var existingMember = await _context.JamaatMembers.FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
+        var existingMember = await _context.JamaatMembers
+            .Include(m => m.MemberRoles)
+                .ThenInclude(mr => mr.Role)
+            .FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
 
-        // FIRST LOGIN
         if (existingMember == null)
         {
+            var resolvedRoleId = await ResolveRoleIdAsync(member);
+
             var newMember = new JamaatMember
             {
                 Surname = member.Surname,
@@ -44,22 +49,29 @@ public class JamaatMemberService : IJamaatMemberService
                 NextOfKinName = member.NextOfKinName,
                 NextOfKinAddress = member.NextOfKinAddress,
                 Nationality = member.Nationality,
-            // These should normally be handled by your application,
-            // not copied blindly from the gateway
-                RoleId = member.RoleId,
                 IsSystemDefault = false,
-
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.JamaatMembers.Add(newMember);
+            if (resolvedRoleId is Guid roleId)
+            {
+                newMember.MemberRoles.Add(new JamaatMemberRole
+                {
+                    RoleId = roleId,
+                    AssignedAt = DateTime.UtcNow,
+                    AssignedBy = "system:first-login-default"
+                });
+            }
 
+            _context.JamaatMembers.Add(newMember);
             await _context.SaveChangesAsync();
 
-            return newMember;
+            return await _context.JamaatMembers
+                .Include(m => m.MemberRoles)
+                    .ThenInclude(mr => mr.Role)
+                .FirstAsync(m => m.Id == newMember.Id);
         }
 
-        // SUBSEQUENT LOGINS
         existingMember.Surname = member.Surname;
         existingMember.FirstName = member.FirstName;
         existingMember.Email = member.Email;
@@ -82,5 +94,22 @@ public class JamaatMemberService : IJamaatMemberService
         await _context.SaveChangesAsync();
 
         return existingMember;
+    }
+
+    private async Task<Guid?> ResolveRoleIdAsync(JamaatMember member)
+    {
+        var roleName = member.MemberRoles?.FirstOrDefault()?.Role?.Name?.Trim();
+        if (!string.IsNullOrWhiteSpace(roleName))
+        {
+            var byName = await _context.JamaatRoles
+                .FirstOrDefaultAsync(r => r.Name == roleName);
+            if (byName is not null)
+            {
+                return byName.Id;
+            }
+        }
+        var baseline = await _context.JamaatRoles
+            .FirstOrDefaultAsync(r => r.HierarchyLevel == BaselineHierarchyLevel);
+        return baseline?.Id;
     }
 }

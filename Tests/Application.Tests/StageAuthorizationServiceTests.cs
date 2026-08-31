@@ -316,8 +316,14 @@ public sealed class StageAuthorizationServiceTests : IDisposable
         Guid AmirId,
         Guid OrdinaryMemberId);
 
+    /// <summary>
+    ///   <param name="currentStage"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
     /// Seeds roles, members and a pending application whose form sits at
     /// <paramref name="currentStage"/> (or in no stage when null).
+    /// </summary>
+   
     private async Task<SeedResult> SeedAsync(
         ApplicationStage? currentStage,
         ApplicationStatus status = ApplicationStatus.ApplicationPending)
@@ -392,7 +398,9 @@ public sealed class StageAuthorizationServiceTests : IDisposable
         JamaatName = "Lagos",
         CircuitName = "Lagos Circuit",
         Sex = sex,
-        RoleId = role.Id,
-        Role = role
+        MemberRoles = new List<JamaatMemberRole>
+        {
+            new() { RoleId = role.Id, Role = role }
+        }
     };
 }
