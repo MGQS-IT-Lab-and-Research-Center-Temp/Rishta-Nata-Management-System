@@ -482,3 +482,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 Presentation/appsettings.Development.json
+/AGENTS.md
