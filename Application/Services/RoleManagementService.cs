@@ -1,8 +1,9 @@
 ﻿using Application.Interfaces;
-using Domain.Entities;
 using Infrastructure.DTOs;
 using Infrastructure.DTOs.Roles;
+using Infrastructure.Identity;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 namespace Application.Services;
 
@@ -12,6 +13,10 @@ public class RoleAssignmentService : IRoleAssignmentService
     private readonly RishtanataDbContext _context;
 
     public RoleAssignmentService(RishtanataDbContext context)
+    {
+        throw new NotImplementedException();
+    }
+
     public RoleAssignmentService(RishtanataDbContext context, RoleManager<ApplicationRole> roleManager)
     {
         _context = context;
@@ -66,6 +71,11 @@ public class RoleAssignmentService : IRoleAssignmentService
         member.Role.UpdatedBy = changedBy;
         await _context.SaveChangesAsync();
         return (true, null);
+    }
+
+    public async Task<(bool Success, string? Error)> RemoveRoleAsync(Guid memberId, Guid roleId, string changedBy)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<(bool Success, string? Error)> ResetToBaseRoleAsync(Guid memberId, string changedBy)

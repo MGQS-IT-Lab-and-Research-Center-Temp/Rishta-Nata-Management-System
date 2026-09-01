@@ -1,4 +1,3 @@
-using Domain.Entities;
 using FluentValidation;
 using Infrastructure.DTOs;
 using Infrastructure.DTOs.BrideGroom;

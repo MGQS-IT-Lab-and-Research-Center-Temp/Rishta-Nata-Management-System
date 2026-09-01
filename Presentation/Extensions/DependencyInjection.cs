@@ -1,3 +1,4 @@
+using System;
 using Application.Interfaces;
 using Application.Interfaces.Identity;
 using Application.Services;
@@ -6,13 +7,15 @@ using Gateway.Implementation;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Domain.Abstractions;
 using Domain.Events;
 using Application.EventHandlers;
 using Application.Roles;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MySql.EntityFrameworkCore.Extensions;
 
 namespace Presentation.Extensions;
 
@@ -42,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddScoped<IEventHandler<MarriageFormStageRevertedEvent>, MarriageFormStageRevertedEventHandler>();
         services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();
+        services.AddScoped<INikahApplicationService, NikahApplicationService>();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
         services.AddHttpContextAccessor();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 

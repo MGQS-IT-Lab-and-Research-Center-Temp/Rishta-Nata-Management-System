@@ -1,12 +1,11 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Presentation.Constants.Roles;
-using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
 using Presentation.Mapping.JamaatMember;
-using Application.Services;
 using Application.Interfaces;
-using Infrastructure.Mapper;
 
 namespace Presentation.Controllers;
 

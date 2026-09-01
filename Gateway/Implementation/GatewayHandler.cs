@@ -1,12 +1,12 @@
 ﻿using Application.Interfaces.Identity;
 using Domain.Entities;
-using Gateway.Extensions;
 using Infrastructure.Identity.Tokens;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
+using Infrastructure.Identity.Users;
 
 namespace Gateway.Implementation;
 

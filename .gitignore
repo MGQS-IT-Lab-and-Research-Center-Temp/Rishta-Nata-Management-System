@@ -483,3 +483,4 @@ $RECYCLE.BIN/
 *.swp
 Presentation/appsettings.Development.json
 /AGENTS.md
+.agents/

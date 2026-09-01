@@ -1,4 +1,6 @@
-﻿namespace Presentation.ViewModels;
+﻿using System;
+
+namespace Presentation.ViewModels;
 
 public class MemberProfileViewModel
 {

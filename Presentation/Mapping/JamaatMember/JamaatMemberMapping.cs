@@ -1,4 +1,6 @@
-﻿using Infrastructure.DTOs.JamaatMember;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Infrastructure.DTOs.JamaatMember;
 using Presentation.ViewModels.JamaatMember;
 namespace Presentation.Mapping.JamaatMember
 {

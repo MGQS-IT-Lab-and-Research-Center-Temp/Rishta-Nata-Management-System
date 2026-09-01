@@ -1,4 +1,3 @@
-// File: Domain/Abstractions/IEventHandler.cs
 namespace Domain.Abstractions;
 
 public interface IEventHandler<in TEvent> where TEvent : DomainEvent

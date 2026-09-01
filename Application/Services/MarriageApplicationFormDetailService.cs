@@ -11,9 +11,9 @@ namespace Application.Services;
 /// <summary>
 /// Assembles MarriageApplicationFormDetailDto for display (Epic C3).
 ///
-/// CanCurrentUserEdit is derived exclusively from IStageAuthorizationService —
-/// the same authorization logic Epic B endpoints use — never a
-/// re-implementation (policy §7.3). When the user is unauthenticated or the
+/// CanCurrentUserEdit is derived exclusively from IStageAuthorizationService ï¿½
+/// the same authorization logic Epic B endpoints use ï¿½ never a
+/// re-implementation (policy ï¿½7.3). When the user is unauthenticated or the
 /// form has not entered the staged workflow yet, the flag is false.
 /// </summary>
 public class MarriageApplicationFormDetailService : IMarriageApplicationFormDetailService
@@ -62,7 +62,7 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
     }
 
     /// <summary>
-    /// "Can the current user act on this form right now?" — answered by the
+    /// "Can the current user act on this form right now?" ï¿½ answered by the
     /// Epic B authorization service for the stage the form is currently at.
     /// </summary>
     private async Task<bool> ComputeCanCurrentUserEditAsync(
@@ -92,7 +92,7 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
     }
 
     /// <summary>
-    /// "Can the current user reject at this form's current stage?" — answered by the
+    /// "Can the current user reject at this form's current stage?" ï¿½ answered by the
     /// stage authorization service. Uses the same gate as CanCurrentUserEdit.
     /// </summary>
     private async Task<bool> ComputeCanCurrentUserRejectAsync(

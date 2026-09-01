@@ -1,8 +1,11 @@
-﻿using Application.Interfaces;
+﻿using System;
+using System.Threading.Tasks;
+using Application.Interfaces;
 using Application.Interfaces.Identity;
 using Domain.Entities;
 using Infrastructure.Identity.Tokens;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Presentation.ViewModels;
@@ -121,21 +124,21 @@ public class AuthController : Controller
     }
     private IActionResult RedirectUserToDashboard(JamaatMember member)
     {
-        return member.Role?.Name switch
+
+        switch (member.NewRole)
         {
-            return RedirectToAction("Dashboard", "RishtanataSecretary");
+            case RoleNames.RishtanataSecretary:
+                return RedirectToAction("Dashboard", "RishtanataSecretary");
+            
+            case RoleNames.JamaatSecretary:
+                return RedirectToAction("Dashboard", "JamaatMemberDashboard");
+            
+            case RoleNames.CircuitSecretary:
+                return RedirectToAction("Dashboard", "CircuitSecretary");
+            
+            default:
+                return RedirectToAction("Index", "JamaatMemberDashboard");
         }
 
-        if (roleNames.Contains(RoleNames.JamaatSecretary))
-        {
-            return RedirectToAction("Dashboard", "JamaatPresident");
-        }
-
-        if (roleNames.Contains(RoleNames.CircuitSecretary))
-        {
-            return RedirectToAction("Index", "JamaatMemberDashboard");
-        }
-
-        return RedirectToAction("Index", "JamaatMemberDashboard");
     }
 }
