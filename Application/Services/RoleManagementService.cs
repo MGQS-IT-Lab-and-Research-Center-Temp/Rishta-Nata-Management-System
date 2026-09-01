@@ -66,9 +66,9 @@ public class RoleAssignmentService : IRoleAssignmentService
 
         if (member.MemberRoles.Any(mr => mr.RoleId == roleId))
             return (false, "Member already holds that role.");
-        member.RoleId = roleId;
+        // member.RoleId = roleId;
         member.ModifiedAt = DateTime.UtcNow;
-        member.Role.UpdatedBy = changedBy;
+        // member.Role.UpdatedBy = changedBy;
         await _context.SaveChangesAsync();
         return (true, null);
     }
@@ -95,9 +95,9 @@ public class RoleAssignmentService : IRoleAssignmentService
             .FirstOrDefaultAsync(r => r.HierarchyLevel == BaselineHierarchyLevel);
         if (baseRole == null)
             return (false, "Baseline Jama'at Member role is not configured.");
-        member.RoleId = baseRole.Id;
+        // member.RoleId = baseRole.Id;
         member.ModifiedAt = DateTime.UtcNow;
-        member.Role.UpdatedBy = changedBy;
+        // member.Role.UpdatedBy = changedBy;
 
         await _context.SaveChangesAsync();
         return (true, null);

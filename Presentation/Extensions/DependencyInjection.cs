@@ -45,7 +45,6 @@ public static class DependencyInjection
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddScoped<IEventHandler<MarriageFormStageRevertedEvent>, MarriageFormStageRevertedEventHandler>();
         services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();
-        services.AddScoped<INikahApplicationService, NikahApplicationService>();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
         services.AddHttpContextAccessor();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
