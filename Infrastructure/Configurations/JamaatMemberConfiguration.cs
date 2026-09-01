@@ -15,7 +15,5 @@ public class JamaatMemberConfiguration : IEntityTypeConfiguration<JamaatMember>
         builder.Property(x => x.Id)
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.BrideGuardianId)
-            .IsRequired(false);
     }
 }

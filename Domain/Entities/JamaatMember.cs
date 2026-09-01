@@ -35,6 +35,4 @@ public class JamaatMember : AuditableEntity
     public string NewRole { get; set; } = string.Empty;
     public string? ResetToken { get; set; }
     public DateTime? ResetTokenExpiry { get; set; }
-    public Guid? BrideGuardianId { get; set; }
-    public BrideGuardian? BrideGuardian { get; set; }
 }
