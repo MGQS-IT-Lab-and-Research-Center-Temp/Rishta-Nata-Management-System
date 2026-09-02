@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
+/// <summary>
+/// Syncs a member record from the external member API into the local DB,
+/// resolving the member's role (by name or the baseline Jama'at Member role).
+/// </summary>
 public class JamaatMemberService : IJamaatMemberService
 {
     private const int BaselineHierarchyLevel = 1; // Jama'at Member

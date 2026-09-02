@@ -1,4 +1,4 @@
-using Application.Roles;
+using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.DTOs.Roles;
 using Infrastructure.Persistence;
@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
+/// <summary>
+/// Role catalogue CRUD + dropdown search, used by RoleController.
+/// </summary>
 public class RoleService : IRoleService
 {
     private readonly RishtanataDbContext _context;

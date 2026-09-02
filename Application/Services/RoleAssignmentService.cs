@@ -1,26 +1,30 @@
 ﻿using Application.Interfaces;
+using Domain.Entities;
 using Infrastructure.DTOs;
 using Infrastructure.DTOs.Roles;
-using Infrastructure.Identity;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 namespace Application.Services;
 
+// Cleanup: file renamed from RoleManagementService.cs to match the class it
+// contains (RoleAssignmentService). The unfinished logic was also completed —
+// the service previously had a throwing constructor, a stale ASP.NET Identity
+// dependency, a NotImplementedException in RemoveRoleAsync, and commented-out
+// writes that meant AssignRoleAsync / ResetToBaseRoleAsync persisted nothing.
 public class RoleAssignmentService : IRoleAssignmentService
 {
     private const int BaselineHierarchyLevel = 1; // Jama'at Member
     private readonly RishtanataDbContext _context;
 
+    // Single working constructor. The old overloads were: (1) one that threw
+    // NotImplementedException — the one DI actually resolved, so the service
+    // crashed on construction; and (2) one that took a stale
+    // RoleManager<ApplicationRole> (ASP.NET Identity was removed). Both gone.
     public RoleAssignmentService(RishtanataDbContext context)
-    {
-        throw new NotImplementedException();
-    }
-
-    public RoleAssignmentService(RishtanataDbContext context, RoleManager<ApplicationRole> roleManager)
     {
         _context = context;
     }
+
     public async Task<IEnumerable<RoleDto>> GetAllRolesAsync()
         => await _context.JamaatRoles
             .OrderBy(r => r.HierarchyLevel)
@@ -66,16 +70,42 @@ public class RoleAssignmentService : IRoleAssignmentService
 
         if (member.MemberRoles.Any(mr => mr.RoleId == roleId))
             return (false, "Member already holds that role.");
-        // member.RoleId = roleId;
+
+        // A member can hold several roles at once, so assigning one means adding
+        // a join row (JamaatMemberRole) to the member's MemberRoles collection —
+        // the same pattern JamaatMemberService uses when provisioning a member at
+        // first login. The old code ran the guards but never added this row.
+        member.MemberRoles.Add(new JamaatMemberRole
+        {
+            RoleId = role.Id,
+            AssignedAt = DateTime.UtcNow,
+            AssignedBy = changedBy
+        });
+
         member.ModifiedAt = DateTime.UtcNow;
-        // member.Role.UpdatedBy = changedBy;
         await _context.SaveChangesAsync();
         return (true, null);
     }
 
     public async Task<(bool Success, string? Error)> RemoveRoleAsync(Guid memberId, Guid roleId, string changedBy)
     {
-        throw new NotImplementedException();
+        var member = await _context.JamaatMembers
+            .Include(m => m.MemberRoles)
+            .FirstOrDefaultAsync(m => m.Id == memberId);
+        if (member == null)
+            return (false, "Member not found.");
+
+        var assignment = member.MemberRoles.FirstOrDefault(mr => mr.RoleId == roleId);
+        if (assignment is null)
+            return (false, "Member does not currently hold that role.");
+
+        // Removing a role = deleting just its join row; all other roles remain.
+        // (Previously threw NotImplementedException.)
+        member.MemberRoles.Remove(assignment);
+        member.ModifiedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        return (true, null);
     }
 
     public async Task<(bool Success, string? Error)> ResetToBaseRoleAsync(Guid memberId, string changedBy)
@@ -95,9 +125,22 @@ public class RoleAssignmentService : IRoleAssignmentService
             .FirstOrDefaultAsync(r => r.HierarchyLevel == BaselineHierarchyLevel);
         if (baseRole == null)
             return (false, "Baseline Jama'at Member role is not configured.");
-        // member.RoleId = baseRole.Id;
+
+        // Reset = collapse to the baseline role only: drop every current join row
+        // and re-add the baseline (fresh AssignedAt/AssignedBy so the audit trail
+        // stays clean). The old code validated the guards but never touched the
+        // roles collection.
+        _context.Set<JamaatMemberRole>().RemoveRange(member.MemberRoles);
+        member.MemberRoles.Clear();
+
+        member.MemberRoles.Add(new JamaatMemberRole
+        {
+            RoleId = baseRole.Id,
+            AssignedAt = DateTime.UtcNow,
+            AssignedBy = changedBy
+        });
+
         member.ModifiedAt = DateTime.UtcNow;
-        // member.Role.UpdatedBy = changedBy;
 
         await _context.SaveChangesAsync();
         return (true, null);

@@ -2,6 +2,9 @@ using Infrastructure.DTOs.Certificates;
 
 namespace Application.Interfaces
 {
+    /// <summary>
+    /// Full CRUD for Aqeeqah certificates.
+    /// </summary>
     public interface IAqeeqahCertificateService
     {
         /// <summary>

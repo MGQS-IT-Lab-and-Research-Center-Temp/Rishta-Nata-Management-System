@@ -1,11 +1,18 @@
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs.JamaatPresidentDashboardDto;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Interfaces;
+namespace Application.Services;
 
+/// <summary>
+/// Jamaat (branch) President dashboard plus per-application review actions
+/// (approve / reject / request more info).
+/// Cleanup: namespace was Application.Interfaces; moved to Application.Services
+/// so the namespace matches the folder where the implementation lives.
+/// </summary>
 public class JamaatPresidentService : IJamaatPresidentService
 {
     private readonly RishtanataDbContext _context;
@@ -19,7 +26,13 @@ public class JamaatPresidentService : IJamaatPresidentService
         string? presidentDisplayName,
         Guid? currentUserId)
     {
-        var pendingStatus = ApplicationStatus.ApplicationPending;
+        // Cleanup: treated AwaitingMoreInformation as pending (a form sent back
+        // for corrections still awaits the next review step on the dashboard).
+        var pendingStatuses = new[]
+        {
+            ApplicationStatus.ApplicationPending,
+            ApplicationStatus.AwaitingMoreInformation
+        };
 
         var jamaatMember = currentUserId.HasValue
             ? await _context.JamaatMembers
@@ -35,7 +48,7 @@ public class JamaatPresidentService : IJamaatPresidentService
         }
 
         var pendingApplications = await _context.FormApplications
-            .Where(x => x.Status == pendingStatus)
+            .Where(x => pendingStatuses.Contains(x.Status))
             .Include(x => x.MarriageApplicationForm)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
@@ -211,10 +224,12 @@ public class JamaatPresidentService : IJamaatPresidentService
 
     public async Task<bool> RequestMoreInformationAsync(Guid id, Guid? currentUserId)
     {
+        // Cleanup: was ApplicationPending (a no-op). The distinct
+        // AwaitingMoreInformation status now records the request for corrections.
         return await ChangeStatusAsync(
             id,
             currentUserId,
-            ApplicationStatus.ApplicationPending,
+            ApplicationStatus.AwaitingMoreInformation,
             "Requested More Information",
             "");
     }
@@ -235,7 +250,10 @@ public class JamaatPresidentService : IJamaatPresidentService
             return false;
         }
 
-        if (application.Status != ApplicationStatus.ApplicationPending)
+        // Cleanup: allow approve/reject/request-info from both pending states so a
+        // form that was sent back (AwaitingMoreInformation) isn't orphaned.
+        if (application.Status != ApplicationStatus.ApplicationPending &&
+            application.Status != ApplicationStatus.AwaitingMoreInformation)
         {
             return false;
         }

@@ -1,9 +1,13 @@
-// Application/Roles/IRoleService.cs
 using Domain.Entities;
 using Infrastructure.DTOs.Roles;
 
-namespace Application.Roles;
+namespace Application.Interfaces;
 
+/// <summary>
+/// Role catalogue — CRUD plus a dropdown search over Jamaat roles.
+/// Cleanup: this interface used to live in the non-existent folder namespace
+/// Application.Roles; moved to Application.Interfaces (all interfaces live here).
+/// </summary>
 public interface IRoleService
 {
     Task<IEnumerable<RoleDto>> GetAllRolesAsync();

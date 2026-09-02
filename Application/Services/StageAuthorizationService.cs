@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 namespace Application.Services;
 
+/// <summary>
+/// The single implementation of the stage-authorization policy
+/// (docs/stage-authorization-policy.md): the only place that maps a member +
+/// application + stage to allow/deny.
+/// </summary>
 public class StageAuthorizationService : IStageAuthorizationService
 {
     private const int HierarchyLevelJamaatPresident = 2;

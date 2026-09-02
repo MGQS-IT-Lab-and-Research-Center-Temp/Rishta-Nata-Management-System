@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// Full CRUD for Aqeeqah (child-birth sacrifice) certificates.
+    /// </summary>
     public class AqeeqahCertificateService : IAqeeqahCertificateService
     {
         private readonly RishtanataDbContext _context;

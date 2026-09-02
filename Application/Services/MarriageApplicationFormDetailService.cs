@@ -55,17 +55,22 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         var dto = MarriageApplicationFormDetailMapper.ToDetailDto(
             form, form.Rejections.ToList());
 
-        dto.CanCurrentUserEdit = await ComputeCanCurrentUserEditAsync(form, cancellationToken);
-        dto.CanCurrentUserReject = await ComputeCanCurrentUserRejectAsync(form, cancellationToken);
+        // CanCurrentUserEdit and CanCurrentUserReject use the *same* gate:
+        // whoever may act on the form's current stage may also reject it
+        // (policy §4.4). One shared check, two flags.
+        dto.CanCurrentUserEdit = await ComputeCanCurrentUserActAsync(form, cancellationToken);
+        dto.CanCurrentUserReject = await ComputeCanCurrentUserActAsync(form, cancellationToken);
 
         return dto;
     }
 
     /// <summary>
-    /// "Can the current user act on this form right now?" � answered by the
+    /// "Can the current user act on this form right now?" — answered by the
     /// Epic B authorization service for the stage the form is currently at.
+    /// Drives both CanCurrentUserEdit and CanCurrentUserReject (cleanup: the
+    /// two previously-identical compute methods were merged into this one).
     /// </summary>
-    private async Task<bool> ComputeCanCurrentUserEditAsync(
+    private async Task<bool> ComputeCanCurrentUserActAsync(
         Domain.Entities.MarriageApplicationForm form,
         CancellationToken cancellationToken)
     {
@@ -73,34 +78,6 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         {
             // The form has not entered the staged workflow: nobody can act on
             // a section yet.
-            return false;
-        }
-
-        var userId = GetCurrentUserId();
-        if (!userId.HasValue)
-        {
-            return false;
-        }
-
-        var result = await _stageAuthorization.CanUserActAsync(
-            userId.Value,
-            form.Id,
-            form.ApplicationStage.Value,
-            cancellationToken);
-
-        return result.IsAllowed;
-    }
-
-    /// <summary>
-    /// "Can the current user reject at this form's current stage?" � answered by the
-    /// stage authorization service. Uses the same gate as CanCurrentUserEdit.
-    /// </summary>
-    private async Task<bool> ComputeCanCurrentUserRejectAsync(
-        Domain.Entities.MarriageApplicationForm form,
-        CancellationToken cancellationToken)
-    {
-        if (!form.ApplicationStage.HasValue)
-        {
             return false;
         }
 

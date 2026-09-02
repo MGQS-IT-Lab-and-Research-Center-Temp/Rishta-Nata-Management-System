@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Application.Interfaces;
-using Application.Interfaces.Identity;
+using Application.Interfaces.Gateway;
 using Domain.Entities;
 using Infrastructure.Identity.Tokens;
 using Microsoft.AspNetCore.Mvc;

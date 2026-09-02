@@ -96,7 +96,9 @@ public class RishtanataSecretaryController : Controller
     [HttpPost]
     public async Task<IActionResult> Approve(Guid id)
     {
-        _service.Approve(id);
+        // Await the status change so the redirect can't beat the write (the
+        // service now persists asynchronously instead of fire-and-forget).
+        await _service.Approve(id);
 
         return RedirectToAction(nameof(PendingApprovals));
     }
@@ -104,7 +106,8 @@ public class RishtanataSecretaryController : Controller
     [HttpPost]
     public async Task<IActionResult> Reject(Guid id)
     {
-        _service.Reject(id);
+        // Same as Approve — wait for the write before redirecting.
+        await _service.Reject(id);
 
         return RedirectToAction(nameof(PendingApprovals));
     }

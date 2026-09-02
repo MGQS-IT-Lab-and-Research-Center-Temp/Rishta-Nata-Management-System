@@ -3,6 +3,11 @@ using Infrastructure.DTOs.Roles;
 
 namespace Application.Interfaces;
 
+/// <summary>
+/// Per-member role management: assign, remove and reset to the base role.
+/// Cleanup: file renamed from IRoleManagementService.cs to match the interface
+/// name it declares (IRoleAssignmentService).
+/// </summary>
 public interface IRoleAssignmentService
 
 {

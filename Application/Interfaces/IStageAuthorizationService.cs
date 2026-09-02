@@ -3,6 +3,11 @@ using Domain.Enums;
 
 namespace Application.Interfaces;
 
+/// <summary>
+/// The authorization gate defined by docs/stage-authorization-policy.md.
+/// Two overloads because the codebase tracks two stage enums (the review-chain
+/// ApplicationStage and the paper-form MarriageFormStage).
+/// </summary>
 public interface IStageAuthorizationService
 {
    Task<StageAuthorizationResult> CanUserActAsync(

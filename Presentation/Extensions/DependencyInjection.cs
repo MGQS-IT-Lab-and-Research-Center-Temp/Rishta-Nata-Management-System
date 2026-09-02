@@ -1,6 +1,6 @@
 using System;
 using Application.Interfaces;
-using Application.Interfaces.Identity;
+using Application.Interfaces.Gateway;
 using Application.Services;
 using Domain.Interfaces;
 using Gateway.Implementation;
@@ -12,7 +12,6 @@ using Presentation.Services.Auth;
 using Domain.Abstractions;
 using Domain.Events;
 using Application.EventHandlers;
-using Application.Roles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.EntityFrameworkCore.Extensions;
@@ -30,6 +29,10 @@ public static class DependencyInjection
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
         services.AddScoped<IMarriageApplicationFormDetailService, MarriageApplicationFormDetailService>();
+        // Cleanup: the staged section submissions were split out of the
+        // guardian/bridegroom CRUD services into single-responsibility ones.
+        services.AddScoped<IBrideSectionService, BrideSectionService>();
+        services.AddScoped<IBridegroomSectionService, BridegroomSectionService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
         services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
         services.AddScoped<ICertificateService, CertificateService>();

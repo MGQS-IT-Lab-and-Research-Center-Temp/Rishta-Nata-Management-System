@@ -3,6 +3,10 @@ using Domain.Enums;
 
 namespace Application.Interfaces
 {
+    /// <summary>
+    /// CRUD for the marriage application form plus signature submissions and
+    /// the revert flow (see MarriageApplicationFormService)
+    /// </summary>
     public interface IMarriageApplicationFormService
     {
         // Create application

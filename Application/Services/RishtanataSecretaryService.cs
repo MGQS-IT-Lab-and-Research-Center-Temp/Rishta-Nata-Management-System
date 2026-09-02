@@ -9,6 +9,9 @@ using Application.Interfaces;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// National Rishtanata Secretary dashboard and approve/reject/return.
+    /// </summary>
     public class RishtanataSecretaryService : IRishtanataSecretaryService
     {
         private readonly RishtanataDbContext _context;
@@ -21,7 +24,10 @@ namespace Application.Services
         public RishtanataSecretaryDashboardDto GetDashboard()
         {
             var pendingApplications = _context.FormApplications
-                .Where(x => x.Status == ApplicationStatus.ApplicationPending)
+                // Cleanup: AwaitingMoreInformation is a pending-ish state too
+                // (form sent back to applicants), so count it as pending.
+                .Where(x => x.Status == ApplicationStatus.ApplicationPending ||
+                            x.Status == ApplicationStatus.AwaitingMoreInformation)
                 .ToList();
 
             var dto = new RishtanataSecretaryDashboardDto
@@ -42,7 +48,10 @@ namespace Application.Services
         {
             return _context.MarriageApplicationForms
                 .Where(f => f.MarriageApplication.Status ==
-                            ApplicationStatus.ApplicationPending)
+                // Cleanup: include awaiting-more-info forms in the pending list.
+                ApplicationStatus.ApplicationPending ||
+                f.MarriageApplication.Status ==
+                ApplicationStatus.AwaitingMoreInformation)
                 .Select(f => new PendingApprovalDto
                 {
                     Id = f.MarriageApplicationId,
@@ -139,7 +148,10 @@ namespace Application.Services
             };
         }
 
-        public void ReturnToPresident(Guid id)
+        // Cleanup: ReturnToPresident/Reject/Approve were fire-and-forget — they
+        // called SaveChangesAsync() without await, so the controller redirected
+        // before the write had finished. They are now Task-based and awaited.
+        public async Task ReturnToPresident(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
@@ -149,7 +161,7 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationPending;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public List<JamaatMemberDto> GetMembers()
@@ -159,7 +171,8 @@ namespace Application.Services
                 .ToList();
         }
 
-        public void Reject(Guid id)
+        // Same fire-and-forget SaveChangesAsync as ReturnToPresident; now awaited.
+        public async Task Reject(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
@@ -169,10 +182,10 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationRejected;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public void Approve(Guid id)
+        public async Task Approve(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
@@ -182,7 +195,7 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationApproved;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

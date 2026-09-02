@@ -1,4 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!--
+  APPLICATION LAYER (use-cases / orchestration only — no direct I/O):
+  - Services/     implementations of the business use-cases
+  - Interfaces/   contracts the Presentation layer consumes
+  - Authorization/  stage-based access-control policy primitives
+  - Workflow/       DTO payloads for the staged paper-form sections
+  - Validators/     FluentValidation rules for section submissions
+  - EventHandlers/  domain-event reactions (e.g. revert notifications)
+  References Domain (entities/enums) + Infrastructure (EF context, DTOs).
+-->
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

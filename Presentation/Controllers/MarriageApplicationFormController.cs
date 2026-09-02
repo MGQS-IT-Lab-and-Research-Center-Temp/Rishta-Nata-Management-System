@@ -17,21 +17,21 @@ public class MarriageApplicationFormController : ControllerBase
 {
     private readonly IMarriageApplicationFormService _formService;
     private readonly IMarriageApplicationFormDetailService _formDetailService;
-    private readonly IBrideGuardianService _brideGuardianService;
-    private readonly IBridegroomService _bridegroomService;
+    private readonly IBrideSectionService _brideSectionService;
+    private readonly IBridegroomSectionService _bridegroomSectionService;
     private readonly IMarriageFormWorkflowService _workflowService;
 
     public MarriageApplicationFormController(
         IMarriageApplicationFormService formService,
         IMarriageApplicationFormDetailService formDetailService,
-        IBrideGuardianService brideGuardianService,
-        IBridegroomService bridegroomService,
+        IBrideSectionService brideSectionService,
+        IBridegroomSectionService bridegroomSectionService,
         IMarriageFormWorkflowService workflowService)
     {
         _formService = formService;
         _formDetailService = formDetailService;
-        _brideGuardianService = brideGuardianService;
-        _bridegroomService = bridegroomService;
+        _brideSectionService = brideSectionService;
+        _bridegroomSectionService = bridegroomSectionService;
         _workflowService = workflowService;
     }
 
@@ -51,7 +51,7 @@ public class MarriageApplicationFormController : ControllerBase
     [Authorize(Policy = "CanFillBrideSection")]
     public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionDto dto, CancellationToken ct)
     {
-        var result = await _brideGuardianService.SubmitBrideSectionAsync(CurrentUserId, id, dto, ct);
+        var result = await _brideSectionService.SubmitBrideSectionAsync(CurrentUserId, id, dto, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
@@ -59,7 +59,7 @@ public class MarriageApplicationFormController : ControllerBase
     [Authorize(Policy = "CanFillBridegroomSection")]
     public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionDto dto, CancellationToken ct)
     {
-        var result = await _bridegroomService.SubmitBridegroomSectionAsync(CurrentUserId, id, dto, ct);
+        var result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(CurrentUserId, id, dto, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 

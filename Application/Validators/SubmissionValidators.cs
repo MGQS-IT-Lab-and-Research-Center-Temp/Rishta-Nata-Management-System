@@ -1,3 +1,5 @@
+// FluentValidation validators for the form-section submission DTOs, applied
+// by the controllers before the data reaches the underlying services.
 using FluentValidation;
 using Infrastructure.DTOs;
 using Infrastructure.DTOs.BrideGroom;

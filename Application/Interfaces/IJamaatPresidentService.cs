@@ -2,6 +2,9 @@ using Infrastructure.DTOs.JamaatPresidentDashboardDto;
 
 namespace Application.Interfaces;
 
+/// <summary>
+/// Jamaat (branch) President dashboard and review actions.
+/// </summary>
 public interface IJamaatPresidentService
 {
     Task<JamaatPresidentDashboardDto> GetDashboardAsync(

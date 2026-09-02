@@ -10,6 +10,10 @@ using Infrastructure.Mapper;
 
 namespace Application.Services;
 
+/// <summary>
+/// MarriageApplicationForm CRUD plus the section-signature submissions
+/// (guardian/wakeel + witnesses) and the revert/rejection flow.
+/// </summary>
 public class MarriageApplicationFormService : IMarriageApplicationFormService
 {
     private readonly RishtanataDbContext _dbContext;

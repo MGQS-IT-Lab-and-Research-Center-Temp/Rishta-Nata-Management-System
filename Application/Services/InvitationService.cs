@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// Generates secure invitation tokens, persists them, validates them, and
+    /// optionally emails the invite.
+    /// </summary>
     public class InvitationService : IInvitationService
     {
         private readonly RishtanataDbContext _db;

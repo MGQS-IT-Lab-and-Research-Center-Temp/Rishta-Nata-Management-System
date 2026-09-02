@@ -5,6 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
+/// <summary>
+/// Wedding certificate catalogue (list of issued certificates).
+/// Cleanup: file renamed from CertificatesService.cs (plural) to match the
+/// class/interface names.
+/// </summary>
 public class CertificateService : ICertificateService
 {
     private readonly RishtanataDbContext _context;
