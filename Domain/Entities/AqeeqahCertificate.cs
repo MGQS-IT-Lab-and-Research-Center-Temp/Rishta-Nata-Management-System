@@ -30,7 +30,7 @@ public class AqeeqahCertificate : AuditableEntity
     public string Address { get; set; } = string.Empty;
 
     // Administration
-    public string OfficiatingMissionary { get; set; }
+    public string OfficiatingMissionary { get; set; } = string.Empty;
 
     public DateTime IssueDate { get; set; }
 
