@@ -132,8 +132,8 @@ public class StageAuthorizationService : IStageAuthorizationService
             };
         }
         var member = await _context.JamaatMembers
-            .Include(m => m.MemberRoles)
-                .ThenInclude(mr => mr.Role)
+            //.Include(m => m.MemberRoles)
+            //    .ThenInclude(mr => mr.Role)
             .FirstOrDefaultAsync(m => m.Id == userId, cancellationToken);
         if (member is null)
         {
@@ -199,16 +199,16 @@ public class StageAuthorizationService : IStageAuthorizationService
             case MarriageFormStage.AwaitingWitnesses:
                 return await MatchesWitnessSlotAsync(member, form, cancellationToken);
             case MarriageFormStage.AwaitingImamVerification:
-                var isImamOrMissionary = member.MemberRoles.Any(mr =>
-                    mr.Role.Name.Contains("imam", StringComparison.OrdinalIgnoreCase) ||
-                    mr.Role.Name.Contains("missionary", StringComparison.OrdinalIgnoreCase));
-                return isImamOrMissionary
-                    ? StageAuthorizationResult.Allow()
-                    : StageAuthorizationResult.Deny(
-                        StageAuthorizationDenyReason.WrongRole,
-                        $"Member '{member.ChandaNo}' holds " +
-                        $"{(member.MemberRoles.Any() ? $"roles '{string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))}'" : "no roles")}; " +
-                        "an Officiating Imam or Missionary is required for this stage.");
+                //var isImamOrMissionary = member.MemberRoles.Any(mr =>
+                //    mr.Role.Name.Contains("imam", StringComparison.OrdinalIgnoreCase) ||
+                //    mr.Role.Name.Contains("missionary", StringComparison.OrdinalIgnoreCase));
+                //return isImamOrMissionary
+                //    ? StageAuthorizationResult.Allow()
+                //    : StageAuthorizationResult.Deny(
+                //        StageAuthorizationDenyReason.WrongRole,
+                //        $"Member '{member.ChandaNo}' holds " +
+                //        //$"{(member.MemberRoles.Any() ? $"roles '{string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))}'" : "no roles")}; " +
+                //        "an Officiating Imam or Missionary is required for this stage.");
             case MarriageFormStage.AwaitingJamaatPresident:
                 return RequireHierarchyLevel(
                     member, HierarchyLevelJamaatPresident, "Jamaat President");
@@ -237,23 +237,23 @@ public class StageAuthorizationService : IStageAuthorizationService
                      (form.WitnessTwoName, form.WitnessTwoTel, 2)
                  })
         {
-            if (!NamesAndPhoneMatch(member.FullName, member.PhoneNo, name, tel))
-            {
-                continue;
-            }
-            var matchingCount = await _context.JamaatMembers
-                .AsNoTracking()
-                .Where(m => m.PhoneNo != null &&
-                            m.FirstName != null && m.Surname != null)
-                .ToListAsync(cancellationToken);
-            var ambiguousCount = matchingCount.Count(m =>
-                NamesAndPhoneMatch(m.FullName, m.PhoneNo, name, tel));
-            return ambiguousCount > 1
-                ? StageAuthorizationResult.Deny(
-                    StageAuthorizationDenyReason.AmbiguousIdentityMatch,
-                    $"Witness {position} identity is ambiguous: more than one " +
-                    "member record matches the recorded name and telephone.")
-                : StageAuthorizationResult.Allow();
+            //if (!NamesAndPhoneMatch(member.FullName, member.PhoneNo, name, tel))
+            //{
+            //    continue;
+            //}
+            //var matchingCount = await _context.JamaatMembers
+            //    .AsNoTracking()
+            //    .Where(m => m.PhoneNo != null &&
+            //                m.FirstName != null && m.Surname != null)
+            //    .ToListAsync(cancellationToken);
+            ////var ambiguousCount = matchingCount.Count(m =>
+            ////    NamesAndPhoneMatch(m.FullName, m.PhoneNo, name, tel));
+            //return ambiguousCount > 1
+            //    ? StageAuthorizationResult.Deny(
+            //        StageAuthorizationDenyReason.AmbiguousIdentityMatch,
+            //        $"Witness {position} identity is ambiguous: more than one " +
+            //        "member record matches the recorded name and telephone.")
+            //    : StageAuthorizationResult.Allow();
         }
         return StageAuthorizationResult.Deny(
             StageAuthorizationDenyReason.WrongRole,
@@ -280,17 +280,17 @@ public class StageAuthorizationService : IStageAuthorizationService
         int requiredLevel,
         string officeName)
     {
-        var hasLevel = member.MemberRoles.Any(mr => mr.Role.HierarchyLevel == requiredLevel);
-        if (!hasLevel)
-        {
-            var actual = member.MemberRoles.Any()
-                ? string.Join(", ", member.MemberRoles.Select(mr => $"{mr.Role.Name} (level {mr.Role.HierarchyLevel})"))
-                : "no roles";
-            return StageAuthorizationResult.Deny(
-                StageAuthorizationDenyReason.WrongRole,
-                $"Member '{member.ChandaNo}' holds {actual}; " +
-                $"{officeName} is required for this stage.");
-        }
+        //var hasLevel = member.MemberRoles.Any(mr => mr.Role.HierarchyLevel == requiredLevel);
+        //if (!hasLevel)
+        //{
+        //    var actual = member.MemberRoles.Any()
+        //        ? string.Join(", ", member.MemberRoles.Select(mr => $"{mr.Role.Name} (level {mr.Role.HierarchyLevel})"))
+        //        : "no roles";
+        //    return StageAuthorizationResult.Deny(
+        //        StageAuthorizationDenyReason.WrongRole,
+        //        $"Member '{member.ChandaNo}' holds {actual}; " +
+        //        $"{officeName} is required for this stage.");
+        //}
         return StageAuthorizationResult.Allow();
     }
 

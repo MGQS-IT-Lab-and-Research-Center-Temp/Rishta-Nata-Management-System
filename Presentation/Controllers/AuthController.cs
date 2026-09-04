@@ -1,33 +1,28 @@
-﻿using System;
-using System.Threading.Tasks;
-using Application.Interfaces;
-using Application.Interfaces.Gateway;
+﻿using Application.Interfaces;
 using Domain.Entities;
-using Infrastructure.Identity.Tokens;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Presentation.Constants.Roles;
 using Presentation.Services.Auth;
 using Presentation.ViewModels;
+
 namespace Presentation.Controllers;
 
 public class AuthController : Controller
 {
-    private readonly IGatewayHandler _gatewayHandler;
     private readonly ICookieAuthenticationService _cookieAuthService;
     private readonly IConfiguration _configuration;
-    private readonly IJamaatMemberService _jamaatMemberService;
+    private readonly IAuthService _authService;
+
     public AuthController(
-        IGatewayHandler gatewayHandler,
         ICookieAuthenticationService cookieAuthService,
         IConfiguration configuration,
-        IJamaatMemberService jamaatMemberService)
+        IAuthService authService)
     {
-        _gatewayHandler = gatewayHandler;
         _cookieAuthService = cookieAuthService;
         _configuration = configuration;
-        _jamaatMemberService = jamaatMemberService;
+        _authService = authService;
     }
+
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -35,8 +30,10 @@ public class AuthController : Controller
         {
             ReturnUrl = returnUrl
         };
+
         return View(model);
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -46,99 +43,55 @@ public class AuthController : Controller
             return View(model);
         }
 
+        var result = await _authService.LoginAsync(model.ChandaNo, model.Password);
 
-        try
+        if (!result.Succeeded)
         {
-            var tokenRequest = new TokenRequest(
-                model.ChandaNo,
-                model.Password);
-            var tokenResponse =
-                await _gatewayHandler.GenerateToken(tokenRequest);
-            if (tokenResponse is null)
-            {
-                ModelState.AddModelError(
-                    string.Empty,
-                    "Invalid ChandaNo or Password.");
-                return View(model);
-            }
-            if (!tokenResponse.Status ||
-                string.IsNullOrWhiteSpace(tokenResponse.Token))
-            {
-                ModelState.AddModelError(
-                    string.Empty,
-                    string.IsNullOrWhiteSpace(tokenResponse.Message)
-                        ? "Login failed."
-                        : tokenResponse.Message);
-                return View(model);
-            }
-        }
-        catch (Exception)
-        {
-            ModelState.AddModelError(
-                string.Empty,
-                "Invalid Chanda number or password.");
-            return View(model);
-        }
-        var jamaatMember =
-            await _gatewayHandler.GetMemberByChandaNoAsync(model.ChandaNo);
-        if (jamaatMember is null)
-        {
-            ModelState.AddModelError(
-                string.Empty,
-                "We could not find your member account.");
+            ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Login failed.");
+
             return View(model);
         }
 
-        // Create/update local member
-        var localMember = await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
+        var member = result.Member!;
 
-        // Check Rishtanata Secretary
-        var rishtanataSecretaryChandaNo =
-            _configuration["RishtanataSecretary:ChandaNo"];
-        var isRishtanataSecretary =
-            !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo) &&
-            localMember.ChandaNo == rishtanataSecretaryChandaNo;
+        await _cookieAuthService.SignInAsync(member, result.Roles);
 
-        // Create authentication cookie
-        await _cookieAuthService.SignInAsync(localMember);
-
-        // Return URL
         if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
         {
             return Redirect(model.ReturnUrl);
         }
-        if (isRishtanataSecretary)
-        {
-            return RedirectToAction("Dashboard", "RishtanataSecretary");
-        }
 
-        // Other roles
-        return RedirectUserToDashboard(localMember);
+        return RedirectUserToDashboard();
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await _cookieAuthService.SignOutAsync();
+
         return RedirectToAction("Login", "Auth");
     }
-    private IActionResult RedirectUserToDashboard(JamaatMember member)
-    {
 
-        switch (member.NewRole)
+    private IActionResult RedirectUserToDashboard()
+    {
+        if (User.IsInRole(RoleNames.RishtanataSecretary))
         {
-            case RoleNames.RishtanataSecretary:
-                return RedirectToAction("Dashboard", "RishtanataSecretary");
-            
-            case RoleNames.JamaatSecretary:
-                return RedirectToAction("Dashboard", "JamaatMemberDashboard");
-            
-            case RoleNames.CircuitSecretary:
-                return RedirectToAction("Dashboard", "CircuitSecretary");
-            
-            default:
-                return RedirectToAction("Index", "JamaatMemberDashboard");
+            return RedirectToAction("Dashboard", "RishtanataSecretary");
         }
 
+        if (User.IsInRole(RoleNames.JamaatSecretary))
+        {
+            return RedirectToAction("Dashboard", "JamaatMemberDashboard");
+        }
+
+        if (User.IsInRole(RoleNames.CircuitSecretary))
+        {
+            return RedirectToAction(
+                "Dashboard",
+                "CircuitSecretary");
+        }
+
+        return RedirectToAction("Index", "JamaatMemberDashboard");
     }
 }

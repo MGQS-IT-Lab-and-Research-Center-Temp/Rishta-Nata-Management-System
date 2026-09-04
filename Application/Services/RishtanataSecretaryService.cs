@@ -111,8 +111,8 @@ namespace Application.Services
         public MemberProfileDto GetMemberProfile(Guid id)
         {
             var member = _context.JamaatMembers
-                .Include(x => x.MemberRoles)
-                    .ThenInclude(mr => mr.Role)
+                //.Include(x => x.MemberRoles)
+                //    .ThenInclude(mr => mr.Role)
                 .FirstOrDefault(x => x.Id == id);
 
             if (member == null)
@@ -124,9 +124,7 @@ namespace Application.Services
                 Surname = member.Surname,
                 FirstName = member.FirstName,
                 MiddleName = member.MiddleName,
-                MaidenName = member.MaidenName,
                 Title = member.Title,
-                FullName = member.FullName,
                 Email = member.Email,
                 ChandaNo = member.ChandaNo,
                 WasiyatNo = member.WasiyatNo,
@@ -138,13 +136,10 @@ namespace Application.Services
                 Sex = member.Sex,
                 MaritalStatus = member.MaritalStatus,
                 Address = member.Address,
-                NextOfKinName = member.NextOfKinName,
-                NextOfKinPhoneNo = member.NextOfKinPhoneNo,
-                NextOfKinAddress = member.NextOfKinAddress,
                 Nationality = member.Nationality,
-                RoleName = member.MemberRoles.Any()
-                    ? string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))
-                    : null
+                //RoleName = member.MemberRoles.Any()
+                //    ? string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))
+                //    : null
             };
         }
 

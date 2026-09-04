@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
 using Infrastructure.Identity.Users;
+using Gateway.Extensions;
 
 namespace Gateway.Implementation;
 
@@ -21,27 +22,27 @@ public class GatewayHandler : IGatewayHandler
         _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
     }
 
-    //public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
-    //{
-    //    var url = $"{_apiUrl}{chandaNo}/userRoles";
-    //    using var request = new HttpRequestMessage(
-    //        HttpMethod.Get,
-    //        url
-    //        );
+    public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
+    {
+        var url = $"{_apiUrl}{chandaNo}/userRoles";
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            url
+            );
 
-    //    var response = await _client.SendAsync(request);
+        var response = await _client.SendAsync(request);
 
-    //    if (response.IsSuccessStatusCode)
-    //    {
-    //        return await response.ReadContentAs<string[]>();
-    //    }
-    //    if (response.StatusCode == HttpStatusCode.NotFound)
-    //    {
-    //        return null;
-    //    }
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.ReadContentAs<string[]>();
+        }
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
 
-    //    throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
-    //}
+        throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
+    }
 
     public async Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo)
     {
@@ -89,6 +90,10 @@ public class GatewayHandler : IGatewayHandler
 
         var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
 
+        //using var requests = new HttpRequestMessage(HttpMethod.Post, url)
+        //{
+
+        //};
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = jsonContent
@@ -105,9 +110,7 @@ public class GatewayHandler : IGatewayHandler
         // The Tajneed API reports invalid credentials as 400 Bad Request
         // ({"message":"Invalid Credential","status":false}), alongside the
         // conventional 401/404 — all mean "not authenticated".
-        if (response.StatusCode == HttpStatusCode.BadRequest ||
-            response.StatusCode == HttpStatusCode.Unauthorized ||
-            response.StatusCode == HttpStatusCode.NotFound)
+        if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
         {
             return null;
         }

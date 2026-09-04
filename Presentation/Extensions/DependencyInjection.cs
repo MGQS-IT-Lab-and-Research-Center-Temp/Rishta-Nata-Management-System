@@ -44,7 +44,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IInvitationEmailService, InvitationEmailService>();
         services.AddScoped<IMarriageFormNotificationService, MarriageFormNotificationService>();
-        services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
+        //services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddScoped<IEventHandler<MarriageFormStageRevertedEvent>, MarriageFormStageRevertedEventHandler>();
         services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();

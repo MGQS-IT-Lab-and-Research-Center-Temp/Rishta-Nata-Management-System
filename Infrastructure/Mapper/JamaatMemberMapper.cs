@@ -18,7 +18,6 @@ public static class JamaatMemberMapper
             Title = entity.Title ?? string.Empty,
             AuxillaryBodyName = entity.AuxillaryBodyName ?? string.Empty,
             MiddleName = entity.MiddleName ?? string.Empty,
-            MaidenName = entity.MaidenName ?? string.Empty,
             DateOfBirth = entity.DateOfBirth,
             PhoneNo = entity.PhoneNo ?? string.Empty,
             JamaatName = entity.JamaatName,
@@ -26,13 +25,7 @@ public static class JamaatMemberMapper
             Sex = entity.Sex,
             MaritalStatus = entity.MaritalStatus ?? string.Empty,
             Address = entity.Address ?? string.Empty,
-            NextOfKinPhoneNo = entity.NextOfKinPhoneNo ?? string.Empty,
-            NextOfKinName = entity.NextOfKinName ?? string.Empty,
-            NextOfKinAddress = entity.NextOfKinAddress ?? string.Empty,
             Nationality = entity.Nationality ?? string.Empty,
-            RoleIds = entity.MemberRoles.Select(mr => mr.RoleId).ToList(),
-            IsSystemDefault = entity.IsSystemDefault,
-            NewRole = entity.NewRole,
         };
     }
 
@@ -53,20 +46,14 @@ public static class JamaatMemberMapper
             Title = dto.Title,
             AuxillaryBodyName = dto.AuxillaryBodyName,
             MiddleName = dto.MiddleName,
-            MaidenName = dto.MaidenName,
             DateOfBirth = dto.DateOfBirth,
             PhoneNo = dto.PhoneNo,
             JamaatName = dto.JamaatName,
             CircuitName = dto.CircuitName,
             Sex = dto.Sex,
             MaritalStatus = dto.MaritalStatus,
-            Address = dto.Address,
-            NextOfKinPhoneNo = dto.NextOfKinPhoneNo,
-            NextOfKinName = dto.NextOfKinName,
-            NextOfKinAddress = dto.NextOfKinAddress,
+            Address = dto.Address, 
             Nationality = dto.Nationality,
-            IsSystemDefault = dto.IsSystemDefault,
-            NewRole = dto.NewRole,
         };
     }
 }

@@ -58,26 +58,26 @@ public class JamaatPresidentService : IJamaatPresidentService
         var today = DateTime.UtcNow.Date;
         var tomorrow = today.AddDays(1);
 
-        var reviewedToday = await _context.AuditLogs
-            .CountAsync(x =>
-                x.Timestamp >= today &&
-                x.Timestamp < tomorrow &&
-                (
-                    x.Action == "Approved Nikah Application" ||
-                    x.Action == "Rejected Nikah Application" ||
-                    x.Action == "Requested More Information"
-                ));
+        //var reviewedToday = await _context.AuditLogs
+        //    .CountAsync(x =>
+        //        x.Timestamp >= today &&
+        //        x.Timestamp < tomorrow &&
+        //        (
+        //            x.Action == "Approved Nikah Application" ||
+        //            x.Action == "Rejected Nikah Application" ||
+        //            x.Action == "Requested More Information"
+        //        ));
 
-        var recentActivities = await _context.AuditLogs
-            .OrderByDescending(x => x.Timestamp)
-            .Take(10)
-            .Select(x => new RecentActivityDto
-            {
-                ApplicationNumber = x.EntityName,
-                Description = x.Action,
-                Date = x.Timestamp
-            })
-            .ToListAsync();
+        //var recentActivities = await _context.AuditLogs
+        //    .OrderByDescending(x => x.Timestamp)
+        //    .Take(10)
+        //    .Select(x => new RecentActivityDto
+        //    {
+        //        ApplicationNumber = x.EntityName,
+        //        Description = x.Action,
+        //        Date = x.Timestamp
+        //    })
+        //    .ToListAsync();
 
         return new JamaatPresidentDashboardDto
         {
@@ -85,7 +85,7 @@ public class JamaatPresidentService : IJamaatPresidentService
             JamaatName = jamaatMember.JamaatName ?? "Jama'at",
             CircuitName = jamaatMember.CircuitName ?? "Circuit",
             PendingNikahReviews = pendingApplications.Count,
-            ReviewedToday = reviewedToday,
+            //ReviewedToday = reviewedToday,
             TotalNikahApplications = totalApplications,
             PendingApplications = pendingApplications
                 .Select(x => new NikahApplicationDto
@@ -99,7 +99,7 @@ public class JamaatPresidentService : IJamaatPresidentService
                     Status = x.Status.ToString()
                 })
                 .ToList(),
-            RecentActivities = recentActivities
+            //RecentActivities = recentActivities
         };
     }
 
@@ -273,7 +273,7 @@ public class JamaatPresidentService : IJamaatPresidentService
             Action = actionLabel,
             EntityName = "MarriageApplication",
             RecordId = application.Id,
-            Timestamp = DateTime.UtcNow,
+            //Timestamp = DateTime.UtcNow,
             ChangeDetails =
                 $"Jama'at President {actionLabel.ToLower()} application {reference}. {extraDetail}"
                     .Trim()

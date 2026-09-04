@@ -12,7 +12,6 @@ public class JamaatMember : AuditableEntity
     public string? Title { get; set; }
     public string? AuxillaryBodyName { get; set; }
     public string? MiddleName { get; set; } = string.Empty;
-    public string? MaidenName { get; set; }
     public DateTime DateOfBirth { get; set; }
     public string? PhoneNo { get; set; } = string.Empty;
     public string JamaatName { get; set; } = string.Empty;
@@ -20,17 +19,11 @@ public class JamaatMember : AuditableEntity
     public string Sex { get; set; } = string.Empty;
     public string? MaritalStatus { get; set; } = string.Empty;
     public string? Address { get; set; } = string.Empty;
-    public string? NextOfKinPhoneNo { get; set; } = string.Empty;
-    public string? NextOfKinName { get; set; } = string.Empty;
-    public string? NextOfKinAddress { get; set; } = string.Empty;
     public string? Nationality { get; set; }
 
     // Roles come from the external Tajneed API, not any local role table
     // These are the role-name strings reported by the API login response
     // (Data.Roles) — see docs/stage-authorization-policy.md §3.2.
-    public ICollection<string> Roles { get; set; } = new List<string>();
-
-    public string FullName => $"{FirstName} {Surname}".Trim();
     public Guid? BrideGuardianId { get; set; }
     public BrideGuardian? BrideGuardian { get; set; }
 }

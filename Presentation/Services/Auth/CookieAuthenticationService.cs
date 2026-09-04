@@ -6,9 +6,6 @@ using Presentation.Constants.Roles;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-
 namespace Presentation.Services.Auth;
 
 public class CookieAuthenticationService : ICookieAuthenticationService
@@ -16,39 +13,37 @@ public class CookieAuthenticationService : ICookieAuthenticationService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
 
-    public CookieAuthenticationService(
-        IHttpContextAccessor httpContextAccessor,
-        IConfiguration configuration)
+    public CookieAuthenticationService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
     {
         _httpContextAccessor = httpContextAccessor;
         _configuration = configuration;
     }
 
-    public async Task<string> SignInAsync(JamaatMember jamaatMember)
+    public async Task SignInAsync(JamaatMember jamaatMember, IEnumerable<string> roles)
     {
+        var roleNames = roles
+            .Where(role => !string.IsNullOrWhiteSpace(role))
+            .Select(role => role.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
         var secretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
 
         var isRishtanataSecretary =
             !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo;
-        var role = isRishtanataSecretary ? RoleNames.RishtanataSecretary : jamaatMember.NewRole;
 
-        var roleNames = jamaatMember.MemberRoles
-            .Select(mr => mr.Role.Name)
-            .ToList();
-
-        if (isRishtanataSecretary && !roleNames.Contains(RoleNames.RishtanataSecretary))
+        if (isRishtanataSecretary && !roleNames.Contains(RoleNames.RishtanataSecretary, StringComparer.OrdinalIgnoreCase))
         {
             roleNames.Add(RoleNames.RishtanataSecretary);
         }
 
-        var identity = new ClaimsIdentity(BuildClaims(jamaatMember, roleNames),
-            CookieAuthenticationDefaults.AuthenticationScheme);
+        var claims = BuildClaims(jamaatMember, roles);
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
         var principal = new ClaimsPrincipal(identity);
-        await _httpContextAccessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-            principal);
-        return isRishtanataSecretary
-            ? RoleNames.RishtanataSecretary
-            : roleNames.FirstOrDefault() ?? string.Empty;
+
+        await _httpContextAccessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
     }
 
     public async Task SignOutAsync()
@@ -56,22 +51,29 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         await _httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
-    static List<Claim> BuildClaims(JamaatMember jamaatMember, List<string> roleNames)
+    static List<Claim> BuildClaims(JamaatMember jamaatMember, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
             new(ClaimTypes.Name, jamaatMember.ChandaNo),
-            new(ClaimTypes.Role, roleNames.First()),
-            // new("HierarchyLevel", (jamaatMember.Role?.HierarchyLevel ?? 1).ToString())
+            new("jamaat", jamaatMember.JamaatName)
         };
 
-
-        claims.Add(new Claim("Jamaat", jamaatMember.JamaatName));
-
-        if (roleNames.Contains(RoleNames.CircuitSecretary))
+        foreach (var role in roles .Where(role => !string.IsNullOrWhiteSpace(role))
+            .Select(role => role.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            claims.Add(new Claim("Circuit", jamaatMember.CircuitName));
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        if(roles.Contains(RoleNames.CircuitSecretary, StringComparer.OrdinalIgnoreCase))
+        {
+            claims.Add(
+                new Claim(
+                    "Circuit",
+                    jamaatMember.CircuitName
+                    ));
         }
 
         return claims;

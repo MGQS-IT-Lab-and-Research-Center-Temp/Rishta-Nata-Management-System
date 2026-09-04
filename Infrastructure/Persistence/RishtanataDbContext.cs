@@ -17,8 +17,6 @@ public class RishtanataDbContext : DbContext
     public DbSet<MarriageApplicationForm> MarriageApplicationForms => Set<MarriageApplicationForm>();
     public DbSet<BridegroomFormSection> BridegroomFormSections => Set<BridegroomFormSection>();
     public DbSet<MarriageFormRejection> MarriageFormRejections => Set<MarriageFormRejection>();
-    public DbSet<Role> JamaatRoles => Set<Role>();
-    public DbSet<JamaatMemberRole> JamaatMemberRoles => Set<JamaatMemberRole>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
