@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Interfaces.Gateway;
+using Domain.Constants;
 using Domain.Entities;
+using Domain.Interfaces;
 using Infrastructure.Identity.Tokens;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Presentation.Constants.Roles;
-using Presentation.Services.Auth;
 using Presentation.ViewModels;
 namespace Presentation.Controllers;
 

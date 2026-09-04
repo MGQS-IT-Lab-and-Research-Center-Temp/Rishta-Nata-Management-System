@@ -4,6 +4,8 @@ namespace Presentation.ViewModels;
 
 public class AqeeqahCertificateViewModel
 {
+    public Guid Id { get; set; }
+
     // Certificate
     public string SerialNumber { get; set; } = string.Empty;
 

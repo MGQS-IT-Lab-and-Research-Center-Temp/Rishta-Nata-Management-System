@@ -4,7 +4,7 @@ namespace Presentation.Mapping.RishtanataSecretary
 {
     public static class RoleManagementMapper
     {
-        public static RoleManagementViewModel toViewModel(RoleManagementDto dto)
+        public static RoleManagementViewModel ToViewModel(RoleManagementDto dto)
         {
             return new RoleManagementViewModel
             {

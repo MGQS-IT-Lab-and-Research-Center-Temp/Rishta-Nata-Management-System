@@ -2,12 +2,12 @@
 using System;
 using Application.Interfaces;
 using Domain.Enums;
-using Infrastructure.DTOs.MarriageApplicationFormDetail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Presentation.Requests;
 
 
 namespace Presentation.Controllers;
@@ -30,7 +30,7 @@ public class MarriageFormsController : Controller
     [HttpPost("{formId:guid}/revert")]
     public async Task<IActionResult> RevertStage(
         Guid formId,
-        [FromBody] RevertStageRequestDto request,
+        [FromBody] RevertStageRequest request,
         CancellationToken cancellationToken)
     {
         var verifierId = GetCurrentUserId();

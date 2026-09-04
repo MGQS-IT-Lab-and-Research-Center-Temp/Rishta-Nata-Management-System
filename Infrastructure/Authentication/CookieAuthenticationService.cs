@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
-using Domain.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Presentation.Constants.Roles;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Domain.Constants;
+using Domain.Entities;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
-namespace Presentation.Services.Auth;
+namespace Infrastructure.Authentication;
 
 public class CookieAuthenticationService : ICookieAuthenticationService
 {
@@ -63,9 +64,7 @@ public class CookieAuthenticationService : ICookieAuthenticationService
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
             new(ClaimTypes.Name, jamaatMember.ChandaNo),
             new(ClaimTypes.Role, roleNames.First()),
-            // new("HierarchyLevel", (jamaatMember.Role?.HierarchyLevel ?? 1).ToString())
         };
-
 
         claims.Add(new Claim("Jamaat", jamaatMember.JamaatName));
 

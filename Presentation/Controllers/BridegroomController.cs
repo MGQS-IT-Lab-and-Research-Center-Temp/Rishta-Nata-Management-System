@@ -2,9 +2,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using Infrastructure.Mapper;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Mapping.Bridegroom;
 using Presentation.ViewModels;
-using Domain.Entities;
 
 public class BridegroomController : Controller
 {
@@ -29,25 +30,8 @@ public class BridegroomController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var bridegroom = new BridegroomFormSection
-        {
-            
-            BridegroomName = model.BridegroomName,
-            BridegroomMembershipNo = model.BridegroomMembershipNo,
-            BridegroomDateOfBirth = model.BridegroomDateOfBirth,
-            BridegroomResidentOf = model.BridegroomResidentOf,
-            BridegroomGenotype = model.BridegroomGenotype,
-            BridegroomBloodGroup = model.BridegroomBloodGroup,
-            BridegroomDowerAmountPaidInCash = model.BridegroomDowerAmountPaidInCash,
-            BridegroomDowerAmountToBePaid = model.BridegroomDowerAmountToBePaid,
-            BridegroomSignatureTel = model.BridegroomPhoneNumber,
-            IsFirstNikah = model.IsFirstNikah,
-            IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah,
-            FormerWifeIsDead = model.FormerWifeIsDead,
-            HasDivorcedFormerWife = model.HasDivorcedFormerWife,
-            FormerWifeIsPresent = model.FormerWifeIsPresent,
-            FormerWifeObtainedKhula = model.FormerWifeObtainedKhula
-        };
+        var dto = BridegroomMapping.ToDto(model);
+        var bridegroom = BrideGroomMapper.ToEntity(dto);
 
         var savedBridegroom = await _bridegroomService.CreateAsync(bridegroom, ct);
         return RedirectToAction(nameof(Confirmation), new { id = savedBridegroom.Id });
