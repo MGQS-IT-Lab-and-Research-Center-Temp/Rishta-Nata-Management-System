@@ -2,23 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
-using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Presentation.Data;
+namespace Infrastructure.Persistence.Seed;
 
 public static class AqeeqahCertificateSeeder
 {
     public static async Task SeedAqeeqahCertificatesAsync(
         RishtanataDbContext context)
     {
-        // Do not seed again if certificates already exist
         if (await context.AqeeqahCertificates.AnyAsync())
         {
             return;
         }
 
-        // Get an existing Jamaat member/user to use as IssuedByUserId
         var issuer = await context.JamaatMembers
             .FirstOrDefaultAsync();
 
@@ -27,7 +24,6 @@ public static class AqeeqahCertificateSeeder
             return;
         }
 
-        // Get an existing Jamaat ID from your members
         var jamaatId = issuer.Id;
 
         var certificates = new List<AqeeqahCertificate>
@@ -175,17 +171,5 @@ public static class AqeeqahCertificateSeeder
         await context.AqeeqahCertificates.AddRangeAsync(certificates);
 
         await context.SaveChangesAsync();
-    }
-}
-
-public static class DbInitializer
-{
-    public static async Task InitializeAsync(
-        RishtanataDbContext dbContext)
-    {
-        await dbContext.Database.MigrateAsync();
-
-        await AqeeqahCertificateSeeder
-            .SeedAqeeqahCertificatesAsync(dbContext);
     }
 }

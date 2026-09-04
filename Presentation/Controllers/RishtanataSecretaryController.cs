@@ -50,7 +50,11 @@ public class RishtanataSecretaryController : Controller
     {
         var marriedCouples = _service.GetMarriedCouples();
 
-        return View(marriedCouples);
+        var viewModels = marriedCouples
+            .Select(MarriedCoupleMapping.ToViewModel)
+            .ToList();
+
+        return View(viewModels);
     }
 
     // View all Jama'at members
@@ -70,7 +74,9 @@ public class RishtanataSecretaryController : Controller
     {
         var application = _service.GetById(id);
 
-        return View(application);
+        var viewModel = RishtanataSecretaryReviewMapping.ToViewModel(application);
+
+        return View(viewModel);
     }
 
     // Full member profile page
@@ -88,7 +94,7 @@ public class RishtanataSecretaryController : Controller
     {
         var dto = await _roleService.GetRoleManagementAsync(id);
 
-        var viewModel = RoleManagementMapper.toViewModel(dto);
+        var viewModel = RoleManagementMapper.ToViewModel(dto);
 
         return View(viewModel);
     }

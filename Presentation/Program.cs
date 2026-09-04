@@ -1,4 +1,9 @@
+using Application.Extensions;
+using Infrastructure.Extensions;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Presentation.Extensions;
@@ -9,9 +14,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen(); // remove this
 builder.Services.AddEndpointsApiExplorer(); // remove this
-builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices();
+builder.Services.AddPresentationServices(builder.Configuration);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<RishtanataDbContext>();
+    await DbInitializer.InitializeAsync(db);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

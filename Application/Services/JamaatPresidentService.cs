@@ -60,8 +60,8 @@ public class JamaatPresidentService : IJamaatPresidentService
 
         var reviewedToday = await _context.AuditLogs
             .CountAsync(x =>
-                x.Timestamp >= today &&
-                x.Timestamp < tomorrow &&
+                x.CreatedAt >= today &&
+                x.CreatedAt < tomorrow &&
                 (
                     x.Action == "Approved Nikah Application" ||
                     x.Action == "Rejected Nikah Application" ||
@@ -69,13 +69,13 @@ public class JamaatPresidentService : IJamaatPresidentService
                 ));
 
         var recentActivities = await _context.AuditLogs
-            .OrderByDescending(x => x.Timestamp)
+            .OrderByDescending(x => x.CreatedAt)
             .Take(10)
             .Select(x => new RecentActivityDto
             {
                 ApplicationNumber = x.EntityName,
                 Description = x.Action,
-                Date = x.Timestamp
+                Date = x.CreatedAt
             })
             .ToListAsync();
 
@@ -273,7 +273,7 @@ public class JamaatPresidentService : IJamaatPresidentService
             Action = actionLabel,
             EntityName = "MarriageApplication",
             RecordId = application.Id,
-            Timestamp = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
             ChangeDetails =
                 $"Jama'at President {actionLabel.ToLower()} application {reference}. {extraDetail}"
                     .Trim()
