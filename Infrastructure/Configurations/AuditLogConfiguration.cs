@@ -16,11 +16,13 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
             builder.Property(a => a.RecordId).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
             builder.Property(a => a.ChangeDetails)
                 .IsRequired()
                 .HasMaxLength(500);
             builder.HasIndex(a => a.UserId);
             builder.HasIndex(a => new { a.EntityName, a.RecordId });
+            builder.HasIndex(a => a.CreatedAt);
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using System;
 using Application.Interfaces;
 using Application.Workflow;
-using Infrastructure.DTOs;
-using Infrastructure.DTOs.BrideGroom;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Presentation.Mapping;
+using Presentation.Requests;
 
 namespace Presentation.Controllers;
 
@@ -49,16 +49,18 @@ public class MarriageApplicationFormController : ControllerBase
 
     [HttpPost("bride")]
     [Authorize(Policy = "CanFillBrideSection")]
-    public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionDto dto, CancellationToken ct)
+    public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionRequest request, CancellationToken ct)
     {
+        var dto = MarriageFormRequestMapping.ToDto(request);
         var result = await _brideSectionService.SubmitBrideSectionAsync(CurrentUserId, id, dto, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
     [HttpPut("bridegroom")]
     [Authorize(Policy = "CanFillBridegroomSection")]
-    public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionDto dto, CancellationToken ct)
+    public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionRequest request, CancellationToken ct)
     {
+        var dto = MarriageFormRequestMapping.ToDto(request);
         var result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(CurrentUserId, id, dto, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }

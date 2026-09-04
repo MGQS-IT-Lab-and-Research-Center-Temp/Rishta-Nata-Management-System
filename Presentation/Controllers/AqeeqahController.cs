@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.Interfaces;
-using Infrastructure.DTOs.Certificates;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Mapping;
+using Presentation.ViewModels;
 
 namespace Presentation.Controllers;
 
@@ -22,14 +24,18 @@ public class AqeeqahCertificateController : Controller
         var certificates =
             await _certificateService.GetAllCertificatesAsync();
 
-        return View(certificates);
+        var viewModels = certificates
+            .Select(AqeeqahCertificateMapping.ToViewModel)
+            .ToList();
+
+        return View(viewModels);
     }
 
     // GET: /AqeeqahCertificate/Create
     [HttpGet]
     public IActionResult Create()
     {
-        var model = new AqeeqahCertificateDto
+        var model = new AqeeqahCertificateViewModel
         {
             IssueDate = DateTime.Today
         };
@@ -41,14 +47,15 @@ public class AqeeqahCertificateController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-        AqeeqahCertificateDto model)
+        AqeeqahCertificateViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        await _certificateService.CreateCertificateAsync(model);
+        await _certificateService.CreateCertificateAsync(
+            AqeeqahCertificateMapping.ToDto(model));
 
         return RedirectToAction(nameof(Index));
     }
@@ -65,7 +72,7 @@ public class AqeeqahCertificateController : Controller
             return NotFound();
         }
 
-        return View(certificate);
+        return View(AqeeqahCertificateMapping.ToViewModel(certificate));
     }
 
     // GET: /AqeeqahCertificate/Details/{id}
@@ -80,7 +87,7 @@ public class AqeeqahCertificateController : Controller
             return NotFound();
         }
 
-        return View(certificate);
+        return View(AqeeqahCertificateMapping.ToViewModel(certificate));
     }
 
     // GET: /AqeeqahCertificate/Delete/{id}

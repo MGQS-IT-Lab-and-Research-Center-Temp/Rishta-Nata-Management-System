@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
-using Domain.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Presentation.Constants.Roles;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Domain.Constants;
+using Domain.Entities;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 namespace Presentation.Services.Auth;
 

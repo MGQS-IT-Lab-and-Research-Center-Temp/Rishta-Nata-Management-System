@@ -7,11 +7,13 @@
 // use the respective service to do all db operation in this controller
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using Presentation.Mapping;
 
 namespace Presentation.Controllers;
 
@@ -42,7 +44,7 @@ public class JamaatPresidentController : Controller
             User.Identity?.Name,
             GetCurrentUserId());
 
-        return View(dto);
+        return View(JamaatPresidentMapping.ToViewModel(dto));
     }
 
     // ============================================================
@@ -59,7 +61,7 @@ public class JamaatPresidentController : Controller
             return NotFound("Marriage application or its form was not found.");
         }
 
-        return View(dto);
+        return View(JamaatPresidentMapping.ToViewModel(dto));
     }
 
     // ============================================================
@@ -139,7 +141,11 @@ public class JamaatPresidentController : Controller
     {
         var certificates = await _certificateService.GetAllCertificatesAsync();
 
-        return View(certificates);
+        var viewModels = certificates
+            .Select(JamaatPresidentMapping.ToViewModel)
+            .ToList();
+
+        return View(viewModels);
     }
 
     // ============================================================
@@ -152,7 +158,12 @@ public class JamaatPresidentController : Controller
     public async Task<IActionResult> AqeeqahCertificates()
     {
         var certificates = await _aqeeqahService.GetAllCertificatesAsync();
-        return View(certificates);
+
+        var viewModels = certificates
+            .Select(AqeeqahCertificateMapping.ToViewModel)
+            .ToList();
+
+        return View(viewModels);
     }
 
     // ============================================================

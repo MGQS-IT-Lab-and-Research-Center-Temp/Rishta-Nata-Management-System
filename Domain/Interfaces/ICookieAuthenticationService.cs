@@ -1,11 +1,10 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Domain.Entities;
 
-namespace Presentation.Services.Auth;
+namespace Domain.Interfaces;
 
 public interface ICookieAuthenticationService
 {
     Task SignInAsync(JamaatMember jamaatMember, IEnumerable<string> roles);
     Task SignOutAsync();
-
 }

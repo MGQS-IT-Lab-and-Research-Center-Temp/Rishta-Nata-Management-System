@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Requests;
 
 namespace Api.Controllers;
 
@@ -45,31 +46,44 @@ public class RoleController : ControllerBase
     //    return Ok(roles);
     //}
 
-    //// POST: api/role
-    //[HttpPost]
-    //public async Task<IActionResult> CreateRole([FromBody] Role role)
-    //{
-    //    var createdBy = User.Identity?.Name ?? "system";
-    //    var created = await _roleService.CreateRoleAsync(role, createdBy);
-    //    return CreatedAtAction(nameof(GetRoleById), new { id = created.Id }, created);
-    //}
+    // POST: api/role
+    [HttpPost]
+    public async Task<IActionResult> CreateRole([FromBody] RoleRequest request)
+    {
+        var createdBy = User.Identity?.Name ?? "system";
+        var role = ToRole(request);
+        var created = await _roleService.CreateRoleAsync(role, createdBy);
+        return CreatedAtAction(nameof(GetRoleById), new { id = created.Id }, created);
+    }
 
-    //// PUT: api/role/{id}
-    //[HttpPut("{id:guid}")]
-    //public async Task<IActionResult> UpdateRole(Guid id, [FromBody] Role role)
-    //{
-    //    var updatedBy = User.Identity?.Name ?? "system";
-    //    var updated = await _roleService.UpdateRoleAsync(id, role, updatedBy);
-    //    if (updated == null) return NotFound();
-    //    return Ok(updated);
-    //}
+    // PUT: api/role/{id}
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateRole(Guid id, [FromBody] RoleRequest request)
+    {
+        var updatedBy = User.Identity?.Name ?? "system";
+        var role = ToRole(request);
+        var updated = await _roleService.UpdateRoleAsync(id, role, updatedBy);
+        if (updated == null) return NotFound();
+        return Ok(updated);
+    }
 
-    //// DELETE: api/role/{id}
-    //[HttpDelete("{id:guid}")]
-    //public async Task<IActionResult> DeleteRole(Guid id)
-    //{
-    //    var success = await _roleService.DeleteRoleAsync(id);
-    //    if (!success) return NotFound();
-    //    return NoContent();
-    //}
+    // DELETE: api/role/{id}
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteRole(Guid id)
+    {
+        var success = await _roleService.DeleteRoleAsync(id);
+        if (!success) return NotFound();
+        return NoContent();
+    }
+
+    private static Role ToRole(RoleRequest request)
+    {
+        return new Role
+        {
+            Id = request.Id,
+            Name = request.Name,
+            Description = request.Description,
+            HierarchyLevel = request.HierarchyLevel
+        };
+    }
 }
