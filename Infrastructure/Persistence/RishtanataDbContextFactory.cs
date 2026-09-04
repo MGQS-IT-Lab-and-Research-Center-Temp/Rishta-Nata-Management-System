@@ -36,4 +36,5 @@ public class RishtanataDbContextFactory
 
         return new RishtanataDbContext(optionsBuilder.Options);
     }
+
 }

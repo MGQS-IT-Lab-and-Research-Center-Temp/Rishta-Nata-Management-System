@@ -43,6 +43,8 @@ public class AuthController : Controller
         {
             return View(model);
         }
+
+
         try
         {
             var tokenRequest = new TokenRequest(
@@ -84,25 +86,32 @@ public class AuthController : Controller
                 "We could not find your member account.");
             return View(model);
         }
-        var savedMember = await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
+
+        // Create/update local member
+        var localMember = await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
+
+        // Check Rishtanata Secretary
         var rishtanataSecretaryChandaNo =
             _configuration["RishtanataSecretary:ChandaNo"];
         var isRishtanataSecretary =
             !string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo) &&
-            savedMember.ChandaNo == rishtanataSecretaryChandaNo;
-        await _cookieAuthService.SignInAsync(savedMember);
-        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
-            Url.IsLocalUrl(model.ReturnUrl))
+            localMember.ChandaNo == rishtanataSecretaryChandaNo;
+
+        // Create authentication cookie
+        await _cookieAuthService.SignInAsync(localMember);
+
+        // Return URL
+        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
         {
             return Redirect(model.ReturnUrl);
         }
         if (isRishtanataSecretary)
         {
-            return RedirectToAction(
-                "Dashboard",
-                "RishtanataSecretary");
+            return RedirectToAction("Dashboard", "RishtanataSecretary");
         }
-        return RedirectUserToDashboard(savedMember);
+
+        // Other roles
+        return RedirectUserToDashboard(localMember);
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -113,11 +122,7 @@ public class AuthController : Controller
     }
     private IActionResult RedirectUserToDashboard(JamaatMember member)
     {
-        var roleNames = member.MemberRoles
-            .Select(mr => (mr.Role?.Name ?? string.Empty).Trim().ToLowerInvariant())
-            .ToHashSet();
-
-        if (roleNames.Contains(RoleNames.RishtanataSecretary))
+        return member.Role?.Name switch
         {
             return RedirectToAction("Dashboard", "RishtanataSecretary");
         }

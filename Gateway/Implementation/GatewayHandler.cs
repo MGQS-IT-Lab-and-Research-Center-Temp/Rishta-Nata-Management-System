@@ -21,47 +21,27 @@ public class GatewayHandler : IGatewayHandler
         _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
     }
 
-    public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
-    {
-        var url = $"{_apiUrl}{chandaNo}/userRoles";
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+    //public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
+    //{
+    //    var url = $"{_apiUrl}{chandaNo}/userRoles";
+    //    using var request = new HttpRequestMessage(
+    //        HttpMethod.Get,
+    //        url
+    //        );
 
-        var response = await _client.SendAsync(request);
+    //    var response = await _client.SendAsync(request);
 
-        // The Tajneed API returns 204 No Content when the member has no roles
-        // (and 404 when the member does not exist).
-        if (response.StatusCode == HttpStatusCode.NoContent)
-        {
-            return Array.Empty<string>();
-        }
-        if (response.IsSuccessStatusCode)
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                return Array.Empty<string>();
-            }
+    //    if (response.IsSuccessStatusCode)
+    //    {
+    //        return await response.ReadContentAs<string[]>();
+    //    }
+    //    if (response.StatusCode == HttpStatusCode.NotFound)
+    //    {
+    //        return null;
+    //    }
 
-            var token = JToken.Parse(content);
-
-            // Accept both a raw JSON array and an envelope with a "data" array.
-            if (token is JObject obj &&
-                obj.TryGetValue("data", StringComparison.OrdinalIgnoreCase, out var data))
-            {
-                token = data;
-            }
-
-            return token is JArray
-                ? token.ToObject<string[]>()
-                : Array.Empty<string>();
-        }
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-
-        throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
-    }
+    //    throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
+    //}
 
     public async Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo)
     {
@@ -95,23 +75,21 @@ public class GatewayHandler : IGatewayHandler
 
         throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
+
+
     public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
     {
         var url = $"{_apiUrl}token";
 
-        // The Tajneed API expects the camelCase { userName, password } body.
-        var jsonContent = new StringContent
-            (JsonConvert.SerializeObject(new
-            {
-                userName = tokenRequest.ChandaNo,
-                password = tokenRequest.Password
-            }),
-            Encoding.UTF8,
-            "application/json");
+        var credentials = new TokenConstant
+        {
+            Username = tokenRequest.ChandaNo,
+            Password = tokenRequest.Password
+        };
 
-        var request = new HttpRequestMessage
-            (HttpMethod.Post,
-            url)
+        var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = jsonContent
         };

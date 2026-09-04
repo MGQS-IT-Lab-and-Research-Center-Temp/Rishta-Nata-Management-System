@@ -4,12 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddSwaggerGen(); // remove this
+builder.Services.AddEndpointsApiExplorer(); // remove this
 builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
@@ -21,7 +17,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-else
+else // Remove this
 {
     app.UseSwagger();
     app.UseSwaggerUI();

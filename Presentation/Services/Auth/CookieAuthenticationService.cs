@@ -20,9 +20,8 @@ public class CookieAuthenticationService : ICookieAuthenticationService
     {
         var secretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
 
-        var isRishtanataSecretary =
-            !string.IsNullOrWhiteSpace(secretaryChandaNo) &&
-            jamaatMember.ChandaNo == secretaryChandaNo;
+        var isRishtanataSecretary = !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo;
+        var role = isRishtanataSecretary ? RoleNames.RishtanataSecretary : jamaatMember.Role?.Name ?? string.Empty;
 
         var roleNames = jamaatMember.MemberRoles
             .Select(mr => mr.Role.Name)
@@ -48,18 +47,12 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
-            new(ClaimTypes.Name, jamaatMember.ChandaNo)
+            new(ClaimTypes.Name, jamaatMember.ChandaNo),
+            new(ClaimTypes.Role, role),
+            new("HierarchyLevel", (jamaatMember.Role?.HierarchyLevel ?? 1).ToString())
         };
-        foreach (var roleName in roleNames)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, roleName));
-        }
-        var highestHierarchyLevel = jamaatMember.MemberRoles
-            .Select(mr => mr.Role.HierarchyLevel)
-            .DefaultIfEmpty(0)
-            .Max();
-        claims.Add(new Claim("HierarchyLevel", highestHierarchyLevel.ToString()));
-        if (roleNames.Contains(RoleNames.JamaatSecretary))
+
+        switch (jamaatMember.Role?.Name)
         {
             claims.Add(new Claim("Jamaat", jamaatMember.JamaatName));
         }

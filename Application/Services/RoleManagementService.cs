@@ -2,9 +2,7 @@
 using Domain.Entities;
 using Infrastructure.DTOs;
 using Infrastructure.DTOs.Roles;
-using Infrastructure.Identity;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 namespace Application.Services;
 
@@ -12,11 +10,11 @@ public class RoleAssignmentService : IRoleAssignmentService
 {
     private const int BaselineHierarchyLevel = 1; // Jama'at Member
     private readonly RishtanataDbContext _context;
-    private readonly RoleManager<ApplicationRole> _roleManager;
+
+    public RoleAssignmentService(RishtanataDbContext context)
     public RoleAssignmentService(RishtanataDbContext context, RoleManager<ApplicationRole> roleManager)
     {
         _context = context;
-        _roleManager = roleManager;
     }
     public async Task<IEnumerable<RoleDto>> GetAllRolesAsync()
         => await _context.JamaatRoles
@@ -57,41 +55,15 @@ public class RoleAssignmentService : IRoleAssignmentService
         if (member == null)
             return (false, "Member not found.");
 
-        var role = await _roleManager.FindByIdAsync(roleId.ToString());
+        var role = await _context.JamaatRoles.FirstOrDefaultAsync(r => r.Id == roleId);
         if (role == null)
             return (false, "Selected role does not exist.");
 
         if (member.MemberRoles.Any(mr => mr.RoleId == roleId))
             return (false, "Member already holds that role.");
-
-        member.MemberRoles.Add(new JamaatMemberRole
-        {
-            JamaatMemberId = member.Id,
-            RoleId = role.Id,
-            AssignedAt = DateTime.UtcNow,
-            AssignedBy = changedBy
-        });
-
-        await _context.SaveChangesAsync();
-        return (true, null);
-    }
-
-    public async Task<(bool Success, string? Error)> RemoveRoleAsync(Guid memberId, Guid roleId, string changedBy)
-    {
-        var member = await _context.JamaatMembers
-            .Include(m => m.MemberRoles)
-            .FirstOrDefaultAsync(m => m.Id == memberId);
-        if (member == null)
-            return (false, "Member not found.");
-
-        var existing = member.MemberRoles.FirstOrDefault(mr => mr.RoleId == roleId);
-        if (existing == null)
-            return (false, "Member does not hold that role.");
-
-        if (member.MemberRoles.Count == 1)
-            return (false, "Member must retain at least one role.");
-
-        _context.Remove(existing);
+        member.RoleId = roleId;
+        member.ModifiedAt = DateTime.UtcNow;
+        member.Role.UpdatedBy = changedBy;
         await _context.SaveChangesAsync();
         return (true, null);
     }
@@ -113,22 +85,9 @@ public class RoleAssignmentService : IRoleAssignmentService
             .FirstOrDefaultAsync(r => r.HierarchyLevel == BaselineHierarchyLevel);
         if (baseRole == null)
             return (false, "Baseline Jama'at Member role is not configured.");
-
-        // Remove every role except the baseline, then ensure baseline is present.
-        var toRemove = member.MemberRoles.Where(mr => mr.RoleId != baseRole.Id).ToList();
-        foreach (var mr in toRemove)
-            _context.Remove(mr);
-
-        if (!member.MemberRoles.Any(mr => mr.RoleId == baseRole.Id))
-        {
-            member.MemberRoles.Add(new JamaatMemberRole
-            {
-                JamaatMemberId = member.Id,
-                RoleId = baseRole.Id,
-                AssignedAt = DateTime.UtcNow,
-                AssignedBy = changedBy
-            });
-        }
+        member.RoleId = baseRole.Id;
+        member.ModifiedAt = DateTime.UtcNow;
+        member.Role.UpdatedBy = changedBy;
 
         await _context.SaveChangesAsync();
         return (true, null);
