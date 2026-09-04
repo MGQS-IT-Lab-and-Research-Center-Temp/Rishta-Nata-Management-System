@@ -34,6 +34,7 @@ public class AuthController : Controller
         };
         return View(model);
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
