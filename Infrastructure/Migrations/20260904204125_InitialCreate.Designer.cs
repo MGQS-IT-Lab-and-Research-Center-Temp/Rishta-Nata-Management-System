@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RishtanataDbContext))]
-    [Migration("20260829183816_InitialCreate")]
+    [Migration("20260904204125_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -187,23 +187,32 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("EntityName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<Guid>("RecordId")
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime(6)");
+                    b.Property<Guid>("RecordId")
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Timestamp");
+                    b.HasIndex("CreatedAt");
 
                     b.HasIndex("UserId");
 
@@ -653,14 +662,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<bool>("IsSystemDefault")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("JamaatName")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("MaidenName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("MaritalStatus")
@@ -678,30 +681,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Nationality")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("NewRole")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("NextOfKinAddress")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("NextOfKinName")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("NextOfKinPhoneNo")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("PhoneNo")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("ResetToken")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("ResetTokenExpiry")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("char(36)");
 
                     b.Property<string>("Sex")
                         .IsRequired()
@@ -720,8 +701,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BrideGuardianId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("JamaatMembers");
                 });
@@ -1183,43 +1162,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("RishtanataRecommendationSection");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("HierarchyLevel")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JamaatRoles");
-                });
-
             modelBuilder.Entity("WitnessSignatureSection", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1351,18 +1293,9 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.BrideGuardian", "BrideGuardian")
                         .WithMany("Brides")
                         .HasForeignKey("BrideGuardianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Role", "Role")
-                        .WithMany("Members")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("BrideGuardian");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Domain.Entities.JamaatPresidentVerificationSection", b =>
@@ -1403,7 +1336,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.FormApplication", "MarriageApplication")
                         .WithMany()
                         .HasForeignKey("MarriageApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("MarriageApplication");
@@ -1464,11 +1397,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("RishtanataRecommendation");
 
                     b.Navigation("WitnessSignatures");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Role", b =>
-                {
-                    b.Navigation("Members");
                 });
 #pragma warning restore 612, 618
         }

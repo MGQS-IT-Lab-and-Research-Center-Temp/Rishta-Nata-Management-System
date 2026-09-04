@@ -11,7 +11,7 @@ public class MemberApiLoginResponse
 
 public class Data
 {
-    public int UserId { get; set; }
-    public string UserName { get; set; } = default!;
-    public string[] Roles { get; set; } = [];
+    public int userId { get; set; }
+    public string userName { get; set; } = default!;
+    public string[] roles { get; set; } = [];
 }

@@ -4,15 +4,14 @@ using Application.Services;
 using Domain.Abstractions;
 using Domain.Events;
 using Domain.Interfaces;
-using Infrastructure.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+using Presentation.Services.Auth;
 
 namespace Application.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplicationServices(
-        this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
         services.AddScoped<IRoleService, RoleService>();
@@ -29,9 +28,9 @@ public static class DependencyInjection
         services.AddScoped<IBrideGuardianService, BrideGuardianService>();
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();
-        services.AddScoped<IRoleAssignmentService, RoleAssignmentService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEventHandler<MarriageFormStageRevertedEvent>, MarriageFormStageRevertedEventHandler>();
 
         return services;

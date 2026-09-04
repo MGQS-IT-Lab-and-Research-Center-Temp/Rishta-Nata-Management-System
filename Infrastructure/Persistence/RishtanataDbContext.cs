@@ -32,7 +32,6 @@ public class RishtanataDbContext : DbContext
             .WithOne(f => f.Certificate)
             .HasForeignKey<Certificate>(c => c.FormApplicationId);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(RishtanataDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(RishtanataDbContext).Assembly);
     }
 }

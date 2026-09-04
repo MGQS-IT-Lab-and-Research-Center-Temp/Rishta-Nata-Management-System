@@ -26,10 +26,10 @@ public static class DependencyInjection
     services.AddAuthorization(options =>
     {
         options.AddPolicy("RequireRishtanataSecretary", p => p.RequireRole(RoleNames.RishtanataSecretary));
-        options.AddPolicy("RequireJamaatSecretary", p => p.RequireRole(RoleNames.JamaatSecretary));
-        options.AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitSecretary));
+        options.AddPolicy("RequireJamaatSecretary", p => p.RequireRole(RoleNames.JamaatPresident));
+        options.AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitPresident));
         options.AddPolicy("RequireAmir", p => p.RequireRole(RoleNames.Amir));
-        options.AddPolicy("StageVerifier", p => p.RequireRole(RoleNames.RishtanataSecretary,RoleNames.JamaatSecretary,RoleNames.CircuitSecretary, RoleNames.Amir));
+        options.AddPolicy("StageVerifier", p => p.RequireRole(RoleNames.RishtanataSecretary,RoleNames.JamaatPresident,RoleNames.CircuitPresident, RoleNames.Amir));
     });
 
         return services;

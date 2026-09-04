@@ -12,9 +12,13 @@ namespace Domain.Constants;
 /// </summary>
 public static class RoleNames
 {
-    public const string JamaatSecretary = "jamaat secretary";
-    public const string CircuitSecretary = "circuit secretary";
-    public const string RishtanataSecretary = "rishtanata secretary";
-    public const string Amir = "amir";
+    public const string Amir = "Amir";
+    public const string MissionaryInCharge = "Missionary In Charge";
+    public const string RishtanataSecretary = "Rishta Nata Secretary";
+    public const string NaibRishtanataSecretary = "Naib Rishta Nata Secretary";
+    public const string GenSecRistanataDept = "Gen Sec Rishata Nata Dept";
+    public const string CircuitPresident = "Circuit President";
+    public const string JamaatPresident = "Jamaat President";   
+    public const string Member = "Member";
 
 }

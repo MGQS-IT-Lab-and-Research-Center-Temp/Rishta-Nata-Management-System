@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces;
+using Domain.Constants;
 using Domain.Entities;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Constants.Roles;
-using Presentation.Services.Auth;
 using Presentation.ViewModels;
 
 namespace Presentation.Controllers;
@@ -13,10 +13,7 @@ public class AuthController : Controller
     private readonly IConfiguration _configuration;
     private readonly IAuthService _authService;
 
-    public AuthController(
-        ICookieAuthenticationService cookieAuthService,
-        IConfiguration configuration,
-        IAuthService authService)
+    public AuthController(ICookieAuthenticationService cookieAuthService, IConfiguration configuration, IAuthService authService)
     {
         _cookieAuthService = cookieAuthService;
         _configuration = configuration;
@@ -61,7 +58,7 @@ public class AuthController : Controller
             return Redirect(model.ReturnUrl);
         }
 
-        return RedirectUserToDashboard();
+        return RedirectUserToDashboard(member);
     }
 
     [HttpPost]
@@ -73,23 +70,44 @@ public class AuthController : Controller
         return RedirectToAction("Login", "Auth");
     }
 
-    private IActionResult RedirectUserToDashboard()
+    private IActionResult RedirectUserToDashboard(JamaatMember member)
     {
-        if (User.IsInRole(RoleNames.RishtanataSecretary))
+        var rishtanataSecretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
+
+        if (!string.IsNullOrWhiteSpace(rishtanataSecretaryChandaNo) &&
+            string.Equals(member.ChandaNo, rishtanataSecretaryChandaNo, StringComparison.OrdinalIgnoreCase))
         {
             return RedirectToAction("Dashboard", "RishtanataSecretary");
         }
 
-        if (User.IsInRole(RoleNames.JamaatSecretary))
+        if (User.IsInRole(RoleNames.NaibRishtanataSecretary) || User.IsInRole(RoleNames.GenSecRistanataDept))
         {
-            return RedirectToAction("Dashboard", "JamaatMemberDashboard");
+            return RedirectToAction("Dashboard", "AssistantRishtanataSecretary");
         }
 
-        if (User.IsInRole(RoleNames.CircuitSecretary))
+        if (User.IsInRole(RoleNames.Amir))
         {
-            return RedirectToAction(
-                "Dashboard",
-                "CircuitSecretary");
+            return RedirectToAction("Dashboard", "Amir");
+        }
+
+        if (User.IsInRole(RoleNames.MissionaryInCharge))
+        {
+            return RedirectToAction("Dashboard", "MissionaryInCharge");
+        }
+
+        if (User.IsInRole(RoleNames.CircuitPresident))
+        {
+            return RedirectToAction("Dashboard", "CircuitPresident");
+        }
+
+        if (User.IsInRole(RoleNames.JamaatPresident))
+        {
+            return RedirectToAction("Dashboard", "JamaatPresident");
+        }
+
+        if (User.IsInRole(RoleNames.Member))
+        {
+            return RedirectToAction("Dashboard", "JamaatMemberDashboard");
         }
 
         return RedirectToAction("Index", "JamaatMemberDashboard");

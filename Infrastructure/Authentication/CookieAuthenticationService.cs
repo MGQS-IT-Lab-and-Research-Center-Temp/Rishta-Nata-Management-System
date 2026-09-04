@@ -6,6 +6,9 @@ using Domain.Constants;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 namespace Presentation.Services.Auth;
 
 public class CookieAuthenticationService : ICookieAuthenticationService
@@ -56,8 +59,7 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
-            new(ClaimTypes.Name, jamaatMember.ChandaNo),
-            new("jamaat", jamaatMember.JamaatName)
+            new(ClaimTypes.Name, jamaatMember.ChandaNo)
         };
 
         foreach (var role in roles .Where(role => !string.IsNullOrWhiteSpace(role))
@@ -65,15 +67,6 @@ public class CookieAuthenticationService : ICookieAuthenticationService
             .Distinct(StringComparer.OrdinalIgnoreCase))
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
-        }
-
-        if(roles.Contains(RoleNames.CircuitSecretary, StringComparer.OrdinalIgnoreCase))
-        {
-            claims.Add(
-                new Claim(
-                    "Circuit",
-                    jamaatMember.CircuitName
-                    ));
         }
 
         return claims;

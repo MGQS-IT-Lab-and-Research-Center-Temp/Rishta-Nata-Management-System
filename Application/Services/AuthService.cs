@@ -45,7 +45,7 @@ public class AuthService : IAuthService
 
         var localMember = await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
 
-        var roles = tokenResponse.Data?.Roles ?? Array.Empty<string>();
+        var roles = tokenResponse.Data?.roles ?? Array.Empty<string>();
 
         return AuthResult.Success(localMember, roles);
     }

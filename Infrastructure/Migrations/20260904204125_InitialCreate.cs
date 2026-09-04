@@ -56,8 +56,11 @@ namespace Infrastructure.Migrations
                     Action = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     EntityName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     RecordId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ChangeDetails = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
+                    ChangeDetails = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -132,14 +135,27 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "JamaatRoles",
+                name: "JamaatMembers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    Description = table.Column<string>(type: "longtext", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "longtext", nullable: false),
-                    HierarchyLevel = table.Column<int>(type: "int", nullable: false),
+                    Surname = table.Column<string>(type: "longtext", nullable: false),
+                    FirstName = table.Column<string>(type: "longtext", nullable: false),
+                    Email = table.Column<string>(type: "longtext", nullable: false),
+                    ChandaNo = table.Column<string>(type: "longtext", nullable: false),
+                    WasiyatNo = table.Column<string>(type: "longtext", nullable: true),
+                    Title = table.Column<string>(type: "longtext", nullable: true),
+                    AuxillaryBodyName = table.Column<string>(type: "longtext", nullable: true),
+                    MiddleName = table.Column<string>(type: "longtext", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    PhoneNo = table.Column<string>(type: "longtext", nullable: true),
+                    JamaatName = table.Column<string>(type: "longtext", nullable: false),
+                    CircuitName = table.Column<string>(type: "longtext", nullable: false),
+                    Sex = table.Column<string>(type: "longtext", nullable: false),
+                    MaritalStatus = table.Column<string>(type: "longtext", nullable: true),
+                    Address = table.Column<string>(type: "longtext", nullable: true),
+                    Nationality = table.Column<string>(type: "longtext", nullable: true),
+                    BrideGuardianId = table.Column<Guid>(type: "char(36)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -147,7 +163,13 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JamaatRoles", x => x.Id);
+                    table.PrimaryKey("PK_JamaatMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JamaatMembers_BrideGuardian_BrideGuardianId",
+                        column: x => x.BrideGuardianId,
+                        principalTable: "BrideGuardian",
+                        principalColumn: "BrideGuardianId",
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -291,61 +313,7 @@ namespace Infrastructure.Migrations
                         column: x => x.MarriageApplicationId,
                         principalTable: "FormApplications",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "JamaatMembers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Surname = table.Column<string>(type: "longtext", nullable: false),
-                    FirstName = table.Column<string>(type: "longtext", nullable: false),
-                    Email = table.Column<string>(type: "longtext", nullable: false),
-                    ChandaNo = table.Column<string>(type: "longtext", nullable: false),
-                    WasiyatNo = table.Column<string>(type: "longtext", nullable: true),
-                    Title = table.Column<string>(type: "longtext", nullable: true),
-                    AuxillaryBodyName = table.Column<string>(type: "longtext", nullable: true),
-                    MiddleName = table.Column<string>(type: "longtext", nullable: true),
-                    MaidenName = table.Column<string>(type: "longtext", nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    PhoneNo = table.Column<string>(type: "longtext", nullable: true),
-                    JamaatName = table.Column<string>(type: "longtext", nullable: false),
-                    CircuitName = table.Column<string>(type: "longtext", nullable: false),
-                    Sex = table.Column<string>(type: "longtext", nullable: false),
-                    MaritalStatus = table.Column<string>(type: "longtext", nullable: true),
-                    Address = table.Column<string>(type: "longtext", nullable: true),
-                    NextOfKinPhoneNo = table.Column<string>(type: "longtext", nullable: true),
-                    NextOfKinName = table.Column<string>(type: "longtext", nullable: true),
-                    NextOfKinAddress = table.Column<string>(type: "longtext", nullable: true),
-                    Nationality = table.Column<string>(type: "longtext", nullable: true),
-                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    IsSystemDefault = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    NewRole = table.Column<string>(type: "longtext", nullable: false),
-                    ResetToken = table.Column<string>(type: "longtext", nullable: true),
-                    ResetTokenExpiry = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    BrideGuardianId = table.Column<Guid>(type: "char(36)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_JamaatMembers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_JamaatMembers_BrideGuardian_BrideGuardianId",
-                        column: x => x.BrideGuardianId,
-                        principalTable: "BrideGuardian",
-                        principalColumn: "BrideGuardianId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_JamaatMembers_JamaatRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "JamaatRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -429,6 +397,44 @@ namespace Infrastructure.Migrations
                     table.PrimaryKey("PK_BrideGrooms", x => x.Id);
                     table.ForeignKey(
                         name: "FK_BrideGrooms_MarriageApplicationForms_MarriageApplicationForm~",
+                        column: x => x.MarriageApplicationFormId,
+                        principalTable: "MarriageApplicationForms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "GuardianOrWakeelSection",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    MarriageApplicationFormId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    PartyType = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Address = table.Column<string>(type: "longtext", nullable: false),
+                    Tel = table.Column<string>(type: "longtext", nullable: false),
+                    RelationToBride = table.Column<string>(type: "longtext", nullable: false),
+                    ActingFor = table.Column<string>(type: "longtext", nullable: true),
+                    Signature = table.Column<string>(type: "longtext", nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    JamaatMemberId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GuardianOrWakeelSection", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GuardianOrWakeelSection_JamaatMembers_JamaatMemberId",
+                        column: x => x.JamaatMemberId,
+                        principalTable: "JamaatMembers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GuardianOrWakeelSection_MarriageApplicationForms_MarriageApp~",
                         column: x => x.MarriageApplicationFormId,
                         principalTable: "MarriageApplicationForms",
                         principalColumn: "Id",
@@ -571,44 +577,6 @@ namespace Infrastructure.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "GuardianOrWakeelSection",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    MarriageApplicationFormId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    PartyType = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    Address = table.Column<string>(type: "longtext", nullable: false),
-                    Tel = table.Column<string>(type: "longtext", nullable: false),
-                    RelationToBride = table.Column<string>(type: "longtext", nullable: false),
-                    ActingFor = table.Column<string>(type: "longtext", nullable: true),
-                    Signature = table.Column<string>(type: "longtext", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    JamaatMemberId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GuardianOrWakeelSection", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GuardianOrWakeelSection_JamaatMembers_JamaatMemberId",
-                        column: x => x.JamaatMemberId,
-                        principalTable: "JamaatMembers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GuardianOrWakeelSection_MarriageApplicationForms_MarriageApp~",
-                        column: x => x.MarriageApplicationFormId,
-                        principalTable: "MarriageApplicationForms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
             migrationBuilder.CreateIndex(
                 name: "IX_AmirApprovalSection_MarriageApplicationFormId",
                 table: "AmirApprovalSection",
@@ -616,14 +584,14 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuditLogs_CreatedAt",
+                table: "AuditLogs",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AuditLogs_EntityName_RecordId",
                 table: "AuditLogs",
                 columns: new[] { "EntityName", "RecordId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AuditLogs_Timestamp",
-                table: "AuditLogs",
-                column: "Timestamp");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditLogs_UserId",
@@ -669,11 +637,6 @@ namespace Infrastructure.Migrations
                 name: "IX_JamaatMembers_BrideGuardianId",
                 table: "JamaatMembers",
                 column: "BrideGuardianId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_JamaatMembers_RoleId",
-                table: "JamaatMembers",
-                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JamaatPresidentVerificationSection_MarriageApplicationFormId",
@@ -762,9 +725,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "BrideGuardian");
-
-            migrationBuilder.DropTable(
-                name: "JamaatRoles");
 
             migrationBuilder.DropTable(
                 name: "FormApplications");
