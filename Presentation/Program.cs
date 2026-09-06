@@ -5,13 +5,12 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.Seed;
 using Presentation.Extensions;
 
-// Load local secrets/overrides from a `.env` file if one exists (copy
-// `.env.example` to `.env` and fill in real values — see README.md). The file
-// must be in the directory the app is launched from (the repository root).
-if (File.Exists(".env"))
-{
-    Env.Load();
-}
+// Load local secrets/overrides from a `.env` file (copy `.env.example` to
+// `.env` and fill in real values — see README.md). TraversePath searches the
+// current directory and its parents, so a `.env` at the repository root is
+// found even when the app is launched from Presentation/ (e.g. Visual Studio).
+// If no `.env` exists, Load() returns without error.
+Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
