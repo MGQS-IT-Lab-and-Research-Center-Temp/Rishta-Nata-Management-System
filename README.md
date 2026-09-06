@@ -31,7 +31,7 @@ ConnectionStrings__DefaultConnection=Server=localhost;Port=3306;Database=rishtan
 The double underscore (`__`) maps to `:` in ASP.NET Core configuration, so the
 line above overrides `ConnectionStrings:DefaultConnection` in
 `appsettings.json`. Any other `appsettings.json` key can be overridden the same
-way (e.g. `TajneedApiBaseUrl=...`, `RishtanataSecretary__ChandaNo=...`).
+way (e.g. `TajneedApiBaseUrl=...`, `EmailSettings__SmtpPassword=...`).
 
 > `.env` is git-ignored. Never commit real credentials.
 
@@ -54,4 +54,12 @@ The default route is the login page (`Auth/Login`).
 | `Gateway/` | HTTP client for the external Tajneed API |
 | `Presentation/` | MVC controllers, Razor views, DI |
 
-Authorization rules are documented in `docs/stage-authorization-policy.md`.
+## How it works
+
+The application is a staged Nikah form: either the groom or the bride can start
+it, the intending partner connects by membership number, and the form then moves
+through witnesses → guardian → Imam → Jamaat President → National Rishtanata
+Secretary → Amir approval.
+
+- **Workflow** (how the data moves): `docs/application-workflow.md`
+- **Authorization** (who may act on each stage): `docs/stage-authorization-policy.md`
