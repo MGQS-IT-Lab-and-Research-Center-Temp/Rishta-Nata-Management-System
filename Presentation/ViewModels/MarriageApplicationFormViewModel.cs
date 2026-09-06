@@ -66,7 +66,9 @@ public class MarriageApplicationFormViewModel
 
     // Parents
     public string BrideFatherName { get; set; } = string.Empty;
+    public string BrideFatherMembershipNo { get; set; } = string.Empty;
     public string BridegroomFatherName { get; set; } = string.Empty;
+    public string BridegroomFatherMembershipNo { get; set; } = string.Empty;
 
     // Guardian / Waliyy
     public string GuardianName { get; set; } = string.Empty;

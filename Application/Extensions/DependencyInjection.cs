@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
         services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
+        services.AddScoped<IMemberLookupService, MemberLookupService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEventHandler<MarriageFormStageRevertedEvent>, MarriageFormStageRevertedEventHandler>();
 

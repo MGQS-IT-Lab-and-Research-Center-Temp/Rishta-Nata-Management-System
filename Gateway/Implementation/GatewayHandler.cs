@@ -44,7 +44,9 @@ public class GatewayHandler : IGatewayHandler
         throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
-    public async Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo)
+    public async Task<JamaatMember?> GetMemberByChandaNoAsync(
+        string chandaNo,
+        CancellationToken cancellationToken = default)
     {
         var url = $"{_apiUrl}members/{chandaNo}";
 
@@ -52,7 +54,7 @@ public class GatewayHandler : IGatewayHandler
             HttpMethod.Get,
             url);
 
-        var response = await _client.SendAsync(request);
+        var response = await _client.SendAsync(request, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {

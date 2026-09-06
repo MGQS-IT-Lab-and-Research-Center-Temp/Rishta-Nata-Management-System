@@ -14,7 +14,9 @@ public interface IGatewayHandler
 {
     //Task<string[]?> GetMemberRoleAsync(string chandaNo);
 
-    Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo);
+    Task<JamaatMember?> GetMemberByChandaNoAsync(
+        string chandaNo,
+        CancellationToken cancellationToken = default);
     
     Task<MemberApiLoginResponse?> GenerateToken(TokenRequest request);
 }

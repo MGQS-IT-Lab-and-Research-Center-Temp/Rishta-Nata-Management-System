@@ -16,6 +16,10 @@ public class BrideGuardianViewModel
     public string BrideName { get; set; } = string.Empty;
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
     public string BrideFatherName { get; set; } = string.Empty;
+    public string BrideFatherMembershipNo { get; set; } = string.Empty;
+
+    [Display(Name = "Bride's father is a member")]
+    public bool BrideFatherIsMember { get; set; }
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
     public DateTime BrideDateOfBirth { get; set; }
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
@@ -35,6 +39,10 @@ public class BrideGuardianViewModel
     public string BridegroomName { get; set; } = string.Empty;
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
     public string BridegroomFatherName { get; set; } = string.Empty;
+    public string BridegroomFatherMembershipNo { get; set; } = string.Empty;
+
+    [Display(Name = "Bridegroom's father is a member")]
+    public bool BridegroomFatherIsMember { get; set; }
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
     public DateTime BridegroomDateOfBirth { get; set; }
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]

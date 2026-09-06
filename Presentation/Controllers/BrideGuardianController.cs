@@ -24,35 +24,27 @@ public class BrideGuardianController : Controller
         _guardianService = guardianService;
     }
 
-    /*
-
-    [HttpGet("Create/{referenceNumber}")]
-    public async Task<IActionResult> Create(string referenceNumber, CancellationToken cancellationToken)
+    [HttpGet("Create/{marriageApplicationId:guid}")]
+    public async Task<IActionResult> Create(
+        Guid marriageApplicationId,
+        CancellationToken cancellationToken)
     {
-        var application = await _applicationService.GetByReferenceNumberAsync(
-            referenceNumber,
-            cancellationToken);
+        var application = await _applicationService.GetByMarriageApplicationIdAsync(
+            marriageApplicationId);
 
         if (application is null)
         {
             return NotFound("The marriage application was not found.");
         }
 
-        var existingGuardian = await _guardianService.GetByMarriageApplicationIdAsync(
-            application.MarriageApplicationId,
-            cancellationToken);
-
-        if (existingGuardian is not null)
-        {
-            return Conflict("A guardian has already been recorded for this application.");
-        }
-
         return View(BrideGuardianViewModelMapper.ToViewModel(
             new MarriageApplicationFormViewModel
             {
                 MarriageApplicationId = application.MarriageApplicationId,
+                ReferenceNumber = application.ReferenceNumber,
                 BrideName = application.BrideName,
                 BrideFatherName = application.BrideFatherName,
+                BrideFatherMembershipNo = application.BrideFatherMembershipNo,
                 BrideDateOfBirth = application.BrideDateOfBirth,
                 BrideResidentOf = application.BrideResidentOf,
                 BrideGenotype = application.BrideGenotype,
@@ -62,14 +54,14 @@ public class BrideGuardianController : Controller
                 BrideDowerAmountReceivedInCash = application.BrideDowerAmountReceivedInCash,
                 BridegroomName = application.BridegroomName,
                 BridegroomFatherName = application.BridegroomFatherName,
+                BridegroomFatherMembershipNo = application.BridegroomFatherMembershipNo,
                 BridegroomDateOfBirth = application.BridegroomDateOfBirth,
                 BridegroomResidentOf = application.BridegroomResidentOf
             },
             application.ReferenceNumber));
     }
 
-    */
-    [HttpPost("Create/{referenceNumber}")]
+    [HttpPost("Create")]
     [ValidateAntiForgeryToken]
     public IActionResult Create(BrideGuardianViewModel model)
     {
@@ -78,9 +70,47 @@ public class BrideGuardianController : Controller
             return View(model);
         }
 
+        ValidateFathers(model);
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
         // Do NOT redirect here.
         // We need to preserve the model for the confirmation page.
         return View("Confirm", model);
+    }
+
+    private void ValidateFathers(BrideGuardianViewModel model)
+    {
+        if (model.BrideFatherIsMember && string.IsNullOrWhiteSpace(model.BrideFatherMembershipNo))
+        {
+            ModelState.AddModelError(
+                nameof(model.BrideFatherMembershipNo),
+                "Membership number is required when the bride's father is a member.");
+        }
+
+        if (!model.BrideFatherIsMember && string.IsNullOrWhiteSpace(model.BrideFatherName))
+        {
+            ModelState.AddModelError(
+                nameof(model.BrideFatherName),
+                "The bride's father's name is required.");
+        }
+
+        if (model.BridegroomFatherIsMember && string.IsNullOrWhiteSpace(model.BridegroomFatherMembershipNo))
+        {
+            ModelState.AddModelError(
+                nameof(model.BridegroomFatherMembershipNo),
+                "Membership number is required when the bridegroom's father is a member.");
+        }
+
+        if (!model.BridegroomFatherIsMember && string.IsNullOrWhiteSpace(model.BridegroomFatherName))
+        {
+            ModelState.AddModelError(
+                nameof(model.BridegroomFatherName),
+                "The bridegroom's father's name is required.");
+        }
     }
 
 
@@ -112,6 +142,11 @@ public class BrideGuardianController : Controller
         application.GuardianAddress = model.GuardianAddress;
         application.GuardianTel = model.GuardianTel;
         application.GuardianSignatureDate = model.GuardianSignatureDate;
+
+        application.BrideFatherName = model.BrideFatherName;
+        application.BrideFatherMembershipNo = model.BrideFatherMembershipNo;
+        application.BridegroomFatherName = model.BridegroomFatherName;
+        application.BridegroomFatherMembershipNo = model.BridegroomFatherMembershipNo;
 
         await _applicationService.UpdateAsync(application, cancellationToken);
 

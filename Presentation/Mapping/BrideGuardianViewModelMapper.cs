@@ -15,6 +15,7 @@ public static class BrideGuardianViewModelMapper
             ReferenceNumber = referenceNumber,
             BrideName = application.BrideName,
             BrideFatherName = application.BrideFatherName,
+            BrideFatherMembershipNo = application.BrideFatherMembershipNo,
             BrideDateOfBirth = application.BrideDateOfBirth,
             BrideResidentOf = application.BrideResidentOf,
             BrideGenotype = application.BrideGenotype,
@@ -24,6 +25,7 @@ public static class BrideGuardianViewModelMapper
             BrideDowerAmountReceivedInCash = application.BrideDowerAmountReceivedInCash,
             BridegroomName = application.BridegroomName,
             BridegroomFatherName = application.BridegroomFatherName,
+            BridegroomFatherMembershipNo = application.BridegroomFatherMembershipNo,
             BridegroomDateOfBirth = application.BridegroomDateOfBirth,
             BridegroomResidentOf = application.BridegroomResidentOf
         };
