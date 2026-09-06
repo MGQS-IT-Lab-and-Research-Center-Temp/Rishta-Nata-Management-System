@@ -59,7 +59,8 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
-            new(ClaimTypes.Name, jamaatMember.ChandaNo)
+            new(ClaimTypes.Name, jamaatMember.ChandaNo),
+            new(ClaimNames.MembershipNo, jamaatMember.ChandaNo)
         };
 
         foreach (var role in roles .Where(role => !string.IsNullOrWhiteSpace(role))

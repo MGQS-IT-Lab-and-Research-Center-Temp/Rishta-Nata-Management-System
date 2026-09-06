@@ -1,5 +1,6 @@
 using Application.Authorization;
 using Application.Interfaces;
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Persistence;
@@ -14,9 +15,6 @@ namespace Application.Services;
 /// </summary>
 public class StageAuthorizationService : IStageAuthorizationService
 {
-    private const int HierarchyLevelJamaatPresident = 2;
-    private const int HierarchyLevelNationalRishtanataSecretary = 4;
-    private const int HierarchyLevelAmir = 5;
     private readonly RishtanataDbContext _context;
     private readonly ILogger<StageAuthorizationService> _logger;
     public StageAuthorizationService(RishtanataDbContext context, ILogger<StageAuthorizationService> logger)
@@ -25,46 +23,46 @@ public class StageAuthorizationService : IStageAuthorizationService
         _logger = logger;
     }
 
-    public async Task<StageAuthorizationResult> CanUserActAsync(Guid userId, Guid applicationFormId, ApplicationStage targetStage,
+    public async Task<StageAuthorizationResult> CanUserActAsync(string membershipNo, Guid applicationFormId, ApplicationStage targetStage,
     CancellationToken cancellationToken = default)
     {
         var form = await LoadFormAsync(applicationFormId, cancellationToken);
         if (form is null)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 StageAuthorizationDenyReason.FormNotFound,
                 "No such application/form exists.");
         }
         if (form.MarriageApplication?.Status == ApplicationStatus.ApplicationApproved)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 StageAuthorizationDenyReason.FormCompleted,
                 "The form reached final approval and is locked.");
         }
-        var member = await ResolveMemberAsync(userId, cancellationToken);
+        var member = await ResolveMemberAsync(membershipNo, cancellationToken);
         if (!member.IsKnown)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 member.FailureReason!.Value, member.FailureMessage!);
         }
         var roleGate = MatchesRequiredRole(member.Member!, form, targetStage);
         if (!roleGate.IsAllowed)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 roleGate.Reason!.Value, roleGate.Message);
         }
         if (form.ApplicationStage != targetStage)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 StageAuthorizationDenyReason.WrongStage,
                 $"Role matches, but the form is currently at " +
                 $"{form.ApplicationStage?.ToString() ?? "no stage"}, not {targetStage}.");
         }
-        return Allow(userId, applicationFormId, targetStage);
+        return Allow(membershipNo, applicationFormId, targetStage);
     }
 
     public async Task<StageAuthorizationResult> CanUserActAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         MarriageFormStage targetStage,
         CancellationToken cancellationToken = default)
@@ -72,38 +70,38 @@ public class StageAuthorizationService : IStageAuthorizationService
         var form = await LoadFormAsync(applicationFormId, cancellationToken);
         if (form is null)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 StageAuthorizationDenyReason.FormNotFound,
                 "No such application/form exists.");
         }
         if (form.FormStage == MarriageFormStage.Completed ||
             form.MarriageApplication?.Status == ApplicationStatus.ApplicationApproved)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 StageAuthorizationDenyReason.FormCompleted,
                 "The form reached final approval and is locked.");
         }
-        var member = await ResolveMemberAsync(userId, cancellationToken);
+        var member = await ResolveMemberAsync(membershipNo, cancellationToken);
         if (!member.IsKnown)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 member.FailureReason!.Value, member.FailureMessage!);
         }
         var roleGate = await MatchesRequiredWorkflowRoleAsync(
             member.Member!, form, targetStage, cancellationToken);
         if (!roleGate.IsAllowed)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 roleGate.Reason!.Value, roleGate.Message);
         }
         if (form.FormStage != targetStage)
         {
-            return Deny(userId, applicationFormId, targetStage,
+            return Deny(membershipNo, applicationFormId, targetStage,
                 StageAuthorizationDenyReason.WrongStage,
                 $"Role matches, but the form is currently at " +
                 $"{form.FormStage}, not {targetStage}.");
         }
-        return Allow(userId, applicationFormId, targetStage);
+        return Allow(membershipNo, applicationFormId, targetStage);
     }
 
     private async Task<MarriageApplicationForm?> LoadFormAsync(Guid applicationFormId, CancellationToken cancellationToken) =>
@@ -121,9 +119,9 @@ public class StageAuthorizationService : IStageAuthorizationService
     }
 
     private async Task<ResolvedMember> ResolveMemberAsync(
-        Guid userId, CancellationToken cancellationToken)
+        string membershipNo, CancellationToken cancellationToken)
     {
-        if (userId == Guid.Empty)
+        if (string.IsNullOrWhiteSpace(membershipNo))
         {
             return new ResolvedMember(null, false)
             {
@@ -132,16 +130,14 @@ public class StageAuthorizationService : IStageAuthorizationService
             };
         }
         var member = await _context.JamaatMembers
-            //.Include(m => m.MemberRoles)
-            //    .ThenInclude(mr => mr.Role)
-            .FirstOrDefaultAsync(m => m.Id == userId, cancellationToken);
+            .FirstOrDefaultAsync(m => m.ChandaNo == membershipNo, cancellationToken);
         if (member is null)
         {
             return new ResolvedMember(null, false)
             {
                 FailureReason = StageAuthorizationDenyReason.UnknownMember,
                 FailureMessage =
-                    $"User id {userId} does not resolve to any known member record."
+                    $"Membership number {membershipNo} does not resolve to any known member record."
             };
         }
         return new ResolvedMember(member, true);
@@ -160,15 +156,11 @@ public class StageAuthorizationService : IStageAuthorizationService
                         StageAuthorizationDenyReason.WrongRole,
                         $"Member '{member.ChandaNo}' is neither the bride nor the bridegroom named on this application.");
             case ApplicationStage.JamaatPresidentReview:
-                return RequireHierarchyLevel(
-                    member, HierarchyLevelJamaatPresident, "Jamaat President");
+                return RequireRole(member, "Jamaat President", RoleNames.JamaatPresident);
             case ApplicationStage.NationalRishtanataSecretaryVerification:
-                return RequireHierarchyLevel(
-                    member, HierarchyLevelNationalRishtanataSecretary,
-                    "National Rishtanata Secretary");
+                return RequireRole(member, "National Rishtanata Secretary", RoleNames.RishtanataSecretary);
             case ApplicationStage.AmirApproval:
-                return RequireHierarchyLevel(
-                    member, HierarchyLevelAmir, "National Amir");
+                return RequireRole(member, "National Amir", RoleNames.Amir);
             default:
                 return StageAuthorizationResult.Deny(
                     StageAuthorizationDenyReason.WrongRole,
@@ -199,26 +191,13 @@ public class StageAuthorizationService : IStageAuthorizationService
             case MarriageFormStage.AwaitingWitnesses:
                 return await MatchesWitnessSlotAsync(member, form, cancellationToken);
             case MarriageFormStage.AwaitingImamVerification:
-                //var isImamOrMissionary = member.MemberRoles.Any(mr =>
-                //    mr.Role.Name.Contains("imam", StringComparison.OrdinalIgnoreCase) ||
-                //    mr.Role.Name.Contains("missionary", StringComparison.OrdinalIgnoreCase));
-                //return isImamOrMissionary
-                //    ? StageAuthorizationResult.Allow()
-                //    : StageAuthorizationResult.Deny(
-                //        StageAuthorizationDenyReason.WrongRole,
-                //        $"Member '{member.ChandaNo}' holds " +
-                //        //$"{(member.MemberRoles.Any() ? $"roles '{string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))}'" : "no roles")}; " +
-                //        "an Officiating Imam or Missionary is required for this stage.");
+                return RequireImamOrMissionary(member);
             case MarriageFormStage.AwaitingJamaatPresident:
-                return RequireHierarchyLevel(
-                    member, HierarchyLevelJamaatPresident, "Jamaat President");
+                return RequireRole(member, "Jamaat President", RoleNames.JamaatPresident);
             case MarriageFormStage.AwaitingRishtanataSecretary:
-                return RequireHierarchyLevel(
-                    member, HierarchyLevelNationalRishtanataSecretary,
-                    "National Rishtanata Secretary");
+                return RequireRole(member, "National Rishtanata Secretary", RoleNames.RishtanataSecretary);
             case MarriageFormStage.AwaitingAmirApproval:
-                return RequireHierarchyLevel(
-                    member, HierarchyLevelAmir, "National Amir");
+                return RequireRole(member, "National Amir", RoleNames.Amir);
             default:
                 return StageAuthorizationResult.Deny(
                     StageAuthorizationDenyReason.WrongRole,
@@ -231,30 +210,33 @@ public class StageAuthorizationService : IStageAuthorizationService
         MarriageApplicationForm form,
         CancellationToken cancellationToken)
     {
+        var memberFullName = BuildFullName(member.FirstName, member.Surname);
+
         foreach (var (name, tel, position) in new[]
                  {
                      (form.WitnessOneName, form.WitnessOneTel, 1),
                      (form.WitnessTwoName, form.WitnessTwoTel, 2)
                  })
         {
-            //if (!NamesAndPhoneMatch(member.FullName, member.PhoneNo, name, tel))
-            //{
-            //    continue;
-            //}
-            //var matchingCount = await _context.JamaatMembers
-            //    .AsNoTracking()
-            //    .Where(m => m.PhoneNo != null &&
-            //                m.FirstName != null && m.Surname != null)
-            //    .ToListAsync(cancellationToken);
-            ////var ambiguousCount = matchingCount.Count(m =>
-            ////    NamesAndPhoneMatch(m.FullName, m.PhoneNo, name, tel));
-            //return ambiguousCount > 1
-            //    ? StageAuthorizationResult.Deny(
-            //        StageAuthorizationDenyReason.AmbiguousIdentityMatch,
-            //        $"Witness {position} identity is ambiguous: more than one " +
-            //        "member record matches the recorded name and telephone.")
-            //    : StageAuthorizationResult.Allow();
+            if (!NamesAndPhoneMatch(memberFullName, member.PhoneNo, name, tel))
+            {
+                continue;
+            }
+
+            var ambiguousCount = await CountAmbiguousWitnessMatchesAsync(
+                name, tel, cancellationToken);
+
+            if (ambiguousCount > 1)
+            {
+                return StageAuthorizationResult.Deny(
+                    StageAuthorizationDenyReason.AmbiguousIdentityMatch,
+                    $"Witness {position} identity is ambiguous: more than one " +
+                    "member record matches the recorded name and telephone.");
+            }
+
+            return StageAuthorizationResult.Allow();
         }
+
         return StageAuthorizationResult.Deny(
             StageAuthorizationDenyReason.WrongRole,
             $"Member '{member.ChandaNo}' does not match either witness recorded on this application.");
@@ -275,24 +257,96 @@ public class StageAuthorizationService : IStageAuthorizationService
     private static string NormalizeName(string value) =>
         string.Join(' ', value.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
-    private static StageAuthorizationResult RequireHierarchyLevel(
+    private static StageAuthorizationResult RequireRole(
         JamaatMember member,
-        int requiredLevel,
-        string officeName)
+        string officeName,
+        params string[] roleNames)
     {
-        //var hasLevel = member.MemberRoles.Any(mr => mr.Role.HierarchyLevel == requiredLevel);
-        //if (!hasLevel)
-        //{
-        //    var actual = member.MemberRoles.Any()
-        //        ? string.Join(", ", member.MemberRoles.Select(mr => $"{mr.Role.Name} (level {mr.Role.HierarchyLevel})"))
-        //        : "no roles";
-        //    return StageAuthorizationResult.Deny(
-        //        StageAuthorizationDenyReason.WrongRole,
-        //        $"Member '{member.ChandaNo}' holds {actual}; " +
-        //        $"{officeName} is required for this stage.");
-        //}
-        return StageAuthorizationResult.Allow();
+        if (HasRole(member, roleNames))
+        {
+            return StageAuthorizationResult.Allow();
+        }
+
+        var actual = string.IsNullOrWhiteSpace(member.Roles)
+            ? "no roles"
+            : $"roles '{member.Roles}'";
+
+        return StageAuthorizationResult.Deny(
+            StageAuthorizationDenyReason.WrongRole,
+            $"Member '{member.ChandaNo}' holds {actual}; " +
+            $"{officeName} is required for this stage.");
     }
+
+    private static StageAuthorizationResult RequireImamOrMissionary(JamaatMember member)
+    {
+        if (HasRoleContaining(member, "imam", "missionary"))
+        {
+            return StageAuthorizationResult.Allow();
+        }
+
+        var actual = string.IsNullOrWhiteSpace(member.Roles)
+            ? "no roles"
+            : $"roles '{member.Roles}'";
+
+        return StageAuthorizationResult.Deny(
+            StageAuthorizationDenyReason.WrongRole,
+            $"Member '{member.ChandaNo}' holds {actual}; " +
+            "an Officiating Imam or Missionary is required for this stage.");
+    }
+
+    private static bool HasRole(JamaatMember member, params string[] roleNames)
+    {
+        if (string.IsNullOrWhiteSpace(member.Roles))
+        {
+            return false;
+        }
+
+        var roles = member.Roles
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        return roles.Any(role =>
+            roleNames.Any(expected =>
+                string.Equals(role, expected, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private static bool HasRoleContaining(JamaatMember member, params string[] fragments)
+    {
+        if (string.IsNullOrWhiteSpace(member.Roles))
+        {
+            return false;
+        }
+
+        var roles = member.Roles
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        return roles.Any(role =>
+            fragments.Any(fragment =>
+                role.Contains(fragment, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private async Task<int> CountAmbiguousWitnessMatchesAsync(
+        string recordedName,
+        string recordedTel,
+        CancellationToken cancellationToken)
+    {
+        var tel = recordedTel.Trim();
+        var normalizedName = NormalizeName(recordedName);
+
+        var candidates = await _context.JamaatMembers
+            .AsNoTracking()
+            .Where(m => m.PhoneNo != null && m.PhoneNo == tel)
+            .Select(m => new { m.FirstName, m.Surname })
+            .ToListAsync(cancellationToken);
+
+        return candidates.Count(m =>
+            string.Equals(
+                NormalizeName(BuildFullName(m.FirstName, m.Surname)),
+                normalizedName,
+                StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string BuildFullName(string? firstName, string? surname) =>
+        $"{firstName} {surname}";
 
     private static bool MembershipNumbersMatch(string? claimed, string? recorded) =>
         !string.IsNullOrWhiteSpace(claimed) &&
@@ -300,26 +354,26 @@ public class StageAuthorizationService : IStageAuthorizationService
         string.Equals(claimed.Trim(), recorded.Trim(), StringComparison.OrdinalIgnoreCase);
 
     private StageAuthorizationResult Allow(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         object targetStage)
     {
         _logger.LogDebug(
-            "Stage authorization allowed: UserId={UserId}, ApplicationFormId={ApplicationFormId}, TargetStage={TargetStage}",
-            userId, applicationFormId, targetStage);
+            "Stage authorization allowed: MembershipNo={MembershipNo}, ApplicationFormId={ApplicationFormId}, TargetStage={TargetStage}",
+            membershipNo, applicationFormId, targetStage);
         return StageAuthorizationResult.Allow();
     }
 
     private StageAuthorizationResult Deny(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         object targetStage,
         StageAuthorizationDenyReason reason,
         string message)
     {
         _logger.LogWarning(
-            "Stage authorization denied: UserId={UserId}, ApplicationFormId={ApplicationFormId}, TargetStage={TargetStage}, Reason={Reason}, Detail={Detail}",
-            userId, applicationFormId, targetStage, reason, message);
+            "Stage authorization denied: MembershipNo={MembershipNo}, ApplicationFormId={ApplicationFormId}, TargetStage={TargetStage}, Reason={Reason}, Detail={Detail}",
+            membershipNo, applicationFormId, targetStage, reason, message);
         return StageAuthorizationResult.Deny(reason, message);
     }
 }

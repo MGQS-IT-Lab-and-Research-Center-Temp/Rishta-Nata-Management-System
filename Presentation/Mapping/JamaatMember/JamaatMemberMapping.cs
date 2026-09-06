@@ -31,9 +31,7 @@ namespace Presentation.Mapping.JamaatMember
                 NextOfKinName = dto.NextOfKinName,
                 NextOfKinAddress = dto.NextOfKinAddress,
                 Nationality = dto.Nationality,
-                RoleIds = dto.RoleIds,
-                IsSystemDefault = dto.IsSystemDefault,
-                NewRole = dto.NewRole,
+                Roles = dto.Roles,
                 MemberNumber = dto.MemberNumber,
                 Occupation = dto.Occupation
             };
@@ -67,9 +65,7 @@ namespace Presentation.Mapping.JamaatMember
                 NextOfKinName = vm.NextOfKinName,
                 NextOfKinAddress = vm.NextOfKinAddress,
                 Nationality = vm.Nationality,
-                RoleIds = vm.RoleIds,
-                IsSystemDefault = vm.IsSystemDefault,
-                NewRole = vm.NewRole
+                Roles = vm.Roles
             };
         }
     }

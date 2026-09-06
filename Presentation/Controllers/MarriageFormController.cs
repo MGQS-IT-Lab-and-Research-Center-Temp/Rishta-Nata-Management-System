@@ -1,6 +1,7 @@
 ﻿
 using System;
 using Application.Interfaces;
+using Domain.Constants;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,12 +34,12 @@ public class MarriageFormsController : Controller
         [FromBody] RevertStageRequest request,
         CancellationToken cancellationToken)
     {
-        var verifierId = GetCurrentUserId();
-        if (verifierId is null)
+        var membershipNo = GetCurrentMembershipNo();
+        if (string.IsNullOrWhiteSpace(membershipNo))
             return Unauthorized();
 
         var result = await _formService.RevertStageAsync(
-            formId, request.TargetStage, request.Reason, verifierId.Value, cancellationToken);
+            formId, request.TargetStage, request.Reason, membershipNo, cancellationToken);
 
         return result switch
         {
@@ -50,9 +51,9 @@ public class MarriageFormsController : Controller
         };
     }
 
-    private Guid? GetCurrentUserId()
+    private string? GetCurrentMembershipNo()
     {
-        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Guid.TryParse(claim, out var id) ? id : null;
+        return User.FindFirstValue(ClaimNames.MembershipNo)
+            ?? User.FindFirstValue(ClaimTypes.Name);
     }
 }

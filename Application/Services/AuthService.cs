@@ -43,9 +43,11 @@ public class AuthService : IAuthService
             return AuthResult.Failure("We could not find your member account.");
         }
 
-        var localMember = await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
-
         var roles = tokenResponse.Data?.roles ?? Array.Empty<string>();
+
+        jamaatMember.Roles = string.Join(",", roles);
+
+        var localMember = await _jamaatMemberService.CreateOrUpdateAsync(jamaatMember);
 
         return AuthResult.Success(localMember, roles);
     }

@@ -40,6 +40,7 @@ public class JamaatMemberService : IJamaatMemberService
                 MaritalStatus = member.MaritalStatus,
                 Address = member.Address,
                 Nationality = member.Nationality,
+                Roles = member.Roles,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -63,6 +64,7 @@ public class JamaatMemberService : IJamaatMemberService
         existingMember.MaritalStatus = member.MaritalStatus;
         existingMember.Address = member.Address;
         existingMember.Nationality = member.Nationality;
+        existingMember.Roles = member.Roles;
         existingMember.ModifiedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();

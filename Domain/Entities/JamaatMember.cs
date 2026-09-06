@@ -22,8 +22,10 @@ public class JamaatMember : AuditableEntity
     public string? Nationality { get; set; }
 
     // Roles come from the external Tajneed API, not any local role table
-    // These are the role-name strings reported by the API login response
     // (Data.Roles) — see docs/stage-authorization-policy.md §3.2.
+    // Stored as a single comma-separated string so a member can hold
+    // multiple roles in one column.
+    public string Roles { get; set; } = string.Empty;
     public Guid? BrideGuardianId { get; set; }
     public BrideGuardian? BrideGuardian { get; set; }
 }

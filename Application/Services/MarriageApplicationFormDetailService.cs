@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Domain.Constants;
 using Infrastructure.DTOs.MarriageApplicationFormDetail;
 using Infrastructure.Mapper;
 using Infrastructure.Persistence;
@@ -81,14 +82,14 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
             return false;
         }
 
-        var userId = GetCurrentUserId();
-        if (!userId.HasValue)
+        var membershipNo = GetCurrentMembershipNo();
+        if (string.IsNullOrWhiteSpace(membershipNo))
         {
             return false;
         }
 
         var result = await _stageAuthorization.CanUserActAsync(
-            userId.Value,
+            membershipNo,
             form.Id,
             form.ApplicationStage.Value,
             cancellationToken);
@@ -96,11 +97,11 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         return result.IsAllowed;
     }
 
-    private Guid? GetCurrentUserId()
+    private string? GetCurrentMembershipNo()
     {
-        var value = _httpContextAccessor.HttpContext?.User
-            ?.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = _httpContextAccessor.HttpContext?.User;
 
-        return Guid.TryParse(value, out var id) ? id : null;
+        return user?.FindFirstValue(ClaimNames.MembershipNo)
+            ?? user?.FindFirstValue(ClaimTypes.Name);
     }
 }

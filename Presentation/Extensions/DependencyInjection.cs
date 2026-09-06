@@ -1,10 +1,8 @@
-using System;
 using Application.Interfaces.Gateway;
 using Domain.Constants;
 using Gateway.Implementation;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 
 namespace Presentation.Extensions;
 
@@ -30,6 +28,21 @@ public static class DependencyInjection
         options.AddPolicy("RequireCircuitSecretary", p => p.RequireRole(RoleNames.CircuitPresident));
         options.AddPolicy("RequireAmir", p => p.RequireRole(RoleNames.Amir));
         options.AddPolicy("StageVerifier", p => p.RequireRole(RoleNames.RishtanataSecretary,RoleNames.JamaatPresident,RoleNames.CircuitPresident, RoleNames.Amir));
+
+        // Coarse section-fill gates — the real gate is IStageAuthorizationService,
+        // which re-checks role + stage per docs/stage-authorization-policy.md §5.
+        options.AddPolicy("CanFillBrideSection", p => p.RequireAuthenticatedUser());
+        options.AddPolicy("CanFillBridegroomSection", p => p.RequireAuthenticatedUser());
+        options.AddPolicy("CanFillGuardianOrWakeelSection", p => p.RequireAuthenticatedUser());
+        options.AddPolicy("CanFillWitnessesSection", p => p.RequireAuthenticatedUser());
+        options.AddPolicy("CanFillImamVerificationSection", p => p.RequireAssertion(ctx =>
+            ctx.User.Claims.Any(c =>
+                c.Type == ClaimTypes.Role &&
+                (c.Value.Contains("imam", StringComparison.OrdinalIgnoreCase) ||
+                 c.Value.Contains("missionary", StringComparison.OrdinalIgnoreCase)))));
+        options.AddPolicy("CanFillJamaatPresidentSection", p => p.RequireRole(RoleNames.JamaatPresident));
+        options.AddPolicy("CanFillRishtanataSection", p => p.RequireRole(RoleNames.RishtanataSecretary));
+        options.AddPolicy("CanFillAmirApprovalSection", p => p.RequireRole(RoleNames.Amir));
     });
 
         return services;

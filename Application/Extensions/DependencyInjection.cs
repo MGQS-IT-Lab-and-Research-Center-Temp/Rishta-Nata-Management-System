@@ -14,7 +14,6 @@ public static class DependencyInjection
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<ICookieAuthenticationService, CookieAuthenticationService>();
-        services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFormApplicationService, FormApplicationService>();
         services.AddScoped<IMarriageApplicationFormService, MarriageApplicationFormService>();
         services.AddScoped<IMarriageApplicationFormDetailService, MarriageApplicationFormDetailService>();

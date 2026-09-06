@@ -54,7 +54,7 @@ namespace Application.Interfaces
             Guid formId,
             ApplicationStage targetStage,
             string reason,
-            Guid verifierId,
+            string membershipNo,
             CancellationToken cancellationToken = default);
     }
 }

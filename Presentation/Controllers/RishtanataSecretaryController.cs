@@ -13,14 +13,11 @@ namespace Presentation.Controllers;
 public class RishtanataSecretaryController : Controller
 {
     private readonly IRishtanataSecretaryService _service;
-    private readonly IRoleAssignmentService _roleService;
 
     public RishtanataSecretaryController(
-        IRishtanataSecretaryService service,
-        IRoleAssignmentService roleService)
+        IRishtanataSecretaryService service)
     {
         _service = service;
-        _roleService = roleService;
     }
 
     // Dashboard page
@@ -87,16 +84,6 @@ public class RishtanataSecretaryController : Controller
         var model = MemberProfileMapping.ToViewModel(dto);
 
         return View(model);
-    }
-
-    // Edit Role of a specific Jamaat Member
-    public async Task<IActionResult> EditRoles(Guid id)
-    {
-        var dto = await _roleService.GetRoleManagementAsync(id);
-
-        var viewModel = RoleManagementMapper.ToViewModel(dto);
-
-        return View(viewModel);
     }
 
     [HttpPost]

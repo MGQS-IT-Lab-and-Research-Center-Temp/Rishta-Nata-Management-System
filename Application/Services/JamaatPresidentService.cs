@@ -106,7 +106,7 @@ public class JamaatPresidentService : IJamaatPresidentService
     public async Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id)
     {
         var review = await _context.Reviews
-            .Include(r => r.MarriageApplication)
+            .Include(r => r.MarriageApplication!)
                 .ThenInclude(r => r.MarriageApplicationForm)
             .FirstOrDefaultAsync(r => r.Id == id);
 

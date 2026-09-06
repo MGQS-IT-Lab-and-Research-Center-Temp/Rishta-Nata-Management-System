@@ -28,11 +28,11 @@ public class BridegroomSectionService : IBridegroomSectionService
     }
 
     public async Task<StageAuthorizationResult> SubmitBridegroomSectionAsync(
-        Guid userId, Guid applicationFormId, BridegroomSectionDto dto,
+        string membershipNo, Guid applicationFormId, BridegroomSectionDto dto,
         CancellationToken cancellationToken = default)
     {
         var authResult = await _stageAuthorizationService.CanUserActAsync(
-            userId, applicationFormId, ApplicationStage.ApplicantsReview, cancellationToken);
+            membershipNo, applicationFormId, ApplicationStage.ApplicantsReview, cancellationToken);
 
         if (!authResult.IsAllowed)
             return authResult;

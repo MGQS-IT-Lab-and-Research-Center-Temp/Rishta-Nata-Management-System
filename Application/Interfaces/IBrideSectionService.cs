@@ -11,6 +11,6 @@ namespace Application.Interfaces;
 public interface IBrideSectionService
 {
     Task<StageAuthorizationResult> SubmitBrideSectionAsync(
-        Guid userId, Guid applicationFormId, BrideSectionDto dto,
+        string membershipNo, Guid applicationFormId, BrideSectionDto dto,
         CancellationToken cancellationToken = default);
 }

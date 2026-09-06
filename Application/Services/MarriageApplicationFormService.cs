@@ -129,11 +129,11 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         Guid formId,
         ApplicationStage targetStage,
         string reason,
-        Guid verifierId,
+        string membershipNo,
         CancellationToken cancellationToken = default)
     {
-        if (verifierId == Guid.Empty)
-            throw new ArgumentException("A verifier id is required.", nameof(verifierId));
+        if (string.IsNullOrWhiteSpace(membershipNo))
+            throw new ArgumentException("A verifier membership number is required.", nameof(membershipNo));
 
         if (string.IsNullOrWhiteSpace(reason))
             throw new ArgumentException("A rejection reason is required.", nameof(reason));
@@ -152,10 +152,15 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             return RevertStageResult.ApplicationAlreadyApproved; 
 
         var authorization = await _stageAuthorization.CanUserActAsync(
-            verifierId, form.Id, currentStage, cancellationToken);
+            membershipNo, form.Id, currentStage, cancellationToken);
 
         if (!authorization.IsAllowed)
             return RevertStageResult.Unauthorized;
+
+        var verifierId = await _dbContext.JamaatMembers
+            .Where(m => m.ChandaNo == membershipNo)
+            .Select(m => (Guid?)m.Id)
+            .FirstOrDefaultAsync(cancellationToken) ?? Guid.Empty;
 
         var rejection = new MarriageFormRejection
         {

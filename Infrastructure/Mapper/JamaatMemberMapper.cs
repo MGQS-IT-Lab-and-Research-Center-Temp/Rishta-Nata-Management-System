@@ -26,6 +26,7 @@ public static class JamaatMemberMapper
             MaritalStatus = entity.MaritalStatus ?? string.Empty,
             Address = entity.Address ?? string.Empty,
             Nationality = entity.Nationality ?? string.Empty,
+            Roles = entity.Roles,
         };
     }
 
@@ -54,6 +55,7 @@ public static class JamaatMemberMapper
             MaritalStatus = dto.MaritalStatus,
             Address = dto.Address, 
             Nationality = dto.Nationality,
+            Roles = dto.Roles,
         };
     }
 }

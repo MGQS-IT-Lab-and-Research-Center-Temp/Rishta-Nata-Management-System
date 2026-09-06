@@ -25,7 +25,7 @@ public interface IMarriageFormWorkflowService
     /// Denied requests produce no side effects.
     /// </summary>
     Task<StageAuthorizationResult> SubmitImamVerificationAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         ImamVerificationSubmission submission,
         CancellationToken cancellationToken = default);
@@ -36,7 +36,7 @@ public interface IMarriageFormWorkflowService
     /// Denied requests produce no side effects.
     /// </summary>
     Task<StageAuthorizationResult> SubmitJamaatPresidentVerificationAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         JamaatPresidentVerificationSubmission submission,
         CancellationToken cancellationToken = default);
@@ -47,7 +47,7 @@ public interface IMarriageFormWorkflowService
     /// Denied requests produce no side effects.
     /// </summary>
     Task<StageAuthorizationResult> SubmitRishtanataRecommendationAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         RishtanataRecommendationSubmission submission,
         CancellationToken cancellationToken = default);
@@ -58,7 +58,7 @@ public interface IMarriageFormWorkflowService
     /// Denied requests produce no side effects.
     /// </summary>
     Task<StageAuthorizationResult> ApproveByAmirAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         AmirApprovalSubmission submission,
         CancellationToken cancellationToken = default);

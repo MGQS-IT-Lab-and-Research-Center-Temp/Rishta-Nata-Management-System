@@ -11,7 +11,7 @@ namespace Application.Interfaces;
 public interface IStageAuthorizationService
 {
    Task<StageAuthorizationResult> CanUserActAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         ApplicationStage targetStage,
         CancellationToken cancellationToken = default);
@@ -21,7 +21,7 @@ public interface IStageAuthorizationService
     /// AwaitingImamVerification, AwaitingWitnesses — have no counterpart in the review-chain
     
     Task<StageAuthorizationResult> CanUserActAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         MarriageFormStage targetStage,
         CancellationToken cancellationToken = default);
