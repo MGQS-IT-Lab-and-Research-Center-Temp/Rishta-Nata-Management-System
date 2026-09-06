@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 Presentation/appsettings.Development.json
 /AGENTS.md
 .agents/
+
+# Superpowers (brainstorming/planning) artifacts
+docs/superpowers/
