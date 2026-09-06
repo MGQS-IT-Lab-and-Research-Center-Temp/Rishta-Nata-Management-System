@@ -22,37 +22,11 @@ public class GatewayHandler : IGatewayHandler
         _apiUrl = config["TajneedApiBaseUrl"] ?? throw new InvalidOperationException("TajneedApiBaseUrl is not configured");
     }
 
-    public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
+
+    public async Task<JamaatMember?> GetMemberByMemberNoAsync(string memberNo, CancellationToken cancellationToken = default)
     {
-        var url = $"{_apiUrl}{chandaNo}/userRoles";
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url
-            );
-
-        var response = await _client.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            return await response.ReadContentAs<string[]>();
-        }
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-
-        throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
-    }
-
-    public async Task<JamaatMember?> GetMemberByChandaNoAsync(
-        string chandaNo,
-        CancellationToken cancellationToken = default)
-    {
-        var url = $"{_apiUrl}members/{chandaNo}";
-
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url);
+        var url = $"{_apiUrl}members/{memberNo}";
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
         var response = await _client.SendAsync(request, cancellationToken);
 
@@ -66,11 +40,12 @@ public class GatewayHandler : IGatewayHandler
             // number, so stamp it from the identifier we queried with.
             if (member is not null)
             {
-                member.ChandaNo = chandaNo;
+                member.ChandaNo = memberNo;
             }
 
             return member;
         }
+
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
@@ -121,8 +96,6 @@ public class GatewayHandler : IGatewayHandler
         //{
         //    return null;
         //}
-
-
     }
 
     /// <summary>

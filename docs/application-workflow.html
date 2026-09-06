@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>application-workflow.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> or <div class="page"></div> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="application-workflow">Application Workflow</h1>
+<p>How the Rishta-Nata system works end to end, technically. This is a companion to
+<code>docs/stage-authorization-policy.md</code> (the authoritative authorization rules) —
+read that for <em>who may act</em>, read this for <em>how the data moves</em>.</p>
+<hr>
+<h2 id="1-authentication--session">1. Authentication &amp; session</h2>
+<ol>
+<li>
+<p>The user submits a <strong>ChandaNo + password</strong> at <code>Auth/Login</code>.</p>
+</li>
+<li>
+<p><code>AuthService.LoginAsync</code> calls the external Tajneed API
+(<code>GatewayHandler.GenerateToken</code>) and, on success, fetches the member record
+(<code>GetMemberByChandaNoAsync</code>) and upserts it into the local <code>JamaatMembers</code>
+table via <code>JamaatMemberService.CreateOrUpdateAsync</code>. The external roles are
+stored as a single comma-separated string on <code>JamaatMember.Roles</code>.</p>
+</li>
+<li>
+<p><code>CookieAuthenticationService.SignInAsync</code> issues a cookie with these claims:</p>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ClaimTypes.NameIdentifier</code></td>
+<td>local <code>JamaatMember.Id</code></td>
+</tr>
+<tr>
+<td><code>ClaimTypes.Name</code></td>
+<td>ChandaNo</td>
+</tr>
+<tr>
+<td><code>membership_no</code></td>
+<td>ChandaNo (the only claim authorization reads)</td>
+</tr>
+<tr>
+<td><code>FullName</code></td>
+<td><code>FirstName MiddleName Surname</code></td>
+</tr>
+<tr>
+<td>one <code>ClaimTypes.Role</code> per role</td>
+<td>each role string</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><code>DashboardRedirector.Resolve(member)</code> lands the user on the dashboard for
+their role (see §2).</p>
+</li>
+</ol>
+<blockquote>
+<p>Real API/network failures are currently swallowed by <code>AuthController.Login</code>'s
+catch-all and reported as &quot;Invalid Chanda number or password&quot; — see
+<code>docs/bugs-and-gaps.md</code>.</p>
+</blockquote>
+<h2 id="2-role-based-landing">2. Role-based landing</h2>
+<p><code>Presentation/Services/DashboardRedirector.cs</code> maps roles (case-insensitive) to
+dashboards, in priority order:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Dashboard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rishtanata Secretary</td>
+<td><code>RishtanataSecretary/Dashboard</code></td>
+</tr>
+<tr>
+<td>Naib Rishtanata Secretary / Gen. Sec.</td>
+<td><code>AssistantRishtanataSecretary/Dashboard</code></td>
+</tr>
+<tr>
+<td>Amir</td>
+<td><code>Amir/Dashboard</code></td>
+</tr>
+<tr>
+<td>Missionary In-charge</td>
+<td><code>MissionaryInCharge/Dashboard</code></td>
+</tr>
+<tr>
+<td>Circuit President</td>
+<td><code>CircuitPresident/Dashboard</code></td>
+</tr>
+<tr>
+<td>Jamaat President</td>
+<td><code>JamaatPresident/Dashboard</code></td>
+</tr>
+<tr>
+<td>anything else (regular member)</td>
+<td><code>JamaatMemberDashboard/Index</code></td>
+</tr>
+</tbody>
+</table>
+<p>Role strings live in <code>Domain/Constants/RoleNames.cs</code> (provisional — confirm
+against the live API).</p>
+<h2 id="3-starting-an-application-either-party-may-start">3. Starting an application (either party may start)</h2>
+<p>The member clicks <strong>New Application</strong> (<code>Bridegroom/Create</code>).</p>
+<ol>
+<li>
+<p>The controller reads the logged-in member's <code>Sex</code> from their local
+<code>JamaatMember</code> record (via <code>IMemberDashboardService.GetProfileAsync</code>) and
+pre-selects whether they are the <strong>groom</strong> or the <strong>bride</strong>. A toggle lets
+them override an incorrect auto-detection.</p>
+</li>
+<li>
+<p>Their own <strong>name, date of birth, address, and phone</strong> are pre-filled from the
+member record (editable).</p>
+</li>
+<li>
+<p>They enter the <strong>partner's membership number</strong>, which auto-fills the
+partner's name/DOB/address/phone from <code>GET /api/members/lookup/{chandaNo}</code>.</p>
+</li>
+<li>
+<p>On submit, <code>IMarriageApplicationFormService.StartApplicationAsync</code> creates the
+owning <code>FormApplication</code> first, then the <code>MarriageApplicationForm</code>, recording:</p>
+<ul>
+<li>both parties' membership numbers (<code>BrideMembershipNo</code>,
+<code>BridegroomMembershipNo</code>),</li>
+<li>the starter's full section,</li>
+<li><code>ApplicationStage = ApplicantsReview</code>,</li>
+<li><code>FormStage = AwaitingBride</code> (groom started) <strong>or</strong> <code>AwaitingBridegroom</code>
+(bride started).</li>
+</ul>
+</li>
+</ol>
+<p>The <strong>intending partner connects by membership number alone</strong>: their dashboard
+(<code>MemberDashboardService</code>) lists every <code>MarriageApplicationForm</code> where
+<code>BrideMembershipNo == no</code> or <code>BridegroomMembershipNo == no</code>. No explicit &quot;join&quot;
+step exists.</p>
+<h2 id="4-the-section-workflow-marriageformstage">4. The section workflow (MarriageFormStage)</h2>
+<p>The micro stage moves through the paper-form order:</p>
+<pre class="hljs"><code><div>AwaitingApplicants ──┬─ (bride first) ──→ AwaitingBride ──→ AwaitingWitnesses
+                     └─ (groom first) ──→ AwaitingBridegroom ─┘
+AwaitingWitnesses → AwaitingImamVerification → AwaitingJamaatPresident
+                 → AwaitingRishtanataSecretary → AwaitingAmirApproval → Completed
+</div></code></pre>
+<ul>
+<li><code>AwaitingApplicants</code> is the neutral start state (added to remove the old
+bride-first hardwiring). <code>BrideSectionService</code> and <code>BridegroomSectionService</code>
+each accept being first <strong>or</strong> second and advance to the correct next stage.</li>
+<li><code>Completed</code> locks the form against further edits.</li>
+</ul>
+<p>Section submission goes through the API surface in
+<code>Presentation/Controllers/MarriageApplicationFormController.cs</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Stage</th>
+<th>Service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PUT .../bride</code></td>
+<td><code>AwaitingApplicants</code> or <code>AwaitingBride</code></td>
+<td><code>BrideSectionService</code></td>
+</tr>
+<tr>
+<td><code>PUT .../bridegroom</code></td>
+<td><code>AwaitingApplicants</code> or <code>AwaitingBridegroom</code></td>
+<td><code>BridegroomSectionService</code></td>
+</tr>
+<tr>
+<td><code>PUT .../guardian-or-wakeel</code></td>
+<td>(blocked, backlog D2)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>PUT .../witnesses</code></td>
+<td>(blocked, backlog D2)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>PUT .../imam-verification</code></td>
+<td><code>AwaitingImamVerification</code></td>
+<td><code>MarriageFormWorkflowService</code></td>
+</tr>
+<tr>
+<td><code>PUT .../jamaat-president</code></td>
+<td><code>AwaitingJamaatPresident</code></td>
+<td><code>MarriageFormWorkflowService</code></td>
+</tr>
+<tr>
+<td><code>PUT .../rishtanata-recommendation</code></td>
+<td><code>AwaitingRishtanataSecretary</code></td>
+<td><code>MarriageFormWorkflowService</code></td>
+</tr>
+<tr>
+<td><code>PUT .../amir-approval</code></td>
+<td><code>AwaitingAmirApproval</code></td>
+<td><code>MarriageFormWorkflowService</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-authorization-single-source-of-truth">5. Authorization (single source of truth)</h2>
+<p><code>IStageAuthorizationService</code> (<code>Application/Services/StageAuthorizationService.cs</code>)
+is the <strong>only</strong> place that decides &quot;can user X act on section Y now?&quot; — never
+re-implemented in a controller or view.</p>
+<p>It has two overloads:</p>
+<ul>
+<li><code>CanUserActAsync(membershipNo, formId, ApplicationStage, ...)</code> — the macro
+stage, used by the applicant intake (<code>ApplicantsReview</code> matches either the
+bride or the groom's membership number).</li>
+<li><code>CanUserActAsync(membershipNo, formId, MarriageFormStage, ...)</code> — the micro
+stage, used by the verification chain.</li>
+</ul>
+<p>Every rule is <strong>role gate AND stage gate</strong>, evaluated atomically. Denies produce
+no side effects. See <code>docs/stage-authorization-policy.md</code> §2–§6 for the full
+matrix.</p>
+<h2 id="6-non-login-parties-fathers-guardian-witnesses">6. Non-login parties (fathers, guardian, witnesses)</h2>
+<p>Parties recorded by name/address/telephone on the paper form are filled via
+MVC flows keyed by the application id:</p>
+<ul>
+<li><code>BrideGuardian/Create/{marriageApplicationId}</code> — guardian/waliyy + both
+fathers. A &quot;is member&quot; checkbox reveals a membership-number field, whose value
+auto-fills name/address/phone via <code>RNMemberLookup</code>.</li>
+<li><code>Witness/Create/{marriageApplicationId}</code> — both witnesses, same lookup wiring.</li>
+</ul>
+<p><code>GET /api/members/lookup/{chandaNo}</code> (<code>MemberLookupService</code>) resolves a ChandaNo
+against the Tajneed gateway (with local-cache fallback) and returns full name,
+address, phone, jamaat name, and date of birth.</p>
+<h2 id="7-verification--approval-chain">7. Verification &amp; approval chain</h2>
+<p><code>MarriageFormWorkflowService</code> implements the office-holder chain. Each method
+re-checks authorization immediately before writing, upserts its section row
+(attributing <code>CreatedBy</code>/<code>CreatedAt</code>), and advances <code>FormStage</code>:</p>
+<ol>
+<li><strong>Imam</strong> → <code>ImamVerificationSection</code> → advances to <code>AwaitingJamaatPresident</code>.</li>
+<li><strong>Jamaat President</strong> → <code>JamaatPresidentVerificationSection</code> → advances to
+<code>AwaitingRishtanataSecretary</code>.</li>
+<li><strong>National Rishtanata Secretary</strong> → <code>RishtanataRecommendationSection</code> →
+advances to <code>AwaitingAmirApproval</code>.</li>
+<li><strong>Amir</strong> → <code>AmirApprovalSection</code>, sets <code>ApprovedDateOfNikah</code>, advances to
+<code>Completed</code> and locks the form.</li>
+</ol>
+<p>The Jamaat President and Secretary also have MVC review views
+(<code>JamaatPresident/Review</code>, <code>RishtanataSecretary/Review</code>) that approve, reject,
+or request more information via <code>FormApplicationService</code>.</p>
+<h2 id="8-rejection--revert">8. Rejection &amp; revert</h2>
+<p><code>MarriageApplicationFormService.RevertStageAsync</code> allows a verifier authorized
+for the current stage to revert to an earlier <code>ApplicationStage</code>, recording a
+<code>MarriageFormRejection</code> and clearing forward section rows
+(<code>ClearSectionsAfterAsync</code>). A domain event triggers
+<code>MarriageFormStageRevertedEventHandler</code> to notify the original submitters.</p>
+<h2 id="9-data-model-summary">9. Data model (summary)</h2>
+<ul>
+<li><code>FormApplication</code> — the application wrapper: status + 1:1 with
+<code>MarriageApplicationForm</code> and 1:1 with <code>Certificate</code> (Certificate is the
+dependent; issued after the application).</li>
+<li><code>MarriageApplicationForm</code> — the flat form: both parties' details, witnesses,
+guardian, verification names, <code>FormStage</code>, <code>ApplicationStage</code>, <code>ReferenceNumber</code>.</li>
+<li><code>Certificate</code> — issued certificate, related through <code>FormApplication</code>
+(NOT directly off <code>MarriageApplicationForm</code>; the direct navigation is
+<code>Ignore</code>d in the EF config).</li>
+<li><code>JamaatMember</code> — local cache of the external member record; roles as a
+comma-separated string.</li>
+<li>Section rows — <code>BrideFormSection</code>, <code>BridegroomFormSection</code>,
+<code>GuardianOrWakeelSection</code>, <code>ImamVerificationSection</code>,
+<code>JamaatPresidentVerificationSection</code>, <code>RishtanataRecommendationSection</code>,
+<code>AmirApprovalSection</code>, <code>WitnessSignatureSection</code>.</li>
+<li><code>MarriageFormRejection</code>, <code>Invitation</code>, <code>Review</code>, <code>AuditLog</code>.</li>
+</ul>
+<h2 id="10-known-quirks">10. Known quirks</h2>
+<ul>
+<li><strong>Two parallel stage enums</strong> (<code>ApplicationStage</code> vs <code>MarriageFormStage</code>) drive
+two <code>CanUserActAsync</code> overloads. Unifying them is an open product decision —
+see <code>docs/stage-authorization-policy.md</code> §8.</li>
+<li>The <strong>guardian/witness submission endpoints</strong> are stubbed (501) pending
+backlog D2, though the MVC create flows in §6 are wired.</li>
+<li>The <strong>Certificate↔FormApplication</strong> relationship is configured in
+<code>RishtanataDbContext.OnModelCreating</code>; <code>MarriageApplicationForm.Certificate</code>
+is deliberately ignored.</li>
+</ul>
+
+</body>
+</html>
