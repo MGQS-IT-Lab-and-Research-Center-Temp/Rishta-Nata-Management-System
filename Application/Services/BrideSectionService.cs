@@ -48,11 +48,20 @@ public class BrideSectionService : IBrideSectionService
 
         // Re-check the granular intake state before writing — a role/identity
         // match at ApplicantsReview isn't enough on its own; the form must
-        // actually still be waiting on the bride specifically.
-        if (form.FormStage != MarriageFormStage.AwaitingBride)
+        // actually still be waiting on the bride. Either party may start:
+        //  - AwaitingApplicants => bride is first, advance to AwaitingBridegroom
+        //  - AwaitingBride       => bridegroom already submitted, advance to witnesses
+        var nextStage = form.FormStage switch
+        {
+            MarriageFormStage.AwaitingApplicants => MarriageFormStage.AwaitingBridegroom,
+            MarriageFormStage.AwaitingBride => MarriageFormStage.AwaitingWitnesses,
+            _ => (MarriageFormStage?)null
+        };
+
+        if (nextStage is null)
             return StageAuthorizationResult.Deny(
                 StageAuthorizationDenyReason.WrongStage,
-                $"Form is at {form.FormStage}, not AwaitingBride.");
+                $"Form is at {form.FormStage}, not awaiting the bride.");
 
         // Persist the bride's section fields onto the form
         form.BrideMembershipNo = dto.BrideMembershipNo;
@@ -66,7 +75,7 @@ public class BrideSectionService : IBrideSectionService
         form.BrideDowerAmountReceivedInCash = dto.BrideDowerAmountReceivedInCash;
         form.BrideSignatureTel = dto.BrideSignatureTel;
 
-        form.FormStage = MarriageFormStage.AwaitingBridegroom;
+        form.FormStage = nextStage.Value;
 
         await _context.SaveChangesAsync(cancellationToken);
         return StageAuthorizationResult.Allow();

@@ -23,7 +23,6 @@ public class JamaatPresidentService : IJamaatPresidentService
     }
 
     public async Task<JamaatPresidentDashboardDto> GetDashboardAsync(
-        string? presidentDisplayName,
         Guid? currentUserId)
     {
         // Cleanup: treated AwaitingMoreInformation as pending (a form sent back
@@ -81,7 +80,7 @@ public class JamaatPresidentService : IJamaatPresidentService
 
         return new JamaatPresidentDashboardDto
         {
-            PresidentName = presidentDisplayName ?? "Jama'at President",
+            PresidentName = BuildFullName(jamaatMember.FirstName, jamaatMember.Surname),
             JamaatName = jamaatMember.JamaatName ?? "Jama'at",
             CircuitName = jamaatMember.CircuitName ?? "Circuit",
             PendingNikahReviews = pendingApplications.Count,
@@ -285,4 +284,7 @@ public class JamaatPresidentService : IJamaatPresidentService
 
         return true;
     }
+
+    private static string BuildFullName(string? firstName, string? surname) =>
+        $"{firstName} {surname}".Trim();
 }

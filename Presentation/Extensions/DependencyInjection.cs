@@ -3,6 +3,7 @@ using Domain.Constants;
 using Gateway.Implementation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using Presentation.Services;
 
 namespace Presentation.Extensions;
 
@@ -12,6 +13,7 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
         services.AddHttpClient<IGatewayHandler, GatewayHandler>();
+        services.AddScoped<IDashboardRedirector, DashboardRedirector>();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

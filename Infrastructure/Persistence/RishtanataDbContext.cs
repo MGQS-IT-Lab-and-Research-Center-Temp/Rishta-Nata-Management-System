@@ -9,7 +9,6 @@ public class RishtanataDbContext : DbContext
     }
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<Certificate> Certificates => Set<Certificate>();
-    public DbSet<AqeeqahCertificate> AqeeqahCertificates => Set<AqeeqahCertificate>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<JamaatMember> JamaatMembers { get; set; }

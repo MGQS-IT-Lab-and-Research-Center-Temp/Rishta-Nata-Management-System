@@ -50,6 +50,43 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         return application;
     }
+
+    public async Task<MarriageApplicationForm> StartApplicationAsync(
+        MarriageApplicationForm application,
+        CancellationToken cancellationToken = default)
+    {
+        if (application == null)
+            throw new ArgumentNullException(nameof(application));
+
+        // The marriage form is the dependent side of the 1:1 with
+        // FormApplication (MarriageApplicationForm.MarriageApplicationId is the
+        // FK), so the owning FormApplication must exist first.
+        var formApplication = new FormApplication
+        {
+            Status = ApplicationStatus.Submitted,
+            AppliedAt = DateTime.UtcNow,
+            CertificateId = Guid.Empty
+        };
+
+        _dbContext.FormApplications.Add(formApplication);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        application.MarriageApplicationId = formApplication.Id;
+        application.ReferenceNumber = string.IsNullOrWhiteSpace(application.ReferenceNumber)
+            ? GenerateReferenceNumber()
+            : application.ReferenceNumber;
+
+        _dbContext.MarriageApplicationForms.Add(application);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        formApplication.MarriageApplicationFormId = application.Id;
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return application;
+    }
+
+    private static string GenerateReferenceNumber() =>
+        $"RN-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..16];
     public async Task<ReadOnlyFormDto?> GetReadOnlyFormAsync(
     Guid formId,
     CancellationToken cancellationToken = default)

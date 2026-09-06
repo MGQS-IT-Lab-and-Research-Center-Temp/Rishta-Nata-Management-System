@@ -5,7 +5,7 @@ namespace Presentation.ViewModels;
 
 public class MemberDashboardViewModel
 {
-    public string MemberName { get; set; } = "Azeem";
+    public string MemberName { get; set; } = string.Empty;
 
     public SpouseInfo? CurrentSpouse { get; set; }
 

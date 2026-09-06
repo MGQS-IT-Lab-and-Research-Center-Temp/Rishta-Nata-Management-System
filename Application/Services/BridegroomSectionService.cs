@@ -48,11 +48,20 @@ public class BridegroomSectionService : IBridegroomSectionService
                 "No such application/form exists.");
 
         // Re-check the granular intake state before writing — the form must
-        // actually still be waiting on the bridegroom specifically.
-        if (form.FormStage != MarriageFormStage.AwaitingBridegroom)
+        // actually still be waiting on the bridegroom. Either party may start:
+        //  - AwaitingApplicants   => bridegroom is first, advance to AwaitingBride
+        //  - AwaitingBridegroom   => bride already submitted, advance to witnesses
+        var nextStage = form.FormStage switch
+        {
+            MarriageFormStage.AwaitingApplicants => MarriageFormStage.AwaitingBride,
+            MarriageFormStage.AwaitingBridegroom => MarriageFormStage.AwaitingWitnesses,
+            _ => (MarriageFormStage?)null
+        };
+
+        if (nextStage is null)
             return StageAuthorizationResult.Deny(
                 StageAuthorizationDenyReason.WrongStage,
-                $"Form is at {form.FormStage}, not AwaitingBridegroom.");
+                $"Form is at {form.FormStage}, not awaiting the bridegroom.");
 
         // Persist the bridegroom's section fields onto the form
         form.BridegroomMembershipNo = dto.BridegroomMembershipNo;
@@ -71,7 +80,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         form.FormerWifeObtainedKhula = dto.FormerWifeObtainedKhula;
         form.BridegroomSignatureTel = dto.BridegroomSignatureTel;
 
-        form.FormStage = MarriageFormStage.AwaitingWitnesses;
+        form.FormStage = nextStage.Value;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return StageAuthorizationResult.Allow();

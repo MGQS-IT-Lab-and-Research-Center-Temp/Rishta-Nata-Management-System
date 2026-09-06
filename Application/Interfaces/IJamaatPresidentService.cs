@@ -8,8 +8,7 @@ namespace Application.Interfaces;
 public interface IJamaatPresidentService
 {
     Task<JamaatPresidentDashboardDto> GetDashboardAsync(
-    string? presidentDisplayName,
-    Guid? currentUserId);
+        Guid? currentUserId);
 
     Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id);
 

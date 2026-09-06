@@ -12,7 +12,7 @@ namespace Application.Interfaces;
 /// </summary>
 public interface IRishtanataSecretaryService
 {
-    RishtanataSecretaryDashboardDto GetDashboard();
+    RishtanataSecretaryDashboardDto GetDashboard(string? membershipNo);
 
     List<PendingApprovalDto> GetPendingApprovals();
 

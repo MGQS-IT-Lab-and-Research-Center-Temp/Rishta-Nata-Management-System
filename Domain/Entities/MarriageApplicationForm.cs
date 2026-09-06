@@ -111,7 +111,7 @@ namespace Domain.Entities
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
 
         public MarriageFormStage FormStage { get; set; }
-            = MarriageFormStage.AwaitingBride;
+            = MarriageFormStage.AwaitingApplicants;
 
         public BrideFormSection? BrideSection { get; set; }
 

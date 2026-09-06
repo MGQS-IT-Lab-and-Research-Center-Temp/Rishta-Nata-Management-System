@@ -9,8 +9,5 @@ public static class DbInitializer
         RishtanataDbContext dbContext)
     {
         await dbContext.Database.MigrateAsync();
-
-        await AqeeqahCertificateSeeder
-            .SeedAqeeqahCertificatesAsync(dbContext);
     }
 }

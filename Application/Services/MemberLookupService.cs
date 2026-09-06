@@ -102,7 +102,8 @@ public class MemberLookupService : IMemberLookupService
             FullName = BuildFullName(member.FirstName, member.Surname),
             PhoneNo = member.PhoneNo ?? string.Empty,
             Address = member.Address ?? string.Empty,
-            JamaatName = member.JamaatName
+            JamaatName = member.JamaatName,
+            DateOfBirth = member.DateOfBirth.Year > 1 ? member.DateOfBirth : null
         };
     }
 

@@ -14,6 +14,16 @@ namespace Application.Interfaces
             MarriageApplicationForm application,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Starts a new application: creates the owning FormApplication and the
+        /// MarriageApplicationForm in one unit of work. The caller supplies the
+        /// already-populated form (both parties' membership numbers + the
+        /// starter's section + the correct FormStage).
+        /// </summary>
+        Task<MarriageApplicationForm> StartApplicationAsync(
+            MarriageApplicationForm application,
+            CancellationToken cancellationToken = default);
+
         // Get application by ID
         Task<MarriageApplicationForm?> GetByIdAsync(
             Guid id,

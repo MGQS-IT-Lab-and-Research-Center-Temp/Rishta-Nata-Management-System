@@ -21,7 +21,7 @@ namespace Application.Services
             _context = context;
         }
 
-        public RishtanataSecretaryDashboardDto GetDashboard()
+        public RishtanataSecretaryDashboardDto GetDashboard(string? membershipNo)
         {
             var pendingApplications = _context.FormApplications
                 // Cleanup: AwaitingMoreInformation is a pending-ish state too
@@ -30,15 +30,26 @@ namespace Application.Services
                             x.Status == ApplicationStatus.AwaitingMoreInformation)
                 .ToList();
 
+            var member = string.IsNullOrWhiteSpace(membershipNo)
+                ? null
+                : _context.JamaatMembers
+                    .FirstOrDefault(x => x.ChandaNo == membershipNo);
+
             var dto = new RishtanataSecretaryDashboardDto
             {
+                SecretaryName = member is null
+                    ? null
+                    : $"{member.FirstName} {member.Surname}".Trim(),
+
                 PendingApprovals = pendingApplications.Count,
 
                 ApprovedApplications = _context.FormApplications
                     .Count(x => x.Status == ApplicationStatus.ApplicationApproved),
 
                 MarriedCouples = _context.FormApplications
-                    .Count(x => x.Certificate != null)
+                    .Count(x => x.Certificate != null),
+
+                TotalMembers = _context.JamaatMembers.Count()
             };
 
             return dto;
@@ -125,6 +136,7 @@ namespace Application.Services
                 FirstName = member.FirstName,
                 MiddleName = member.MiddleName,
                 Title = member.Title,
+                FullName = $"{member.FirstName} {member.Surname}".Trim(),
                 Email = member.Email,
                 ChandaNo = member.ChandaNo,
                 WasiyatNo = member.WasiyatNo,
@@ -137,9 +149,9 @@ namespace Application.Services
                 MaritalStatus = member.MaritalStatus,
                 Address = member.Address,
                 Nationality = member.Nationality,
-                //RoleName = member.MemberRoles.Any()
-                //    ? string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))
-                //    : null
+                RoleName = string.IsNullOrWhiteSpace(member.Roles)
+                    ? null
+                    : member.Roles
             };
         }
 

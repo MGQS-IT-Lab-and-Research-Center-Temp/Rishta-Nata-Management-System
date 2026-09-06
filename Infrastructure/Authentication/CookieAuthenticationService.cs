@@ -8,41 +8,22 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 namespace Presentation.Services.Auth;
 
 public class CookieAuthenticationService : ICookieAuthenticationService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IConfiguration _configuration;
 
-    public CookieAuthenticationService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+    public CookieAuthenticationService(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
-        _configuration = configuration;
     }
 
     public async Task SignInAsync(JamaatMember jamaatMember, IEnumerable<string> roles)
     {
-        var roleNames = roles
-            .Where(role => !string.IsNullOrWhiteSpace(role))
-            .Select(role => role.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        var secretaryChandaNo = _configuration["RishtanataSecretary:ChandaNo"];
-
-        var isRishtanataSecretary =
-            !string.IsNullOrWhiteSpace(secretaryChandaNo) && jamaatMember.ChandaNo == secretaryChandaNo;
-
-        if (isRishtanataSecretary && !roleNames.Contains(RoleNames.RishtanataSecretary, StringComparer.OrdinalIgnoreCase))
-        {
-            roleNames.Add(RoleNames.RishtanataSecretary);
-        }
-
-        var claims = BuildClaims(jamaatMember, roles);
-
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var identity = new ClaimsIdentity(
+            BuildClaims(jamaatMember, roles),
+            CookieAuthenticationDefaults.AuthenticationScheme);
 
         var principal = new ClaimsPrincipal(identity);
 
@@ -60,7 +41,8 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         {
             new(ClaimTypes.NameIdentifier, jamaatMember.Id.ToString()),
             new(ClaimTypes.Name, jamaatMember.ChandaNo),
-            new(ClaimNames.MembershipNo, jamaatMember.ChandaNo)
+            new(ClaimNames.MembershipNo, jamaatMember.ChandaNo),
+            new(ClaimNames.FullName, BuildFullName(jamaatMember))
         };
 
         foreach (var role in roles .Where(role => !string.IsNullOrWhiteSpace(role))
@@ -71,5 +53,14 @@ public class CookieAuthenticationService : ICookieAuthenticationService
         }
 
         return claims;
+    }
+
+    static string BuildFullName(JamaatMember member)
+    {
+        var parts = new[] { member.FirstName, member.MiddleName, member.Surname }
+            .Where(part => !string.IsNullOrWhiteSpace(part))
+            .Select(part => part!.Trim());
+
+        return string.Join(" ", parts);
     }
 }

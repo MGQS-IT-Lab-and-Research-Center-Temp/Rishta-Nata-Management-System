@@ -26,11 +26,22 @@
           var t = document.getElementById(config.telId);
           if (t) { t.value = m.phoneNo || ''; }
         }
+        if (config.dateOfBirthId) {
+          var dob = document.getElementById(config.dateOfBirthId);
+          if (dob && m.dateOfBirth) {
+            var d = new Date(m.dateOfBirth);
+            if (!isNaN(d.getTime())) {
+              var mm = String(d.getMonth() + 1).padStart(2, '0');
+              var dd = String(d.getDate()).padStart(2, '0');
+              dob.value = d.getFullYear() + '-' + mm + '-' + dd;
+            }
+          }
+        }
       })
       .catch(function (err) { console.warn('Member lookup failed', err); });
   }
 
-  // config: { checkboxId, wrapId, membershipId, nameId, addressId, telId }
+  // config: { checkboxId, wrapId, membershipId, nameId, addressId, telId, dateOfBirthId }
   function initParty(config) {
     var box = document.getElementById(config.checkboxId);
     if (!box) { return; }

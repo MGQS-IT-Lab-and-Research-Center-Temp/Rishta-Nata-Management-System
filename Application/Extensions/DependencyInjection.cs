@@ -20,7 +20,6 @@ public static class DependencyInjection
         services.AddScoped<IBrideSectionService, BrideSectionService>();
         services.AddScoped<IBridegroomSectionService, BridegroomSectionService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
-        services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
         services.AddScoped<ICertificateService, CertificateService>();
         services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
         services.AddScoped<IJamaatPresidentService, JamaatPresidentService>();
@@ -28,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IMarriageFormWorkflowService, MarriageFormWorkflowService>();
         services.AddScoped<IJamaatMemberService, JamaatMemberService>();
+        services.AddScoped<IMemberDashboardService, MemberDashboardService>();
         services.AddScoped<IStageAuthorizationService, StageAuthorizationService>();
         services.AddScoped<IMemberLookupService, MemberLookupService>();
         services.AddScoped<IAuthService, AuthService>();

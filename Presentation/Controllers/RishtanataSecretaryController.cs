@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Presentation.Mapping.RishtanataSecretary;
 using Presentation.Mapping.JamaatMember;
 using Application.Interfaces;
+using Domain.Constants;
 
 namespace Presentation.Controllers;
 
@@ -23,7 +25,9 @@ public class RishtanataSecretaryController : Controller
     // Dashboard page
     public IActionResult Dashboard()
     {
-        var dto = _service.GetDashboard();
+        var dto = _service.GetDashboard(
+            User.FindFirstValue(ClaimNames.MembershipNo)
+            ?? User.FindFirstValue(ClaimTypes.Name));
 
         var model = RishtanataSecretaryDashboardMapping.ToViewModel(dto);
 

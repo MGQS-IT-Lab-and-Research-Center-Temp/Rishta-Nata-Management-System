@@ -92,10 +92,7 @@ public class GatewayHandler : IGatewayHandler
 
         var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
 
-        //using var requests = new HttpRequestMessage(HttpMethod.Post, url)
-        //{
-
-        //};
+ 
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = jsonContent
@@ -103,25 +100,29 @@ public class GatewayHandler : IGatewayHandler
 
         var response = await _client.SendAsync(request);
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
+            var errorContent = await response.Content.ReadAsStringAsync();
+
+            throw new HttpRequestException(
+                $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). " +
+                $"Response: {errorContent}");
         }
+
+
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
+
 
         // The Tajneed API reports invalid credentials as 400 Bad Request
         // ({"message":"Invalid Credential","status":false}), alongside the
         // conventional 401/404 — all mean "not authenticated".
-        if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
-        {
-            return null;
-        }
+        //if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
+        //{
+        //    return null;
+        //}
 
-        var errorContent = await response.Content.ReadAsStringAsync();
 
-        throw new HttpRequestException(
-            $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). " +
-            $"Response: {errorContent}");
     }
 
     /// <summary>

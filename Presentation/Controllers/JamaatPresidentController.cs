@@ -1,5 +1,4 @@
 // do page for review for individual nikkah form - azeez
-// do page for viewing aqeeqah certificates - yusroh - done
 // do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
 // fix all errors under your dto - faridah -done
 // fix all errors under service and interface - yusroh
@@ -22,16 +21,13 @@ public class JamaatPresidentController : Controller
 {
     private readonly IJamaatPresidentService _service;
     private readonly ICertificateService _certificateService;
-    private readonly IAqeeqahCertificateService _aqeeqahService;
 
     public JamaatPresidentController(
         IJamaatPresidentService service,
-        ICertificateService certificateService,
-        IAqeeqahCertificateService aqeeqahService)
+        ICertificateService certificateService)
     {
         _service = service;
         _certificateService = certificateService;
-        _aqeeqahService = aqeeqahService;
     }
 
     // ============================================================
@@ -41,7 +37,6 @@ public class JamaatPresidentController : Controller
     public async Task<IActionResult> Dashboard()
     {
         var dto = await _service.GetDashboardAsync(
-            User.Identity?.Name,
             GetCurrentUserId());
 
         return View(JamaatPresidentMapping.ToViewModel(dto));
@@ -143,24 +138,6 @@ public class JamaatPresidentController : Controller
 
         var viewModels = certificates
             .Select(JamaatPresidentMapping.ToViewModel)
-            .ToList();
-
-        return View(viewModels);
-    }
-
-    // ============================================================
-    // AQEEQAH CERTIFICATES
-    // ============================================================
-
-    /// <summary>
-    /// Displays all Aqeeqah certificates for the Jamaat President
-    /// </summary>
-    public async Task<IActionResult> AqeeqahCertificates()
-    {
-        var certificates = await _aqeeqahService.GetAllCertificatesAsync();
-
-        var viewModels = certificates
-            .Select(AqeeqahCertificateMapping.ToViewModel)
             .ToList();
 
         return View(viewModels);
