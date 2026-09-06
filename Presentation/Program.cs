@@ -1,8 +1,17 @@
 using Application.Extensions;
+using DotNetEnv;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Seed;
 using Presentation.Extensions;
+
+// Load local secrets/overrides from a `.env` file if one exists (copy
+// `.env.example` to `.env` and fill in real values — see README.md). The file
+// must be in the directory the app is launched from (the repository root).
+if (File.Exists(".env"))
+{
+    Env.Load();
+}
 
 var builder = WebApplication.CreateBuilder(args);
 

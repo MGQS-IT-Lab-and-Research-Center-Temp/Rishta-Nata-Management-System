@@ -228,9 +228,10 @@ proves painful, add a role-refresh hook later — out of scope for v1.)
 - **Q2 — Is `AwaitingWitnesses` one stage or two?** Tracked separately as
   Ticket F1; this policy is agnostic — whichever way it splits, each resulting
   stage gets its own row in the §4 tables.
-- **Q3 — Exact role strings** returned by the member API for the four offices
-  need to be confirmed and recorded in the authorization service's mapping
-  table before B2 ships.
+- **Q3 — Exact role strings** (RESOLVED): recorded in
+  `Domain/Constants/RoleNames.cs` — the single source of truth for the role
+  strings returned by the member API. Matching is case-insensitive; update the
+  constants there if the live API's strings ever differ.
 
 ---
 

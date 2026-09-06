@@ -35,9 +35,8 @@ model.
 - Canonical role-name constants (JamaatSecretary, CircuitSecretary,
   RishtanataSecretary, Amir, plus workflow roles JamaatPresident, Imam,
   Missionary).
-- **PROVISIONAL**: exact strings unconfirmed against the live API (open
-  question §8 Q3 in `docs/stage-authorization-policy.md`). Matching should be
-  case-insensitive.
+- Exact strings confirmed as the source of truth (§8 Q3 in
+  `docs/stage-authorization-policy.md`). Matching is case-insensitive.
 
 ### 4. `AuditLog` now inherits `AuditableEntity`
 `Domain/Entities/AuditLog.cs` (see `docs/bugs-and-gaps.md` #12):

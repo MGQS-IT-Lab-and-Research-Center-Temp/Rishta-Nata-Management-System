@@ -28,31 +28,18 @@ file as items are fixed.
 
 ## Blocking
 
-1. **Certificate ↔ FormApplication ↔ MarriageApplicationForm relationships are
-   ambiguous; EF model validation fails.** *Decision: leave the model as-is for
-   now.* Every test fails at runtime with:
-   `The dependent side could not be determined for the one-to-one relationship
-   between 'Certificate.FormApplication' and 'FormApplication.Certificate'`.
-   The same failure will occur on the app's first DB query.
-   - `Domain/Entities/Certificate.cs` has both `MarriageApplicationFormId`
-     (declared `int`, but `MarriageApplicationForm.Id` is `Guid`) and
-     `FormApplicationId` + `FormApplication` navigation.
-   - `Domain/Entities/FormApplication.cs` has `CertificateId` + `Certificate`.
-   - `Infrastructure/Configurations/CertificateConfiguration.cs` maps
-     `Certificate.MarriageApplicationForm` ↔ `MarriageApplicationForm.Certificate`
-     (the int/Guid mismatch), while the `FormApplication` link is unconfigured.
-   Live code (`RishtanataSecretaryService`, `FormApplicationService`) only uses
-   `FormApplication.Certificate`/`CertificateId`; the other navigations are dead
-   leftovers from an in-progress refactor. Needs a product decision on which
-   entity owns the certificate before anyone touches it.
+1. **Certificate ↔ FormApplication ↔ MarriageApplicationForm relationships —
+   RESOLVED.** The ambiguity is resolved in `RishtanataDbContext.OnModelCreating`
+   (`Certificate` is the dependent side via `HasForeignKey(c => c.FormApplicationId)`)
+   and `CertificateConfiguration` ignores the dead `MarriageApplicationForm` /
+   `MarriageApplicationFormId` leftovers. No product decision pending.
 
-2. **EF migrations are stale.** No migration reflects the removal of
-   `JamaatMember.Password`, the Identity-table changes, or the Certificate
-   refactor. The model snapshot still maps `ApplicationUser`/`AspNet*` tables and
-   the old `Certificate.MarriageApplicationId`. Running `dotnet ef migrations add`
-   now would generate `DROP TABLE` for the Identity tables plus column
-   add/drop/rename for Certificate. Reconcile deliberately (with a live MySQL)
-   after resolving item 1.
+2. **EF migrations — reconciled.** The snapshot no longer maps Identity tables,
+   and a migration (`AddJamaatMemberRoles`) now adds the `JamaatMember.Roles`
+   column. The `InitialCreate` migration carries Oracle-provider
+   `MySQL:Charset` annotations, which are correct for the current
+   `MySql.EntityFrameworkCore` provider. No further reconciliation needed unless
+   the provider changes.
 
 ## Design / decision
 
