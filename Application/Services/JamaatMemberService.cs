@@ -14,8 +14,7 @@ public class JamaatMemberService : IJamaatMemberService
         _context = context;
     }
 
-    public async Task<JamaatMember> CreateOrUpdateAsync(
-        JamaatMember member)
+    public async Task<JamaatMember> CreateOrUpdateAsync(JamaatMember member)
     {
         var existingMember = await _context.JamaatMembers
             .FirstOrDefaultAsync(x => x.ChandaNo == member.ChandaNo);
@@ -40,7 +39,6 @@ public class JamaatMemberService : IJamaatMemberService
                 MaritalStatus = member.MaritalStatus,
                 Address = member.Address,
                 Nationality = member.Nationality,
-                CreatedAt = DateTime.UtcNow
             };
 
             _context.JamaatMembers.Add(newMember);

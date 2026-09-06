@@ -21,7 +21,6 @@ public static class DependencyInjection
         services.AddScoped<IBrideSectionService, BrideSectionService>();
         services.AddScoped<IBridegroomSectionService, BridegroomSectionService>();
         services.AddScoped<IBridegroomService, BridegroomService>();
-        services.AddScoped<IAqeeqahCertificateService, AqeeqahCertificateService>();
         services.AddScoped<ICertificateService, CertificateService>();
         services.AddScoped<IRishtanataSecretaryService, RishtanataSecretaryService>();
         services.AddScoped<IJamaatPresidentService, JamaatPresidentService>();

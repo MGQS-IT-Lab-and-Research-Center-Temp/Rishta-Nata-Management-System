@@ -22,16 +22,11 @@ public class JamaatPresidentController : Controller
 {
     private readonly IJamaatPresidentService _service;
     private readonly ICertificateService _certificateService;
-    private readonly IAqeeqahCertificateService _aqeeqahService;
 
-    public JamaatPresidentController(
-        IJamaatPresidentService service,
-        ICertificateService certificateService,
-        IAqeeqahCertificateService aqeeqahService)
+    public JamaatPresidentController(IJamaatPresidentService service, ICertificateService certificateService)
     {
         _service = service;
         _certificateService = certificateService;
-        _aqeeqahService = aqeeqahService;
     }
 
     // ============================================================
@@ -143,24 +138,6 @@ public class JamaatPresidentController : Controller
 
         var viewModels = certificates
             .Select(JamaatPresidentMapping.ToViewModel)
-            .ToList();
-
-        return View(viewModels);
-    }
-
-    // ============================================================
-    // AQEEQAH CERTIFICATES
-    // ============================================================
-
-    /// <summary>
-    /// Displays all Aqeeqah certificates for the Jamaat President
-    /// </summary>
-    public async Task<IActionResult> AqeeqahCertificates()
-    {
-        var certificates = await _aqeeqahService.GetAllCertificatesAsync();
-
-        var viewModels = certificates
-            .Select(AqeeqahCertificateMapping.ToViewModel)
             .ToList();
 
         return View(viewModels);
