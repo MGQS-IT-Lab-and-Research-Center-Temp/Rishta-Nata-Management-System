@@ -36,7 +36,7 @@ public class AuthService : IAuthService
                     : tokenResponse.Message);
         }
 
-        var jamaatMember = await _gatewayHandler.GetMemberByChandaNoAsync(chandaNo);
+        var jamaatMember = await _gatewayHandler.GetMemberByMemberNoAsync(chandaNo);
 
         if (jamaatMember is null)
         {

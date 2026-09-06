@@ -59,7 +59,7 @@ public class MemberLookupService : IMemberLookupService
                 using var attemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 attemptCts.CancelAfter(AttemptTimeout);
 
-                return await _gateway.GetMemberByChandaNoAsync(no, attemptCts.Token);
+                return await _gateway.GetMemberByMemberNoAsync(no, attemptCts.Token);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
