@@ -19,7 +19,7 @@ public class GatewayHandler : IGatewayHandler
     public GatewayHandler(HttpClient client, IConfiguration config)
     {
         _client = client;
-        _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
+        _apiUrl = config["TajneedApiBaseUrl"] ?? throw new InvalidOperationException("TajneedApiBaseUrl is not configured");
     }
 
     public async Task<string[]?> GetMemberRoleAsync(string chandaNo)

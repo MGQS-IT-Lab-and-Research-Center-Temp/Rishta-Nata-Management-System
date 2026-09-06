@@ -31,7 +31,7 @@ ConnectionStrings__DefaultConnection=Server=localhost;Port=3306;Database=rishtan
 The double underscore (`__`) maps to `:` in ASP.NET Core configuration, so the
 line above overrides `ConnectionStrings:DefaultConnection` in
 `appsettings.json`. Any other `appsettings.json` key can be overridden the same
-way (e.g. `Api=...`, `RishtanataSecretary__ChandaNo=...`).
+way (e.g. `TajneedApiBaseUrl=...`, `RishtanataSecretary__ChandaNo=...`).
 
 > `.env` is git-ignored. Never commit real credentials.
 
