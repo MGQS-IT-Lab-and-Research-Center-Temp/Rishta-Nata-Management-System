@@ -2,7 +2,6 @@ using Application.Extensions;
 using DotNetEnv;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.Seed;
 using Presentation.Extensions;
 
 // Load local secrets/overrides from a `.env` file (copy `.env.example` to
@@ -25,7 +24,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<RishtanataDbContext>();
-    await DbInitializer.InitializeAsync(db);
 }
 
 // Configure the HTTP request pipeline.
