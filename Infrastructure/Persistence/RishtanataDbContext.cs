@@ -21,7 +21,21 @@ public class RishtanataDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<BridegroomFormSection>().ToTable("BrideGrooms");
+
+        modelBuilder.Entity<FormApplication>().ToTable("ApplicationSubmissions");
+        modelBuilder.Entity<MarriageApplicationForm>().ToTable("NikahApplications");
+        modelBuilder.Entity<MarriageFormRejection>().ToTable("NikahRejections");
+        modelBuilder.Entity<Certificate>().ToTable("NikahCertificates");
+        modelBuilder.Entity<SectionAccessToken>().ToTable("SectionAccessTokens");
+
+        modelBuilder.Entity<BrideFormSection>().ToTable("NikahBrides");
+        modelBuilder.Entity<BridegroomFormSection>().ToTable("NikahGrooms");
+        modelBuilder.Entity<GuardianOrWakeelSection>().ToTable("NikahGuardians");
+        modelBuilder.Entity<ImamVerificationSection>().ToTable("ImamVerifications");
+        modelBuilder.Entity<JamaatPresidentVerificationSection>().ToTable("JamaatPresidentVerifications");
+        modelBuilder.Entity<RishtanataRecommendationSection>().ToTable("RishtanataRecommendations");
+        modelBuilder.Entity<AmirApprovalSection>().ToTable("AmirApprovals");
+        modelBuilder.Entity<WitnessSignatureSection>().ToTable("WitnessSignatures");
 
         // Section tables carry their own tenant identity (the owning
         // application's ReferenceNumber) for cross-domain identification.
