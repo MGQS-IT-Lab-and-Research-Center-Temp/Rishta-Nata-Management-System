@@ -127,6 +127,14 @@ public class MarriageApplicationController : Controller
             return View(model);
         }
 
+        var currentMembershipNo = GetCurrentMembershipNo()?.Trim();
+        if (!string.IsNullOrWhiteSpace(currentMembershipNo) &&
+            string.Equals(partner.ChandaNo, currentMembershipNo, StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(string.Empty, "Your partner cannot be yourself.");
+            return View(model);
+        }
+
         var partnerPhone = partner.PhoneNo;
         var form = new MarriageApplicationForm
         {
