@@ -27,161 +27,322 @@
         </div>
     </div>
 
-    <div class="card dashboard-card mb-4">
-        <div class="card-header">
-            Bridegroom Information
-            <span class="badge rounded-pill text-bg-light ms-2" id="groomBadge">(You)</span>
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label asp-for="Bridegroom.MembershipNo" class="form-label"></label>
-                    <input asp-for="Bridegroom.MembershipNo" class="form-control" />
-                    <span asp-validation-for="Bridegroom.MembershipNo" class="text-danger small"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Bridegroom.Name" class="form-label"></label>
-                    <input asp-for="Bridegroom.Name" class="form-control" />
-                    <span asp-validation-for="Bridegroom.Name" class="text-danger small"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Bridegroom.DateOfBirth" class="form-label"></label>
-                    <input asp-for="Bridegroom.DateOfBirth" class="form-control" type="date" />
-                    <span asp-validation-for="Bridegroom.DateOfBirth" class="text-danger small"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Bridegroom.Phone" class="form-label"></label>
-                    <input asp-for="Bridegroom.Phone" class="form-control" />
-                    <span asp-validation-for="Bridegroom.Phone" class="text-danger small"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Bridegroom.ResidentOf" class="form-label"></label>
-                    <input asp-for="Bridegroom.ResidentOf" class="form-control" />
-                    <span asp-validation-for="Bridegroom.ResidentOf" class="text-danger small"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Bridegroom.Genotype" class="form-label"></label>
-                    <select asp-for="Bridegroom.Genotype" class="form-select">
-                        <option value="">Select</option>
-                        <option>AA</option><option>AS</option><option>SS</option>
-                        <option>AC</option><option>SC</option><option>Other</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Bridegroom.BloodGroup" class="form-label"></label>
-                    <select asp-for="Bridegroom.BloodGroup" class="form-select">
-                        <option value="">Select</option>
-                        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-                        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
-                    </select>
-                </div>
-
-                <div class="col-12"><hr class="my-1" /></div>
-
-                <div class="col-md-6">
-                    <label asp-for="BridegroomDowerAmountPaidInCash" class="form-label"></label>
-                    <input asp-for="BridegroomDowerAmountPaidInCash" class="form-control" type="number" min="0" step="0.01" />
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="BridegroomDowerAmountToBePaid" class="form-label"></label>
-                    <input asp-for="BridegroomDowerAmountToBePaid" class="form-control" type="number" min="0" step="0.01" />
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label d-block">Is this your first Nikah?</label>
-                    <div class="form-check form-check-inline">
-                        <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="true" id="firstNikahYes" />
-                        <label class="form-check-label" for="firstNikahYes">Yes</label>
+    @if (Model.StartingParty == "Bride")
+    {
+        <div class="card dashboard-card mb-4" id="brideCard">
+            <div class="card-header">
+                Bride Information
+                <span class="badge rounded-pill text-bg-light ms-2" id="brideBadge">(You)</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bride.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bride.MembershipNo" class="form-control" />
+                        <span asp-validation-for="Bride.MembershipNo" class="text-danger small"></span>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="false" id="firstNikahNo" />
-                        <label class="form-check-label" for="firstNikahNo">No</label>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.Name" class="form-label"></label>
+                        <input asp-for="Bride.Name" class="form-control" />
+                        <span asp-validation-for="Bride.Name" class="text-danger small"></span>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label d-block">Is this a second, third or fourth Nikah?</label>
-                    <div class="form-check form-check-inline">
-                        <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="true" id="multiNikahYes" />
-                        <label class="form-check-label" for="multiNikahYes">Yes</label>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.DateOfBirth" class="form-label"></label>
+                        <input asp-for="Bride.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Bride.DateOfBirth" class="text-danger small"></span>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="false" id="multiNikahNo" />
-                        <label class="form-check-label" for="multiNikahNo">No</label>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.Phone" class="form-label"></label>
+                        <input asp-for="Bride.Phone" class="form-control" />
+                        <span asp-validation-for="Bride.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.ResidentOf" class="form-label"></label>
+                        <input asp-for="Bride.ResidentOf" class="form-control" />
+                        <span asp-validation-for="Bride.ResidentOf" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.Genotype" class="form-label"></label>
+                        <select asp-for="Bride.Genotype" class="form-select">
+                            <option value="">Select</option>
+                            <option>AA</option><option>AS</option><option>SS</option>
+                            <option>AC</option><option>SC</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.BloodGroup" class="form-label"></label>
+                        <select asp-for="Bride.BloodGroup" class="form-select">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr class="my-1" /></div>
+
+                    <div class="col-md-4">
+                        <label asp-for="BrideMaritalStatus" class="form-label"></label>
+                        <select asp-for="BrideMaritalStatus" class="form-select">
+                            <option value="">Select</option>
+                            <option>Single</option><option>Widowed</option><option>Divorced</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BrideProposedDowerAmount" class="form-label"></label>
+                        <input asp-for="BrideProposedDowerAmount" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BrideDowerAmountReceivedInCash" class="form-label"></label>
+                        <input asp-for="BrideDowerAmountReceivedInCash" class="form-control" type="number" min="0" step="0.01" />
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="card dashboard-card mb-4">
-        <div class="card-header">
-            Bride Information
-            <span class="badge rounded-pill text-bg-light ms-2" id="brideBadge">(Partner)</span>
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label asp-for="Bride.MembershipNo" class="form-label"></label>
-                    <input asp-for="Bride.MembershipNo" class="form-control" />
-                    <span asp-validation-for="Bride.MembershipNo" class="text-danger small"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Bride.Name" class="form-label"></label>
-                    <input asp-for="Bride.Name" class="form-control" />
-                    <span asp-validation-for="Bride.Name" class="text-danger small"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Bride.DateOfBirth" class="form-label"></label>
-                    <input asp-for="Bride.DateOfBirth" class="form-control" type="date" />
-                    <span asp-validation-for="Bride.DateOfBirth" class="text-danger small"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Bride.Phone" class="form-label"></label>
-                    <input asp-for="Bride.Phone" class="form-control" />
-                    <span asp-validation-for="Bride.Phone" class="text-danger small"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Bride.ResidentOf" class="form-label"></label>
-                    <input asp-for="Bride.ResidentOf" class="form-control" />
-                    <span asp-validation-for="Bride.ResidentOf" class="text-danger small"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Bride.Genotype" class="form-label"></label>
-                    <select asp-for="Bride.Genotype" class="form-select">
-                        <option value="">Select</option>
-                        <option>AA</option><option>AS</option><option>SS</option>
-                        <option>AC</option><option>SC</option><option>Other</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Bride.BloodGroup" class="form-label"></label>
-                    <select asp-for="Bride.BloodGroup" class="form-select">
-                        <option value="">Select</option>
-                        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-                        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
-                    </select>
-                </div>
+        <div class="card dashboard-card mb-4" id="groomCard">
+            <div class="card-header">
+                Bridegroom Information
+                <span class="badge rounded-pill text-bg-light ms-2" id="groomBadge">(Partner)</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bridegroom.MembershipNo" class="form-control" />
+                        <span asp-validation-for="Bridegroom.MembershipNo" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.Name" class="form-label"></label>
+                        <input asp-for="Bridegroom.Name" class="form-control" />
+                        <span asp-validation-for="Bridegroom.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.DateOfBirth" class="form-label"></label>
+                        <input asp-for="Bridegroom.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Bridegroom.DateOfBirth" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.Phone" class="form-label"></label>
+                        <input asp-for="Bridegroom.Phone" class="form-control" />
+                        <span asp-validation-for="Bridegroom.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.ResidentOf" class="form-label"></label>
+                        <input asp-for="Bridegroom.ResidentOf" class="form-control" />
+                        <span asp-validation-for="Bridegroom.ResidentOf" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.Genotype" class="form-label"></label>
+                        <select asp-for="Bridegroom.Genotype" class="form-select">
+                            <option value="">Select</option>
+                            <option>AA</option><option>AS</option><option>SS</option>
+                            <option>AC</option><option>SC</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.BloodGroup" class="form-label"></label>
+                        <select asp-for="Bridegroom.BloodGroup" class="form-select">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
 
-                <div class="col-12"><hr class="my-1" /></div>
+                    <div class="col-12"><hr class="my-1" /></div>
 
-                <div class="col-md-4">
-                    <label asp-for="BrideMaritalStatus" class="form-label"></label>
-                    <select asp-for="BrideMaritalStatus" class="form-select">
-                        <option value="">Select</option>
-                        <option>Single</option><option>Widowed</option><option>Divorced</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="BrideProposedDowerAmount" class="form-label"></label>
-                    <input asp-for="BrideProposedDowerAmount" class="form-control" type="number" min="0" step="0.01" />
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="BrideDowerAmountReceivedInCash" class="form-label"></label>
-                    <input asp-for="BrideDowerAmountReceivedInCash" class="form-control" type="number" min="0" step="0.01" />
+                    <div class="col-md-6">
+                        <label asp-for="BridegroomDowerAmountPaidInCash" class="form-label"></label>
+                        <input asp-for="BridegroomDowerAmountPaidInCash" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="BridegroomDowerAmountToBePaid" class="form-label"></label>
+                        <input asp-for="BridegroomDowerAmountToBePaid" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this your first Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="true" id="firstNikahYes" />
+                            <label class="form-check-label" for="firstNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="false" id="firstNikahNo" />
+                            <label class="form-check-label" for="firstNikahNo">No</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this a second, third or fourth Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="true" id="multiNikahYes" />
+                            <label class="form-check-label" for="multiNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="false" id="multiNikahNo" />
+                            <label class="form-check-label" for="multiNikahNo">No</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="card dashboard-card mb-4" id="groomCard">
+            <div class="card-header">
+                Bridegroom Information
+                <span class="badge rounded-pill text-bg-light ms-2" id="groomBadge">(You)</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bridegroom.MembershipNo" class="form-control" />
+                        <span asp-validation-for="Bridegroom.MembershipNo" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.Name" class="form-label"></label>
+                        <input asp-for="Bridegroom.Name" class="form-control" />
+                        <span asp-validation-for="Bridegroom.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.DateOfBirth" class="form-label"></label>
+                        <input asp-for="Bridegroom.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Bridegroom.DateOfBirth" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.Phone" class="form-label"></label>
+                        <input asp-for="Bridegroom.Phone" class="form-control" />
+                        <span asp-validation-for="Bridegroom.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.ResidentOf" class="form-label"></label>
+                        <input asp-for="Bridegroom.ResidentOf" class="form-control" />
+                        <span asp-validation-for="Bridegroom.ResidentOf" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.Genotype" class="form-label"></label>
+                        <select asp-for="Bridegroom.Genotype" class="form-select">
+                            <option value="">Select</option>
+                            <option>AA</option><option>AS</option><option>SS</option>
+                            <option>AC</option><option>SC</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.BloodGroup" class="form-label"></label>
+                        <select asp-for="Bridegroom.BloodGroup" class="form-select">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr class="my-1" /></div>
+
+                    <div class="col-md-6">
+                        <label asp-for="BridegroomDowerAmountPaidInCash" class="form-label"></label>
+                        <input asp-for="BridegroomDowerAmountPaidInCash" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="BridegroomDowerAmountToBePaid" class="form-label"></label>
+                        <input asp-for="BridegroomDowerAmountToBePaid" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this your first Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="true" id="firstNikahYes" />
+                            <label class="form-check-label" for="firstNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="false" id="firstNikahNo" />
+                            <label class="form-check-label" for="firstNikahNo">No</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this a second, third or fourth Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="true" id="multiNikahYes" />
+                            <label class="form-check-label" for="multiNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="false" id="multiNikahNo" />
+                            <label class="form-check-label" for="multiNikahNo">No</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card mb-4" id="brideCard">
+            <div class="card-header">
+                Bride Information
+                <span class="badge rounded-pill text-bg-light ms-2" id="brideBadge">(Partner)</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bride.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bride.MembershipNo" class="form-control" />
+                        <span asp-validation-for="Bride.MembershipNo" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.Name" class="form-label"></label>
+                        <input asp-for="Bride.Name" class="form-control" />
+                        <span asp-validation-for="Bride.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.DateOfBirth" class="form-label"></label>
+                        <input asp-for="Bride.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Bride.DateOfBirth" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.Phone" class="form-label"></label>
+                        <input asp-for="Bride.Phone" class="form-control" />
+                        <span asp-validation-for="Bride.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.ResidentOf" class="form-label"></label>
+                        <input asp-for="Bride.ResidentOf" class="form-control" />
+                        <span asp-validation-for="Bride.ResidentOf" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.Genotype" class="form-label"></label>
+                        <select asp-for="Bride.Genotype" class="form-select">
+                            <option value="">Select</option>
+                            <option>AA</option><option>AS</option><option>SS</option>
+                            <option>AC</option><option>SC</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.BloodGroup" class="form-label"></label>
+                        <select asp-for="Bride.BloodGroup" class="form-select">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr class="my-1" /></div>
+
+                    <div class="col-md-4">
+                        <label asp-for="BrideMaritalStatus" class="form-label"></label>
+                        <select asp-for="BrideMaritalStatus" class="form-select">
+                            <option value="">Select</option>
+                            <option>Single</option><option>Widowed</option><option>Divorced</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BrideProposedDowerAmount" class="form-label"></label>
+                        <input asp-for="BrideProposedDowerAmount" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BrideDowerAmountReceivedInCash" class="form-label"></label>
+                        <input asp-for="BrideDowerAmountReceivedInCash" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     <div class="card dashboard-card mb-4">
         <div class="card-header">Wedding Details</div>
@@ -216,6 +377,8 @@
             var brideRadio = document.getElementById('partyBride');
             var groomBadge = document.getElementById('groomBadge');
             var brideBadge = document.getElementById('brideBadge');
+            var groomCard = document.getElementById('groomCard');
+            var brideCard = document.getElementById('brideCard');
 
             function updateBadges() {
                 var isGroom = groomRadio && groomRadio.checked;
@@ -223,9 +386,25 @@
                 if (brideBadge) { brideBadge.textContent = isGroom ? '(Partner)' : '(You)'; }
             }
 
-            if (groomRadio) { groomRadio.addEventListener('change', updateBadges); }
-            if (brideRadio) { brideRadio.addEventListener('change', updateBadges); }
-            updateBadges();
+            function reorderCards() {
+                if (!groomCard || !brideCard || groomCard.parentNode !== brideCard.parentNode) { return; }
+                var isGroom = groomRadio && groomRadio.checked;
+                var container = groomCard.parentNode;
+                if (isGroom) {
+                    if (container.firstElementChild !== groomCard) { container.insertBefore(groomCard, container.firstElementChild); }
+                } else {
+                    if (container.lastElementChild !== brideCard) { container.insertBefore(brideCard, groomCard); }
+                }
+            }
+
+            function updateLayout() {
+                updateBadges();
+                reorderCards();
+            }
+
+            if (groomRadio) { groomRadio.addEventListener('change', updateLayout); }
+            if (brideRadio) { brideRadio.addEventListener('change', updateLayout); }
+            updateLayout();
 
             function fillDate(input, value) {
                 var d = new Date(value);
