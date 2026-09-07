@@ -1,0 +1,61 @@
+@model Presentation.ViewModels.SectionFillViewModel
+@{
+    ViewData["Title"] = "Complete " + Model.SectionLabel;
+    Layout = "_Layout";
+}
+
+<div class="dashboard-hero">
+    <h1>@Model.SectionLabel</h1>
+    <p>Application <strong>@Model.ReferenceNumber</strong>
+       (@Model.BrideName &#x2764; @Model.BridegroomName)</p>
+    <p class="text-muted mb-0">By submitting you confirm your role and details for the Nikah record.</p>
+</div>
+
+<form asp-action="Fill" asp-controller="SharedSection" method="post" class="card dashboard-card">
+    <div class="card-header">Your details</div>
+    <div class="card-body">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Token" />
+        <input type="hidden" asp-for="SectionType" />
+        <input type="hidden" asp-for="ReferenceNumber" />
+        <input type="hidden" asp-for="SectionLabel" />
+
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        @if (Model.SectionType == Domain.Enums.SectionType.Guardian)
+        {
+            <div class="mb-3">
+                <label asp-for="RelationToBride" class="form-label">Relation to bride</label>
+                <input asp-for="RelationToBride" class="form-control" />
+            </div>
+        }
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Full name</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label">Address</label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Tel" class="form-label">Telephone</label>
+            <input asp-for="Tel" class="form-control" />
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="IsMember" class="form-check-input" />
+            <label asp-for="IsMember" class="form-check-label">I am a Jama'at member (enter membership number to prefill my details)</label>
+        </div>
+        <div class="mb-3">
+            <label asp-for="MemberMembershipNo" class="form-label">Membership number</label>
+            <input asp-for="MemberMembershipNo" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="SignatureDate" class="form-label">Date signed</label>
+            <input asp-for="SignatureDate" type="date" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>

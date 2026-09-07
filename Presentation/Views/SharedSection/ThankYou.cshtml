@@ -1,0 +1,13 @@
+@{
+    ViewData["Title"] = "Thank You";
+    var advanced = TempData["StageAdvanced"] as string == "True";
+}
+
+<div class="dashboard-hero">
+    <h1>Thank you</h1>
+    <p>Your details have been recorded.</p>
+    @if (advanced)
+    {
+        <p class="text-success">All signatures are complete — the application now moves to Imam verification.</p>
+    }
+</div>
