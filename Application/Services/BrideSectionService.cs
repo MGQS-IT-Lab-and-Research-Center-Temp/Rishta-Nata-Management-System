@@ -1,5 +1,6 @@
 using Application.Authorization;
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs;
 using Infrastructure.Persistence;
@@ -37,6 +38,7 @@ public class BrideSectionService : IBrideSectionService
             return authResult;
 
         var form = await _context.MarriageApplicationForms
+            .Include(x => x.BrideSection)
             .FirstOrDefaultAsync(
                 f => f.Id == applicationFormId || f.MarriageApplicationId == applicationFormId,
                 cancellationToken);
@@ -74,6 +76,26 @@ public class BrideSectionService : IBrideSectionService
         form.BrideProposedDowerAmount = dto.BrideProposedDowerAmount;
         form.BrideDowerAmountReceivedInCash = dto.BrideDowerAmountReceivedInCash;
         form.BrideSignatureTel = dto.BrideSignatureTel;
+
+        // Authoritative per-party store, kept in parity with the flat mirror.
+        var brideSection = form.BrideSection ??= new BrideFormSection
+        {
+            ReferenceNumber = form.ReferenceNumber,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        brideSection.ReferenceNumber = form.ReferenceNumber;
+        brideSection.BrideMembershipNo = dto.BrideMembershipNo;
+        brideSection.BrideName = dto.BrideName;
+        brideSection.BrideDateOfBirth = dto.BrideDateOfBirth;
+        brideSection.BrideResidentOf = dto.BrideResidentOf;
+        brideSection.BrideGenotype = dto.BrideGenotype;
+        brideSection.BrideBloodGroup = dto.BrideBloodGroup;
+        brideSection.BrideMaritalStatus = dto.BrideMaritalStatus;
+        brideSection.BrideProposedDowerAmount = dto.BrideProposedDowerAmount;
+        brideSection.BrideDowerAmountReceivedInCash = dto.BrideDowerAmountReceivedInCash;
+        brideSection.BrideSignatureTel = dto.BrideSignatureTel;
+        brideSection.ModifiedAt = DateTime.UtcNow;
 
         form.FormStage = nextStage.Value;
 

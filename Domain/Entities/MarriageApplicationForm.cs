@@ -132,5 +132,8 @@ namespace Domain.Entities
 
         public ICollection<MarriageFormRejection> Rejections { get; set; }
             = new List<MarriageFormRejection>();
+
+        public ICollection<SectionAccessToken> SectionAccessTokens { get; set; }
+            = new List<SectionAccessToken>();
     }
 }

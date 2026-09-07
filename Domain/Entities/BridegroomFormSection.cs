@@ -23,7 +23,7 @@ namespace Domain.Entities
         public bool FormerWifeIsPresent { get; set; }
         public bool FormerWifeObtainedKhula { get; set; }
         public string BridegroomSignatureTel { get; set; } = string.Empty;
-        public string ReferenceNumber { get; set; } = Guid.NewGuid().ToString();
+        public string ReferenceNumber { get; set; } = string.Empty;
     }
 }
 

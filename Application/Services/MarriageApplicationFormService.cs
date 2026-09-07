@@ -76,6 +76,54 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             ? GenerateReferenceNumber()
             : application.ReferenceNumber;
 
+        // The Create POST hydrates both parties' flat fields up front, so both
+        // section rows are created here as a single EF graph (one SaveChanges,
+        // one implicit transaction — no split-save atomicity gap).
+        if (application.BrideSection is null && !string.IsNullOrWhiteSpace(application.BrideName))
+        {
+            application.BrideSection = new BrideFormSection
+            {
+                BrideMembershipNo = application.BrideMembershipNo,
+                BrideName = application.BrideName,
+                BrideDateOfBirth = application.BrideDateOfBirth,
+                BrideResidentOf = application.BrideResidentOf,
+                BrideGenotype = application.BrideGenotype,
+                BrideBloodGroup = application.BrideBloodGroup,
+                BrideMaritalStatus = application.BrideMaritalStatus,
+                BrideProposedDowerAmount = application.BrideProposedDowerAmount,
+                BrideDowerAmountReceivedInCash = application.BrideDowerAmountReceivedInCash,
+                BrideSignatureTel = application.BrideSignatureTel,
+                ReferenceNumber = application.ReferenceNumber,
+                CreatedAt = DateTime.UtcNow,
+                ModifiedAt = DateTime.UtcNow
+            };
+        }
+
+        if (application.BridegroomSection is null && !string.IsNullOrWhiteSpace(application.BridegroomName))
+        {
+            application.BridegroomSection = new BridegroomFormSection
+            {
+                BridegroomMembershipNo = application.BridegroomMembershipNo,
+                BridegroomName = application.BridegroomName,
+                BridegroomDateOfBirth = application.BridegroomDateOfBirth,
+                BridegroomResidentOf = application.BridegroomResidentOf,
+                BridegroomGenotype = application.BridegroomGenotype,
+                BridegroomBloodGroup = application.BridegroomBloodGroup,
+                BridegroomDowerAmountPaidInCash = application.BridegroomDowerAmountPaidInCash,
+                BridegroomDowerAmountToBePaid = application.BridegroomDowerAmountToBePaid,
+                IsFirstNikah = application.IsFirstNikah,
+                IsSecondThirdOrFourthNikah = application.IsSecondThirdOrFourthNikah,
+                FormerWifeIsDead = application.FormerWifeIsDead,
+                HasDivorcedFormerWife = application.HasDivorcedFormerWife,
+                FormerWifeIsPresent = application.FormerWifeIsPresent,
+                FormerWifeObtainedKhula = application.FormerWifeObtainedKhula,
+                BridegroomSignatureTel = application.BridegroomSignatureTel,
+                ReferenceNumber = application.ReferenceNumber,
+                CreatedAt = DateTime.UtcNow,
+                ModifiedAt = DateTime.UtcNow
+            };
+        }
+
         _dbContext.MarriageApplicationForms.Add(application);
         await _dbContext.SaveChangesAsync(cancellationToken);
 

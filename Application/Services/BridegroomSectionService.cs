@@ -1,5 +1,6 @@
 using Application.Authorization;
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs.BrideGroom;
 using Infrastructure.Persistence;
@@ -38,6 +39,7 @@ public class BridegroomSectionService : IBridegroomSectionService
             return authResult;
 
         var form = await _dbContext.MarriageApplicationForms
+            .Include(x => x.BridegroomSection)
             .FirstOrDefaultAsync(
                 f => f.Id == applicationFormId || f.MarriageApplicationId == applicationFormId,
                 cancellationToken);
@@ -79,6 +81,31 @@ public class BridegroomSectionService : IBridegroomSectionService
         form.FormerWifeIsPresent = dto.FormerWifeIsPresent;
         form.FormerWifeObtainedKhula = dto.FormerWifeObtainedKhula;
         form.BridegroomSignatureTel = dto.BridegroomSignatureTel;
+
+        // Authoritative per-party store, kept in parity with the flat mirror.
+        var bridegroomSection = form.BridegroomSection ??= new BridegroomFormSection
+        {
+            ReferenceNumber = form.ReferenceNumber,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        bridegroomSection.ReferenceNumber = form.ReferenceNumber;
+        bridegroomSection.BridegroomMembershipNo = dto.BridegroomMembershipNo;
+        bridegroomSection.BridegroomName = dto.BridegroomName;
+        bridegroomSection.BridegroomDateOfBirth = dto.BridegroomDateOfBirth;
+        bridegroomSection.BridegroomResidentOf = dto.BridegroomResidentOf;
+        bridegroomSection.BridegroomGenotype = dto.BridegroomGenotype;
+        bridegroomSection.BridegroomBloodGroup = dto.BridegroomBloodGroup;
+        bridegroomSection.BridegroomDowerAmountPaidInCash = dto.BridegroomDowerAmountPaidInCash;
+        bridegroomSection.BridegroomDowerAmountToBePaid = dto.BridegroomDowerAmountToBePaid;
+        bridegroomSection.IsFirstNikah = dto.IsFirstNikah;
+        bridegroomSection.IsSecondThirdOrFourthNikah = dto.IsSecondThirdOrFourthNikah;
+        bridegroomSection.FormerWifeIsDead = dto.FormerWifeIsDead;
+        bridegroomSection.HasDivorcedFormerWife = dto.HasDivorcedFormerWife;
+        bridegroomSection.FormerWifeIsPresent = dto.FormerWifeIsPresent;
+        bridegroomSection.FormerWifeObtainedKhula = dto.FormerWifeObtainedKhula;
+        bridegroomSection.BridegroomSignatureTel = dto.BridegroomSignatureTel;
+        bridegroomSection.ModifiedAt = DateTime.UtcNow;
 
         form.FormStage = nextStage.Value;
 
