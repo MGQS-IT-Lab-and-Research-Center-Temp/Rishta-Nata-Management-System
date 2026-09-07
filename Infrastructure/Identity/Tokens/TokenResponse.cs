@@ -15,3 +15,10 @@ public class Data
     public string userName { get; set; } = default!;
     public string[] roles { get; set; } = [];
 }
+
+public class ApiErrorResponse
+{
+    public string Message { get; set; } = default!;
+
+    public bool Status { get; set; }
+}

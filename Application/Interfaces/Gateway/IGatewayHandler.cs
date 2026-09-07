@@ -16,5 +16,5 @@ public interface IGatewayHandler
 
     Task<JamaatMember?> GetMemberByMemberNoAsync(string memberNo, CancellationToken cancellationToken = default);
     
-    Task<MemberApiLoginResponse?> GenerateToken(TokenRequest request);
+    Task<(MemberApiLoginResponse?, string? ErrorMessage)> GenerateToken(TokenRequest request);
 }

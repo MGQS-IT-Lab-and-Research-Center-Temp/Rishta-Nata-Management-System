@@ -22,7 +22,6 @@ public class GatewayHandler : IGatewayHandler
         _apiUrl = config["TajneedApiBaseUrl"] ?? throw new InvalidOperationException("TajneedApiBaseUrl is not configured");
     }
 
-
     public async Task<JamaatMember?> GetMemberByMemberNoAsync(string memberNo, CancellationToken cancellationToken = default)
     {
         var url = $"{_apiUrl}members/{memberNo}";
@@ -54,8 +53,7 @@ public class GatewayHandler : IGatewayHandler
         throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
-
-    public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
+    public async Task<(MemberApiLoginResponse?, string? ErrorMessage)> GenerateToken(TokenRequest tokenRequest)
     {
         var url = $"{_apiUrl}token";
 
@@ -65,9 +63,11 @@ public class GatewayHandler : IGatewayHandler
             Password = tokenRequest.Password
         };
 
-        var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
+        var jsonContent = new StringContent(
+            JsonConvert.SerializeObject(credentials), 
+            Encoding.UTF8, 
+            "application/json");
 
- 
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = jsonContent
@@ -75,27 +75,26 @@ public class GatewayHandler : IGatewayHandler
 
         var response = await _client.SendAsync(request);
 
+        var errorContent = await response.Content.ReadAsStringAsync();
+
+        if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
+        {
+            var errorData = JsonConvert.DeserializeObject<ApiErrorResponse>(errorContent);
+            var errorMessage = errorData?.Message ?? $"Authentication failed: {(int)response.StatusCode} {response.StatusCode}";
+
+            return (null, errorMessage);
+        }
+
         if (!response.IsSuccessStatusCode)
         {
-            var errorContent = await response.Content.ReadAsStringAsync();
-
-            throw new HttpRequestException(
-                $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). " +
-                $"Response: {errorContent}");
+            return (null, $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {errorContent}");
         }
 
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
+        var successData = JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
 
-
-        // The Tajneed API reports invalid credentials as 400 Bad Request
-        // ({"message":"Invalid Credential","status":false}), alongside the
-        // conventional 401/404 — all mean "not authenticated".
-        //if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
-        //{
-        //    return null;
-        //}
+        return (successData, null);
     }
 
     /// <summary>

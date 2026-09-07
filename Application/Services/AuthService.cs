@@ -18,11 +18,14 @@ public class AuthService : IAuthService
 
     public async Task<AuthResult> LoginAsync(string chandaNo, string password)
     {
-        var tokenRequest = new TokenRequest(
-            chandaNo,
-            password);
+        var tokenRequest = new TokenRequest(chandaNo, password);
 
-        var tokenResponse = await _gatewayHandler.GenerateToken(tokenRequest);
+        var (tokenResponse, errorMessage) = await _gatewayHandler.GenerateToken(tokenRequest);
+
+        if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            return AuthResult.Failure(errorMessage);
+        }
 
         if (tokenResponse is null)
         {
