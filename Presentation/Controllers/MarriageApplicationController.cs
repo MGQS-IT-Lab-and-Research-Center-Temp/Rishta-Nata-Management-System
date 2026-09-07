@@ -21,17 +21,20 @@ public class MarriageApplicationController : Controller
     private readonly IMemberDashboardService _memberDashboardService;
     private readonly IBrideSectionService _brideSectionService;
     private readonly IBridegroomSectionService _bridegroomSectionService;
+    private readonly IMemberLookupService _memberLookupService;
 
     public MarriageApplicationController(
         IMarriageApplicationFormService formService,
         IMemberDashboardService memberDashboardService,
         IBrideSectionService brideSectionService,
-        IBridegroomSectionService bridegroomSectionService)
+        IBridegroomSectionService bridegroomSectionService,
+        IMemberLookupService memberLookupService)
     {
         _formService = formService;
         _memberDashboardService = memberDashboardService;
         _brideSectionService = brideSectionService;
         _bridegroomSectionService = bridegroomSectionService;
+        _memberLookupService = memberLookupService;
     }
 
     // GET: New Application (role-aware — either party can start)
@@ -96,26 +99,44 @@ public class MarriageApplicationController : Controller
         var isGroomFirst = string.Equals(
             model.StartingParty, "Groom", StringComparison.OrdinalIgnoreCase);
 
+        var starterMembershipNo = (isGroomFirst ? model.Bridegroom.MembershipNo : model.Bride.MembershipNo)?.Trim();
+        var partnerMembershipNo = (isGroomFirst ? model.Bride.MembershipNo : model.Bridegroom.MembershipNo)?.Trim();
+
+        if (string.Equals(starterMembershipNo, partnerMembershipNo, StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(string.Empty, "Your partner cannot be yourself.");
+            return View(model);
+        }
+
+        var partner = await _memberLookupService.LookupAsync(partnerMembershipNo ?? string.Empty, ct);
+        if (partner is null)
+        {
+            ModelState.AddModelError(string.Empty,
+                "We couldn't find that membership number. Please check it and try again.");
+            return View(model);
+        }
+
+        var partnerPhone = partner.PhoneNo;
         var form = new MarriageApplicationForm
         {
             ProposedNikahDate = model.ProposedNikahDate,
             Venue = model.Venue,
 
-            BrideMembershipNo = model.Bride.MembershipNo.Trim(),
-            BrideName = model.Bride.Name.Trim(),
-            BrideDateOfBirth = model.Bride.DateOfBirth,
-            BrideResidentOf = model.Bride.ResidentOf,
+            BrideMembershipNo = (isGroomFirst ? partner.ChandaNo : model.Bride.MembershipNo.Trim()),
+            BrideName = (isGroomFirst ? partner.FullName : model.Bride.Name.Trim()),
+            BrideDateOfBirth = (isGroomFirst ? (partner.DateOfBirth ?? model.Bride.DateOfBirth) : model.Bride.DateOfBirth),
+            BrideResidentOf = (isGroomFirst ? partner.Address : model.Bride.ResidentOf),
             BrideGenotype = model.Bride.Genotype,
             BrideBloodGroup = model.Bride.BloodGroup,
             BrideMaritalStatus = model.BrideMaritalStatus,
             BrideProposedDowerAmount = model.BrideProposedDowerAmount,
             BrideDowerAmountReceivedInCash = model.BrideDowerAmountReceivedInCash,
-            BrideSignatureTel = model.Bride.Phone.Trim(),
+            BrideSignatureTel = (isGroomFirst ? partnerPhone : model.Bride.Phone.Trim()),
 
-            BridegroomMembershipNo = model.Bridegroom.MembershipNo.Trim(),
-            BridegroomName = model.Bridegroom.Name.Trim(),
-            BridegroomDateOfBirth = model.Bridegroom.DateOfBirth,
-            BridegroomResidentOf = model.Bridegroom.ResidentOf,
+            BridegroomMembershipNo = (isGroomFirst ? model.Bridegroom.MembershipNo.Trim() : partner.ChandaNo),
+            BridegroomName = (isGroomFirst ? model.Bridegroom.Name.Trim() : partner.FullName),
+            BridegroomDateOfBirth = (isGroomFirst ? model.Bridegroom.DateOfBirth : (partner.DateOfBirth ?? model.Bridegroom.DateOfBirth)),
+            BridegroomResidentOf = (isGroomFirst ? model.Bridegroom.ResidentOf : partner.Address),
             BridegroomGenotype = model.Bridegroom.Genotype,
             BridegroomBloodGroup = model.Bridegroom.BloodGroup,
             BridegroomDowerAmountPaidInCash = model.BridegroomDowerAmountPaidInCash,
@@ -126,10 +147,9 @@ public class MarriageApplicationController : Controller
             HasDivorcedFormerWife = model.HasDivorcedFormerWife,
             FormerWifeIsPresent = model.FormerWifeIsPresent,
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
-            BridegroomSignatureTel = model.Bridegroom.Phone.Trim(),
+            BridegroomSignatureTel = (isGroomFirst ? model.Bridegroom.Phone.Trim() : partnerPhone),
 
             ApplicationStage = ApplicationStage.ApplicantsReview,
-
             FormStage = isGroomFirst
                 ? MarriageFormStage.AwaitingBride
                 : MarriageFormStage.AwaitingBridegroom
