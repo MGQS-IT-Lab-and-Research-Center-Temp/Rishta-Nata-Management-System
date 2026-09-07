@@ -1,6 +1,7 @@
 using Infrastructure.DTOs;
 using Infrastructure.DTOs.BrideGroom;
 using Presentation.Requests;
+using Presentation.ViewModels;
 
 namespace Presentation.Mapping;
 
@@ -46,4 +47,41 @@ public static class MarriageFormRequestMapping
             BridegroomSignatureTel = request.BridegroomSignatureTel
         };
     }
+
+    public static BrideSectionDto ToBrideDto(ContinueApplicationViewModel model) =>
+        new BrideSectionDto
+        {
+            MarriageApplicationId = model.Id,
+            BrideMembershipNo = model.MembershipNo,
+            BrideName = model.Name,
+            BrideDateOfBirth = model.DateOfBirth,
+            BrideResidentOf = model.ResidentOf,
+            BrideGenotype = model.Genotype,
+            BrideBloodGroup = model.BloodGroup,
+            BrideMaritalStatus = model.MaritalStatus,
+            BrideProposedDowerAmount = model.ProposedDowerAmount,
+            BrideDowerAmountReceivedInCash = model.DowerAmountReceivedInCash,
+            BrideSignatureTel = model.Phone
+        };
+
+    public static BridegroomSectionDto ToBridegroomDto(ContinueApplicationViewModel model) =>
+        new BridegroomSectionDto
+        {
+            Id = model.Id,
+            BridegroomMembershipNo = model.MembershipNo,
+            BridegroomName = model.Name,
+            BridegroomDateOfBirth = model.DateOfBirth,
+            BridegroomResidentOf = model.ResidentOf,
+            BridegroomGenotype = model.Genotype,
+            BridegroomBloodGroup = model.BloodGroup,
+            BridegroomDowerAmountPaidInCash = model.DowerAmountPaidInCash,
+            BridegroomDowerAmountToBePaid = model.DowerAmountToBePaid,
+            IsFirstNikah = model.IsFirstNikah,
+            IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah,
+            FormerWifeIsDead = model.FormerWifeIsDead,
+            HasDivorcedFormerWife = model.HasDivorcedFormerWife,
+            FormerWifeIsPresent = model.FormerWifeIsPresent,
+            FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
+            BridegroomSignatureTel = model.Phone
+        };
 }

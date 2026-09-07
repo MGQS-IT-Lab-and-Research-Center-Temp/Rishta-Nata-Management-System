@@ -9,7 +9,7 @@
     <p>Start your Nikah application. You can apply as the groom or the bride — your details are pre-filled from your membership record.</p>
 </div>
 
-<form asp-controller="Bridegroom" asp-action="Create" method="post">
+<form asp-controller="MarriageApplication" asp-action="Create" method="post">
     @Html.AntiForgeryToken()
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>

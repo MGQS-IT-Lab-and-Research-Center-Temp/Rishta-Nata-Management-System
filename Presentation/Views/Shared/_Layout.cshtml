@@ -109,11 +109,11 @@
                         <span>My Applications</span>
                     </a>
 
-                    <a class="nav-item @(IsActive("Bridegroom", "Create") ? "active" : "")"
-                       asp-controller="Bridegroom"
+                    <a class="nav-item @(IsActive("MarriageApplication", "Create") ? "active" : "")"
+                       asp-controller="MarriageApplication"
                        asp-action="Create">
                         <i class="bi bi-file-earmark-plus"></i>
-                        <span>New Application</span>
+                        <span>Apply for Nikah</span>
                     </a>
 
                     <a class="nav-item @(IsActive("Profile") ? "active" : "")"
@@ -153,6 +153,14 @@
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         @error
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["Info"] is string info)
+                {
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        @info
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 }
