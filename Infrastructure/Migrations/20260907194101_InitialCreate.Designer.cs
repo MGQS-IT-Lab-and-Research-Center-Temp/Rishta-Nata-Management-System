@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RishtanataDbContext))]
-    [Migration("20260907105655_InitialCreate")]
+    [Migration("20260907194101_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -55,7 +55,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationFormId")
                         .IsUnique();
 
-                    b.ToTable("AmirApprovalSection");
+                    b.ToTable("AmirApprovals", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
@@ -183,7 +183,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationFormId")
                         .IsUnique();
 
-                    b.ToTable("BrideFormSections");
+                    b.ToTable("NikahBrides", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.BrideGuardian", b =>
@@ -327,7 +327,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationFormId")
                         .IsUnique();
 
-                    b.ToTable("BrideGrooms", (string)null);
+                    b.ToTable("NikahGrooms", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
@@ -400,7 +400,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("FormApplicationId")
                         .IsUnique();
 
-                    b.ToTable("Certificates");
+                    b.ToTable("NikahCertificates", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.FormApplication", b =>
@@ -436,7 +436,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FormApplications");
+                    b.ToTable("ApplicationSubmissions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.GuardianOrWakeelSection", b =>
@@ -503,7 +503,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationFormId")
                         .IsUnique();
 
-                    b.ToTable("GuardianOrWakeelSection");
+                    b.ToTable("NikahGuardians", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.ImamVerificationSection", b =>
@@ -548,7 +548,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationFormId")
                         .IsUnique();
 
-                    b.ToTable("ImamVerificationSection");
+                    b.ToTable("ImamVerifications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Invitation", b =>
@@ -718,7 +718,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationFormId")
                         .IsUnique();
 
-                    b.ToTable("JamaatPresidentVerificationSection");
+                    b.ToTable("JamaatPresidentVerifications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.MarriageApplicationForm", b =>
@@ -1025,7 +1025,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationId")
                         .IsUnique();
 
-                    b.ToTable("MarriageApplicationForms");
+                    b.ToTable("NikahApplications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.MarriageFormRejection", b =>
@@ -1064,7 +1064,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("MarriageApplicationFormId");
 
-                    b.ToTable("MarriageFormRejections");
+                    b.ToTable("NikahRejections", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Review", b =>
@@ -1154,10 +1154,55 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MarriageApplicationFormId")
                         .IsUnique();
 
-                    b.ToTable("RishtanataRecommendationSection");
+                    b.ToTable("RishtanataRecommendations", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.WitnessSignatureSection", b =>
+            modelBuilder.Entity("Domain.Entities.SectionAccessToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedByMembershipNo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<Guid>("MarriageApplicationFormId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("SectionType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarriageApplicationFormId", "SectionType")
+                        .IsUnique();
+
+                    b.ToTable("SectionAccessTokens", (string)null);
+                });
+
+            modelBuilder.Entity("WitnessSignatureSection", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1211,7 +1256,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("MarriageApplicationFormId");
 
-                    b.ToTable("WitnessSignatureSection");
+                    b.ToTable("WitnessSignatures", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.AmirApprovalSection", b =>
@@ -1353,7 +1398,18 @@ namespace Infrastructure.Migrations
                     b.Navigation("MarriageApplicationForm");
                 });
 
-            modelBuilder.Entity("Domain.Entities.WitnessSignatureSection", b =>
+            modelBuilder.Entity("Domain.Entities.SectionAccessToken", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithMany("SectionAccessTokens")
+                        .HasForeignKey("MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
+            modelBuilder.Entity("WitnessSignatureSection", b =>
                 {
                     b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
                         .WithMany("WitnessSignatures")
@@ -1395,6 +1451,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Rejections");
 
                     b.Navigation("RishtanataRecommendation");
+
+                    b.Navigation("SectionAccessTokens");
 
                     b.Navigation("WitnessSignatures");
                 });
