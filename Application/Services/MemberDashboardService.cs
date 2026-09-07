@@ -1,3 +1,5 @@
+using System;
+using System.Linq.Expressions;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
@@ -66,6 +68,8 @@ public class MemberDashboardService : IMemberDashboardService
             .OrderByDescending(x => x.MarriageDate)
             .FirstOrDefault();
 
+        dto.ActiveApplication = await GetActiveApplicationAsync(no, cancellationToken);
+
         return dto;
     }
 
@@ -85,16 +89,30 @@ public class MemberDashboardService : IMemberDashboardService
             .Include(x => x.MarriageApplication)
             .Where(x => x.BridegroomMembershipNo == no || x.BrideMembershipNo == no)
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new MemberApplicationDto
-            {
-                Id = x.Id,
-                ReferenceNumber = x.ReferenceNumber,
-                SpouseName = x.BridegroomMembershipNo == no ? x.BrideName : x.BridegroomName,
-                Role = x.BridegroomMembershipNo == no ? "Groom" : "Bride",
-                Status = x.MarriageApplication!.Status.ToString(),
-                SubmittedDate = x.CreatedAt
-            })
+            .Select(ProjectToApplicationDto(no))
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<MemberApplicationDto?> GetActiveApplicationAsync(
+        string membershipNo,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(membershipNo))
+        {
+            return null;
+        }
+
+        var no = membershipNo.Trim();
+
+        return await _context.MarriageApplicationForms
+            .AsNoTracking()
+            .Include(x => x.MarriageApplication)
+            .Where(x => x.BridegroomMembershipNo == no || x.BrideMembershipNo == no)
+            .Where(x => x.FormStage != MarriageFormStage.Completed &&
+                        x.MarriageApplication!.Status != ApplicationStatus.ApplicationRejected)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(ProjectToApplicationDto(no))
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<MemberProfileDto?> GetProfileAsync(
@@ -138,6 +156,27 @@ public class MemberDashboardService : IMemberDashboardService
             RoleName = string.IsNullOrWhiteSpace(member.Roles) ? null : member.Roles
         };
     }
+
+    private static Expression<Func<MarriageApplicationForm, MemberApplicationDto>> ProjectToApplicationDto(string no) =>
+        x => new MemberApplicationDto
+        {
+            Id = x.Id,
+            ReferenceNumber = x.ReferenceNumber,
+            SpouseName = x.BridegroomMembershipNo == no ? x.BrideName : x.BridegroomName,
+            Role = x.BridegroomMembershipNo == no ? "Groom" : "Bride",
+            Status = x.MarriageApplication!.Status.ToString(),
+            SubmittedDate = x.CreatedAt,
+            FormStage = x.FormStage,
+            IsActive = x.FormStage != MarriageFormStage.Completed &&
+                       x.MarriageApplication!.Status != ApplicationStatus.ApplicationRejected,
+            IsAwaitingYourSection =
+                (x.BridegroomMembershipNo == no &&
+                    (x.FormStage == MarriageFormStage.AwaitingBridegroom ||
+                     x.FormStage == MarriageFormStage.AwaitingApplicants)) ||
+                (x.BrideMembershipNo == no &&
+                    (x.FormStage == MarriageFormStage.AwaitingBride ||
+                     x.FormStage == MarriageFormStage.AwaitingApplicants))
+        };
 
     private static string SpouseName(MarriageApplicationForm form, string membershipNo) =>
         string.Equals(form.BridegroomMembershipNo, membershipNo, StringComparison.OrdinalIgnoreCase)

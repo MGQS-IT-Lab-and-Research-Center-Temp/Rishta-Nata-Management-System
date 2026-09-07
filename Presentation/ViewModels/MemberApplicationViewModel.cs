@@ -15,4 +15,8 @@ public class MemberApplicationViewModel
     public string Status { get; set; } = string.Empty;
 
     public DateTime SubmittedDate { get; set; }
+
+    public bool IsAwaitingYourSection { get; set; }
+
+    public Domain.Enums.MarriageFormStage FormStage { get; set; }
 }

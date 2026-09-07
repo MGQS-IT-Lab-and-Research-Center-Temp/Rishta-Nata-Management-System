@@ -39,7 +39,20 @@ public class JamaatMemberDashboardController : Controller
                     Status = entry.Status,
                     Date = entry.Date
                 })
-                .ToList()
+                .ToList(),
+            ActiveApplication = dto.ActiveApplication is null
+                ? null
+                : new MemberApplicationViewModel
+                {
+                    Id = dto.ActiveApplication.Id,
+                    ReferenceNumber = dto.ActiveApplication.ReferenceNumber,
+                    SpouseName = dto.ActiveApplication.SpouseName,
+                    Role = dto.ActiveApplication.Role,
+                    Status = dto.ActiveApplication.Status,
+                    SubmittedDate = dto.ActiveApplication.SubmittedDate,
+                    IsAwaitingYourSection = dto.ActiveApplication.IsAwaitingYourSection,
+                    FormStage = dto.ActiveApplication.FormStage
+                }
         };
 
         return View(model);

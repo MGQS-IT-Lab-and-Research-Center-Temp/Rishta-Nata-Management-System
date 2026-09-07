@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Infrastructure.DTOs.MemberDashboard;
 
 public class MemberApplicationDto
@@ -13,4 +15,10 @@ public class MemberApplicationDto
     public string Status { get; set; } = string.Empty;
 
     public DateTime SubmittedDate { get; set; }
+
+    public MarriageFormStage FormStage { get; set; }
+
+    public bool IsActive { get; set; }
+
+    public bool IsAwaitingYourSection { get; set; }
 }

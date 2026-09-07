@@ -7,6 +7,8 @@ public class MemberDashboardDto
     public SpouseInfoDto? CurrentSpouse { get; set; }
 
     public List<MarriageHistoryEntryDto> MarriageHistory { get; set; } = new();
+
+    public MemberApplicationDto? ActiveApplication { get; set; }
 }
 
 public class SpouseInfoDto

@@ -33,7 +33,9 @@ public class ApplicationsController : Controller
                 SpouseName = a.SpouseName,
                 Role = a.Role,
                 Status = a.Status,
-                SubmittedDate = a.SubmittedDate
+                SubmittedDate = a.SubmittedDate,
+                IsAwaitingYourSection = a.IsAwaitingYourSection,
+                FormStage = a.FormStage
             })
             .ToList();
 

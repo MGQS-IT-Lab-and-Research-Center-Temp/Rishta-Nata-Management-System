@@ -23,6 +23,8 @@
                             <th>Role</th>
                             <th>Submitted</th>
                             <th>Status</th>
+                            <th>Next</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,6 +36,29 @@
                                 <td>@item.Role</td>
                                 <td>@item.SubmittedDate.ToString("dd MMM yyyy")</td>
                                 <td>@item.Status</td>
+                                <td>
+                                    <div class="small text-muted">@Presentation.ViewModels.FormStageLabels.For(item.FormStage)</div>
+                                    @if (item.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses)
+                                    {
+                                        <a asp-controller="SectionLinks"
+                                           asp-action="Index"
+                                           asp-route-applicationId="@item.Id"
+                                           class="btn btn-sm btn-outline-primary mt-1">
+                                            Signature links
+                                        </a>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.IsAwaitingYourSection)
+                                    {
+                                        <a asp-controller="MarriageApplication"
+                                           asp-action="Continue"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-primary">
+                                            Continue
+                                        </a>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>

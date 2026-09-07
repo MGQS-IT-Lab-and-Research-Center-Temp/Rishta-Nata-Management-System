@@ -17,6 +17,10 @@ public interface IMemberDashboardService
         string membershipNo,
         CancellationToken cancellationToken = default);
 
+    Task<MemberApplicationDto?> GetActiveApplicationAsync(
+        string membershipNo,
+        CancellationToken cancellationToken = default);
+
     Task<MemberProfileDto?> GetProfileAsync(
         string membershipNo,
         CancellationToken cancellationToken = default);
