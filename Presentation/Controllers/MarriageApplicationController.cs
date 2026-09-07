@@ -91,13 +91,24 @@ public class MarriageApplicationController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NewApplicationViewModel model, CancellationToken ct)
     {
+        var isGroomFirst = string.Equals(
+            model.StartingParty, "Groom", StringComparison.OrdinalIgnoreCase);
+
+        // The partner's Name/DateOfBirth/ResidentOf/Phone are not rendered as editable
+        // inputs on the starter-only view, so they are never posted; the shared
+        // ApplicantPartyInfo [Required] annotations would otherwise fail validation for
+        // the partner's unposted fields. The partner's identity is derived server-side
+        // from the Tajneed lookup, so those errors are dropped here.
+        var partnerPrefix = isGroomFirst ? "Bride" : "Bridegroom";
+        foreach (var prop in new[] { "Name", "DateOfBirth", "ResidentOf", "Phone" })
+        {
+            ModelState.Remove($"{partnerPrefix}.{prop}");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
         }
-
-        var isGroomFirst = string.Equals(
-            model.StartingParty, "Groom", StringComparison.OrdinalIgnoreCase);
 
         var starterMembershipNo = (isGroomFirst ? model.Bridegroom.MembershipNo : model.Bride.MembershipNo)?.Trim();
         var partnerMembershipNo = (isGroomFirst ? model.Bride.MembershipNo : model.Bridegroom.MembershipNo)?.Trim();
