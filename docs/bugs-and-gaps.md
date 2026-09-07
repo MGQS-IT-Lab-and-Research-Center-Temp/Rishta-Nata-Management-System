@@ -5,6 +5,11 @@ file as items are fixed.
 
 ## Fixed (recent session)
 
+- **Guardian/witness submission is now live (was D2 stub).** Anonymous,
+  revocable, stage-gated share links (`SectionLinks` + `SharedSection`,
+  `SharedSectionService`) replace the formerly-stubbed endpoints. Legacy
+  `WitnessController` / `BrideGuardianController` remain wired but are
+  superseded (flag for removal).
 - **Test project no longer compiled** — `JamaatMember.Password` was removed but
   still referenced by three test files. Fixed by removing the `Password` seed
   lines. Tests now compile.
@@ -34,12 +39,15 @@ file as items are fixed.
    and `CertificateConfiguration` ignores the dead `MarriageApplicationForm` /
    `MarriageApplicationFormId` leftovers. No product decision pending.
 
-2. **EF migrations — reconciled.** The snapshot no longer maps Identity tables,
-   and a migration (`AddJamaatMemberRoles`) now adds the `JamaatMember.Roles`
-   column. The `InitialCreate` migration carries Oracle-provider
-   `MySQL:Charset` annotations, which are correct for the current
-   `MySql.EntityFrameworkCore` provider. No further reconciliation needed unless
-   the provider changes.
+2. **EF migrations — regenerated from scratch.** Local development (no data-loss
+   concern), so the DB was dropped and all migrations replaced by a single fresh
+   `InitialCreate` (`20260907105655_InitialCreate`) spanning the whole current
+   model, applied to the recreated `rishtanatahdb`. ReferenceNumber is now a
+   `varchar(50)` column on all four shareable sections, `BrideFormSection`, and
+   `BrideGuardian`. The `MySQL:Charset` annotations emitted by the current
+   `MySql.EntityFrameworkCore` provider are correct; no further reconciliation
+   needed unless the provider changes. Future schema changes must be additive
+   migrations on top of this baseline.
 
 ## Design / decision
 

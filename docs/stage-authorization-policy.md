@@ -222,9 +222,12 @@ proves painful, add a role-refresh hook later — out of scope for v1.)
 
 ## 8. Open questions (do not silently decide in code)
 
-- **Q1 — Must witnesses/guardian/wakeel be Jamaat members?** If yes, capture
-  ChandaNo always and delete the §4.2 fallback. Owner: product owner. Blocks:
-  D2, F2 witness endpoints.
+- **Q1 — Must witnesses/guardian/wakeel be Jamaat members?** (RESOLVED) No —
+  identity is holder-of-link. Their details are self-attested through the
+  anonymous `SharedSection/Fill/{token}` flow (see `application-workflow.md`
+  §6); member lookup is an optional convenience prefill, not a gate. Tokens are
+  stored hashed (SHA-256), one active token per (form, section), revocable by
+  regeneration.
 - **Q2 — Is `AwaitingWitnesses` one stage or two?** Tracked separately as
   Ticket F1; this policy is agnostic — whichever way it splits, each resulting
   stage gets its own row in the §4 tables.

@@ -469,7 +469,7 @@ dashboards, in priority order:</p>
 <p>Role strings live in <code>Domain/Constants/RoleNames.cs</code> (provisional — confirm
 against the live API).</p>
 <h2 id="3-starting-an-application-either-party-may-start">3. Starting an application (either party may start)</h2>
-<p>The member clicks <strong>New Application</strong> (<code>Bridegroom/Create</code>).</p>
+<p>The member clicks <strong>Apply for Nikah</strong> (<code>MarriageApplication/Create</code>). If the member already has a non-terminal application, this redirects them to continue that application instead (<code>MarriageApplication/Continue/{id}</code>).</p>
 <ol>
 <li>
 <p>The controller reads the logged-in member's <code>Sex</code> from their local

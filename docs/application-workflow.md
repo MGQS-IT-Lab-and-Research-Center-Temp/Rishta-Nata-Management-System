@@ -51,7 +51,9 @@ against the live API).
 
 ## 3. Starting an application (either party may start)
 
-The member clicks **New Application** (`Bridegroom/Create`).
+The member clicks **Apply for Nikah** (`MarriageApplication/Create`). If the
+member already has a non-terminal application, this redirects them to continue
+that application instead (`MarriageApplication/Continue/{id}`).
 
 1. The controller reads the logged-in member's `Sex` from their local
    `JamaatMember` record (via `IMemberDashboardService.GetProfileAsync`) and
@@ -126,17 +128,22 @@ matrix.
 
 ## 6. Non-login parties (fathers, guardian, witnesses)
 
-Parties recorded by name/address/telephone on the paper form are filled via
-MVC flows keyed by the application id:
+Guardian/witness details are collected **anonymously** via revocable share
+links, stage-gated to `AwaitingWitnesses`:
 
-- `BrideGuardian/Create/{marriageApplicationId}` — guardian/waliyy + both
-  fathers. A "is member" checkbox reveals a membership-number field, whose value
-  auto-fills name/address/phone via `RNMemberLookup`.
-- `Witness/Create/{marriageApplicationId}` — both witnesses, same lookup wiring.
+- `SectionLinks/Index/{applicationId}` (authenticated, party-only) — the
+  bride/groom mints and regenerates links per section (Guardian / Witness 1 /
+  Witness 2). The raw link is shown once and stored only as a SHA-256 hash.
+- `SharedSection/Fill/{token}` (fully anonymous) — validates the token, then
+  upserts the guardian/witness section row + the flat mirror columns. Once all
+  three sections are recorded the form auto-advances `AwaitingWitnesses` →
+  `AwaitingImamVerification`.
+- A "I am a member" checkbox prefills name/address/phone from
+  `MemberLookupService` (`GET /api/members/lookup/{chandaNo}` → Tajneed gateway
+  with local-cache fallback), overriding only blank fields.
 
-`GET /api/members/lookup/{chandaNo}` (`MemberLookupService`) resolves a ChandaNo
-against the Tajneed gateway (with local-cache fallback) and returns full name,
-address, phone, jamaat name, and date of birth.
+Legacy authenticated flows (`BrideGuardian/Create/{marriageApplicationId}`,
+`Witness/Create/{marriageApplicationId}`) remain wired but are now superseded.
 
 ## 7. Verification & approval chain
 
@@ -187,8 +194,9 @@ for the current stage to revert to an earlier `ApplicationStage`, recording a
 - **Two parallel stage enums** (`ApplicationStage` vs `MarriageFormStage`) drive
   two `CanUserActAsync` overloads. Unifying them is an open product decision —
   see `docs/stage-authorization-policy.md` §8.
-- The **guardian/witness submission endpoints** are stubbed (501) pending
-  backlog D2, though the MVC create flows in §6 are wired.
+- The **guardian/witness submission** is live via anonymous share links
+  (`SectionLinks` + `SharedSection`, §6). The legacy `WitnessController` /
+  `BrideGuardianController` MVC flows are superseded (flagged for removal).
 - The **Certificate↔FormApplication** relationship is configured in
   `RishtanataDbContext.OnModelCreating`; `MarriageApplicationForm.Certificate`
   is deliberately ignored.
