@@ -54,7 +54,15 @@ public class RishtanataDbContext : DbContext
         });
 
         modelBuilder.Entity<BridegroomFormSection>(e =>
-            e.Property(x => x.ReferenceNumber).HasMaxLength(50));
+        {
+            e.Property(x => x.ReferenceNumber).HasMaxLength(50);
+            e.Property(x => x.BridegroomMembershipNo).HasMaxLength(50);
+            e.Property(x => x.BridegroomName).HasMaxLength(200);
+            e.Property(x => x.BridegroomResidentOf).HasMaxLength(300);
+            e.Property(x => x.BridegroomGenotype).HasMaxLength(10);
+            e.Property(x => x.BridegroomBloodGroup).HasMaxLength(10);
+            e.Property(x => x.BridegroomSignatureTel).HasMaxLength(30);
+        });
 
         modelBuilder.Entity<GuardianOrWakeelSection>(e =>
             e.Property(x => x.ReferenceNumber).HasMaxLength(50));
