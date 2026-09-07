@@ -76,10 +76,12 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             ? GenerateReferenceNumber()
             : application.ReferenceNumber;
 
-        // The Create POST hydrates both parties' flat fields up front, so both
-        // section rows are created here as a single EF graph (one SaveChanges,
-        // one implicit transaction — no split-save atomicity gap).
-        if (application.BrideSection is null && !string.IsNullOrWhiteSpace(application.BrideName))
+        // Only the starting party's section row is created now. The partner's row is
+        // created later, when the partner signs in and completes their own section via
+        // SubmitBrideSectionAsync / SubmitBridegroomSectionAsync (which upsert-or-create).
+        var brideStarted = application.FormStage == MarriageFormStage.AwaitingBridegroom;
+
+        if (brideStarted && application.BrideSection is null && !string.IsNullOrWhiteSpace(application.BrideName))
         {
             application.BrideSection = new BrideFormSection
             {
@@ -99,7 +101,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             };
         }
 
-        if (application.BridegroomSection is null && !string.IsNullOrWhiteSpace(application.BridegroomName))
+        if (!brideStarted && application.BridegroomSection is null && !string.IsNullOrWhiteSpace(application.BridegroomName))
         {
             application.BridegroomSection = new BridegroomFormSection
             {
