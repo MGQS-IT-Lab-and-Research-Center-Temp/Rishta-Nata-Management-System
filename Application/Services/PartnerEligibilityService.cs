@@ -88,10 +88,10 @@ public class PartnerEligibilityService : IPartnerEligibilityService
             return Deny(GroomNotEligibleMessage);
         }
 
-        if (brideMaritalStatus.Equals("Widowed", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(brideMaritalStatus, "Widowed", StringComparison.OrdinalIgnoreCase))
             return Allow();
 
-        if (brideMaritalStatus.Equals("Divorced", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(brideMaritalStatus, "Divorced", StringComparison.OrdinalIgnoreCase))
             return string.IsNullOrWhiteSpace(brideDivorceEvidence)
                 ? Deny(BrideKhulaEvidenceMessage)
                 : Allow();
