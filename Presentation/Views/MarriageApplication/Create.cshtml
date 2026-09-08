@@ -87,6 +87,12 @@
                             <option>Single</option><option>Widowed</option><option>Divorced</option>
                         </select>
                     </div>
+                    <div class="col-md-6 d-none" id="khulaEvidenceGroup">
+                        <label asp-for="BrideDivorceEvidence" class="form-label">
+                            Evidence of Khula (divorce certificate reference / number)
+                        </label>
+                        <input asp-for="BrideDivorceEvidence" class="form-control" />
+                    </div>
                     <div class="col-md-4">
                         <label asp-for="BrideProposedDowerAmount" class="form-label"></label>
                         <input asp-for="BrideProposedDowerAmount" class="form-control" type="number" min="0" step="0.01" />
@@ -198,16 +204,27 @@
                             <label class="form-check-label" for="firstNikahNo">No</label>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label d-block">Is this a second, third or fourth Nikah?</label>
-                        <div class="form-check form-check-inline">
-                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="true" id="multiNikahYes" />
-                            <label class="form-check-label" for="multiNikahYes">Yes</label>
+                    <div class="col-md-6 d-none" id="remarriageGroup">
+                        <label class="form-label d-block">If not your first Nikah, which applies?</label>
+                        <div class="form-check">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input remar-opt" type="radio" value="true" id="renSubseq" />
+                            <label class="form-check-label" for="renSubseq">Second, third or fourth Nikah</label>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="false" id="multiNikahNo" />
-                            <label class="form-check-label" for="multiNikahNo">No</label>
+                        <div class="form-check">
+                            <input asp-for="FormerWifeIsDead" class="form-check-input remar-opt" type="radio" value="true" id="renWidower" />
+                            <label class="form-check-label" for="renWidower">Widower</label>
                         </div>
+                        <div class="form-check">
+                            <input asp-for="HasDivorcedFormerWife" class="form-check-input remar-opt" type="radio" value="true" id="renDivorced" />
+                            <label class="form-check-label" for="renDivorced">Divorced (provide evidence below)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 d-none" id="talaqEvidenceGroup">
+                        <label asp-for="BridegroomDivorceEvidence" class="form-label">
+                            Evidence of Talaq (divorce certificate reference / number)
+                        </label>
+                        <input asp-for="BridegroomDivorceEvidence" class="form-control" />
                     </div>
                 </div>
             </div>
@@ -337,6 +354,46 @@
             }
 
             wirePartnerLookup('partnerMembershipNo');
+
+            function wireRemarriage() {
+                var firstNikahYes = document.getElementById('firstNikahYes');
+                var firstNikahNo = document.getElementById('firstNikahNo');
+                var group = document.getElementById('remarriageGroup');
+                var talaq = document.getElementById('talaqEvidenceGroup');
+                if (!firstNikahYes || !firstNikahNo || !group) { return; }
+                var options = group.querySelectorAll('.remar-opt');
+                var div = document.getElementById('renDivorced');
+
+                function render() {
+                    var notFirst = firstNikahNo && firstNikahNo.checked;
+                    group.classList.toggle('d-none', !notFirst);
+                    talaq.classList.toggle('d-none', !(div && div.checked));
+                }
+
+                function onOptionChange(el) {
+                    options.forEach(function (o) { if (o !== el) { o.checked = false; } });
+                    render();
+                }
+
+                firstNikahYes.addEventListener('change', function () {
+                    options.forEach(function (o) { o.checked = false; });
+                    render();
+                });
+                firstNikahNo.addEventListener('change', render);
+                options.forEach(function (o) { o.addEventListener('change', function () { onOptionChange(o); }); });
+                render();
+            }
+            wireRemarriage();
+
+            function wireBrideEvidence() {
+                var sel = document.getElementById('BrideMaritalStatus');
+                var khula = document.getElementById('khulaEvidenceGroup');
+                if (!sel || !khula) { return; }
+                function render() { khula.classList.toggle('d-none', sel.value !== 'Divorced'); }
+                sel.addEventListener('change', render);
+                render();
+            }
+            wireBrideEvidence();
         })();
     </script>
 }
