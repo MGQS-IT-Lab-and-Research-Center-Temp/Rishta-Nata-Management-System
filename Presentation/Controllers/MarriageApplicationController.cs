@@ -22,19 +22,22 @@ public class MarriageApplicationController : Controller
     private readonly IBrideSectionService _brideSectionService;
     private readonly IBridegroomSectionService _bridegroomSectionService;
     private readonly IMemberLookupService _memberLookupService;
+    private readonly IPartnerEligibilityService _eligibility;
 
     public MarriageApplicationController(
         IMarriageApplicationFormService formService,
         IMemberDashboardService memberDashboardService,
         IBrideSectionService brideSectionService,
         IBridegroomSectionService bridegroomSectionService,
-        IMemberLookupService memberLookupService)
+        IMemberLookupService memberLookupService,
+        IPartnerEligibilityService eligibility)
     {
         _formService = formService;
         _memberDashboardService = memberDashboardService;
         _brideSectionService = brideSectionService;
         _bridegroomSectionService = bridegroomSectionService;
         _memberLookupService = memberLookupService;
+        _eligibility = eligibility;
     }
 
     // GET: New Application (role-aware — either party can start)
@@ -116,6 +119,21 @@ public class MarriageApplicationController : Controller
         if (string.Equals(starterMembershipNo, partnerMembershipNo, StringComparison.OrdinalIgnoreCase))
         {
             ModelState.AddModelError(string.Empty, "Your partner cannot be yourself.");
+            return View(model);
+        }
+
+        var eligibility = await _eligibility.ValidateAsync(
+            partnerMembershipNo ?? string.Empty,
+            !isGroomFirst,
+            model.IsSecondThirdOrFourthNikah,
+            model.FormerWifeIsDead,
+            model.HasDivorcedFormerWife,
+            model.BrideMaritalStatus,
+            ct);
+
+        if (!eligibility.IsAllowed)
+        {
+            ModelState.AddModelError(string.Empty, eligibility.Message);
             return View(model);
         }
 
