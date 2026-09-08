@@ -128,6 +128,7 @@
                     </div>
                 </div>
                 <div id="partnerNotFound" class="alert alert-warning d-none mt-3">We couldn't find that membership number. Please check it and try again.</div>
+                <div id="partnerBlocked" class="alert alert-danger d-none mt-3"></div>
             </div>
         </div>
     }
@@ -253,6 +254,7 @@
                     </div>
                 </div>
                 <div id="partnerNotFound" class="alert alert-warning d-none mt-3">We couldn't find that membership number. Please check it and try again.</div>
+                <div id="partnerBlocked" class="alert alert-danger d-none mt-3"></div>
             </div>
         </div>
     }
@@ -328,23 +330,33 @@
                     var chandaNo = input.value.trim();
                     var preview = document.getElementById('partnerPreview');
                     var notFound = document.getElementById('partnerNotFound');
+                    var blocked = document.getElementById('partnerBlocked');
                     if (!chandaNo) { return; }
-                    fetch('/api/members/lookup/' + encodeURIComponent(chandaNo))
+                    fetch('/api/members/partner-eligibility/' + encodeURIComponent(chandaNo))
                         .then(function (r) { return r.ok ? r.json() : null; })
                         .then(function (m) {
                             if (!m) {
                                 if (preview) { preview.classList.add('d-none'); }
+                                if (blocked) { blocked.classList.add('d-none'); }
                                 if (notFound) { notFound.classList.remove('d-none'); }
                                 if (submit) { submit.disabled = true; }
                                 return;
                             }
+                            if (m.blocked) {
+                                if (preview) { preview.classList.add('d-none'); }
+                                if (notFound) { notFound.classList.add('d-none'); }
+                                if (blocked) { blocked.textContent = m.message || ''; blocked.classList.remove('d-none'); }
+                                if (submit) { submit.disabled = true; }
+                                return;
+                            }
                             if (notFound) { notFound.classList.add('d-none'); }
+                            if (blocked) { blocked.classList.add('d-none'); }
                             if (preview) { preview.classList.remove('d-none'); }
                             function set(id, v) { var el = document.getElementById(id); if (el) { el.textContent = v || ''; } }
-                            set('pvName', m.fullName);
-                            set('pvDob', m.dateOfBirth ? m.dateOfBirth.slice(0, 10) : '');
-                            set('pvAddress', m.address);
-                            set('pvPhone', m.phoneNo);
+                            set('pvName', m.member.fullName);
+                            set('pvDob', m.member.dateOfBirth ? m.member.dateOfBirth.slice(0, 10) : '');
+                            set('pvAddress', m.member.address);
+                            set('pvPhone', m.member.phoneNo);
                             if (submit) { submit.disabled = false; }
                         })
                         .catch(function () {
