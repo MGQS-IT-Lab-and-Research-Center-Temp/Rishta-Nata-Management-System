@@ -112,3 +112,25 @@ file as items are fixed.
 
 13. **Nullable warnings** (not errors): `JamaatPresidentService.cs:97` (CS8602),
     `MarriageFormStageRevertedEventHandler.cs:96` (CS8629).
+
+14. **Additive migration not yet applied to a live MySQL.**
+    `20260908155154_AddDivorceEvidence` (4 × `varchar(500)`:
+    `NikahApplications.BrideDivorceEvidence`/`BridegroomDivorceEvidence`,
+    `NikahBrides.BrideDivorceEvidence`, `NikahGrooms.BridegroomDivorceEvidence`)
+    predates any live-DB apply. Until applied, the new divorce-evidence fields are
+    all empty and the eligible-divorce path will store nothing. Apply via
+    `dotnet ef database update` (or equivalent SQL) against MySQL when
+    appropriate — do not hand-edit `InitialCreate`.
+
+15. **Eligibility denies reuse `WrongStage` deny reason.**
+    `BrideSectionService`/`BridegroomSectionService` return
+    `StageAuthorizationDenyReason.WrongStage` with the partner-eligibility message
+    because no code branches on the reason. Deliberate; an enum addition
+    (`PartnerNotEligible = 8`) is a plausible follow-up if reasons ever are acted on.
+
+16. **Divorce-evidence persistence is client-consented, not server-gated.**
+    The section services persist `BrideDivorceEvidence`/`BridegroomDivorceEvidence`
+    unconditionally; correctness relies on the UI clearing the input when its
+    status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
+    without the corresponding divorced flag. Harden server-side only if such data
+    integrity becomes important.
