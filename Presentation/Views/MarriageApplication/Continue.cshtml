@@ -169,6 +169,11 @@
                 if (!firstNikahYes || !firstNikahNo || !group) { return; }
                 var options = group.querySelectorAll('.remar-opt');
                 var div = document.getElementById('renDivorced');
+                var talaqInput = document.querySelector('#talaqEvidenceGroup input');
+
+                function clearTalaq() {
+                    if (talaqInput) { talaqInput.value = ''; }
+                }
 
                 function render() {
                     var notFirst = firstNikahNo && firstNikahNo.checked;
@@ -178,11 +183,13 @@
 
                 function onOptionChange(el) {
                     options.forEach(function (o) { if (o !== el) { o.checked = false; } });
+                    if (el !== div) { clearTalaq(); }
                     render();
                 }
 
                 firstNikahYes.addEventListener('change', function () {
                     options.forEach(function (o) { o.checked = false; });
+                    clearTalaq();
                     render();
                 });
                 firstNikahNo.addEventListener('change', render);
@@ -195,8 +202,12 @@
                 var sel = document.getElementById('MaritalStatus');
                 var khula = document.getElementById('khulaEvidenceGroup');
                 if (!sel || !khula) { return; }
+                var khulaInput = khula.querySelector('input');
                 function render() { khula.classList.toggle('d-none', sel.value !== 'Divorced'); }
-                sel.addEventListener('change', render);
+                sel.addEventListener('change', function () {
+                    if (sel.value !== 'Divorced') { khulaInput.value = ''; }
+                    render();
+                });
                 render();
             }
             wireBrideEvidence();
