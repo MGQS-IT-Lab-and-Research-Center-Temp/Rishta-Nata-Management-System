@@ -1,8 +1,12 @@
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
 
+// Lookup exposes member PII (names, phones, addresses) so it must not be
+// reachable anonymously.
+[Authorize]
 [ApiController]
 [Route("api/members")]
 public class MemberLookupController : ControllerBase

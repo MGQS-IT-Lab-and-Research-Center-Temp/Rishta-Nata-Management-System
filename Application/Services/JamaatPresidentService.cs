@@ -40,10 +40,15 @@ public class JamaatPresidentService : IJamaatPresidentService
 
         if (jamaatMember == null)
         {
-            throw new InvalidOperationException(
-                currentUserId.HasValue
-                    ? $"No Jama'at member was found for the current user ID '{currentUserId.Value}'."
-                    : "Unable to load the Jama'at member because no current user ID was provided.");
+            return new JamaatPresidentDashboardDto
+            {
+                PresidentName = string.Empty,
+                JamaatName = "Jama'at",
+                CircuitName = "Circuit",
+                PendingNikahReviews = 0,
+                TotalNikahApplications = 0,
+                PendingApplications = new List<NikahApplicationDto>()
+            };
         }
 
         var pendingApplications = await _context.FormApplications
@@ -104,31 +109,30 @@ public class JamaatPresidentService : IJamaatPresidentService
 
     public async Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id)
     {
-        var review = await _context.Reviews
-            .Include(r => r.MarriageApplication!)
-                .ThenInclude(r => r.MarriageApplicationForm)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        // The dashboard routes here with a FormApplication.Id (see
+        // JamaatPresidentService.GetDashboardAsync -> NikahApplicationDto.Id),
+        // and the Review view posts that same id back to Approve/Reject which
+        // resolve a FormApplication. So resolve against FormApplication.Id, not
+        // the never-populated Review table. Return null (no throw) so the
+        // controller can turn a miss into a 404.
+        var application = await _context.FormApplications
+            .Include(x => x.MarriageApplicationForm)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
-        if (review == null)
-        {
-            throw new KeyNotFoundException(
-                $"No review was found with ID '{id}'.");
-        }
-
-        var form = review.MarriageApplication?.MarriageApplicationForm;
+        var form = application?.MarriageApplicationForm;
 
         if (form == null)
         {
-            throw new InvalidOperationException(
-                $"Review '{id}' does not have an associated marriage application form.");
+            return null;
         }
 
         return new JamaatPresidentReviewDto
         {
-            Id = review.Id,
+            Id = application!.Id,
             ReferenceNumber = form.ReferenceNumber,
-            Status = review.Status,
-            SubmittedDate = review.ReviewedAt,
+            Status = application.Status.ToString(),
+            SubmittedDate = application.CreatedAt,
+            CurrentStage = form.ApplicationStage,
 
             ProposedNikahDate = form.ProposedNikahDate,
             Venue = form.Venue,

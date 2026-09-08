@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
+﻿using Domain.Enums;
+
+namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
 {
 
     public class ReviewApplicationDto
@@ -30,6 +32,9 @@
         public string? Status { get; set; }
 
         public bool IsApprovedByPresident { get; set; }
+
+        /// <summary>The form's current review-chain stage, for the revert modal.</summary>
+        public ApplicationStage? CurrentStage { get; set; }
     }
 
 

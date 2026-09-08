@@ -59,6 +59,7 @@ public static class MarriageFormRequestMapping
             BrideGenotype = model.Genotype,
             BrideBloodGroup = model.BloodGroup,
             BrideMaritalStatus = model.MaritalStatus,
+            BrideDivorceEvidence = model.BrideDivorceEvidence,
             BrideProposedDowerAmount = model.ProposedDowerAmount,
             BrideDowerAmountReceivedInCash = model.DowerAmountReceivedInCash,
             BrideSignatureTel = model.Phone
@@ -80,6 +81,7 @@ public static class MarriageFormRequestMapping
             IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah,
             FormerWifeIsDead = model.FormerWifeIsDead,
             HasDivorcedFormerWife = model.HasDivorcedFormerWife,
+            BridegroomDivorceEvidence = model.BridegroomDivorceEvidence,
             FormerWifeIsPresent = model.FormerWifeIsPresent,
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
             BridegroomSignatureTel = model.Phone

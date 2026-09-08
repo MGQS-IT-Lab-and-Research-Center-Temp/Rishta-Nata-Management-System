@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebUI.Controllers;
@@ -14,7 +15,11 @@ public class InvitationsController : Controller
         _invitationService = invitationService;
     }
 
+    // Only authenticated members may mint new invitation links. Acceptance is
+    // still token-scoped (the GET below stays anonymous).
     [HttpPost("generate")]
+    [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Generate([FromForm] InvitationGenerateModel model)
     {
         // This link generation is code or path independent

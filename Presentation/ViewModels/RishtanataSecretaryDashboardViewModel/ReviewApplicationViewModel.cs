@@ -1,4 +1,5 @@
 ﻿using System;
+using Domain.Enums;
 
 namespace Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
 
@@ -31,4 +32,7 @@ public class ReviewApplicationViewModel
     public string? Status { get; set; }
 
     public bool IsApprovedByPresident { get; set; }
+
+    /// <summary>The form's current review-chain stage, for the revert modal.</summary>
+    public ApplicationStage? CurrentStage { get; set; }
 }

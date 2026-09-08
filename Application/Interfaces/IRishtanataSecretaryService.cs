@@ -16,18 +16,19 @@ public interface IRishtanataSecretaryService
 
     List<PendingApprovalDto> GetPendingApprovals();
 
-    ReviewApplicationDto GetById(Guid id);
+    ReviewApplicationDto? GetById(Guid id);
 
     List<MarriedCoupleDto> GetMarriedCouples();
-    MemberProfileDto GetMemberProfile(Guid id);
+    MemberProfileDto? GetMemberProfile(Guid id);
 
     List<JamaatMemberDto> GetMembers();
 
     // Cleanup: were `void` fire-and-forget saves; made Task so callers await
-    // the status change before redirecting.
-    Task Approve(Guid id);
+    // the status change before redirecting. Return false when the application
+    // could not be found instead of throwing.
+    Task<bool> Approve(Guid id);
 
-    Task Reject(Guid id);
+    Task<bool> Reject(Guid id);
 
-    Task ReturnToPresident(Guid id);
+    Task<bool> ReturnToPresident(Guid id);
 }
