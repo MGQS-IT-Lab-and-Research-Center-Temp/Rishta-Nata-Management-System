@@ -35,7 +35,7 @@ public class RishtanataSecretaryController : Controller
     }
 
     // Pending approvals page
-    public async Task<IActionResult> PendingApprovals()
+    public IActionResult PendingApprovals()
     {
         var pendingApprovals = _service.GetPendingApprovals();
 
@@ -47,7 +47,7 @@ public class RishtanataSecretaryController : Controller
     }
 
     // MarriedCouples Page
-    public async Task<IActionResult> MarriedCouples()
+    public IActionResult MarriedCouples()
     {
         var marriedCouples = _service.GetMarriedCouples();
 
@@ -71,9 +71,14 @@ public class RishtanataSecretaryController : Controller
     }
 
     // Review a specific application
-    public async Task<IActionResult> Review(Guid id)
+    public IActionResult Review(Guid id)
     {
         var application = _service.GetById(id);
+
+        if (application is null)
+        {
+            return NotFound("Application not found.");
+        }
 
         var viewModel = RishtanataSecretaryReviewMapping.ToViewModel(application);
 
@@ -81,9 +86,14 @@ public class RishtanataSecretaryController : Controller
     }
 
     // Full member profile page
-    public async Task<IActionResult> MemberProfile(Guid id)
+    public IActionResult MemberProfile(Guid id)
     {
         var dto = _service.GetMemberProfile(id);
+
+        if (dto is null)
+        {
+            return NotFound("Member not found.");
+        }
 
         var model = MemberProfileMapping.ToViewModel(dto);
 
@@ -91,6 +101,7 @@ public class RishtanataSecretaryController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(Guid id)
     {
         // Await the status change so the redirect can't beat the write (the
@@ -101,6 +112,7 @@ public class RishtanataSecretaryController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(Guid id)
     {
         // Same as Approve — wait for the write before redirecting.

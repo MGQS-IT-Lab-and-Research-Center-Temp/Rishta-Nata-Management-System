@@ -19,6 +19,12 @@ public class MemberDashboardService : IMemberDashboardService
         _context = context;
     }
 
+    // NOTE on membership-number comparisons: LINQ-to-SQL `==` comparisons
+    // (lines below and in ProjectToApplicationDto) rely on MySQL's default
+    // case-insensitive collation (utf8mb4_*_ci) to match the case-insensitive
+    // StringComparison.OrdinalIgnoreCase used for the in-memory SpouseName
+    // lookup. If a case-sensitive collation is ever configured, standardise the
+    // SQL-side comparisons (e.g. EF.Functions.Collate) to match.
     public async Task<MemberDashboardDto> GetDashboardAsync(
         string membershipNo,
         CancellationToken cancellationToken = default)

@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Application.Workflow;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
@@ -229,10 +230,15 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         var form = await _dbContext.MarriageApplicationForms
             .Include(x => x.MarriageApplication)
-            .FirstOrDefaultAsync(x => x.Id == formId, cancellationToken);
+            // Accept either the marriage-form id or the wrapping
+            // FormApplication.Id (both are used from different review pages).
+            .FirstOrDefaultAsync(x => x.Id == formId || x.MarriageApplicationId == formId, cancellationToken);
 
         if (form is null || !form.ApplicationStage.HasValue)
             return RevertStageResult.FormNotFound;
+
+        if (!Enum.IsDefined(targetStage))
+            return RevertStageResult.InvalidTargetStage;
 
         var currentStage = form.ApplicationStage.Value;
         if (targetStage >= currentStage )
@@ -263,6 +269,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         await ClearSectionsAfterAsync(form.Id, targetStage, cancellationToken);
         form.ApplicationStage = targetStage;
+        form.FormStage = WorkflowStageMapping.ToFormStage(targetStage);
         _dbContext.MarriageFormRejections.Add(rejection);
 
         await _dbContext.SaveChangesAsync(cancellationToken);

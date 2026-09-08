@@ -21,7 +21,8 @@ namespace Presentation.Mapping.RishtanataSecretary;
             BrideAddress = dto.BrideAddress,
             PresidentName = dto.PresidentName,
             Status = dto.Status,
-            SubmittedDate = dto.SubmittedDate
+            SubmittedDate = dto.SubmittedDate,
+            CurrentStage = dto.CurrentStage
         };
     }
 

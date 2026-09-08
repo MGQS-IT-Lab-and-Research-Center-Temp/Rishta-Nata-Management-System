@@ -1,9 +1,21 @@
+@using Domain.Enums
 @* Rejection Modal - Used by Jamaat President and Secretary Review pages *@
 
 @{
-    // Expected in ViewData: 
-    // "FormId" (Guid) - The form ID
-    // "CurrentStage" (ApplicationStage?) - Current stage for determining valid revert destinations
+    // Expected in ViewData:
+    // "FormId" (Guid) - The marriage application form id
+    // "CurrentStage" (ApplicationStage?) - Current stage; only earlier stages
+    //   are shown as valid revert destinations.
+    ApplicationStage? current = ViewData["CurrentStage"] as ApplicationStage?;
+
+    string StageLabel(ApplicationStage stage) => stage switch
+    {
+        ApplicationStage.ApplicantsReview => "Applicants Review",
+        ApplicationStage.JamaatPresidentReview => "Jama'at President Review",
+        ApplicationStage.NationalRishtanataSecretaryVerification => "National Secretary Verification",
+        ApplicationStage.AmirApproval => "Amir Approval",
+        _ => stage.ToString()
+    };
 }
 
 <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
@@ -18,11 +30,12 @@
 
             <div class="modal-body">
                 <div class="alert alert-danger" role="alert">
-                    <strong>Warning:</strong> Rejecting this application will revert it to an earlier stage. 
+                    <strong>Warning:</strong> Rejecting this application will revert it to an earlier stage.
                     All information entered after that stage will be cleared.
                 </div>
 
                 <form id="rejectionForm">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" id="formId" value="@ViewData["FormId"]" />
 
                     <!-- Rejection Reason -->
@@ -30,9 +43,9 @@
                         <label for="rejectionReason" class="form-label">
                             Rejection Reason <span class="text-danger">*</span>
                         </label>
-                        <textarea 
-                            id="rejectionReason" 
-                            class="form-control" 
+                        <textarea
+                            id="rejectionReason"
+                            class="form-control"
                             rows="4"
                             placeholder="Provide a detailed reason for rejecting this application..."
                             required></textarea>
@@ -51,10 +64,23 @@
                         </label>
                         <select id="targetStage" class="form-select" required>
                             <option value="">-- Select a stage --</option>
-                            <option value="0">Applicant Initial Entry</option>
-                            <option value="1">Jamaat President Review</option>
-                            <option value="2">National Secretary Verification</option>
-                            <option value="3">Amir Approval</option>
+                            @if (current.HasValue)
+                            {
+                                @foreach (var stage in Enum.GetValues<ApplicationStage>())
+                                {
+                                    if ((int)stage < (int)current.Value)
+                                    {
+                                        <option value="@((int)stage)">@StageLabel(stage)</option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                @foreach (var stage in Enum.GetValues<ApplicationStage>())
+                                {
+                                    <option value="@((int)stage)">@StageLabel(stage)</option>
+                                }
+                            }
                         </select>
                         <div class="invalid-feedback">
                             Please select a target stage to revert to.

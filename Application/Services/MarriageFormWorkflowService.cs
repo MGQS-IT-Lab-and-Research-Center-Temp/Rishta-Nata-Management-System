@@ -288,6 +288,12 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         string actionLabel)
     {
         form.FormStage = nextStage;
+
+        // Keep the coarse review-chain ApplicationStage in sync with the
+        // fine-grained FormStage so the revert flow (which authorizes against
+        // ApplicationStage) can never deadlock/stall at ApplicantsReview.
+        form.ApplicationStage = WorkflowStageMapping.ToApplicationStage(nextStage);
+
         form.ModifiedAt = now;
         form.ModifiedBy = memberId;
 

@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RishtanataDbContext))]
-    partial class RishtanataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260907220616_NormalizeBridegroomSectionTypes")]
+    partial class NormalizeBridegroomSectionTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,11 +121,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("BrideDateOfBirth")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("BrideDivorceEvidence")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
 
                     b.Property<decimal>("BrideDowerAmountReceivedInCash")
                         .HasColumnType("decimal(18,2)");
@@ -260,11 +258,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("BridegroomDateOfBirth")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("BridegroomDivorceEvidence")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
 
                     b.Property<decimal>("BridegroomDowerAmountPaidInCash")
                         .HasColumnType("decimal(18,2)");
@@ -754,11 +747,6 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("BrideDateOfBirth")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("BrideDivorceEvidence")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
                     b.Property<decimal>("BrideDowerAmountReceivedInCash")
                         .HasColumnType("decimal(18,2)");
 
@@ -812,11 +800,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("BridegroomDateOfBirth")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("BridegroomDivorceEvidence")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
 
                     b.Property<decimal>("BridegroomDowerAmountPaidInCash")
                         .HasColumnType("decimal(18,2)");

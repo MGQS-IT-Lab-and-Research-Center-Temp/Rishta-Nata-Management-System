@@ -42,6 +42,7 @@ public class MarriageApplicationFormController : ControllerBase
         ?? string.Empty;
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetForm(Guid id, CancellationToken ct)
     {
         var detail = await _formDetailService.GetDetailAsync(id, ct);
@@ -49,6 +50,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPost("bride")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillBrideSection")]
     public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionRequest request, CancellationToken ct)
     {
@@ -58,6 +60,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPut("bridegroom")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillBridegroomSection")]
     public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionRequest request, CancellationToken ct)
     {
@@ -67,6 +70,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPut("guardian-or-wakeel")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillGuardianOrWakeelSection")]
     public IActionResult SubmitGuardianOrWakeel(Guid id)
     {
@@ -77,6 +81,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPut("witnesses")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillWitnessesSection")]
     public IActionResult SubmitWitnesses(Guid id)
     {
@@ -85,6 +90,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPut("imam-verification")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillImamVerificationSection")]
     public async Task<IActionResult> SubmitImamVerification(Guid id, [FromBody] ImamVerificationSubmission submission, CancellationToken ct)
     {
@@ -93,6 +99,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPut("jamaat-president")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillJamaatPresidentSection")]
 
     public async Task<IActionResult> SubmitJamaatPresident(Guid id, [FromBody] JamaatPresidentVerificationSubmission submission, CancellationToken ct)
@@ -102,6 +109,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPut("rishtanata-recommendation")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillRishtanataSection")]
     public async Task<IActionResult> SubmitRishtanataRecommendation(Guid id, [FromBody] RishtanataRecommendationSubmission submission, CancellationToken ct)
     {
@@ -110,6 +118,7 @@ public class MarriageApplicationFormController : ControllerBase
     }
 
     [HttpPut("amir-approval")]
+    [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillAmirApprovalSection")]
     public async Task<IActionResult> SubmitAmirApproval(Guid id, [FromBody] AmirApprovalSubmission submission, CancellationToken ct)
     {

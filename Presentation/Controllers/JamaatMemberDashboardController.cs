@@ -1,11 +1,13 @@
 ﻿using System.Security.Claims;
 using Application.Interfaces;
 using Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ViewModels;
 
 namespace Presentation.Controllers;
 
+[Authorize]
 public class JamaatMemberDashboardController : Controller
 {
     private readonly IMemberDashboardService _memberDashboardService;
