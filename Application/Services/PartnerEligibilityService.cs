@@ -47,7 +47,7 @@ public class PartnerEligibilityService : IPartnerEligibilityService
         bool partnerIsGroom,
         CancellationToken cancellationToken = default)
     {
-        var forms = await LoadFormsAsync(partnerMembershipNo, cancellationToken);
+        var forms = await LoadFormsAsync((partnerMembershipNo ?? string.Empty).Trim(), cancellationToken);
 
         return IsPending(forms, excludeFormId: null)
             ? Deny(PendingMessage)
@@ -66,7 +66,7 @@ public class PartnerEligibilityService : IPartnerEligibilityService
         Guid? excludeFormId,
         CancellationToken cancellationToken = default)
     {
-        var no = membershipNo.Trim();
+        var no = (membershipNo ?? string.Empty).Trim();
         var forms = await LoadFormsAsync(no, cancellationToken);
 
         if (IsPending(forms, excludeFormId))
