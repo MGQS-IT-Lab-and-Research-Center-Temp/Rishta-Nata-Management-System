@@ -1,4 +1,5 @@
 ﻿using System;
+using Domain.Enums;
 
 namespace Presentation.ViewModels;
 
@@ -15,6 +16,9 @@ public class JamaatPresidentReviewViewModel
     public string Status { get; set; } = string.Empty;
 
     public DateTime SubmittedDate { get; set; }
+
+    /// <summary>The form's current review-chain stage, for the revert modal.</summary>
+    public ApplicationStage? CurrentStage { get; set; }
 
     public DateTime ProposedNikahDate { get; set; }
 

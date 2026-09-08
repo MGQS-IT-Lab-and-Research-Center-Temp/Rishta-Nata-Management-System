@@ -76,13 +76,14 @@ namespace Application.Services
                 .ToList();
         }
 
-        public ReviewApplicationDto GetById(Guid id)
+        public ReviewApplicationDto? GetById(Guid id)
         {
             var form = _context.MarriageApplicationForms
+                .Include(x => x.MarriageApplication)
                 .FirstOrDefault(x => x.MarriageApplicationId == id);
 
             if (form == null)
-                throw new Exception("Application not found.");
+                return null;
 
             return new ReviewApplicationDto
             {
@@ -94,7 +95,8 @@ namespace Application.Services
                 BridePhone = form.BrideSignatureTel,
                 PresidentName = form.JamaatPresidentName,
                 SubmittedDate = form.CreatedAt,
-                Status = form.MarriageApplication.Status.ToString()
+                Status = form.MarriageApplication.Status.ToString(),
+                CurrentStage = form.ApplicationStage
             };
         }
 
@@ -119,7 +121,7 @@ namespace Application.Services
                 .ToList();
         }
 
-        public MemberProfileDto GetMemberProfile(Guid id)
+        public MemberProfileDto? GetMemberProfile(Guid id)
         {
             var member = _context.JamaatMembers
                 //.Include(x => x.MemberRoles)
@@ -127,7 +129,7 @@ namespace Application.Services
                 .FirstOrDefault(x => x.Id == id);
 
             if (member == null)
-                throw new Exception("Member not found.");
+                return null;
 
             return new MemberProfileDto
             {
@@ -158,17 +160,19 @@ namespace Application.Services
         // Cleanup: ReturnToPresident/Reject/Approve were fire-and-forget — they
         // called SaveChangesAsync() without await, so the controller redirected
         // before the write had finished. They are now Task-based and awaited.
-        public async Task ReturnToPresident(Guid id)
+        public async Task<bool> ReturnToPresident(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
 
             if (application == null)
-                throw new Exception("Application not found.");
+                return false;
 
             application.Status = ApplicationStatus.ApplicationPending;
 
             await _context.SaveChangesAsync();
+
+            return true;
         }
 
         public List<JamaatMemberDto> GetMembers()
@@ -179,30 +183,34 @@ namespace Application.Services
         }
 
         // Same fire-and-forget SaveChangesAsync as ReturnToPresident; now awaited.
-        public async Task Reject(Guid id)
+        public async Task<bool> Reject(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
 
             if (application == null)
-                throw new Exception("Application not found.");
+                return false;
 
             application.Status = ApplicationStatus.ApplicationRejected;
 
             await _context.SaveChangesAsync();
+
+            return true;
         }
 
-        public async Task Approve(Guid id)
+        public async Task<bool> Approve(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
 
             if (application == null)
-                throw new Exception("Application not found.");
+                return false;
 
             application.Status = ApplicationStatus.ApplicationApproved;
 
             await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Presentation.Requests;
 public class RevertStageRequest
 {
     [Required]
-    public ApplicationStage TargetStage { get; set; }
+    public ApplicationStage? TargetStage { get; set; }
 
     [Required]
     [MinLength(1, ErrorMessage = "A rejection reason is required.")]

@@ -39,6 +39,7 @@ public class ContinueApplicationViewModel
 
     // ===== Bride-only =====
     public string MaritalStatus { get; set; } = string.Empty;
+    public string BrideDivorceEvidence { get; set; } = string.Empty;
     public decimal ProposedDowerAmount { get; set; }
     public decimal DowerAmountReceivedInCash { get; set; }
 
@@ -49,6 +50,7 @@ public class ContinueApplicationViewModel
     public bool IsSecondThirdOrFourthNikah { get; set; }
     public bool FormerWifeIsDead { get; set; }
     public bool HasDivorcedFormerWife { get; set; }
+    public string BridegroomDivorceEvidence { get; set; } = string.Empty;
     public bool FormerWifeIsPresent { get; set; }
     public bool FormerWifeObtainedKhula { get; set; }
 }

@@ -22,19 +22,22 @@ public class MarriageApplicationController : Controller
     private readonly IBrideSectionService _brideSectionService;
     private readonly IBridegroomSectionService _bridegroomSectionService;
     private readonly IMemberLookupService _memberLookupService;
+    private readonly IPartnerEligibilityService _eligibility;
 
     public MarriageApplicationController(
         IMarriageApplicationFormService formService,
         IMemberDashboardService memberDashboardService,
         IBrideSectionService brideSectionService,
         IBridegroomSectionService bridegroomSectionService,
-        IMemberLookupService memberLookupService)
+        IMemberLookupService memberLookupService,
+        IPartnerEligibilityService eligibility)
     {
         _formService = formService;
         _memberDashboardService = memberDashboardService;
         _brideSectionService = brideSectionService;
         _bridegroomSectionService = bridegroomSectionService;
         _memberLookupService = memberLookupService;
+        _eligibility = eligibility;
     }
 
     // GET: New Application (role-aware — either party can start)
@@ -119,6 +122,17 @@ public class MarriageApplicationController : Controller
             return View(model);
         }
 
+        var eligibility = await _eligibility.ValidateCreateAsync(
+            partnerMembershipNo ?? string.Empty,
+            !isGroomFirst,
+            ct);
+
+        if (!eligibility.IsAllowed)
+        {
+            ModelState.AddModelError(string.Empty, eligibility.Message);
+            return View(model);
+        }
+
         var partner = await _memberLookupService.LookupAsync(partnerMembershipNo ?? string.Empty, ct);
         if (partner is null)
         {
@@ -148,6 +162,7 @@ public class MarriageApplicationController : Controller
             BrideGenotype = model.Bride.Genotype,
             BrideBloodGroup = model.Bride.BloodGroup,
             BrideMaritalStatus = model.BrideMaritalStatus,
+            BrideDivorceEvidence = model.BrideDivorceEvidence,
             BrideProposedDowerAmount = model.BrideProposedDowerAmount,
             BrideDowerAmountReceivedInCash = model.BrideDowerAmountReceivedInCash,
             BrideSignatureTel = (isGroomFirst ? partnerPhone : model.Bride.Phone.Trim()),
@@ -164,6 +179,7 @@ public class MarriageApplicationController : Controller
             IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah,
             FormerWifeIsDead = model.FormerWifeIsDead,
             HasDivorcedFormerWife = model.HasDivorcedFormerWife,
+            BridegroomDivorceEvidence = model.BridegroomDivorceEvidence,
             FormerWifeIsPresent = model.FormerWifeIsPresent,
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
             BridegroomSignatureTel = (isGroomFirst ? model.Bridegroom.Phone.Trim() : partnerPhone),
@@ -269,6 +285,7 @@ public class MarriageApplicationController : Controller
         Genotype = form.BrideGenotype,
         BloodGroup = form.BrideBloodGroup,
         MaritalStatus = form.BrideMaritalStatus,
+        BrideDivorceEvidence = form.BrideDivorceEvidence,
         ProposedDowerAmount = form.BrideProposedDowerAmount,
         DowerAmountReceivedInCash = form.BrideDowerAmountReceivedInCash
     };
@@ -291,6 +308,7 @@ public class MarriageApplicationController : Controller
         IsSecondThirdOrFourthNikah = form.IsSecondThirdOrFourthNikah,
         FormerWifeIsDead = form.FormerWifeIsDead,
         HasDivorcedFormerWife = form.HasDivorcedFormerWife,
+        BridegroomDivorceEvidence = form.BridegroomDivorceEvidence,
         FormerWifeIsPresent = form.FormerWifeIsPresent,
         FormerWifeObtainedKhula = form.FormerWifeObtainedKhula
     };

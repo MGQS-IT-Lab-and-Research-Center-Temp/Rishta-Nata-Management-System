@@ -19,13 +19,16 @@ public class BridegroomSectionService : IBridegroomSectionService
 {
     private readonly RishtanataDbContext _dbContext;
     private readonly IStageAuthorizationService _stageAuthorizationService;
+    private readonly IPartnerEligibilityService _eligibility;
 
     public BridegroomSectionService(
         RishtanataDbContext dbContext,
-        IStageAuthorizationService stageAuthorizationService)
+        IStageAuthorizationService stageAuthorizationService,
+        IPartnerEligibilityService eligibility)
     {
         _dbContext = dbContext;
         _stageAuthorizationService = stageAuthorizationService;
+        _eligibility = eligibility;
     }
 
     public async Task<StageAuthorizationResult> SubmitBridegroomSectionAsync(
@@ -65,6 +68,24 @@ public class BridegroomSectionService : IBridegroomSectionService
                 StageAuthorizationDenyReason.WrongStage,
                 $"Form is at {form.FormStage}, not awaiting the bridegroom.");
 
+        var eligibility = await _eligibility.ValidateSectionAsync(
+            dto.BridegroomMembershipNo,
+            partnerIsGroom: true,
+            dto.IsSecondThirdOrFourthNikah,
+            dto.FormerWifeIsDead,
+            dto.HasDivorcedFormerWife,
+            dto.BridegroomDivorceEvidence,
+            brideMaritalStatus: string.Empty,
+            brideDivorceEvidence: string.Empty,
+            applicationFormId,
+            cancellationToken);
+
+        if (!eligibility.IsAllowed)
+        {
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage, eligibility.Message);
+        }
+
         // Persist the bridegroom's section fields onto the form
         form.BridegroomMembershipNo = dto.BridegroomMembershipNo;
         form.BridegroomName = dto.BridegroomName;
@@ -81,6 +102,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         form.FormerWifeIsPresent = dto.FormerWifeIsPresent;
         form.FormerWifeObtainedKhula = dto.FormerWifeObtainedKhula;
         form.BridegroomSignatureTel = dto.BridegroomSignatureTel;
+        form.BridegroomDivorceEvidence = dto.BridegroomDivorceEvidence;
 
         // Authoritative per-party store, kept in parity with the flat mirror.
         var bridegroomSection = form.BridegroomSection ??= new BridegroomFormSection
@@ -105,6 +127,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         bridegroomSection.FormerWifeIsPresent = dto.FormerWifeIsPresent;
         bridegroomSection.FormerWifeObtainedKhula = dto.FormerWifeObtainedKhula;
         bridegroomSection.BridegroomSignatureTel = dto.BridegroomSignatureTel;
+        bridegroomSection.BridegroomDivorceEvidence = dto.BridegroomDivorceEvidence;
         bridegroomSection.ModifiedAt = DateTime.UtcNow;
 
         form.FormStage = nextStage.Value;

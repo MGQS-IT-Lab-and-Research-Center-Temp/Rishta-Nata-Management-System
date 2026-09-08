@@ -23,6 +23,7 @@ public class NewApplicationViewModel
 
     // ===== Bride-only =====
     public string BrideMaritalStatus { get; set; } = string.Empty;
+    public string BrideDivorceEvidence { get; set; } = string.Empty;
     public decimal BrideProposedDowerAmount { get; set; }
     public decimal BrideDowerAmountReceivedInCash { get; set; }
 
@@ -33,6 +34,7 @@ public class NewApplicationViewModel
     public bool IsSecondThirdOrFourthNikah { get; set; }
     public bool FormerWifeIsDead { get; set; }
     public bool HasDivorcedFormerWife { get; set; }
+    public string BridegroomDivorceEvidence { get; set; } = string.Empty;
     public bool FormerWifeIsPresent { get; set; }
     public bool FormerWifeObtainedKhula { get; set; }
 }

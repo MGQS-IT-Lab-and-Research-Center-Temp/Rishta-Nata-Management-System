@@ -10,6 +10,7 @@ public class BrideSectionDto
     public string BrideGenotype { get; set; } = string.Empty;
     public string BrideBloodGroup { get; set; } = string.Empty;
     public string BrideMaritalStatus { get; set; } = string.Empty;
+    public string BrideDivorceEvidence { get; set; } = string.Empty;
     public decimal BrideProposedDowerAmount { get; set; }
     public decimal BrideDowerAmountReceivedInCash { get; set; }
     public string BrideSignatureTel { get; set; } = string.Empty;

@@ -18,13 +18,16 @@ public class BrideSectionService : IBrideSectionService
 {
     private readonly RishtanataDbContext _context;
     private readonly IStageAuthorizationService _stageAuthorizationService;
+    private readonly IPartnerEligibilityService _eligibility;
 
     public BrideSectionService(
         RishtanataDbContext context,
-        IStageAuthorizationService stageAuthorizationService)
+        IStageAuthorizationService stageAuthorizationService,
+        IPartnerEligibilityService eligibility)
     {
         _context = context;
         _stageAuthorizationService = stageAuthorizationService;
+        _eligibility = eligibility;
     }
 
     public async Task<StageAuthorizationResult> SubmitBrideSectionAsync(
@@ -65,6 +68,24 @@ public class BrideSectionService : IBrideSectionService
                 StageAuthorizationDenyReason.WrongStage,
                 $"Form is at {form.FormStage}, not awaiting the bride.");
 
+        var eligibility = await _eligibility.ValidateSectionAsync(
+            dto.BrideMembershipNo,
+            partnerIsGroom: false,
+            declaresSubsequentNikah: false,
+            isWidower: false,
+            isDivorced: false,
+            divorceEvidence: string.Empty,
+            dto.BrideMaritalStatus,
+            dto.BrideDivorceEvidence,
+            applicationFormId,
+            cancellationToken);
+
+        if (!eligibility.IsAllowed)
+        {
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage, eligibility.Message);
+        }
+
         // Persist the bride's section fields onto the form
         form.BrideMembershipNo = dto.BrideMembershipNo;
         form.BrideName = dto.BrideName;
@@ -76,6 +97,7 @@ public class BrideSectionService : IBrideSectionService
         form.BrideProposedDowerAmount = dto.BrideProposedDowerAmount;
         form.BrideDowerAmountReceivedInCash = dto.BrideDowerAmountReceivedInCash;
         form.BrideSignatureTel = dto.BrideSignatureTel;
+        form.BrideDivorceEvidence = dto.BrideDivorceEvidence;
 
         // Authoritative per-party store, kept in parity with the flat mirror.
         var brideSection = form.BrideSection ??= new BrideFormSection
@@ -95,6 +117,7 @@ public class BrideSectionService : IBrideSectionService
         brideSection.BrideProposedDowerAmount = dto.BrideProposedDowerAmount;
         brideSection.BrideDowerAmountReceivedInCash = dto.BrideDowerAmountReceivedInCash;
         brideSection.BrideSignatureTel = dto.BrideSignatureTel;
+        brideSection.BrideDivorceEvidence = dto.BrideDivorceEvidence;
         brideSection.ModifiedAt = DateTime.UtcNow;
 
         form.FormStage = nextStage.Value;

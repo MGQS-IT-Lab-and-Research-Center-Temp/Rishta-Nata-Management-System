@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.DTOs.JamaatPresidentDashboardDto;
+﻿using Domain.Enums;
+
+namespace Infrastructure.DTOs.JamaatPresidentDashboardDto;
 
 public class JamaatPresidentReviewDto
 {
@@ -6,6 +8,9 @@ public class JamaatPresidentReviewDto
     public string ReferenceNumber { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public DateTime SubmittedDate { get; set; }
+
+    /// <summary>The form's current review-chain stage, for the revert modal.</summary>
+    public ApplicationStage? CurrentStage { get; set; }
     public DateTime ProposedNikahDate { get; set; }
     public string Venue { get; set; } = string.Empty;
 

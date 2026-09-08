@@ -96,6 +96,9 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.BrideMaritalStatus)
             .HasMaxLength(50);
 
+        builder.Property(f => f.BrideDivorceEvidence)
+            .HasMaxLength(500);
+
         builder.Property(f => f.BrideProposedDowerAmount)
             .HasColumnType("decimal(18,2)");
 
@@ -132,6 +135,9 @@ public class MarriageApplicationFormConfiguration
 
         builder.Property(f => f.BridegroomSignatureTel)
             .HasMaxLength(30);
+
+        builder.Property(f => f.BridegroomDivorceEvidence)
+            .HasMaxLength(500);
 
         // =====================================================
         // Parents

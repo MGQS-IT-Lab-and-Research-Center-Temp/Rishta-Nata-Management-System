@@ -12,7 +12,14 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
-        services.AddHttpClient<IGatewayHandler, GatewayHandler>();
+        services.AddTransient<RetryDelegatingHandler>();
+        services.AddHttpClient<IGatewayHandler, GatewayHandler>(client =>
+        {
+            // The internal HTTP retry handler covers transient failures; a
+            // generous total timeout bounds the worst case (3 retries * backoff).
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .AddHttpMessageHandler<RetryDelegatingHandler>();
         services.AddScoped<IDashboardRedirector, DashboardRedirector>();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

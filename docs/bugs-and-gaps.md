@@ -5,6 +5,64 @@ file as items are fixed.
 
 ## Fixed (recent session)
 
+- **FormStage/Revert deadlock resolved.** `MarriageApplicationForm.ApplicationStage`
+  was initialised once (`ApplicantsReview`) and never advanced, so
+  `RevertStageAsync` (which requires `targetStage < currentStage`) always failed.
+  `MarriageFormWorkflowService.AdvanceAsync` now derives and writes
+  `ApplicationStage` from `FormStage` via the new `Application.Workflow.WorkflowStageMapping`,
+  and `RevertStageAsync` keeps the two in sync by also writing `FormStage`. Revert
+  can now actually move a form back.
+- **Revert enum misalignment resolved.** Forward transitions run on `FormStage`
+  (0-8), revert on `ApplicationStage` (1-4). `WorkflowStageMapping` is now the
+  single bi-directional mapping; there is no independent second progression.
+- **President Review key mismatch resolved.** `JamaatPresidentController.Review`
+  previously looked up a `Review.Id` from a `FormApplication.Id` (and the Review
+  table is never populated), and the Review page posted a `Review.Id` back to
+  `Approve`/`Reject` which resolve `FormApplication`. `JamaatPresidentService.GetReviewByIdAsync`
+  now resolves by `FormApplication.Id` and returns `null` on a miss; the review
+  page posts the same id, so the whole flow is self-consistent.
+- **CSRF holes closed.** `RishtanataSecretaryController.Approve/Reject` now have
+  `[ValidateAntiForgeryToken]`; `MarriageFormController.RevertStage`,
+  `MarriageApplicationFormController` (all POST/PUT) and `InvitationsController.Generate`
+  too. The rejection modal now emits `@Html.AntiForgeryToken()` so the header token
+  it posts is actually generated.
+- **Anonymous endpoints secured.** `JamaatMemberDashboardController`,
+  `MemberLookupController`, `InvitationsController.Generate` and the
+  `GetForm` API action now require `[Authorize]`. `InvitationsController.Accept`
+  stays anonymous because it is token-scoped.
+- **Tajneed transport failures no longer masquerade as bad credentials.**
+  `AuthService.LoginAsync` catches `HttpRequestException`/`TaskCanceledException`/
+  `TimeoutException` and reports "the member service is temporarily unreachable"
+  instead of swallowing them as invalid login.
+- **Retry added for Tajneed calls.** New `Presentation/Services/RetryDelegatingHandler`
+  (no extra package; fixed backoff, max 3 attempts) wired on the
+  `IGatewayHandler` HttpClient in `Presentation/Extensions/DependencyInjection.cs`.
+- **Missing null guards fixed.** `RishtanataSecretaryService.GetById` /
+  `GetMemberProfile` return `null` instead of throwing; `Approve`/`Reject`/
+  `ReturnToPresident` return `false` on a miss. Controllers (`RishtanataSecretaryController`,
+  `JamaatPresidentController`) null-guard the results. `RishtanataSecretaryService.GetById`
+  now `Include`s `MarriageApplication` (was a latent NRE).
+- **`@page` residuals removed** from `RishtanataSecretary/Review.cshtml` and
+  `MarriedCouples.cshtml`.
+- **Await-less async removed.** `RishtanataSecretaryController.PendingApprovals`,
+  `MarriedCouples`, `Review`, `MemberProfile` are no longer `async` (CS1998 gone).
+- **`ViewData["CurrentStage"]` now honoured.** The rejection modal renders only
+  stages earlier than the form's actual `ApplicationStage` (from the new
+  `CurrentStage` on both review DTOs), correcting the previous hardcoded
+  mismatched option values (0-3) which never matched the `ApplicationStage`
+  enum (1-4).
+- **`RevertStage` validates model state.** `MarriageFormController.RevertStage`
+  returns 400 on invalid/absent `targetStage` or empty reason;
+  `RevertStageRequest.TargetStage` is now nullable `[Required]` so a missing
+  value no longer silently binds to `0`.
+- **Hardcoded MySQL password removed.** `Presentation/appsettings.json` no longer
+  carries a plaintext password (was `Password=yuzzypizzy2007?`). Connection is via
+  `.env` / user-secrets.
+- **Git case-collision file removed.** Only `BridegroomFormSection.cs` (lowercase
+  `g`) exists in the index; the `BrideGroomFormSection.cs` duplicate is gone.
+
+## Previously fixed
+
 - **Guardian/witness submission is now live (was D2 stub).** Anonymous,
   revocable, stage-gated share links (`SectionLinks` + `SharedSection`,
   `SharedSectionService`) replace the formerly-stubbed endpoints. Legacy
@@ -44,10 +102,14 @@ file as items are fixed.
    `InitialCreate` (`20260907105655_InitialCreate`) spanning the whole current
    model, applied to the recreated `rishtanatahdb`. ReferenceNumber is now a
    `varchar(50)` column on all four shareable sections, `BrideFormSection`, and
-   `BrideGuardian`. The `MySQL:Charset` annotations emitted by the current
+   `BrideGuardian`. Current migrations are `20260907194101_InitialCreate` and
+   `20260907220616_NormalizeBridegroomSectionTypes`. The `MySQL:Charset`
+   annotations emitted by the current
    `MySql.EntityFrameworkCore` provider are correct; no further reconciliation
    needed unless the provider changes. Future schema changes must be additive
-   migrations on top of this baseline.
+   migrations on top of this baseline. `Infrastructure/Persistence/RishtanataDbContextFactory.cs`
+   still exists (reads `ConnectionStrings__DefaultConnection` from `.env`), so
+   `dotnet ef` works from the repository root.
 
 ## Design / decision
 
@@ -58,7 +120,10 @@ file as items are fixed.
    copies the gateway's `RoleId` (likely dangling against local `Role` IDs).
    Result: members sign in with no local `Role`, so the `ClaimTypes.Role` claim is
    empty and role-gated policies/pages don't match. Need: map Tajneed role strings
-   → local `Domain.Entities.Role` and set it during login/sync.
+   → local `Domain.Entities.Role` and set it during login/sync. (Note: the login
+   flow does now map the gateway member payload into a local `JamaatMember` and
+   role strings are matched case-insensitively; the gap is resolving role strings
+   to local roles.)
 
 4. **Policy vs implementation divergence on claims.**
    `docs/stage-authorization-policy.md` §3.2 requires a `membership_no` claim and
@@ -70,13 +135,8 @@ file as items are fixed.
 
 ## Security
 
-5. **Hardcoded MySQL credentials committed.** `Password=yuzzypizzy2007?` appears
-   in both `API/appsettings.json:3` and `Presentation/appsettings.json:4`. Rotate
-   and move to user-secrets/env vars.
-
-6. **`AuthController.Login` swallows all exceptions** as "Invalid Chanda number or
-   password" (`Presentation/Controllers/AuthController.cs`), hiding API/network
-   failures.
+- **Closed:** CSRF, anonymous endpoints, swallowed Tajneed failures, and the
+  hardcoded DB password are all fixed (see "Fixed (recent session)" above).
 
 ## Minor
 
@@ -84,13 +144,14 @@ file as items are fixed.
    `StageAuthorizationService.MatchesWitnessSlotAsync` fetches *all* `JamaatMembers`
    into memory and counts matches client-side.
 
-8. **Design-time factory hardcodes `../Presentation`.**
-   `Infrastructure/Persistence/RishtanataDbContextFactory.cs:17` — migrations only
-   work when `dotnet ef` runs from a directory where `../Presentation` resolves.
+8. **Design-time factory requires `.env`.** `Infrastructure/Persistence/RishtanataDbContextFactory.cs`
+   reads `ConnectionStrings__DefaultConnection` from the environment / `.env`
+   (no longer hardcodes `../Presentation`). `dotnet ef` must run where
+   `DotNetEnv.TraversePath()` can find the `.env` file.
 
 9. **Namespace/path mismatches.**
-   - `IGatewayHandler` file is `Application/Interfaces/Auth/IGatewayHandler.cs`
-     but declares `namespace Application.Interfaces.Identity`.
+   - `IGatewayHandler` file is `Application/Interfaces/Gateway/IGatewayHandler.cs`
+     with `namespace Application.Interfaces.Gateway` (now matches).
    - `IRoleService` file is `Application/Interfaces/IRoleService.cs` but declares
      `namespace Application.Roles`.
    - `IRishtanataSecretaryServices.cs` filename is plural; the interface is
@@ -102,9 +163,10 @@ file as items are fixed.
     reconciled (item 2). `JamaatMember` still carries leftover fields
     (`ResetToken`, `ResetTokenExpiry`, `IsSystemDefault`, `NewRole`).
 
-11. **Stray committed files.** Root `cls` is an accidental `git branch -a` dump;
-    `Presentation/Presentation.csproj.user` and `API/API.csproj.user` are
-    committed but should be gitignored.
+11. **Stray committed file.** Root `cls` is an accidental `git branch -a` dump
+    and `Presentation/Presentation.csproj.user` are committed but should be
+    gitignored. (The old `API/API.csproj.user` reference — the `API/` folder no
+    longer exists — and the `API/appsettings.json` hardcoded password are gone.)
 
 12. **`AuditLog` does not inherit `AuditableEntity`**
     (`Domain/Entities/AuditLog.cs`) — it rolls its own `Id`/`Timestamp` and lacks
@@ -112,3 +174,25 @@ file as items are fixed.
 
 13. **Nullable warnings** (not errors): `JamaatPresidentService.cs:97` (CS8602),
     `MarriageFormStageRevertedEventHandler.cs:96` (CS8629).
+
+14. **Additive migration not yet applied to a live MySQL.**
+    `20260908155154_AddDivorceEvidence` (4 × `varchar(500)`:
+    `NikahApplications.BrideDivorceEvidence`/`BridegroomDivorceEvidence`,
+    `NikahBrides.BrideDivorceEvidence`, `NikahGrooms.BridegroomDivorceEvidence`)
+    predates any live-DB apply. Until applied, the new divorce-evidence fields are
+    all empty and the eligible-divorce path will store nothing. Apply via
+    `dotnet ef database update` (or equivalent SQL) against MySQL when
+    appropriate — do not hand-edit `InitialCreate`.
+
+15. **Eligibility denies reuse `WrongStage` deny reason.**
+    `BrideSectionService`/`BridegroomSectionService` return
+    `StageAuthorizationDenyReason.WrongStage` with the partner-eligibility message
+    because no code branches on the reason. Deliberate; an enum addition
+    (`PartnerNotEligible = 8`) is a plausible follow-up if reasons ever are acted on.
+
+16. **Divorce-evidence persistence is client-consented, not server-gated.**
+    The section services persist `BrideDivorceEvidence`/`BridegroomDivorceEvidence`
+    unconditionally; correctness relies on the UI clearing the input when its
+    status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
+    without the corresponding divorced flag. Harden server-side only if such data
+    integrity becomes important.
