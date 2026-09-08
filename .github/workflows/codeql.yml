@@ -1,0 +1,52 @@
+name: "C# .NET Code Scan"
+
+on:
+  # Majorly scan when PRs are made to the dev branch (and master)
+  pull_request:
+    branches: [ "dev", "master" ]
+  # Scan when code is pushed/merged directly into dev
+  push:
+    branches: [ "dev" ]
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Analyze C# Code
+    runs-on: ubuntu-latest 
+    
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # .slnx requires .NET SDK 8.0.300 or higher. 8.0.x ensures you get the latest patch.
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' 
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+
+    # MANUAL BUILD: Replaces autobuild because CodeQL doesn't recognize .slnx yet
+    - name: Build .NET Solution
+      # The .NET CLI automatically detects .slnx files in the root directory.
+      # NOTE: If you have multiple .slnx files, replace the line below with: 
+      # run: dotnet build YourExactSolutionName.slnx --configuration Release
+      run: dotnet build --configuration Release
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
