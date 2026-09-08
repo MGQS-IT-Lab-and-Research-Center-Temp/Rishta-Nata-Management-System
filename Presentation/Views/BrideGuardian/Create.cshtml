@@ -80,7 +80,6 @@
         <input asp-for="ReferenceNumber" type="hidden" />
         @* Hidden fields for read-only data so they round-trip through TempData *@
         <input asp-for="BrideName" type="hidden" />
-        <input asp-for="BrideFatherName" type="hidden" />
         <input asp-for="BrideDateOfBirth" type="hidden" />
         <input asp-for="BrideResidentOf" type="hidden" />
         <input asp-for="BrideGenotype" type="hidden" />
@@ -89,9 +88,47 @@
         <input asp-for="BrideProposedDowerAmount" type="hidden" />
         <input asp-for="BrideDowerAmountReceivedInCash" type="hidden" />
         <input asp-for="BridegroomName" type="hidden" />
-        <input asp-for="BridegroomFatherName" type="hidden" />
         <input asp-for="BridegroomDateOfBirth" type="hidden" />
         <input asp-for="BridegroomResidentOf" type="hidden" />
+
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Fathers</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input asp-for="BrideFatherIsMember" class="form-check-input" type="checkbox" />
+                            <label asp-for="BrideFatherIsMember" class="form-check-label"></label>
+                        </div>
+                        <div id="brideFatherMembershipWrap" style="display:none">
+                            <label asp-for="BrideFatherMembershipNo" class="form-label"></label>
+                            <input asp-for="BrideFatherMembershipNo" class="form-control" />
+                            <span asp-validation-for="BrideFatherMembershipNo" class="text-danger"></span>
+                        </div>
+                        <label asp-for="BrideFatherName" class="form-label"></label>
+                        <input asp-for="BrideFatherName" class="form-control" />
+                        <span asp-validation-for="BrideFatherName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input asp-for="BridegroomFatherIsMember" class="form-check-input" type="checkbox" />
+                            <label asp-for="BridegroomFatherIsMember" class="form-check-label"></label>
+                        </div>
+                        <div id="bridegroomFatherMembershipWrap" style="display:none">
+                            <label asp-for="BridegroomFatherMembershipNo" class="form-label"></label>
+                            <input asp-for="BridegroomFatherMembershipNo" class="form-control" />
+                            <span asp-validation-for="BridegroomFatherMembershipNo" class="text-danger"></span>
+                        </div>
+                        <label asp-for="BridegroomFatherName" class="form-label"></label>
+                        <input asp-for="BridegroomFatherName" class="form-control" />
+                        <span asp-validation-for="BridegroomFatherName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <div class="card shadow-sm border-0 mb-4">
@@ -139,4 +176,19 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/member-lookup.js" asp-append-version="true"></script>
+    <script>
+        RNMemberLookup.initParty({
+            checkboxId: 'BrideFatherIsMember',
+            wrapId: 'brideFatherMembershipWrap',
+            membershipId: 'BrideFatherMembershipNo',
+            nameId: 'BrideFatherName'
+        });
+        RNMemberLookup.initParty({
+            checkboxId: 'BridegroomFatherIsMember',
+            wrapId: 'bridegroomFatherMembershipWrap',
+            membershipId: 'BridegroomFatherMembershipNo',
+            nameId: 'BridegroomFatherName'
+        });
+    </script>
 }

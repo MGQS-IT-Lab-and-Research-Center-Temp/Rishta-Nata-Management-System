@@ -1,0 +1,111 @@
+@model Presentation.ViewModels.SectionLinksViewModel
+@{
+    ViewData["Title"] = "Signature Links";
+    var rawLink = TempData["RawLink"] as string;
+    var sectionLabel = TempData["SectionLabel"] as string;
+    var error = TempData["Error"] as string;
+    var signatureWaitActive = Model.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses;
+}
+
+<div class="dashboard-hero">
+    <h1>Signature Links</h1>
+    <p>Application <strong>@Model.ReferenceNumber</strong>
+       (@Model.BrideName &#x2764; @Model.BridegroomName) — awaiting signatures.</p>
+</div>
+
+@if (!signatureWaitActive)
+{
+    <div class="alert alert-secondary">
+        Signatures are no longer being collected for this application (current stage:
+        @Model.FormStage). Existing links are inactive.
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-warning">@error</div>
+}
+
+<div class="card dashboard-card">
+    <div class="card-header">Links</div>
+    <div class="card-body">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Section</th>
+                    <th>Status</th>
+                    <th>Filled by</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td><strong>@SectionTitle(item.Section)</strong></td>
+                    <td>
+                        @if (item.Complete) { <span class="text-success">Completed</span> }
+                        else if (item.HasActiveToken) { <span class="text-warning">Link active</span> }
+                        else { <span class="text-muted">No link</span> }
+                    </td>
+                    <td>@(item.FilledByName ?? "—")</td>
+                    <td class="text-end">
+                        @if (signatureWaitActive)
+                        {
+                            @if (item.HasActiveToken)
+                            {
+                                <form asp-action="Regenerate" asp-controller="SectionLinks" method="post" class="d-inline">
+                                    <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
+                                    <input type="hidden" name="section" value="@item.Section" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Regenerate</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="Generate" asp-controller="SectionLinks" method="post" class="d-inline">
+                                    <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
+                                    <input type="hidden" name="section" value="@item.Section" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-primary">Get link</button>
+                                </form>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        @if (!string.IsNullOrWhiteSpace(rawLink))
+        {
+            <div class="alert alert-info mt-3">
+                <strong>@sectionLabel link created — show this to them once:</strong>
+                <div class="input-group mt-2">
+                    <input id="rawLink" class="form-control" value="@rawLink" readonly />
+                    <button type="button" class="btn btn-outline-primary" onclick="copyRaw()">Copy</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function copyRaw() {
+        const el = document.getElementById('rawLink');
+        el.select();
+        document.execCommand('copy');
+        el.setAttribute('aria-live', 'polite');
+        alert('Link copied to clipboard.');
+    }
+</script>
+
+@functions {
+    private static string SectionTitle(Domain.Enums.SectionType s) => s switch
+    {
+        Domain.Enums.SectionType.Guardian => "Guardian / Waliy",
+        Domain.Enums.SectionType.WitnessOne => "Witness 1",
+        Domain.Enums.SectionType.WitnessTwo => "Witness 2",
+        _ => s.ToString()
+    };
+}

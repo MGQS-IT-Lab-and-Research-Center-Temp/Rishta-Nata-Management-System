@@ -1,5 +1,10 @@
 namespace Application.Authorization;
 
+/// <summary>
+/// Result of a CanUserActAsync check: either allowed, or denied with a
+/// machine-readable reason (StageAuthorizationDenyReason) and a human-readable
+/// message. Denied = no side effects
+/// </summary>
 public sealed class StageAuthorizationResult
 {
     // True when the user may act on the target stage right now.

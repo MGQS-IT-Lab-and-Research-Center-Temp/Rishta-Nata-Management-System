@@ -1,0 +1,81 @@
+@model Presentation.ViewModel.WitnessViewModel
+
+@{
+    ViewData["Title"] = "Confirm Witnesses";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold">Confirm Witnesses</h2>
+        <p class="text-muted mb-0">Review the witness details before saving.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Witness One</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Name</span>
+                    <strong>@Model.WitnessOneName</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Telephone</span>
+                    <span>@Model.WitnessOneTel</span>
+                </div>
+                <div class="col-12 mb-3">
+                    <span class="text-muted small d-block">Address</span>
+                    <span>@Model.WitnessOneAddress</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Witness Two</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Name</span>
+                    <strong>@Model.WitnessTwoName</strong>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <span class="text-muted small d-block">Telephone</span>
+                    <span>@Model.WitnessTwoTel</span>
+                </div>
+                <div class="col-12 mb-3">
+                    <span class="text-muted small d-block">Address</span>
+                    <span>@Model.WitnessTwoAddress</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Confirm" method="post" class="d-flex gap-2">
+        @Html.AntiForgeryToken()
+        <input asp-for="MarriageApplicationId" type="hidden" />
+        <input asp-for="ReferenceNumber" type="hidden" />
+        <input asp-for="BrideName" type="hidden" />
+        <input asp-for="BridegroomName" type="hidden" />
+        <input asp-for="WitnessOneIsMember" type="hidden" />
+        <input asp-for="WitnessOneMembershipNo" type="hidden" />
+        <input asp-for="WitnessOneName" type="hidden" />
+        <input asp-for="WitnessOneAddress" type="hidden" />
+        <input asp-for="WitnessOneTel" type="hidden" />
+        <input asp-for="WitnessOneSignatureDate" type="hidden" />
+        <input asp-for="WitnessTwoIsMember" type="hidden" />
+        <input asp-for="WitnessTwoMembershipNo" type="hidden" />
+        <input asp-for="WitnessTwoName" type="hidden" />
+        <input asp-for="WitnessTwoAddress" type="hidden" />
+        <input asp-for="WitnessTwoTel" type="hidden" />
+        <input asp-for="WitnessTwoSignatureDate" type="hidden" />
+
+        <button type="submit" class="btn btn-success">&#10003; Confirm and Save</button>
+        <a asp-action="Create" asp-route-marriageApplicationId="@Model.MarriageApplicationId" class="btn btn-secondary">
+            &#8592; Cancel &#8211; Go Back
+        </a>
+    </form>
+</div>

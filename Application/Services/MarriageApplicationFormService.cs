@@ -10,6 +10,10 @@ using Infrastructure.Mapper;
 
 namespace Application.Services;
 
+/// <summary>
+/// MarriageApplicationForm CRUD plus the section-signature submissions
+/// (guardian/wakeel + witnesses) and the revert/rejection flow.
+/// </summary>
 public class MarriageApplicationFormService : IMarriageApplicationFormService
 {
     private readonly RishtanataDbContext _dbContext;
@@ -46,6 +50,93 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
         return application;
     }
+
+    public async Task<MarriageApplicationForm> StartApplicationAsync(
+        MarriageApplicationForm application,
+        CancellationToken cancellationToken = default)
+    {
+        if (application == null)
+            throw new ArgumentNullException(nameof(application));
+
+        // The marriage form is the dependent side of the 1:1 with
+        // FormApplication (MarriageApplicationForm.MarriageApplicationId is the
+        // FK), so the owning FormApplication must exist first.
+        var formApplication = new FormApplication
+        {
+            Status = ApplicationStatus.Submitted,
+            AppliedAt = DateTime.UtcNow,
+            CertificateId = Guid.Empty
+        };
+
+        _dbContext.FormApplications.Add(formApplication);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        application.MarriageApplicationId = formApplication.Id;
+        application.ReferenceNumber = string.IsNullOrWhiteSpace(application.ReferenceNumber)
+            ? GenerateReferenceNumber()
+            : application.ReferenceNumber;
+
+        // Only the starting party's section row is created now. The partner's row is
+        // created later, when the partner signs in and completes their own section via
+        // SubmitBrideSectionAsync / SubmitBridegroomSectionAsync (which upsert-or-create).
+        var brideStarted = application.FormStage == MarriageFormStage.AwaitingBridegroom;
+
+        if (brideStarted && application.BrideSection is null && !string.IsNullOrWhiteSpace(application.BrideName))
+        {
+            application.BrideSection = new BrideFormSection
+            {
+                BrideMembershipNo = application.BrideMembershipNo,
+                BrideName = application.BrideName,
+                BrideDateOfBirth = application.BrideDateOfBirth,
+                BrideResidentOf = application.BrideResidentOf,
+                BrideGenotype = application.BrideGenotype,
+                BrideBloodGroup = application.BrideBloodGroup,
+                BrideMaritalStatus = application.BrideMaritalStatus,
+                BrideProposedDowerAmount = application.BrideProposedDowerAmount,
+                BrideDowerAmountReceivedInCash = application.BrideDowerAmountReceivedInCash,
+                BrideSignatureTel = application.BrideSignatureTel,
+                ReferenceNumber = application.ReferenceNumber,
+                CreatedAt = DateTime.UtcNow,
+                ModifiedAt = DateTime.UtcNow
+            };
+        }
+
+        if (!brideStarted && application.BridegroomSection is null && !string.IsNullOrWhiteSpace(application.BridegroomName))
+        {
+            application.BridegroomSection = new BridegroomFormSection
+            {
+                BridegroomMembershipNo = application.BridegroomMembershipNo,
+                BridegroomName = application.BridegroomName,
+                BridegroomDateOfBirth = application.BridegroomDateOfBirth,
+                BridegroomResidentOf = application.BridegroomResidentOf,
+                BridegroomGenotype = application.BridegroomGenotype,
+                BridegroomBloodGroup = application.BridegroomBloodGroup,
+                BridegroomDowerAmountPaidInCash = application.BridegroomDowerAmountPaidInCash,
+                BridegroomDowerAmountToBePaid = application.BridegroomDowerAmountToBePaid,
+                IsFirstNikah = application.IsFirstNikah,
+                IsSecondThirdOrFourthNikah = application.IsSecondThirdOrFourthNikah,
+                FormerWifeIsDead = application.FormerWifeIsDead,
+                HasDivorcedFormerWife = application.HasDivorcedFormerWife,
+                FormerWifeIsPresent = application.FormerWifeIsPresent,
+                FormerWifeObtainedKhula = application.FormerWifeObtainedKhula,
+                BridegroomSignatureTel = application.BridegroomSignatureTel,
+                ReferenceNumber = application.ReferenceNumber,
+                CreatedAt = DateTime.UtcNow,
+                ModifiedAt = DateTime.UtcNow
+            };
+        }
+
+        _dbContext.MarriageApplicationForms.Add(application);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        formApplication.MarriageApplicationFormId = application.Id;
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return application;
+    }
+
+    private static string GenerateReferenceNumber() =>
+        $"RN-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}"[..16];
     public async Task<ReadOnlyFormDto?> GetReadOnlyFormAsync(
     Guid formId,
     CancellationToken cancellationToken = default)
@@ -125,11 +216,11 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         Guid formId,
         ApplicationStage targetStage,
         string reason,
-        Guid verifierId,
+        string membershipNo,
         CancellationToken cancellationToken = default)
     {
-        if (verifierId == Guid.Empty)
-            throw new ArgumentException("A verifier id is required.", nameof(verifierId));
+        if (string.IsNullOrWhiteSpace(membershipNo))
+            throw new ArgumentException("A verifier membership number is required.", nameof(membershipNo));
 
         if (string.IsNullOrWhiteSpace(reason))
             throw new ArgumentException("A rejection reason is required.", nameof(reason));
@@ -148,10 +239,15 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             return RevertStageResult.ApplicationAlreadyApproved; 
 
         var authorization = await _stageAuthorization.CanUserActAsync(
-            verifierId, form.Id, currentStage, cancellationToken);
+            membershipNo, form.Id, currentStage, cancellationToken);
 
         if (!authorization.IsAllowed)
             return RevertStageResult.Unauthorized;
+
+        var verifierId = await _dbContext.JamaatMembers
+            .Where(m => m.ChandaNo == membershipNo)
+            .Select(m => (Guid?)m.Id)
+            .FirstOrDefaultAsync(cancellationToken) ?? Guid.Empty;
 
         var rejection = new MarriageFormRejection
         {

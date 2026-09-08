@@ -1,0 +1,342 @@
+@model Presentation.ViewModels.NewApplicationViewModel
+
+@{
+    ViewData["Title"] = "New Application";
+}
+
+<div class="dashboard-hero">
+    <h1>New Marriage Application</h1>
+    <p>Start your Nikah application. You can apply as the groom or the bride — your details are pre-filled from your membership record.</p>
+</div>
+
+<form asp-controller="MarriageApplication" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="card dashboard-card mb-4">
+        <div class="card-header">Who is starting this application?</div>
+        <div class="card-body">
+            <div class="btn-group" role="group" aria-label="Starting party">
+                <input type="radio" asp-for="StartingParty" value="Groom" id="partyGroom" class="btn-check" autocomplete="off" />
+                <label class="btn btn-outline-primary" for="partyGroom">I am the Groom</label>
+
+                <input type="radio" asp-for="StartingParty" value="Bride" id="partyBride" class="btn-check" autocomplete="off" />
+                <label class="btn btn-outline-primary" for="partyBride">I am the Bride</label>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.StartingParty == "Bride")
+    {
+        <div class="card dashboard-card mb-4" id="brideCard">
+            <div class="card-header">
+                Bride Information
+                <span class="badge rounded-pill text-bg-light ms-2" id="brideBadge">(You)</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bride.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bride.MembershipNo" class="form-control" />
+                        <span asp-validation-for="Bride.MembershipNo" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.Name" class="form-label"></label>
+                        <input asp-for="Bride.Name" class="form-control" />
+                        <span asp-validation-for="Bride.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.DateOfBirth" class="form-label"></label>
+                        <input asp-for="Bride.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Bride.DateOfBirth" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.Phone" class="form-label"></label>
+                        <input asp-for="Bride.Phone" class="form-control" />
+                        <span asp-validation-for="Bride.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bride.ResidentOf" class="form-label"></label>
+                        <input asp-for="Bride.ResidentOf" class="form-control" />
+                        <span asp-validation-for="Bride.ResidentOf" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.Genotype" class="form-label"></label>
+                        <select asp-for="Bride.Genotype" class="form-select">
+                            <option value="">Select</option>
+                            <option>AA</option><option>AS</option><option>SS</option>
+                            <option>AC</option><option>SC</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bride.BloodGroup" class="form-label"></label>
+                        <select asp-for="Bride.BloodGroup" class="form-select">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr class="my-1" /></div>
+
+                    <div class="col-md-4">
+                        <label asp-for="BrideMaritalStatus" class="form-label"></label>
+                        <select asp-for="BrideMaritalStatus" class="form-select">
+                            <option value="">Select</option>
+                            <option>Single</option><option>Widowed</option><option>Divorced</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BrideProposedDowerAmount" class="form-label"></label>
+                        <input asp-for="BrideProposedDowerAmount" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BrideDowerAmountReceivedInCash" class="form-label"></label>
+                        <input asp-for="BrideDowerAmountReceivedInCash" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card mb-4" id="groomCard">
+            <div class="card-header">
+                Bridegroom Details
+                <span class="badge rounded-pill text-bg-light ms-2" id="groomBadge">(Partner)</span>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">Enter your partner's membership number. Their details will be loaded automatically.</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bridegroom.MembershipNo" class="form-control" id="partnerMembershipNo" />
+                        <span asp-validation-for="Bridegroom.MembershipNo" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div id="partnerPreview" class="mt-3 d-none">
+                    <div class="alert alert-light border mb-0">
+                        <strong>Name:</strong> <span id="pvName"></span><br/>
+                        <strong>Date of Birth:</strong> <span id="pvDob"></span><br/>
+                        <strong>Address:</strong> <span id="pvAddress"></span><br/>
+                        <strong>Phone:</strong> <span id="pvPhone"></span>
+                    </div>
+                </div>
+                <div id="partnerNotFound" class="alert alert-warning d-none mt-3">We couldn't find that membership number. Please check it and try again.</div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card dashboard-card mb-4" id="groomCard">
+            <div class="card-header">
+                Bridegroom Information
+                <span class="badge rounded-pill text-bg-light ms-2" id="groomBadge">(You)</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bridegroom.MembershipNo" class="form-control" />
+                        <span asp-validation-for="Bridegroom.MembershipNo" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.Name" class="form-label"></label>
+                        <input asp-for="Bridegroom.Name" class="form-control" />
+                        <span asp-validation-for="Bridegroom.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.DateOfBirth" class="form-label"></label>
+                        <input asp-for="Bridegroom.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Bridegroom.DateOfBirth" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.Phone" class="form-label"></label>
+                        <input asp-for="Bridegroom.Phone" class="form-control" />
+                        <span asp-validation-for="Bridegroom.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Bridegroom.ResidentOf" class="form-label"></label>
+                        <input asp-for="Bridegroom.ResidentOf" class="form-control" />
+                        <span asp-validation-for="Bridegroom.ResidentOf" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.Genotype" class="form-label"></label>
+                        <select asp-for="Bridegroom.Genotype" class="form-select">
+                            <option value="">Select</option>
+                            <option>AA</option><option>AS</option><option>SS</option>
+                            <option>AC</option><option>SC</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Bridegroom.BloodGroup" class="form-label"></label>
+                        <select asp-for="Bridegroom.BloodGroup" class="form-select">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr class="my-1" /></div>
+
+                    <div class="col-md-6">
+                        <label asp-for="BridegroomDowerAmountPaidInCash" class="form-label"></label>
+                        <input asp-for="BridegroomDowerAmountPaidInCash" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="BridegroomDowerAmountToBePaid" class="form-label"></label>
+                        <input asp-for="BridegroomDowerAmountToBePaid" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this your first Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="true" id="firstNikahYes" />
+                            <label class="form-check-label" for="firstNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="false" id="firstNikahNo" />
+                            <label class="form-check-label" for="firstNikahNo">No</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this a second, third or fourth Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="true" id="multiNikahYes" />
+                            <label class="form-check-label" for="multiNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="false" id="multiNikahNo" />
+                            <label class="form-check-label" for="multiNikahNo">No</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card mb-4" id="brideCard">
+            <div class="card-header">
+                Bride Information
+                <span class="badge rounded-pill text-bg-light ms-2" id="brideBadge">(Partner)</span>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">Enter your partner's membership number. Their details will be loaded automatically.</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Bride.MembershipNo" class="form-label"></label>
+                        <input asp-for="Bride.MembershipNo" class="form-control" id="partnerMembershipNo" />
+                        <span asp-validation-for="Bride.MembershipNo" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div id="partnerPreview" class="mt-3 d-none">
+                    <div class="alert alert-light border mb-0">
+                        <strong>Name:</strong> <span id="pvName"></span><br/>
+                        <strong>Date of Birth:</strong> <span id="pvDob"></span><br/>
+                        <strong>Address:</strong> <span id="pvAddress"></span><br/>
+                        <strong>Phone:</strong> <span id="pvPhone"></span>
+                    </div>
+                </div>
+                <div id="partnerNotFound" class="alert alert-warning d-none mt-3">We couldn't find that membership number. Please check it and try again.</div>
+            </div>
+        </div>
+    }
+
+    <div class="card dashboard-card mb-4">
+        <div class="card-header">Wedding Details</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="ProposedNikahDate" class="form-label"></label>
+                    <input asp-for="ProposedNikahDate" class="form-control" type="date" />
+                    <span asp-validation-for="ProposedNikahDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Venue" class="form-label"></label>
+                    <input asp-for="Venue" class="form-control" placeholder="Mosque / Jama'at / venue" />
+                    <span asp-validation-for="Venue" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-5">
+        <button type="submit" class="btn btn-primary">Save &amp; Continue</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            'use strict';
+
+            var groomRadio = document.getElementById('partyGroom');
+            var brideRadio = document.getElementById('partyBride');
+            var groomBadge = document.getElementById('groomBadge');
+            var brideBadge = document.getElementById('brideBadge');
+            var groomCard = document.getElementById('groomCard');
+            var brideCard = document.getElementById('brideCard');
+
+            function updateBadges() {
+                var isGroom = groomRadio && groomRadio.checked;
+                if (groomBadge) { groomBadge.textContent = isGroom ? '(You)' : '(Partner)'; }
+                if (brideBadge) { brideBadge.textContent = isGroom ? '(Partner)' : '(You)'; }
+            }
+
+            function reorderCards() {
+                if (!groomCard || !brideCard || groomCard.parentNode !== brideCard.parentNode) { return; }
+                var isGroom = groomRadio && groomRadio.checked;
+                var container = groomCard.parentNode;
+                if (isGroom) {
+                    container.insertBefore(groomCard, brideCard);
+                } else {
+                    container.insertBefore(brideCard, groomCard);
+                }
+            }
+
+            function updateLayout() {
+                updateBadges();
+                reorderCards();
+            }
+
+            if (groomRadio) { groomRadio.addEventListener('change', updateLayout); }
+            if (brideRadio) { brideRadio.addEventListener('change', updateLayout); }
+            updateLayout();
+
+            function wirePartnerLookup(membershipId) {
+                var input = document.getElementById(membershipId);
+                if (!input) { return; }
+                var submit = document.querySelector('button[type="submit"]');
+                if (submit) { submit.disabled = true; }
+                input.addEventListener('change', function () {
+                    var chandaNo = input.value.trim();
+                    var preview = document.getElementById('partnerPreview');
+                    var notFound = document.getElementById('partnerNotFound');
+                    if (!chandaNo) { return; }
+                    fetch('/api/members/lookup/' + encodeURIComponent(chandaNo))
+                        .then(function (r) { return r.ok ? r.json() : null; })
+                        .then(function (m) {
+                            if (!m) {
+                                if (preview) { preview.classList.add('d-none'); }
+                                if (notFound) { notFound.classList.remove('d-none'); }
+                                if (submit) { submit.disabled = true; }
+                                return;
+                            }
+                            if (notFound) { notFound.classList.add('d-none'); }
+                            if (preview) { preview.classList.remove('d-none'); }
+                            function set(id, v) { var el = document.getElementById(id); if (el) { el.textContent = v || ''; } }
+                            set('pvName', m.fullName);
+                            set('pvDob', m.dateOfBirth ? m.dateOfBirth.slice(0, 10) : '');
+                            set('pvAddress', m.address);
+                            set('pvPhone', m.phoneNo);
+                            if (submit) { submit.disabled = false; }
+                        })
+                        .catch(function () {
+                            if (submit) { submit.disabled = true; }
+                        });
+                });
+            }
+
+            wirePartnerLookup('partnerMembershipNo');
+        })();
+    </script>
+}

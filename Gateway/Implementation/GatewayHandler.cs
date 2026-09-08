@@ -1,12 +1,13 @@
-﻿using Application.Interfaces.Identity;
+﻿using Application.Interfaces.Gateway;
 using Domain.Entities;
-using Gateway.Extensions;
 using Infrastructure.Identity.Tokens;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
+using Infrastructure.Identity.Users;
+using Gateway.Extensions;
 
 namespace Gateway.Implementation;
 
@@ -18,40 +19,15 @@ public class GatewayHandler : IGatewayHandler
     public GatewayHandler(HttpClient client, IConfiguration config)
     {
         _client = client;
-        _apiUrl = config["Api"] ?? throw new InvalidOperationException("Api URL is not configured");
+        _apiUrl = config["TajneedApiBaseUrl"] ?? throw new InvalidOperationException("TajneedApiBaseUrl is not configured");
     }
 
-    //public async Task<string[]?> GetMemberRoleAsync(string chandaNo)
-    //{
-    //    var url = $"{_apiUrl}{chandaNo}/userRoles";
-    //    using var request = new HttpRequestMessage(
-    //        HttpMethod.Get,
-    //        url
-    //        );
-
-    //    var response = await _client.SendAsync(request);
-
-    //    if (response.IsSuccessStatusCode)
-    //    {
-    //        return await response.ReadContentAs<string[]>();
-    //    }
-    //    if (response.StatusCode == HttpStatusCode.NotFound)
-    //    {
-    //        return null;
-    //    }
-
-    //    throw new HttpRequestException($"Member roles API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
-    //}
-
-    public async Task<JamaatMember?> GetMemberByChandaNoAsync(string chandaNo)
+    public async Task<JamaatMember?> GetMemberByMemberNoAsync(string memberNo, CancellationToken cancellationToken = default)
     {
-        var url = $"{_apiUrl}members/{chandaNo}";
+        var url = $"{_apiUrl}members/{memberNo}";
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url);
-
-        var response = await _client.SendAsync(request);
+        var response = await _client.SendAsync(request, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
@@ -63,11 +39,12 @@ public class GatewayHandler : IGatewayHandler
             // number, so stamp it from the identifier we queried with.
             if (member is not null)
             {
-                member.ChandaNo = chandaNo;
+                member.ChandaNo = memberNo;
             }
 
             return member;
         }
+
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
@@ -76,8 +53,7 @@ public class GatewayHandler : IGatewayHandler
         throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
     }
 
-
-    public async Task<MemberApiLoginResponse?> GenerateToken(TokenRequest tokenRequest)
+    public async Task<(MemberApiLoginResponse?, string? ErrorMessage)> GenerateToken(TokenRequest tokenRequest)
     {
         var url = $"{_apiUrl}token";
 
@@ -87,7 +63,10 @@ public class GatewayHandler : IGatewayHandler
             Password = tokenRequest.Password
         };
 
-        var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
+        var jsonContent = new StringContent(
+            JsonConvert.SerializeObject(credentials), 
+            Encoding.UTF8, 
+            "application/json");
 
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
@@ -96,27 +75,26 @@ public class GatewayHandler : IGatewayHandler
 
         var response = await _client.SendAsync(request);
 
-        if (response.IsSuccessStatusCode)
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
-        }
-
-        // The Tajneed API reports invalid credentials as 400 Bad Request
-        // ({"message":"Invalid Credential","status":false}), alongside the
-        // conventional 401/404 — all mean "not authenticated".
-        if (response.StatusCode == HttpStatusCode.BadRequest ||
-            response.StatusCode == HttpStatusCode.Unauthorized ||
-            response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-
         var errorContent = await response.Content.ReadAsStringAsync();
 
-        throw new HttpRequestException(
-            $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). " +
-            $"Response: {errorContent}");
+        if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
+        {
+            var errorData = JsonConvert.DeserializeObject<ApiErrorResponse>(errorContent);
+            var errorMessage = errorData?.Message ?? $"Authentication failed: {(int)response.StatusCode} {response.StatusCode}";
+
+            return (null, errorMessage);
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return (null, $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {errorContent}");
+        }
+
+
+        var content = await response.Content.ReadAsStringAsync();
+        var successData = JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);
+
+        return (successData, null);
     }
 
     /// <summary>

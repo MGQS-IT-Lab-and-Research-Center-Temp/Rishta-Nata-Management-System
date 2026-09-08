@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
@@ -12,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// Generates secure invitation tokens, persists them, validates them, and
+    /// optionally emails the invite.
+    /// </summary>
     public class InvitationService : IInvitationService
     {
         private readonly RishtanataDbContext _db;

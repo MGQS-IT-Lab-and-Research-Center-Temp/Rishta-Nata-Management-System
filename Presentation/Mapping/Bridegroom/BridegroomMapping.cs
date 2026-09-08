@@ -5,6 +5,28 @@ namespace Presentation.Mapping.Bridegroom;
 
 public static class BridegroomMapping
 {
+    public static BridegroomSectionDto ToDto(BridegroomFormViewModel model)
+    {
+        return new BridegroomSectionDto
+        {
+            BridegroomMembershipNo = model.BridegroomMembershipNo,
+            BridegroomName = model.BridegroomName,
+            BridegroomDateOfBirth = model.BridegroomDateOfBirth,
+            BridegroomResidentOf = model.BridegroomResidentOf,
+            BridegroomGenotype = model.BridegroomGenotype,
+            BridegroomBloodGroup = model.BridegroomBloodGroup,
+            BridegroomDowerAmountPaidInCash = model.BridegroomDowerAmountPaidInCash,
+            BridegroomDowerAmountToBePaid = model.BridegroomDowerAmountToBePaid,
+            BridegroomSignatureTel = model.BridegroomPhoneNumber,
+            IsFirstNikah = model.IsFirstNikah,
+            IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah,
+            FormerWifeIsDead = model.FormerWifeIsDead,
+            HasDivorcedFormerWife = model.HasDivorcedFormerWife,
+            FormerWifeIsPresent = model.FormerWifeIsPresent,
+            FormerWifeObtainedKhula = model.FormerWifeObtainedKhula
+        };
+    }
+
     public static BridegroomFormViewModel ToViewModel(BridegroomSectionDto dto)
     {
         return new BridegroomFormViewModel

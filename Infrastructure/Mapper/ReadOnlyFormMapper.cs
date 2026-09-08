@@ -1,8 +1,5 @@
 ﻿using Domain.Entities;
 using Infrastructure.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Infrastructure.Mapper;
     public  static class ReadOnlyFormMapper

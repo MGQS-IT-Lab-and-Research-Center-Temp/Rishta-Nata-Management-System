@@ -1,15 +1,14 @@
-using Application.Authorization;
 using Domain.Entities;
-using Infrastructure.DTOs;
 
 namespace Application.Interfaces;
 
+/// <summary>
+/// BrideGuardian record management only. The staged bride-section submission
+/// moved to IBrideSectionService (cleanup) so each interface has a single
+/// responsibility.
+/// </summary>
 public interface IBrideGuardianService
 {
-    Task<StageAuthorizationResult> SubmitBrideSectionAsync(
-        Guid userId, Guid applicationFormId, BrideSectionDto dto,
-        CancellationToken cancellationToken = default);
-
     Task<BrideGuardian?> CreateAsync(
         BrideGuardian guardian,
         CancellationToken cancellationToken = default);

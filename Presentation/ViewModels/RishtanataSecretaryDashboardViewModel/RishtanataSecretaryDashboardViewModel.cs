@@ -1,4 +1,6 @@
-﻿namespace Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
+﻿using System.Collections.Generic;
+
+namespace Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
 
 public class RishtanataSecretaryDashboardViewModel
 {

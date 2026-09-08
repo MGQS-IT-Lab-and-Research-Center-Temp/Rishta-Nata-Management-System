@@ -9,6 +9,9 @@ using Application.Interfaces;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// National Rishtanata Secretary dashboard and approve/reject/return.
+    /// </summary>
     public class RishtanataSecretaryService : IRishtanataSecretaryService
     {
         private readonly RishtanataDbContext _context;
@@ -18,21 +21,35 @@ namespace Application.Services
             _context = context;
         }
 
-        public RishtanataSecretaryDashboardDto GetDashboard()
+        public RishtanataSecretaryDashboardDto GetDashboard(string? membershipNo)
         {
             var pendingApplications = _context.FormApplications
-                .Where(x => x.Status == ApplicationStatus.ApplicationPending)
+                // Cleanup: AwaitingMoreInformation is a pending-ish state too
+                // (form sent back to applicants), so count it as pending.
+                .Where(x => x.Status == ApplicationStatus.ApplicationPending ||
+                            x.Status == ApplicationStatus.AwaitingMoreInformation)
                 .ToList();
+
+            var member = string.IsNullOrWhiteSpace(membershipNo)
+                ? null
+                : _context.JamaatMembers
+                    .FirstOrDefault(x => x.ChandaNo == membershipNo);
 
             var dto = new RishtanataSecretaryDashboardDto
             {
+                SecretaryName = member is null
+                    ? null
+                    : $"{member.FirstName} {member.Surname}".Trim(),
+
                 PendingApprovals = pendingApplications.Count,
 
                 ApprovedApplications = _context.FormApplications
                     .Count(x => x.Status == ApplicationStatus.ApplicationApproved),
 
                 MarriedCouples = _context.FormApplications
-                    .Count(x => x.Certificate != null)
+                    .Count(x => x.Certificate != null),
+
+                TotalMembers = _context.JamaatMembers.Count()
             };
 
             return dto;
@@ -42,7 +59,10 @@ namespace Application.Services
         {
             return _context.MarriageApplicationForms
                 .Where(f => f.MarriageApplication.Status ==
-                            ApplicationStatus.ApplicationPending)
+                // Cleanup: include awaiting-more-info forms in the pending list.
+                ApplicationStatus.ApplicationPending ||
+                f.MarriageApplication.Status ==
+                ApplicationStatus.AwaitingMoreInformation)
                 .Select(f => new PendingApprovalDto
                 {
                     Id = f.MarriageApplicationId,
@@ -102,8 +122,8 @@ namespace Application.Services
         public MemberProfileDto GetMemberProfile(Guid id)
         {
             var member = _context.JamaatMembers
-                .Include(x => x.MemberRoles)
-                    .ThenInclude(mr => mr.Role)
+                //.Include(x => x.MemberRoles)
+                //    .ThenInclude(mr => mr.Role)
                 .FirstOrDefault(x => x.Id == id);
 
             if (member == null)
@@ -115,9 +135,8 @@ namespace Application.Services
                 Surname = member.Surname,
                 FirstName = member.FirstName,
                 MiddleName = member.MiddleName,
-                MaidenName = member.MaidenName,
                 Title = member.Title,
-                FullName = member.FullName,
+                FullName = $"{member.FirstName} {member.Surname}".Trim(),
                 Email = member.Email,
                 ChandaNo = member.ChandaNo,
                 WasiyatNo = member.WasiyatNo,
@@ -129,17 +148,17 @@ namespace Application.Services
                 Sex = member.Sex,
                 MaritalStatus = member.MaritalStatus,
                 Address = member.Address,
-                NextOfKinName = member.NextOfKinName,
-                NextOfKinPhoneNo = member.NextOfKinPhoneNo,
-                NextOfKinAddress = member.NextOfKinAddress,
                 Nationality = member.Nationality,
-                RoleName = member.MemberRoles.Any()
-                    ? string.Join(", ", member.MemberRoles.Select(mr => mr.Role.Name))
-                    : null
+                RoleName = string.IsNullOrWhiteSpace(member.Roles)
+                    ? null
+                    : member.Roles
             };
         }
 
-        public void ReturnToPresident(Guid id)
+        // Cleanup: ReturnToPresident/Reject/Approve were fire-and-forget — they
+        // called SaveChangesAsync() without await, so the controller redirected
+        // before the write had finished. They are now Task-based and awaited.
+        public async Task ReturnToPresident(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
@@ -149,7 +168,7 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationPending;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public List<JamaatMemberDto> GetMembers()
@@ -159,7 +178,8 @@ namespace Application.Services
                 .ToList();
         }
 
-        public void Reject(Guid id)
+        // Same fire-and-forget SaveChangesAsync as ReturnToPresident; now awaited.
+        public async Task Reject(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
@@ -169,10 +189,10 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationRejected;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public void Approve(Guid id)
+        public async Task Approve(Guid id)
         {
             var application = _context.FormApplications
                 .FirstOrDefault(x => x.Id == id);
@@ -182,7 +202,7 @@ namespace Application.Services
 
             application.Status = ApplicationStatus.ApplicationApproved;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

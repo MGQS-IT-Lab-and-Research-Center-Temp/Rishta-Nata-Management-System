@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
+﻿namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
 {
     public class MemberProfileDto
     {

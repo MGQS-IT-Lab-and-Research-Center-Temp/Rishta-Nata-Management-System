@@ -1,4 +1,6 @@
-﻿namespace Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
+﻿using System;
+
+namespace Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
 
 public class PendingApprovalViewModel
 {

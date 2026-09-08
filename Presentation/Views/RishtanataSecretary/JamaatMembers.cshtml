@@ -87,6 +87,7 @@
                         <th>Jama'at</th>
                         <th>Marital Status</th>
                         <th>Phone</th>
+                        <th></th>
                     </tr>
                 </thead>
 
@@ -141,13 +142,22 @@
                                     @member.PhoneNumber
                                 </td>
 
+                                <td>
+                                    <a asp-controller="RishtanataSecretary"
+                                       asp-action="MemberProfile"
+                                       asp-route-id="@member.Id"
+                                       class="btn btn-outline-primary btn-sm">
+                                        View
+                                    </a>
+                                </td>
+
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <h5 class="text-muted">
                                     No registered members found.
                                 </h5>

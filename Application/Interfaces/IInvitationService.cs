@@ -3,6 +3,9 @@ using Domain.Enums;
 
 namespace Application.Interfaces;
 
+/// <summary>
+/// Invitation token lifecycle: generate, validate, mark-used.
+/// </summary>
 public interface IInvitationService
 {
     // Generates a new invitation token, persists it, and optionally sends email.

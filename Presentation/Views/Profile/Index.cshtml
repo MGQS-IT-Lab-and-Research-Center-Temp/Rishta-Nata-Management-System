@@ -1,0 +1,62 @@
+@model Presentation.ViewModels.MemberProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="dashboard-hero">
+    <h1>My Profile</h1>
+    <p>Your details as registered with the Jama'at.</p>
+</div>
+
+<div class="card dashboard-card">
+    <div class="card-header">Personal Information</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Full Name</dt>
+            <dd class="col-sm-8">@Model.FullName</dd>
+
+            <dt class="col-sm-4">Title</dt>
+            <dd class="col-sm-8">@Model.Title</dd>
+
+            <dt class="col-sm-4">Chanda Number</dt>
+            <dd class="col-sm-8">@Model.ChandaNo</dd>
+
+            <dt class="col-sm-4">Wasiyat Number</dt>
+            <dd class="col-sm-8">@Model.WasiyatNo</dd>
+
+            <dt class="col-sm-4">Role</dt>
+            <dd class="col-sm-8">@Model.RoleName</dd>
+
+            <dt class="col-sm-4">Email</dt>
+            <dd class="col-sm-8">@Model.Email</dd>
+
+            <dt class="col-sm-4">Phone Number</dt>
+            <dd class="col-sm-8">@Model.PhoneNo</dd>
+
+            <dt class="col-sm-4">Date of Birth</dt>
+            <dd class="col-sm-8">@Model.DateOfBirth.ToString("dd MMM yyyy")</dd>
+
+            <dt class="col-sm-4">Sex</dt>
+            <dd class="col-sm-8">@Model.Sex</dd>
+
+            <dt class="col-sm-4">Marital Status</dt>
+            <dd class="col-sm-8">@Model.MaritalStatus</dd>
+
+            <dt class="col-sm-4">Nationality</dt>
+            <dd class="col-sm-8">@Model.Nationality</dd>
+
+            <dt class="col-sm-4">Auxiliary Body</dt>
+            <dd class="col-sm-8">@Model.AuxillaryBodyName</dd>
+
+            <dt class="col-sm-4">Jama'at</dt>
+            <dd class="col-sm-8">@Model.JamaatName</dd>
+
+            <dt class="col-sm-4">Circuit</dt>
+            <dd class="col-sm-8">@Model.CircuitName</dd>
+
+            <dt class="col-sm-4">Address</dt>
+            <dd class="col-sm-8">@Model.Address</dd>
+        </dl>
+    </div>
+</div>

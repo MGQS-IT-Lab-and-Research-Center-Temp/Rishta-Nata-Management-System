@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Domain.Constants;
 using Infrastructure.DTOs.MarriageApplicationFormDetail;
 using Infrastructure.Mapper;
 using Infrastructure.Persistence;
@@ -11,9 +12,9 @@ namespace Application.Services;
 /// <summary>
 /// Assembles MarriageApplicationFormDetailDto for display (Epic C3).
 ///
-/// CanCurrentUserEdit is derived exclusively from IStageAuthorizationService —
-/// the same authorization logic Epic B endpoints use — never a
-/// re-implementation (policy §7.3). When the user is unauthenticated or the
+/// CanCurrentUserEdit is derived exclusively from IStageAuthorizationService ï¿½
+/// the same authorization logic Epic B endpoints use ï¿½ never a
+/// re-implementation (policy ï¿½7.3). When the user is unauthenticated or the
 /// form has not entered the staged workflow yet, the flag is false.
 /// </summary>
 public class MarriageApplicationFormDetailService : IMarriageApplicationFormDetailService
@@ -55,17 +56,22 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         var dto = MarriageApplicationFormDetailMapper.ToDetailDto(
             form, form.Rejections.ToList());
 
-        dto.CanCurrentUserEdit = await ComputeCanCurrentUserEditAsync(form, cancellationToken);
-        dto.CanCurrentUserReject = await ComputeCanCurrentUserRejectAsync(form, cancellationToken);
+        // CanCurrentUserEdit and CanCurrentUserReject use the *same* gate:
+        // whoever may act on the form's current stage may also reject it
+        // (policy Â§4.4). One shared check, two flags.
+        dto.CanCurrentUserEdit = await ComputeCanCurrentUserActAsync(form, cancellationToken);
+        dto.CanCurrentUserReject = await ComputeCanCurrentUserActAsync(form, cancellationToken);
 
         return dto;
     }
 
     /// <summary>
-    /// "Can the current user act on this form right now?" — answered by the
+    /// "Can the current user act on this form right now?" â€” answered by the
     /// Epic B authorization service for the stage the form is currently at.
+    /// Drives both CanCurrentUserEdit and CanCurrentUserReject (cleanup: the
+    /// two previously-identical compute methods were merged into this one).
     /// </summary>
-    private async Task<bool> ComputeCanCurrentUserEditAsync(
+    private async Task<bool> ComputeCanCurrentUserActAsync(
         Domain.Entities.MarriageApplicationForm form,
         CancellationToken cancellationToken)
     {
@@ -76,14 +82,14 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
             return false;
         }
 
-        var userId = GetCurrentUserId();
-        if (!userId.HasValue)
+        var membershipNo = GetCurrentMembershipNo();
+        if (string.IsNullOrWhiteSpace(membershipNo))
         {
             return false;
         }
 
         var result = await _stageAuthorization.CanUserActAsync(
-            userId.Value,
+            membershipNo,
             form.Id,
             form.ApplicationStage.Value,
             cancellationToken);
@@ -91,39 +97,11 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         return result.IsAllowed;
     }
 
-    /// <summary>
-    /// "Can the current user reject at this form's current stage?" — answered by the
-    /// stage authorization service. Uses the same gate as CanCurrentUserEdit.
-    /// </summary>
-    private async Task<bool> ComputeCanCurrentUserRejectAsync(
-        Domain.Entities.MarriageApplicationForm form,
-        CancellationToken cancellationToken)
+    private string? GetCurrentMembershipNo()
     {
-        if (!form.ApplicationStage.HasValue)
-        {
-            return false;
-        }
+        var user = _httpContextAccessor.HttpContext?.User;
 
-        var userId = GetCurrentUserId();
-        if (!userId.HasValue)
-        {
-            return false;
-        }
-
-        var result = await _stageAuthorization.CanUserActAsync(
-            userId.Value,
-            form.Id,
-            form.ApplicationStage.Value,
-            cancellationToken);
-
-        return result.IsAllowed;
-    }
-
-    private Guid? GetCurrentUserId()
-    {
-        var value = _httpContextAccessor.HttpContext?.User
-            ?.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        return Guid.TryParse(value, out var id) ? id : null;
+        return user?.FindFirstValue(ClaimNames.MembershipNo)
+            ?? user?.FindFirstValue(ClaimTypes.Name);
     }
 }

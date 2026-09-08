@@ -1,4 +1,6 @@
-﻿namespace Presentation.Requests;
+﻿using System;
+
+namespace Presentation.Requests;
 
 public class GuardianOrWakeelSignatureRequest
 {

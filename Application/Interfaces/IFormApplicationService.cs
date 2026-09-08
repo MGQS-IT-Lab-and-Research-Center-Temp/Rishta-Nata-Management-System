@@ -4,6 +4,9 @@ using Infrastructure.DTOs.FormApplication;
 
 namespace Application.Interfaces
 {
+    /// <summary>
+    /// CRUD over FormApplication (the application wrapper).
+    /// </summary>
     public interface IFormApplicationService
     {
         Task<FormApplicationDto> CreateApplicationAsync(CreateFormApplicationDto dto);

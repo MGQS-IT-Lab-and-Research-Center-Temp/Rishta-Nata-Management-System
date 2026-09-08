@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using Application.Interfaces;
-using Domain.Entities;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 

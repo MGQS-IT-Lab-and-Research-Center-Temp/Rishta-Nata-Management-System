@@ -143,6 +143,12 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.BridegroomFatherName)
             .HasMaxLength(200);
 
+        builder.Property(f => f.BrideFatherMembershipNo)
+            .HasMaxLength(50);
+
+        builder.Property(f => f.BridegroomFatherMembershipNo)
+            .HasMaxLength(50);
+
         // =====================================================
         // Guardian
         // =====================================================
@@ -185,6 +191,9 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.WitnessOneName)
             .HasMaxLength(200);
 
+        builder.Property(f => f.WitnessOneMembershipNo)
+            .HasMaxLength(50);
+
         builder.Property(f => f.WitnessOneAddress)
             .HasMaxLength(300);
 
@@ -200,6 +209,9 @@ public class MarriageApplicationFormConfiguration
 
         builder.Property(f => f.WitnessTwoName)
             .HasMaxLength(200);
+
+        builder.Property(f => f.WitnessTwoMembershipNo)
+            .HasMaxLength(50);
 
         builder.Property(f => f.WitnessTwoAddress)
             .HasMaxLength(300);

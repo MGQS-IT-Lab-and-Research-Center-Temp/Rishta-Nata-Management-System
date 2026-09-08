@@ -1,55 +1,52 @@
-﻿
-using Application.Interfaces;
+﻿using Application.Interfaces;
+using Domain.Constants;
 using Domain.Enums;
-using Infrastructure.DTOs.MarriageApplicationFormDetail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Presentation.Requests;
 
 
 namespace Presentation.Controllers;
 
-[ApiController]
-[Route("api/marriage-forms")]
 [Authorize(Policy = "StageVerifier")]
-public class MarriageFormsController : Controller
+[Route("api/marriage-forms")]
+public class MarriageFormController : Controller
 {
     private readonly IMarriageApplicationFormService _formService;
-    public MarriageFormsController(IMarriageApplicationFormService formService)
+    public MarriageFormController(IMarriageApplicationFormService formService)
     {
         _formService = formService;
     }
-
-    // GET api/marriage-forms/{id}
-    [HttpGet]
 
     // POST api/marriage-forms/{formId}/revert
     [HttpPost("{formId:guid}/revert")]
     public async Task<IActionResult> RevertStage(
         Guid formId,
-        [FromBody] RevertStageRequestDto request,
+        [FromBody] RevertStageRequest request,
         CancellationToken cancellationToken)
     {
-        var verifierId = GetCurrentUserId();
-        if (verifierId is null)
+        var membershipNo = GetCurrentMembershipNo();
+        if (string.IsNullOrWhiteSpace(membershipNo))
             return Unauthorized();
 
         var result = await _formService.RevertStageAsync(
-            formId, request.TargetStage, request.Reason, verifierId.Value, cancellationToken);
+            formId, request.TargetStage, request.Reason, membershipNo, cancellationToken);
 
         return result switch
         {
             RevertStageResult.Success => NoContent(),
             RevertStageResult.FormNotFound => NotFound(),
             RevertStageResult.InvalidTargetStage => BadRequest(new { message = "Cannot revert to that stage from the current state." }),
+            RevertStageResult.ApplicationAlreadyApproved => BadRequest(new { message = "The application has already been approved and cannot be reverted." }),
             RevertStageResult.Unauthorized => Forbid(),
             _ => StatusCode(500)
         };
     }
 
-    private Guid? GetCurrentUserId()
+    private string? GetCurrentMembershipNo()
     {
-        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Guid.TryParse(claim, out var id) ? id : null;
+        return User.FindFirstValue(ClaimNames.MembershipNo)
+            ?? User.FindFirstValue(ClaimTypes.Name);
     }
 }

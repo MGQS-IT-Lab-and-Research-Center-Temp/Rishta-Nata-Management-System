@@ -93,7 +93,7 @@ public class MarriageFormStageRevertedEventHandler : IEventHandler<MarriageFormS
             MarriageFormStage.AwaitingBridegroom =>
                 form.BridegroomSection?.CreatedBy is Guid bridegroomId ? new[] { bridegroomId } : Enumerable.Empty<Guid>(),
             MarriageFormStage.AwaitingWitnesses =>
-                form.WitnessSignatures.Select(w => w.CreatedBy).Where(id => id.HasValue).Select(id => id.Value).Distinct(),
+                form.WitnessSignatures.Where(w => w.CreatedBy.HasValue).Select(w => w.CreatedBy!.Value).Distinct(),
             MarriageFormStage.AwaitingImamVerification =>
                 form.ImamVerification?.CreatedBy is Guid imamId ? new[] { imamId } : Enumerable.Empty<Guid>(),
             MarriageFormStage.AwaitingJamaatPresident =>

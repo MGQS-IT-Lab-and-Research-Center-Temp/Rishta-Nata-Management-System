@@ -1,12 +1,13 @@
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Presentation.Constants.Roles;
-using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 using Presentation.Mapping.RishtanataSecretary;
 using Presentation.Mapping.JamaatMember;
-using Application.Services;
 using Application.Interfaces;
-using Infrastructure.Mapper;
+using Domain.Constants;
 
 namespace Presentation.Controllers;
 
@@ -14,20 +15,19 @@ namespace Presentation.Controllers;
 public class RishtanataSecretaryController : Controller
 {
     private readonly IRishtanataSecretaryService _service;
-    private readonly IRoleAssignmentService _roleService;
 
     public RishtanataSecretaryController(
-        IRishtanataSecretaryService service,
-        IRoleAssignmentService roleService)
+        IRishtanataSecretaryService service)
     {
         _service = service;
-        _roleService = roleService;
     }
 
     // Dashboard page
     public IActionResult Dashboard()
     {
-        var dto = _service.GetDashboard();
+        var dto = _service.GetDashboard(
+            User.FindFirstValue(ClaimNames.MembershipNo)
+            ?? User.FindFirstValue(ClaimTypes.Name));
 
         var model = RishtanataSecretaryDashboardMapping.ToViewModel(dto);
 
@@ -51,7 +51,11 @@ public class RishtanataSecretaryController : Controller
     {
         var marriedCouples = _service.GetMarriedCouples();
 
-        return View(marriedCouples);
+        var viewModels = marriedCouples
+            .Select(MarriedCoupleMapping.ToViewModel)
+            .ToList();
+
+        return View(viewModels);
     }
 
     // View all Jama'at members
@@ -71,7 +75,9 @@ public class RishtanataSecretaryController : Controller
     {
         var application = _service.GetById(id);
 
-        return View(application);
+        var viewModel = RishtanataSecretaryReviewMapping.ToViewModel(application);
+
+        return View(viewModel);
     }
 
     // Full member profile page
@@ -84,20 +90,12 @@ public class RishtanataSecretaryController : Controller
         return View(model);
     }
 
-    // Edit Role of a specific Jamaat Member
-    public async Task<IActionResult> EditRoles(Guid id)
-    {
-        var dto = await _roleService.GetRoleManagementAsync(id);
-
-        var viewModel = RoleManagementMapper.toViewModel(dto);
-
-        return View(viewModel);
-    }
-
     [HttpPost]
     public async Task<IActionResult> Approve(Guid id)
     {
-        _service.Approve(id);
+        // Await the status change so the redirect can't beat the write (the
+        // service now persists asynchronously instead of fire-and-forget).
+        await _service.Approve(id);
 
         return RedirectToAction(nameof(PendingApprovals));
     }
@@ -105,7 +103,8 @@ public class RishtanataSecretaryController : Controller
     [HttpPost]
     public async Task<IActionResult> Reject(Guid id)
     {
-        _service.Reject(id);
+        // Same as Approve — wait for the write before redirecting.
+        await _service.Reject(id);
 
         return RedirectToAction(nameof(PendingApprovals));
     }

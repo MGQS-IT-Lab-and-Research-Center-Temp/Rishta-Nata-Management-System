@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// CRUD over FormApplication (the application wrapper holding form +
+    /// certificate + status).
+    /// </summary>
     public class FormApplicationService : IFormApplicationService
     {
         private readonly RishtanataDbContext _context;
@@ -65,8 +69,11 @@ namespace Application.Services
         GetPendingApplicationsAsync()
         {
             return await _context.FormApplications
+                // Cleanup: AwaitingMoreInformation is also pending-ish — a form
+                // sent back for corrections still awaits the next review step.
                 .Where(x =>
-                    x.Status == ApplicationStatus.ApplicationPending)
+                    x.Status == ApplicationStatus.ApplicationPending ||
+                    x.Status == ApplicationStatus.AwaitingMoreInformation)
                 .Include(x => x.MarriageApplicationForm)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
@@ -81,8 +88,12 @@ namespace Application.Services
                 return false;
             }
 
+            // Cleanup: allow from AwaitingMoreInformation too, so a form that
+            // was sent back for corrections isn't orphaned outside the flow.
             if (application.Status !=
-                ApplicationStatus.ApplicationPending)
+                ApplicationStatus.ApplicationPending &&
+                application.Status !=
+                ApplicationStatus.AwaitingMoreInformation)
             {
                 return false;
             }
@@ -106,8 +117,12 @@ namespace Application.Services
                 return false;
             }
 
+            // Cleanup: same orphan-avoidance rule as ApproveApplicationAsync —
+            // reject is allowed from both pending-ish states.
             if (application.Status !=
-                ApplicationStatus.ApplicationPending)
+                ApplicationStatus.ApplicationPending &&
+                application.Status !=
+                ApplicationStatus.AwaitingMoreInformation)
             {
                 return false;
             }
@@ -132,14 +147,19 @@ namespace Application.Services
                 return false;
             }
 
+            // Cleanup: this was a no-op — it set a pending form back to pending.
+            // It now moves the form to AwaitingMoreInformation so the state is
+            // distinguishable from a form that was never reviewed.
             if (application.Status !=
-                ApplicationStatus.ApplicationPending)
+                ApplicationStatus.ApplicationPending &&
+                application.Status !=
+                ApplicationStatus.AwaitingMoreInformation)
             {
                 return false;
             }
 
             application.Status =
-                ApplicationStatus.ApplicationPending;
+                ApplicationStatus.AwaitingMoreInformation;
 
             application.ModifiedAt = DateTime.UtcNow;
 

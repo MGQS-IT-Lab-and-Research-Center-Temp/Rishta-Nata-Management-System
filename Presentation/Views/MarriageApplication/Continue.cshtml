@@ -1,0 +1,143 @@
+@model Presentation.ViewModels.ContinueApplicationViewModel
+
+@{
+    ViewData["Title"] = "Complete Your Application";
+}
+
+<div class="dashboard-hero">
+    <h1>Complete Your Application</h1>
+    <p>Reference @Model.ReferenceNumber — finish your @Model.Party section below.</p>
+</div>
+
+<form asp-controller="MarriageApplication" asp-action="Continue" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Party" />
+    <input type="hidden" asp-for="ReferenceNumber" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="card dashboard-card mb-4">
+        <div class="card-header">Your Information</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="MembershipNo" class="form-label"></label>
+                    <input asp-for="MembershipNo" class="form-control" />
+                    <span asp-validation-for="MembershipNo" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="DateOfBirth" class="form-label"></label>
+                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ResidentOf" class="form-label"></label>
+                    <input asp-for="ResidentOf" class="form-control" />
+                    <span asp-validation-for="ResidentOf" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Genotype" class="form-label"></label>
+                    <select asp-for="Genotype" class="form-select">
+                        <option value="">Select</option>
+                        <option>AA</option><option>AS</option><option>SS</option>
+                        <option>AC</option><option>SC</option><option>Other</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="BloodGroup" class="form-label"></label>
+                    <select asp-for="BloodGroup" class="form-select">
+                        <option value="">Select</option>
+                        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Party == "Bride")
+    {
+        <div class="card dashboard-card mb-4">
+            <div class="card-header">Bride Details</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="MaritalStatus" class="form-label"></label>
+                        <select asp-for="MaritalStatus" class="form-select">
+                            <option value="">Select</option>
+                            <option>Single</option><option>Widowed</option><option>Divorced</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ProposedDowerAmount" class="form-label"></label>
+                        <input asp-for="ProposedDowerAmount" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="DowerAmountReceivedInCash" class="form-label"></label>
+                        <input asp-for="DowerAmountReceivedInCash" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card dashboard-card mb-4">
+            <div class="card-header">Bridegroom Details</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="DowerAmountPaidInCash" class="form-label"></label>
+                        <input asp-for="DowerAmountPaidInCash" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DowerAmountToBePaid" class="form-label"></label>
+                        <input asp-for="DowerAmountToBePaid" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this your first Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="true" id="firstNikahYes" />
+                            <label class="form-check-label" for="firstNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFirstNikah" class="form-check-input" type="radio" value="false" id="firstNikahNo" />
+                            <label class="form-check-label" for="firstNikahNo">No</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label d-block">Is this a second, third or fourth Nikah?</label>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="true" id="multiNikahYes" />
+                            <label class="form-check-label" for="multiNikahYes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input" type="radio" value="false" id="multiNikahNo" />
+                            <label class="form-check-label" for="multiNikahNo">No</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="d-flex justify-content-end mb-5">
+        <button type="submit" class="btn btn-primary">Submit Section</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,10 +1,14 @@
-﻿using Application.Interfaces;
+﻿using System;
+using Application.Interfaces;
 using Application.Workflow;
-using Infrastructure.DTOs;
-using Infrastructure.DTOs.BrideGroom;
+using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Presentation.Mapping;
+using Presentation.Requests;
 
 namespace Presentation.Controllers;
 
@@ -14,28 +18,28 @@ public class MarriageApplicationFormController : ControllerBase
 {
     private readonly IMarriageApplicationFormService _formService;
     private readonly IMarriageApplicationFormDetailService _formDetailService;
-    private readonly IBrideGuardianService _brideGuardianService;
-    private readonly IBridegroomService _bridegroomService;
+    private readonly IBrideSectionService _brideSectionService;
+    private readonly IBridegroomSectionService _bridegroomSectionService;
     private readonly IMarriageFormWorkflowService _workflowService;
 
     public MarriageApplicationFormController(
         IMarriageApplicationFormService formService,
         IMarriageApplicationFormDetailService formDetailService,
-        IBrideGuardianService brideGuardianService,
-        IBridegroomService bridegroomService,
+        IBrideSectionService brideSectionService,
+        IBridegroomSectionService bridegroomSectionService,
         IMarriageFormWorkflowService workflowService)
     {
         _formService = formService;
         _formDetailService = formDetailService;
-        _brideGuardianService = brideGuardianService;
-        _bridegroomService = bridegroomService;
+        _brideSectionService = brideSectionService;
+        _bridegroomSectionService = bridegroomSectionService;
         _workflowService = workflowService;
     }
 
-    private Guid CurrentUserId =>
-        Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId)
-            ? userId
-            : Guid.Empty;
+    private string CurrentMembershipNo =>
+        User.FindFirstValue(ClaimNames.MembershipNo)
+        ?? User.FindFirstValue(ClaimTypes.Name)
+        ?? string.Empty;
 
     [HttpGet]
     public async Task<IActionResult> GetForm(Guid id, CancellationToken ct)
@@ -46,17 +50,19 @@ public class MarriageApplicationFormController : ControllerBase
 
     [HttpPost("bride")]
     [Authorize(Policy = "CanFillBrideSection")]
-    public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionDto dto, CancellationToken ct)
+    public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionRequest request, CancellationToken ct)
     {
-        var result = await _brideGuardianService.SubmitBrideSectionAsync(CurrentUserId, id, dto, ct);
+        var dto = MarriageFormRequestMapping.ToDto(request);
+        var result = await _brideSectionService.SubmitBrideSectionAsync(CurrentMembershipNo, id, dto, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
     [HttpPut("bridegroom")]
     [Authorize(Policy = "CanFillBridegroomSection")]
-    public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionDto dto, CancellationToken ct)
+    public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionRequest request, CancellationToken ct)
     {
-        var result = await _bridegroomService.SubmitBridegroomSectionAsync(CurrentUserId, id, dto, ct);
+        var dto = MarriageFormRequestMapping.ToDto(request);
+        var result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(CurrentMembershipNo, id, dto, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
@@ -82,7 +88,7 @@ public class MarriageApplicationFormController : ControllerBase
     [Authorize(Policy = "CanFillImamVerificationSection")]
     public async Task<IActionResult> SubmitImamVerification(Guid id, [FromBody] ImamVerificationSubmission submission, CancellationToken ct)
     {
-        var result = await _workflowService.SubmitImamVerificationAsync(CurrentUserId, id, submission, ct);
+        var result = await _workflowService.SubmitImamVerificationAsync(CurrentMembershipNo, id, submission, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
@@ -91,7 +97,7 @@ public class MarriageApplicationFormController : ControllerBase
 
     public async Task<IActionResult> SubmitJamaatPresident(Guid id, [FromBody] JamaatPresidentVerificationSubmission submission, CancellationToken ct)
     {
-        var result = await _workflowService.SubmitJamaatPresidentVerificationAsync(CurrentUserId, id, submission, ct);
+        var result = await _workflowService.SubmitJamaatPresidentVerificationAsync(CurrentMembershipNo, id, submission, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
@@ -99,7 +105,7 @@ public class MarriageApplicationFormController : ControllerBase
     [Authorize(Policy = "CanFillRishtanataSection")]
     public async Task<IActionResult> SubmitRishtanataRecommendation(Guid id, [FromBody] RishtanataRecommendationSubmission submission, CancellationToken ct)
     {
-        var result = await _workflowService.SubmitRishtanataRecommendationAsync(CurrentUserId, id, submission, ct);
+        var result = await _workflowService.SubmitRishtanataRecommendationAsync(CurrentMembershipNo, id, submission, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
@@ -107,7 +113,7 @@ public class MarriageApplicationFormController : ControllerBase
     [Authorize(Policy = "CanFillAmirApprovalSection")]
     public async Task<IActionResult> SubmitAmirApproval(Guid id, [FromBody] AmirApprovalSubmission submission, CancellationToken ct)
     {
-        var result = await _workflowService.ApproveByAmirAsync(CurrentUserId, id, submission, ct);
+        var result = await _workflowService.ApproveByAmirAsync(CurrentMembershipNo, id, submission, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 }

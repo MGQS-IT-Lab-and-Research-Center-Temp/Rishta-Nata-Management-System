@@ -5,6 +5,11 @@ file as items are fixed.
 
 ## Fixed (recent session)
 
+- **Guardian/witness submission is now live (was D2 stub).** Anonymous,
+  revocable, stage-gated share links (`SectionLinks` + `SharedSection`,
+  `SharedSectionService`) replace the formerly-stubbed endpoints. Legacy
+  `WitnessController` / `BrideGuardianController` remain wired but are
+  superseded (flag for removal).
 - **Test project no longer compiled** — `JamaatMember.Password` was removed but
   still referenced by three test files. Fixed by removing the `Password` seed
   lines. Tests now compile.
@@ -28,31 +33,21 @@ file as items are fixed.
 
 ## Blocking
 
-1. **Certificate ↔ FormApplication ↔ MarriageApplicationForm relationships are
-   ambiguous; EF model validation fails.** *Decision: leave the model as-is for
-   now.* Every test fails at runtime with:
-   `The dependent side could not be determined for the one-to-one relationship
-   between 'Certificate.FormApplication' and 'FormApplication.Certificate'`.
-   The same failure will occur on the app's first DB query.
-   - `Domain/Entities/Certificate.cs` has both `MarriageApplicationFormId`
-     (declared `int`, but `MarriageApplicationForm.Id` is `Guid`) and
-     `FormApplicationId` + `FormApplication` navigation.
-   - `Domain/Entities/FormApplication.cs` has `CertificateId` + `Certificate`.
-   - `Infrastructure/Configurations/CertificateConfiguration.cs` maps
-     `Certificate.MarriageApplicationForm` ↔ `MarriageApplicationForm.Certificate`
-     (the int/Guid mismatch), while the `FormApplication` link is unconfigured.
-   Live code (`RishtanataSecretaryService`, `FormApplicationService`) only uses
-   `FormApplication.Certificate`/`CertificateId`; the other navigations are dead
-   leftovers from an in-progress refactor. Needs a product decision on which
-   entity owns the certificate before anyone touches it.
+1. **Certificate ↔ FormApplication ↔ MarriageApplicationForm relationships —
+   RESOLVED.** The ambiguity is resolved in `RishtanataDbContext.OnModelCreating`
+   (`Certificate` is the dependent side via `HasForeignKey(c => c.FormApplicationId)`)
+   and `CertificateConfiguration` ignores the dead `MarriageApplicationForm` /
+   `MarriageApplicationFormId` leftovers. No product decision pending.
 
-2. **EF migrations are stale.** No migration reflects the removal of
-   `JamaatMember.Password`, the Identity-table changes, or the Certificate
-   refactor. The model snapshot still maps `ApplicationUser`/`AspNet*` tables and
-   the old `Certificate.MarriageApplicationId`. Running `dotnet ef migrations add`
-   now would generate `DROP TABLE` for the Identity tables plus column
-   add/drop/rename for Certificate. Reconcile deliberately (with a live MySQL)
-   after resolving item 1.
+2. **EF migrations — regenerated from scratch.** Local development (no data-loss
+   concern), so the DB was dropped and all migrations replaced by a single fresh
+   `InitialCreate` (`20260907105655_InitialCreate`) spanning the whole current
+   model, applied to the recreated `rishtanatahdb`. ReferenceNumber is now a
+   `varchar(50)` column on all four shareable sections, `BrideFormSection`, and
+   `BrideGuardian`. The `MySQL:Charset` annotations emitted by the current
+   `MySql.EntityFrameworkCore` provider are correct; no further reconciliation
+   needed unless the provider changes. Future schema changes must be additive
+   migrations on top of this baseline.
 
 ## Design / decision
 

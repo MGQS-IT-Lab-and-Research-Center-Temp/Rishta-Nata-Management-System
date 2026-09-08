@@ -12,7 +12,7 @@ public static class RecentActivityMapper
             Id = entity.Id,
             ActivityType = entity.EntityName,
             Description = entity.Action,
-            ActivityDate = entity.Timestamp
+            ActivityDate = entity.CreatedAt
         };
     }
 }

@@ -1,15 +1,18 @@
 // do page for review for individual nikkah form - azeez
-// do page for viewing aqeeqah certificates - yusroh - done
 // do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
 // fix all errors under your dto - faridah -done
 // fix all errors under service and interface - yusroh
 // ensure that dto namespace is infrastructure not application - done
 // use the respective service to do all db operation in this controller
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Presentation.Mapping;
 
 namespace Presentation.Controllers;
 
@@ -18,16 +21,13 @@ public class JamaatPresidentController : Controller
 {
     private readonly IJamaatPresidentService _service;
     private readonly ICertificateService _certificateService;
-    private readonly IAqeeqahCertificateService _aqeeqahService;
 
     public JamaatPresidentController(
         IJamaatPresidentService service,
-        ICertificateService certificateService,
-        IAqeeqahCertificateService aqeeqahService)
+        ICertificateService certificateService)
     {
         _service = service;
         _certificateService = certificateService;
-        _aqeeqahService = aqeeqahService;
     }
 
     // ============================================================
@@ -37,10 +37,9 @@ public class JamaatPresidentController : Controller
     public async Task<IActionResult> Dashboard()
     {
         var dto = await _service.GetDashboardAsync(
-            User.Identity?.Name,
             GetCurrentUserId());
 
-        return View(dto);
+        return View(JamaatPresidentMapping.ToViewModel(dto));
     }
 
     // ============================================================
@@ -57,7 +56,7 @@ public class JamaatPresidentController : Controller
             return NotFound("Marriage application or its form was not found.");
         }
 
-        return View(dto);
+        return View(JamaatPresidentMapping.ToViewModel(dto));
     }
 
     // ============================================================
@@ -137,20 +136,11 @@ public class JamaatPresidentController : Controller
     {
         var certificates = await _certificateService.GetAllCertificatesAsync();
 
-        return View(certificates);
-    }
+        var viewModels = certificates
+            .Select(JamaatPresidentMapping.ToViewModel)
+            .ToList();
 
-    // ============================================================
-    // AQEEQAH CERTIFICATES
-    // ============================================================
-
-    /// <summary>
-    /// Displays all Aqeeqah certificates for the Jamaat President
-    /// </summary>
-    public async Task<IActionResult> AqeeqahCertificates()
-    {
-        var certificates = await _aqeeqahService.GetAllCertificatesAsync();
-        return View(certificates);
+        return View(viewModels);
     }
 
     // ============================================================

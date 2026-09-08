@@ -88,6 +88,8 @@
         <input asp-for="ReferenceNumber" type="hidden" />
         <input asp-for="BrideName" type="hidden" />
         <input asp-for="BrideFatherName" type="hidden" />
+        <input asp-for="BrideFatherMembershipNo" type="hidden" />
+        <input asp-for="BrideFatherIsMember" type="hidden" />
         <input asp-for="BrideDateOfBirth" type="hidden" />
         <input asp-for="BrideResidentOf" type="hidden" />
         <input asp-for="BrideGenotype" type="hidden" />
@@ -97,6 +99,8 @@
         <input asp-for="BrideDowerAmountReceivedInCash" type="hidden" />
         <input asp-for="BridegroomName" type="hidden" />
         <input asp-for="BridegroomFatherName" type="hidden" />
+        <input asp-for="BridegroomFatherMembershipNo" type="hidden" />
+        <input asp-for="BridegroomFatherIsMember" type="hidden" />
         <input asp-for="BridegroomDateOfBirth" type="hidden" />
         <input asp-for="BridegroomResidentOf" type="hidden" />
         <input asp-for="GuardianName" type="hidden" />
@@ -108,7 +112,7 @@
         <button type="submit" class="btn btn-success">
             &#10003; Confirm and Save
         </button>
-        <a asp-action="Create" asp-route-referenceNumber="@Model.ReferenceNumber" class="btn btn-secondary">
+        <a asp-action="Create" asp-route-marriageApplicationId="@Model.MarriageApplicationId" class="btn btn-secondary">
             &#8592; Cancel &#8211; Go Back
         </a>
     </form>

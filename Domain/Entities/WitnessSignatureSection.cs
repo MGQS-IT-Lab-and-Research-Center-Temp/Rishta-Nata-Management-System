@@ -18,6 +18,7 @@ public class WitnessSignatureSection : AuditableEntity
     public WitnessContext WitnessContext { get; set; }
 
     public int WitnessNumber { get; set; }
+    public string ReferenceNumber { get; set; } = string.Empty;
     public Guid MarriageApplicationFormId { get; set; }
 
     public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;

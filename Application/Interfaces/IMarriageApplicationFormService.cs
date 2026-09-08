@@ -3,10 +3,24 @@ using Domain.Enums;
 
 namespace Application.Interfaces
 {
+    /// <summary>
+    /// CRUD for the marriage application form plus signature submissions and
+    /// the revert flow (see MarriageApplicationFormService)
+    /// </summary>
     public interface IMarriageApplicationFormService
     {
         // Create application
         Task<MarriageApplicationForm> CreateAsync(
+            MarriageApplicationForm application,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Starts a new application: creates the owning FormApplication and the
+        /// MarriageApplicationForm in one unit of work. The caller supplies the
+        /// already-populated form (both parties' membership numbers + the
+        /// starter's section + the correct FormStage).
+        /// </summary>
+        Task<MarriageApplicationForm> StartApplicationAsync(
             MarriageApplicationForm application,
             CancellationToken cancellationToken = default);
 
@@ -50,7 +64,7 @@ namespace Application.Interfaces
             Guid formId,
             ApplicationStage targetStage,
             string reason,
-            Guid verifierId,
+            string membershipNo,
             CancellationToken cancellationToken = default);
     }
 }

@@ -35,13 +35,13 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
     }
 
     public async Task<StageAuthorizationResult> SubmitImamVerificationAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         ImamVerificationSubmission submission,
         CancellationToken cancellationToken = default)
     {
-        var (form, denied) = await AuthorizeAsync(
-            userId, applicationFormId,
+        var (form, memberId, denied) = await AuthorizeAsync(
+            membershipNo, applicationFormId,
             MarriageFormStage.AwaitingImamVerification,
             cancellationToken);
         if (form is null)
@@ -61,7 +61,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 Tel = submission.Tel,
                 SignatureDate = submission.SignatureDate,
                 CreatedAt = now,
-                CreatedBy = userId
+                CreatedBy = memberId
             };
 
             // Track explicitly: nav-discovery on a tracked principal can
@@ -76,23 +76,23 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.ImamVerification.Tel = submission.Tel;
             form.ImamVerification.SignatureDate = submission.SignatureDate;
             form.ImamVerification.ModifiedAt = now;
-            form.ImamVerification.ModifiedBy = userId;
+            form.ImamVerification.ModifiedBy = memberId;
         }
 
         return await AdvanceAsync(
-            form, userId, now,
+            form, memberId, now,
             MarriageFormStage.AwaitingJamaatPresident,
             "imam verification");
     }
 
     public async Task<StageAuthorizationResult> SubmitJamaatPresidentVerificationAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         JamaatPresidentVerificationSubmission submission,
         CancellationToken cancellationToken = default)
     {
-        var (form, denied) = await AuthorizeAsync(
-            userId, applicationFormId,
+        var (form, memberId, denied) = await AuthorizeAsync(
+            membershipNo, applicationFormId,
             MarriageFormStage.AwaitingJamaatPresident,
             cancellationToken);
         if (form is null)
@@ -111,7 +111,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 Tel = submission.Tel,
                 SignatureDate = submission.SignatureDate,
                 CreatedAt = now,
-                CreatedBy = userId
+                CreatedBy = memberId
             };
 
             _context.Add(section);
@@ -123,23 +123,23 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.JamaatPresidentVerification.Tel = submission.Tel;
             form.JamaatPresidentVerification.SignatureDate = submission.SignatureDate;
             form.JamaatPresidentVerification.ModifiedAt = now;
-            form.JamaatPresidentVerification.ModifiedBy = userId;
+            form.JamaatPresidentVerification.ModifiedBy = memberId;
         }
 
         return await AdvanceAsync(
-            form, userId, now,
+            form, memberId, now,
             MarriageFormStage.AwaitingRishtanataSecretary,
             "Jamaat president verification");
     }
 
     public async Task<StageAuthorizationResult> SubmitRishtanataRecommendationAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         RishtanataRecommendationSubmission submission,
         CancellationToken cancellationToken = default)
     {
-        var (form, denied) = await AuthorizeAsync(
-            userId, applicationFormId,
+        var (form, memberId, denied) = await AuthorizeAsync(
+            membershipNo, applicationFormId,
             MarriageFormStage.AwaitingRishtanataSecretary,
             cancellationToken);
         if (form is null)
@@ -158,7 +158,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 WakeelDeclaration = submission.WakeelDeclaration,
                 SignatureDate = submission.SignatureDate,
                 CreatedAt = now,
-                CreatedBy = userId
+                CreatedBy = memberId
             };
 
             _context.Add(section);
@@ -170,23 +170,23 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.RishtanataRecommendation.WakeelDeclaration = submission.WakeelDeclaration;
             form.RishtanataRecommendation.SignatureDate = submission.SignatureDate;
             form.RishtanataRecommendation.ModifiedAt = now;
-            form.RishtanataRecommendation.ModifiedBy = userId;
+            form.RishtanataRecommendation.ModifiedBy = memberId;
         }
 
         return await AdvanceAsync(
-            form, userId, now,
+            form, memberId, now,
             MarriageFormStage.AwaitingAmirApproval,
             "Rishtanata secretary recommendation");
     }
 
     public async Task<StageAuthorizationResult> ApproveByAmirAsync(
-        Guid userId,
+        string membershipNo,
         Guid applicationFormId,
         AmirApprovalSubmission submission,
         CancellationToken cancellationToken = default)
     {
-        var (form, denied) = await AuthorizeAsync(
-            userId, applicationFormId,
+        var (form, memberId, denied) = await AuthorizeAsync(
+            membershipNo, applicationFormId,
             MarriageFormStage.AwaitingAmirApproval,
             cancellationToken);
         if (form is null)
@@ -204,7 +204,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 ApprovedDateOfNikah = submission.ApprovedDateOfNikah,
                 SignatureDate = submission.SignatureDate,
                 CreatedAt = now,
-                CreatedBy = userId
+                CreatedBy = memberId
             };
 
             _context.Add(section);
@@ -215,7 +215,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.AmirApproval.ApprovedDateOfNikah = submission.ApprovedDateOfNikah;
             form.AmirApproval.SignatureDate = submission.SignatureDate;
             form.AmirApproval.ModifiedAt = now;
-            form.AmirApproval.ModifiedBy = userId;
+            form.AmirApproval.ModifiedBy = memberId;
         }
 
         // Final approval: record the approved Nikah date on the form itself
@@ -223,7 +223,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         form.ApprovedDateOfNikah = submission.ApprovedDateOfNikah;
 
         return await AdvanceAsync(
-            form, userId, now,
+            form, memberId, now,
             MarriageFormStage.Completed,
             "Amir approval");
     }
@@ -237,22 +237,22 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
     /// Returns a null form together with the denial result when the request
     /// must not proceed — no entity has been touched at that point.
     /// </summary>
-    private async Task<(MarriageApplicationForm? Form, StageAuthorizationResult Denied)> AuthorizeAsync(
-        Guid userId,
+    private async Task<(MarriageApplicationForm? Form, Guid MemberId, StageAuthorizationResult Denied)> AuthorizeAsync(
+        string membershipNo,
         Guid applicationFormId,
         MarriageFormStage requiredStage,
         CancellationToken cancellationToken)
     {
         var auth = await _stageAuthorization.CanUserActAsync(
-            userId, applicationFormId, requiredStage, cancellationToken);
+            membershipNo, applicationFormId, requiredStage, cancellationToken);
 
         if (!auth.IsAllowed)
         {
             _logger.LogInformation(
-                "Workflow submission blocked before any write: UserId={UserId}, ApplicationFormId={ApplicationFormId}, RequiredStage={RequiredStage}, Reason={Reason}",
-                userId, applicationFormId, requiredStage, auth.Reason);
+                "Workflow submission blocked before any write: MembershipNo={MembershipNo}, ApplicationFormId={ApplicationFormId}, RequiredStage={RequiredStage}, Reason={Reason}",
+                membershipNo, applicationFormId, requiredStage, auth.Reason);
 
-            return (null, auth);
+            return (null, Guid.Empty, auth);
         }
 
         var form = await _context.MarriageApplicationForms
@@ -266,31 +266,36 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         {
             // Authorization already resolved the form; a miss here means it
             // vanished between checks. Deny without side effects.
-            return (null, StageAuthorizationResult.Deny(
+            return (null, Guid.Empty, StageAuthorizationResult.Deny(
                 StageAuthorizationDenyReason.FormNotFound,
                 "No such application/form exists."));
         }
 
-        return (form, StageAuthorizationResult.Allow());
+        var memberId = await _context.JamaatMembers
+            .Where(m => m.ChandaNo == membershipNo)
+            .Select(m => (Guid?)m.Id)
+            .FirstOrDefaultAsync(cancellationToken) ?? Guid.Empty;
+
+        return (form, memberId, StageAuthorizationResult.Allow());
     }
 
     /// <summary>Advances the stage, stamps audit fields, and saves.</summary>
     private async Task<StageAuthorizationResult> AdvanceAsync(
         MarriageApplicationForm form,
-        Guid userId,
+        Guid memberId,
         DateTime now,
         MarriageFormStage nextStage,
         string actionLabel)
     {
         form.FormStage = nextStage;
         form.ModifiedAt = now;
-        form.ModifiedBy = userId;
+        form.ModifiedBy = memberId;
 
         await _context.SaveChangesAsync();
 
         _logger.LogInformation(
-            "Workflow advanced: UserId={UserId}, ApplicationFormId={ApplicationFormId}, Action={Action}, NewStage={NewStage}",
-            userId, form.Id, actionLabel, nextStage);
+            "Workflow advanced: MemberId={MemberId}, ApplicationFormId={ApplicationFormId}, Action={Action}, NewStage={NewStage}",
+            memberId, form.Id, actionLabel, nextStage);
 
         return StageAuthorizationResult.Allow();
     }

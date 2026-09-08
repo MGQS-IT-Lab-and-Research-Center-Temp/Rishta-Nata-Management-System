@@ -62,9 +62,11 @@ namespace Domain.Entities
 
         // ===== Bride's Parent =====
         public string BrideFatherName { get; set; } = string.Empty;
+        public string BrideFatherMembershipNo { get; set; } = string.Empty;
 
         // ===== Groom's Parent =====
         public string BridegroomFatherName { get; set; } = string.Empty;
+        public string BridegroomFatherMembershipNo { get; set; } = string.Empty;
 
         // ===== Guardian (Bride's Waliyy) =====
         public string GuardianName { get; set; } = string.Empty;
@@ -81,12 +83,14 @@ namespace Domain.Entities
 
         // ===== Witness One =====
         public string WitnessOneName { get; set; } = string.Empty;
+        public string WitnessOneMembershipNo { get; set; } = string.Empty;
         public string WitnessOneAddress { get; set; } = string.Empty;
         public string WitnessOneTel { get; set; } = string.Empty;
         public string WitnessOneSignatureDate { get; set; } = string.Empty;
 
         // ===== Witness Two =====
         public string WitnessTwoName { get; set; } = string.Empty;
+        public string WitnessTwoMembershipNo { get; set; } = string.Empty;
         public string WitnessTwoAddress { get; set; } = string.Empty;
         public string WitnessTwoTel { get; set; } = string.Empty;
         public string WitnessTwoSignatureDate { get; set; } = string.Empty;
@@ -107,7 +111,7 @@ namespace Domain.Entities
         public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
 
         public MarriageFormStage FormStage { get; set; }
-            = MarriageFormStage.AwaitingBride;
+            = MarriageFormStage.AwaitingApplicants;
 
         public BrideFormSection? BrideSection { get; set; }
 
@@ -128,5 +132,8 @@ namespace Domain.Entities
 
         public ICollection<MarriageFormRejection> Rejections { get; set; }
             = new List<MarriageFormRejection>();
+
+        public ICollection<SectionAccessToken> SectionAccessTokens { get; set; }
+            = new List<SectionAccessToken>();
     }
 }
