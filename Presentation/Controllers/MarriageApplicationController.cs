@@ -118,7 +118,7 @@ public class MarriageApplicationController : Controller
 
         if (string.Equals(starterMembershipNo, partnerMembershipNo, StringComparison.OrdinalIgnoreCase))
         {
-            ModelState.AddModelError(string.Empty, "Your partner cannot be yourself.");
+            ModelState.AddModelError($"{partnerPrefix}.MembershipNo", "Your partner cannot be yourself.");
             return View(model);
         }
 
@@ -129,7 +129,7 @@ public class MarriageApplicationController : Controller
 
         if (!eligibility.IsAllowed)
         {
-            ModelState.AddModelError(string.Empty, eligibility.Message);
+            ModelState.AddModelError($"{partnerPrefix}.MembershipNo", eligibility.Message);
             return View(model);
         }
 
@@ -145,7 +145,7 @@ public class MarriageApplicationController : Controller
         if (!string.IsNullOrWhiteSpace(currentMembershipNo) &&
             string.Equals(partner.ChandaNo, currentMembershipNo, StringComparison.OrdinalIgnoreCase))
         {
-            ModelState.AddModelError(string.Empty, "Your partner cannot be yourself.");
+            ModelState.AddModelError($"{partnerPrefix}.MembershipNo", "Your partner cannot be yourself.");
             return View(model);
         }
 
