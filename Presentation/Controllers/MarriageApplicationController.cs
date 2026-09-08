@@ -287,6 +287,7 @@ public class MarriageApplicationController : Controller
         Genotype = form.BrideGenotype,
         BloodGroup = form.BrideBloodGroup,
         MaritalStatus = form.BrideMaritalStatus,
+        BrideDivorceEvidence = form.BrideDivorceEvidence,
         ProposedDowerAmount = form.BrideProposedDowerAmount,
         DowerAmountReceivedInCash = form.BrideDowerAmountReceivedInCash
     };
@@ -309,6 +310,7 @@ public class MarriageApplicationController : Controller
         IsSecondThirdOrFourthNikah = form.IsSecondThirdOrFourthNikah,
         FormerWifeIsDead = form.FormerWifeIsDead,
         HasDivorcedFormerWife = form.HasDivorcedFormerWife,
+        BridegroomDivorceEvidence = form.BridegroomDivorceEvidence,
         FormerWifeIsPresent = form.FormerWifeIsPresent,
         FormerWifeObtainedKhula = form.FormerWifeObtainedKhula
     };
