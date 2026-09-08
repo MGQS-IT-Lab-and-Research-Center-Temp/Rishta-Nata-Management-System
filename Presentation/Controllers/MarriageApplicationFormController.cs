@@ -1,0 +1,119 @@
+﻿using System;
+using Application.Interfaces;
+using Application.Workflow;
+using Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Presentation.Mapping;
+using Presentation.Requests;
+
+namespace Presentation.Controllers;
+
+[ApiController]
+[Route("api/marriage-applications/{id}/form")]
+public class MarriageApplicationFormController : ControllerBase
+{
+    private readonly IMarriageApplicationFormService _formService;
+    private readonly IMarriageApplicationFormDetailService _formDetailService;
+    private readonly IBrideSectionService _brideSectionService;
+    private readonly IBridegroomSectionService _bridegroomSectionService;
+    private readonly IMarriageFormWorkflowService _workflowService;
+
+    public MarriageApplicationFormController(
+        IMarriageApplicationFormService formService,
+        IMarriageApplicationFormDetailService formDetailService,
+        IBrideSectionService brideSectionService,
+        IBridegroomSectionService bridegroomSectionService,
+        IMarriageFormWorkflowService workflowService)
+    {
+        _formService = formService;
+        _formDetailService = formDetailService;
+        _brideSectionService = brideSectionService;
+        _bridegroomSectionService = bridegroomSectionService;
+        _workflowService = workflowService;
+    }
+
+    private string CurrentMembershipNo =>
+        User.FindFirstValue(ClaimNames.MembershipNo)
+        ?? User.FindFirstValue(ClaimTypes.Name)
+        ?? string.Empty;
+
+    [HttpGet]
+    public async Task<IActionResult> GetForm(Guid id, CancellationToken ct)
+    {
+        var detail = await _formDetailService.GetDetailAsync(id, ct);
+        return detail is null ? NotFound() : Ok(detail);
+    }
+
+    [HttpPost("bride")]
+    [Authorize(Policy = "CanFillBrideSection")]
+    public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionRequest request, CancellationToken ct)
+    {
+        var dto = MarriageFormRequestMapping.ToDto(request);
+        var result = await _brideSectionService.SubmitBrideSectionAsync(CurrentMembershipNo, id, dto, ct);
+        return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
+    }
+
+    [HttpPut("bridegroom")]
+    [Authorize(Policy = "CanFillBridegroomSection")]
+    public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionRequest request, CancellationToken ct)
+    {
+        var dto = MarriageFormRequestMapping.ToDto(request);
+        var result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(CurrentMembershipNo, id, dto, ct);
+        return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
+    }
+
+    [HttpPut("guardian-or-wakeel")]
+    [Authorize(Policy = "CanFillGuardianOrWakeelSection")]
+    public IActionResult SubmitGuardianOrWakeel(Guid id)
+    {
+        // BLOCKED: guardian/wakeel submission (backlog D2) has not been implemented
+        // by anyone on the team yet — confirmed via full-repo search. Route exists
+        // per F2's AC; wire the real call once D2 lands.
+        return StatusCode(501, "Guardian/Wakeel submission is not yet implemented (backlog D2).");
+    }
+
+    [HttpPut("witnesses")]
+    [Authorize(Policy = "CanFillWitnessesSection")]
+    public IActionResult SubmitWitnesses(Guid id)
+    {
+        // BLOCKED: same as above — witness submission (backlog D2) not yet implemented.
+        return StatusCode(501, "Witness submission is not yet implemented (backlog D2).");
+    }
+
+    [HttpPut("imam-verification")]
+    [Authorize(Policy = "CanFillImamVerificationSection")]
+    public async Task<IActionResult> SubmitImamVerification(Guid id, [FromBody] ImamVerificationSubmission submission, CancellationToken ct)
+    {
+        var result = await _workflowService.SubmitImamVerificationAsync(CurrentMembershipNo, id, submission, ct);
+        return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
+    }
+
+    [HttpPut("jamaat-president")]
+    [Authorize(Policy = "CanFillJamaatPresidentSection")]
+
+    public async Task<IActionResult> SubmitJamaatPresident(Guid id, [FromBody] JamaatPresidentVerificationSubmission submission, CancellationToken ct)
+    {
+        var result = await _workflowService.SubmitJamaatPresidentVerificationAsync(CurrentMembershipNo, id, submission, ct);
+        return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
+    }
+
+    [HttpPut("rishtanata-recommendation")]
+    [Authorize(Policy = "CanFillRishtanataSection")]
+    public async Task<IActionResult> SubmitRishtanataRecommendation(Guid id, [FromBody] RishtanataRecommendationSubmission submission, CancellationToken ct)
+    {
+        var result = await _workflowService.SubmitRishtanataRecommendationAsync(CurrentMembershipNo, id, submission, ct);
+        return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
+    }
+
+    [HttpPut("amir-approval")]
+    [Authorize(Policy = "CanFillAmirApprovalSection")]
+    public async Task<IActionResult> SubmitAmirApproval(Guid id, [FromBody] AmirApprovalSubmission submission, CancellationToken ct)
+    {
+        var result = await _workflowService.ApproveByAmirAsync(CurrentMembershipNo, id, submission, ct);
+        return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
+    }
+}

@@ -1,0 +1,161 @@
+// do page for review for individual nikkah form - azeez
+// do page for viewing all certificates under the jama'at president's jama'at (for now view all certificates) - faridah
+// fix all errors under your dto - faridah -done
+// fix all errors under service and interface - yusroh
+// ensure that dto namespace is infrastructure not application - done
+// use the respective service to do all db operation in this controller
+
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Presentation.Mapping;
+
+namespace Presentation.Controllers;
+
+[Authorize(Policy = "RequireJamaatSecretary")]
+public class JamaatPresidentController : Controller
+{
+    private readonly IJamaatPresidentService _service;
+    private readonly ICertificateService _certificateService;
+
+    public JamaatPresidentController(
+        IJamaatPresidentService service,
+        ICertificateService certificateService)
+    {
+        _service = service;
+        _certificateService = certificateService;
+    }
+
+    // ============================================================
+    // DASHBOARD
+    // ============================================================
+
+    public async Task<IActionResult> Dashboard()
+    {
+        var dto = await _service.GetDashboardAsync(
+            GetCurrentUserId());
+
+        return View(JamaatPresidentMapping.ToViewModel(dto));
+    }
+
+    // ============================================================
+    // REVIEW APPLICATION
+    // ============================================================
+
+    [HttpGet]
+    public async Task<IActionResult> Review(Guid id)
+    {
+        var dto = await _service.GetReviewByIdAsync(id);
+
+        if (dto == null)
+        {
+            return NotFound("Marriage application or its form was not found.");
+        }
+
+        return View(JamaatPresidentMapping.ToViewModel(dto));
+    }
+
+    // ============================================================
+    // APPROVE
+    // ============================================================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Approve(Guid id)
+    {
+        var success = await _service.ApproveAsync(id, GetCurrentUserId());
+
+        TempData["Success"] = success
+            ? "Nikah application approved and forwarded to the National Rishtanata Secretary."
+            : null;
+
+        TempData["Error"] = success
+            ? null
+            : "This application is no longer awaiting Jama'at President review.";
+
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    // ============================================================
+    // REJECT
+    // ============================================================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reject(Guid id)
+    {
+        var success = await _service.RejectAsync(id, GetCurrentUserId());
+
+        TempData["Success"] = success
+            ? "Nikah application has been rejected."
+            : null;
+
+        TempData["Error"] = success
+            ? null
+            : "This application is no longer awaiting Jama'at President review.";
+
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    // ============================================================
+    // REQUEST MORE INFORMATION
+    // ============================================================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestMoreInformation(Guid id)
+    {
+        var success = await _service.RequestMoreInformationAsync(id, GetCurrentUserId());
+
+        TempData["Success"] = success
+            ? "More information has been requested for this Nikah application."
+            : null;
+
+        TempData["Error"] = success
+            ? null
+            : "This application is no longer awaiting Jama'at President review.";
+
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    // ============================================================
+    // MARRIAGE CERTIFICATES
+    // ============================================================
+
+    /// <summary>
+    /// Displays all marriage certificates.
+    ///
+    /// For now, all certificates are displayed.
+    /// Later, this can be filtered by the Jama'at President's Jama'at.
+    /// </summary>
+    public async Task<IActionResult> Certificates()
+    {
+        var certificates = await _certificateService.GetAllCertificatesAsync();
+
+        var viewModels = certificates
+            .Select(JamaatPresidentMapping.ToViewModel)
+            .ToList();
+
+        return View(viewModels);
+    }
+
+    // ============================================================
+    // CURRENT USER
+    // ============================================================
+
+    private Guid? GetCurrentUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (Guid.TryParse(userId, out var id))
+        {
+            return id;
+        }
+
+        return null;
+    }
+}

@@ -1,0 +1,145 @@
+@model Presentation.ViewModel.WitnessViewModel
+
+@{
+    ViewData["Title"] = "Witnesses Form";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold">Witnesses Form</h2>
+        <p class="text-muted mb-0">To be completed with the details of both witnesses.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Marriage Application</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <span class="text-muted small d-block">Reference Number</span>
+                    <strong>@Model.ReferenceNumber</strong>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <span class="text-muted small d-block">Bride</span>
+                    <strong>@Model.BrideName</strong>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <span class="text-muted small d-block">Bridegroom</span>
+                    <strong>@Model.BridegroomName</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input asp-for="MarriageApplicationId" type="hidden" />
+        <input asp-for="ReferenceNumber" type="hidden" />
+        <input asp-for="BrideName" type="hidden" />
+        <input asp-for="BridegroomName" type="hidden" />
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Witness One</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input asp-for="WitnessOneIsMember" class="form-check-input" type="checkbox" />
+                    <label asp-for="WitnessOneIsMember" class="form-check-label"></label>
+                </div>
+                <div class="row">
+                    <div id="witnessOneMembershipWrap" class="col-12 mb-3" style="display:none">
+                        <label asp-for="WitnessOneMembershipNo" class="form-label"></label>
+                        <input asp-for="WitnessOneMembershipNo" class="form-control" />
+                        <span asp-validation-for="WitnessOneMembershipNo" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="WitnessOneName" class="form-label"></label>
+                        <input asp-for="WitnessOneName" class="form-control" />
+                        <span asp-validation-for="WitnessOneName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="WitnessOneTel" class="form-label"></label>
+                        <input asp-for="WitnessOneTel" class="form-control" />
+                        <span asp-validation-for="WitnessOneTel" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="WitnessOneSignatureDate" class="form-label"></label>
+                        <input asp-for="WitnessOneSignatureDate" type="date" class="form-control" />
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label asp-for="WitnessOneAddress" class="form-label"></label>
+                        <textarea asp-for="WitnessOneAddress" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="WitnessOneAddress" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Witness Two</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input asp-for="WitnessTwoIsMember" class="form-check-input" type="checkbox" />
+                    <label asp-for="WitnessTwoIsMember" class="form-check-label"></label>
+                </div>
+                <div class="row">
+                    <div id="witnessTwoMembershipWrap" class="col-12 mb-3" style="display:none">
+                        <label asp-for="WitnessTwoMembershipNo" class="form-label"></label>
+                        <input asp-for="WitnessTwoMembershipNo" class="form-control" />
+                        <span asp-validation-for="WitnessTwoMembershipNo" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="WitnessTwoName" class="form-label"></label>
+                        <input asp-for="WitnessTwoName" class="form-control" />
+                        <span asp-validation-for="WitnessTwoName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="WitnessTwoTel" class="form-label"></label>
+                        <input asp-for="WitnessTwoTel" class="form-control" />
+                        <span asp-validation-for="WitnessTwoTel" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="WitnessTwoSignatureDate" class="form-label"></label>
+                        <input asp-for="WitnessTwoSignatureDate" type="date" class="form-control" />
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label asp-for="WitnessTwoAddress" class="form-label"></label>
+                        <textarea asp-for="WitnessTwoAddress" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="WitnessTwoAddress" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Review &amp; Confirm</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/member-lookup.js" asp-append-version="true"></script>
+    <script>
+        RNMemberLookup.initParty({
+            checkboxId: 'WitnessOneIsMember',
+            wrapId: 'witnessOneMembershipWrap',
+            membershipId: 'WitnessOneMembershipNo',
+            nameId: 'WitnessOneName',
+            addressId: 'WitnessOneAddress',
+            telId: 'WitnessOneTel'
+        });
+        RNMemberLookup.initParty({
+            checkboxId: 'WitnessTwoIsMember',
+            wrapId: 'witnessTwoMembershipWrap',
+            membershipId: 'WitnessTwoMembershipNo',
+            nameId: 'WitnessTwoName',
+            addressId: 'WitnessTwoAddress',
+            telId: 'WitnessTwoTel'
+        });
+    </script>
+}

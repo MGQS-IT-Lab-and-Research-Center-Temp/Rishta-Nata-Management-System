@@ -1,0 +1,92 @@
+﻿@model Presentation.ViewModels.MemberDashboardViewModel
+
+@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+<div class="dashboard-hero">
+    <h1>Assalamu alaykum, @Model.MemberName</h1>
+    <p>Here's an overview of your marriage records with the Jama'at.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card dashboard-card h-100">
+            <div class="card-header">Current Spouse</div>
+            <div class="card-body">
+                @if (Model.CurrentSpouse is not null)
+                {
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="spouse-avatar">@Model.CurrentSpouse.Name.Substring(0, 1)</div>
+                        <div>
+                            <div class="fw-semibold">@Model.CurrentSpouse.Name</div>
+                            <div class="text-muted small">Married since @Model.CurrentSpouse.MarriageDate.ToString("dd MMM yyyy")</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No current spouse on record.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card dashboard-card h-100">
+            <div class="card-header">Marriage History</div>
+            <div class="card-body">
+                <ul class="timeline">
+                    @foreach (var entry in Model.MarriageHistory)
+                    {
+                        <li>
+                            <span>
+                                <span class="status-dot @(entry.Status == "Married" ? "married" : "divorced")"></span>
+                                <strong>@entry.Status</strong> @entry.SpouseName
+                            </span>
+                            <span class="text-muted small">@entry.Date.ToString("dd MMM yyyy")</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    @if (Model.ActiveApplication is not null)
+    {
+        <p class="fw-semibold mb-2">
+            Next: @Presentation.ViewModels.FormStageLabels.For(Model.ActiveApplication.FormStage)
+            <span class="text-muted small">(ref @Model.ActiveApplication.ReferenceNumber)</span>
+        </p>
+
+        @if (Model.ActiveApplication.IsAwaitingYourSection)
+        {
+            <a asp-controller="MarriageApplication"
+               asp-action="Continue"
+               asp-route-id="@Model.ActiveApplication.Id"
+               class="btn btn-primary apply-nikah-btn">
+                Continue Your Application
+            </a>
+        }
+
+        @if (Model.ActiveApplication.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses)
+        {
+            <a asp-controller="SectionLinks"
+               asp-action="Index"
+               asp-route-applicationId="@Model.ActiveApplication.Id"
+               class="btn btn-outline-primary apply-nikah-btn ms-2">
+                Signature links
+            </a>
+        }
+    }
+    else
+    {
+        <a asp-controller="MarriageApplication"
+           asp-action="Create"
+           class="btn btn-primary apply-nikah-btn">
+            Apply for Nikah
+        </a>
+    }
+</div>

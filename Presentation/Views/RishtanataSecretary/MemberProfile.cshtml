@@ -1,0 +1,44 @@
+﻿@model Presentation.ViewModels.MemberProfileViewModel
+
+@{
+    ViewData["Title"] = "Member Profile";
+}
+
+<h2>Member Profile</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h4>@Model.FullName</h4>
+        <p><strong>Title:</strong> @Model.Title</p>
+        <p><strong>Role:</strong> @Model.RoleName</p>
+
+        <hr />
+
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Phone Number:</strong> @Model.PhoneNo</p>
+        <p><strong>Date of Birth:</strong> @Model.DateOfBirth.ToString("dd MMM yyyy")</p>
+        <p><strong>Sex:</strong> @Model.Sex</p>
+        <p><strong>Marital Status:</strong> @Model.MaritalStatus</p>
+        <p><strong>Nationality:</strong> @Model.Nationality</p>
+
+        <hr />
+
+        <p><strong>Chanda Number:</strong> @Model.ChandaNo</p>
+        <p><strong>Wasiyat Number:</strong> @Model.WasiyatNo</p>
+        <p><strong>Auxiliary Body:</strong> @Model.AuxillaryBodyName</p>
+        <p><strong>Jamaat Name:</strong> @Model.JamaatName</p>
+        <p><strong>Circuit Name:</strong> @Model.CircuitName</p>
+
+        <hr />
+
+        <p><strong>Address:</strong> @Model.Address</p>
+
+        <hr />
+
+        <p><strong>Next of Kin:</strong> @Model.NextOfKinName</p>
+        <p><strong>Next of Kin Phone:</strong> @Model.NextOfKinPhoneNo</p>
+        <p><strong>Next of Kin Address:</strong> @Model.NextOfKinAddress</p>
+    </div>
+</div>
+
+<a asp-action="Dashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>

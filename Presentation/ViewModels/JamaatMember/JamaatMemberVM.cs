@@ -1,0 +1,40 @@
+﻿
+using System;
+using System.Collections.Generic;
+
+namespace Presentation.ViewModels.JamaatMember;
+
+
+public class JamaatMemberVM
+{
+    public Guid Id { get; set; }
+    public string Surname { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string ChandaNo { get; set; } = string.Empty;
+    public string WasiyatNo { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string AuxillaryBodyName { get; set; } = string.Empty;
+    public string MiddleName { get; set; } = string.Empty!;
+    public string MaidenName { get; set; } = string.Empty;
+    public DateTime DateOfBirth { get; set; }
+    public string PhoneNumber { get; set; } = string.Empty!;
+    public string JamaatName { get; set; } = string.Empty;
+    public string CircuitName { get; set; } = string.Empty!;
+    public string Gender { get; set; } = string.Empty!;
+    public string MaritalStatus { get; set; } = string.Empty!;
+    public string Address { get; set; } = string.Empty!;
+    public string NextOfKinPhoneNo { get; set; } = string.Empty!;
+    public string NextOfKinName { get; set; } = string.Empty!;
+    public string NextOfKinAddress { get; set; } = string.Empty!;
+    public string Nationality { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public string Roles { get; set; } = string.Empty;
+    public string FullName => $"{FirstName} {Surname}".Trim();
+    public string? ResetToken { get; set; }
+    public DateTime? ResetTokenExpiry { get; set; }
+
+    // ✅ Added properties
+    public string MemberNumber { get; set; } = string.Empty;
+    public string Occupation { get; set; } = string.Empty;
+}

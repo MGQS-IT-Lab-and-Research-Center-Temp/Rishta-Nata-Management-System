@@ -1,0 +1,342 @@
+@model Presentation.ViewModels.JamaatPresidentDashboardViewModel
+
+@{
+    Layout = "_JamaatPresidentLayout";
+    ViewData["Title"] = "Jama'at President Dashboard";
+}
+
+<div class="president-dashboard">
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+
+        <div>
+            <h2>Jama'at President Dashboard</h2>
+
+            <p>
+                Welcome, <strong>@Model.PresidentName</strong>
+            </p>
+
+            <span class="location-info">
+                @Model.JamaatName
+                @if (!string.IsNullOrWhiteSpace(Model.CircuitName))
+                {
+                    <span>• @Model.CircuitName</span>
+                }
+            </span>
+        </div>
+
+        <div class="dashboard-date">
+            @DateTime.Now.ToString("dddd, dd MMMM yyyy")
+        </div>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+    <div class="statistics-grid">
+
+        <div class="stat-card warn">
+
+            <div class="stat-card-content">
+
+                <span class="stat-label">
+                    Pending Nikah Reviews
+                </span>
+
+                <h2 class="stat-number">
+                    @Model.PendingNikahReviews
+                </h2>
+
+                <span class="stat-description">
+                    Applications awaiting your review
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card primary">
+
+            <div class="stat-card-content">
+
+                <span class="stat-label">
+                    Reviewed Today
+                </span>
+
+                <h2 class="stat-number">
+                    @Model.ReviewedToday
+                </h2>
+
+                <span class="stat-description">
+                    Applications reviewed today
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card dark">
+
+            <div class="stat-card-content">
+
+                <span class="stat-label">
+                    Total Nikah Applications
+                </span>
+
+                <h2 class="stat-number">
+                    @Model.TotalNikahApplications
+                </h2>
+
+                <span class="stat-description">
+                    Total applications submitted
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+    <div class="dashboard-card quick-actions-card">
+
+        <div class="card-heading">
+
+            <div>
+                <h4>Quick Actions</h4>
+
+                <p>
+                    Access frequently used Jama'at President functions.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="quick-actions-grid">
+
+            <a asp-controller="JamaatPresident"
+               asp-action="PendingApplications"
+               class="quick-action">
+
+                <span class="quick-action-title">
+                    Review Pending Applications
+                </span>
+
+                <span class="quick-action-description">
+                    Review Nikah applications awaiting your decision.
+                </span>
+
+            </a>
+
+
+            <a asp-controller="JamaatPresident"
+               asp-action="ReviewedApplications"
+               class="quick-action">
+
+                <span class="quick-action-title">
+                    Reviewed Applications
+                </span>
+
+                <span class="quick-action-description">
+                    View applications you have already reviewed.
+                </span>
+
+            </a>
+
+
+            <a asp-controller="JamaatPresident"
+               asp-action="Certificates"
+               class="quick-action">
+
+                <span class="quick-action-title">
+                    Marriage Certificates
+                </span>
+
+                <span class="quick-action-description">
+                    View issued marriage certificates.
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- PENDING APPLICATIONS -->
+    <div class="dashboard-card">
+
+        <div class="card-heading card-heading-row">
+
+            <div>
+
+                <h4>
+                    Nikah Applications Awaiting Review
+                </h4>
+
+                <p>
+                    Review these applications before they proceed to other administrators.
+                </p>
+
+            </div>
+
+            <span class="pending-badge">
+                @Model.PendingNikahReviews Pending
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="president-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Reference</th>
+                        <th>Groom</th>
+                        <th>Bride</th>
+                        <th>Jama'at</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @if (Model.PendingApplications != null &&
+                         Model.PendingApplications.Any())
+                    {
+                        foreach (var item in Model.PendingApplications)
+                        {
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        @item.ReferenceNumber
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @item.GroomName
+                                </td>
+
+                                <td>
+                                    @item.BrideName
+                                </td>
+
+                                <td>
+                                    @item.JamaatName
+                                </td>
+
+                                <td>
+                                    @item.SubmittedDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    <span class="status-badge">
+                                        @item.Status
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <a asp-controller="JamaatPresident"
+                                       asp-action="Review"
+                                       asp-route-id="@item.Id"
+                                       class="review-button">
+                                        Review
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+
+                            <td colspan="7" class="empty-state">
+                                No pending Nikah applications.
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECENT ACTIVITY -->
+    <div class="dashboard-card">
+
+        <div class="card-heading">
+
+            <h4>Recent Activity</h4>
+
+            <p>
+                Your latest Jama'at President activities.
+            </p>
+
+        </div>
+
+
+        <div class="activity-list">
+
+            @if (Model.RecentActivities != null &&
+                 Model.RecentActivities.Any())
+            {
+                foreach (var activity in Model.RecentActivities)
+                {
+                    <div class="activity-item">
+
+                        <div class="activity-details">
+
+                            <strong>
+                                @activity.Description
+                            </strong>
+
+                            @if (!string.IsNullOrWhiteSpace(activity.ApplicationNumber))
+                            {
+                                <span>
+                                    @activity.ApplicationNumber
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <time>
+                            @activity.Date.ToString("dd MMM yyyy hh:mm tt")
+                        </time>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-activity">
+                    No recent activity.
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>

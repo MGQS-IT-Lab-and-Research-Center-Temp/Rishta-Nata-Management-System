@@ -1,8 +1,1123 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Rishtanata - Marriage Management System";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<!-- Rishtanata Landing Page CSS -->
+<link rel="stylesheet"
+      href="~/css/landing-page.css"
+      asp-append-version="true" />
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+
+    <div class="container">
+
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center"
+           asp-controller="Home"
+           asp-action="Index">
+
+            <img src="~/img/logo.png" alt="Rishtanata Logo" class="rn-logo-img me-2" />
+
+            <div>
+                <div class="rn-logo-name">
+                    Rishtanata
+                </div>
+
+                <small class="rn-logo-subtitle">
+                    MARRIAGE MANAGEMENT SYSTEM
+                </small>
+            </div>
+
+        </a>
+
+
+        <!-- Mobile button -->
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+        <!-- Navigation -->
+        <div class="collapse navbar-collapse"
+             id="mainNavbar">
+
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link active"
+                       href="#home">
+                        Home
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="#about">
+                        About
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="#services">
+                        Services
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="#how-it-works">
+                        How It Works
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="#dashboards">
+                        Dashboards
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="#contact">
+                        Contact
+                    </a>
+                </li>
+
+            </ul>
+
+
+            <!-- Dashboard Dropdown -->
+
+            <div class="dropdown me-2">
+
+                <button class="btn btn-outline-success rounded-pill px-3 dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown">
+
+                    <i class="bi bi-grid-3x3-gap-fill me-1"></i>
+                    Dashboard Access
+
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2">
+
+                    <li>
+                        <a class="dropdown-item rounded-3"
+                           href="/MemberDashboard">
+                            <i class="bi bi-person-fill me-2"></i>
+                            Jama'at Member
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item rounded-3"
+                           href="/RishtanataSecretary/Dashboard">
+                            <i class="bi bi-building-fill me-2"></i>
+                            RishtanataSecretary Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item rounded-3"
+                           href="/JamaatPresident/Dashboard">
+                            <i class="bi bi-building-fill me-2"></i>
+                            Jama'at President
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item rounded-3"
+                           href="/AssistanceSecretary/Dashboard">
+                            <i class="bi bi-file-earmark-text-fill me-2"></i>
+                            AssistanceSecretary
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item rounded-3"
+                           href="/Admin/Dashboard">
+                            <i class="bi bi-shield-lock-fill me-2"></i>
+                            Admin
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- Login -->
+
+            <a asp-controller="Auth"
+               asp-action="Login"
+               class="btn btn-success rounded-pill px-4">
+
+                <i class="bi bi-box-arrow-in-right me-1"></i>
+                Login
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<section id="home" class="rn-hero">
+
+    <div class="container">
+
+        <div class="row align-items-center min-vh-75 g-5">
+
+            <!-- LEFT -->
+
+            <div class="col-lg-6">
+
+                <div class="rn-welcome-badge mb-4">
+
+                    <span class="rn-badge-icon">
+                        <i class="bi bi-heart-fill"></i>
+                    </span>
+
+                    Trusted Jama'at Marriage Platform
+
+                </div>
+
+
+                <h1 class="rn-hero-title">
+
+                    Connecting Hearts.
+
+                    <span>Building Families.</span>
+
+                </h1>
+
+
+                <p class="rn-hero-description">
+
+                    Rishtanata is a secure digital platform designed
+                    to simplify marriage applications, Nikah processes,
+                    certificates, and family-related services within
+                    the Jama'at.
+
+                </p>
+
+
+                <div class="d-flex flex-wrap gap-3 mt-4">
+
+                    <a href="#application"
+                       class="btn rn-btn-primary btn-lg">
+
+                        <i class="bi bi-heart-fill me-2"></i>
+
+                        Start Your Application
+
+                    </a>
+
+
+                    <a href="#services"
+                       class="btn rn-btn-secondary btn-lg">
+
+                        Explore Services
+
+                        <i class="bi bi-arrow-right ms-2"></i>
+
+                    </a>
+
+                </div>
+
+
+                <!-- Trust information -->
+
+                <div class="d-flex flex-wrap gap-4 mt-5">
+
+                    <div class="rn-trust-item">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <span>
+                            Secure Platform
+                        </span>
+
+                    </div>
+
+                    <div class="rn-trust-item">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        <span>
+                            Verified Process
+                        </span>
+
+                    </div>
+
+                    <div class="rn-trust-item">
+
+                        <i class="bi bi-people"></i>
+
+                        <span>
+                            Community Focused
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT -->
+
+            <div class="col-lg-6">
+
+                <div class="rn-hero-visual">
+
+                    <div class="rn-hero-circle"></div>
+
+
+                    <!-- Main card -->
+
+                    <div class="rn-family-card">
+
+                        <div class="rn-family-icon">
+
+                            <i class="bi bi-people-fill"></i>
+
+                        </div>
+
+                        <h3>
+                            Stronger Families
+                        </h3>
+
+                        <p>
+                            Stronger Communities
+                        </p>
+
+                    </div>
+
+
+                    <!-- Marriage card -->
+
+                    <div class="rn-floating-card rn-floating-one">
+
+                        <div class="rn-floating-icon pink">
+
+                            <i class="bi bi-heart-fill"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Marriage
+                            </strong>
+
+                            <small>
+                                Simple Application
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Certificate card -->
+
+                    <div class="rn-floating-card rn-floating-two">
+
+                        <div class="rn-floating-icon gold">
+
+                            <i class="bi bi-file-earmark-check-fill"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Certificates
+                            </strong>
+
+                            <small>
+                                Verified Records
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Security card -->
+
+                    <div class="rn-floating-card rn-floating-three">
+
+                        <div class="rn-floating-icon green">
+
+                            <i class="bi bi-shield-check"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Secure
+                            </strong>
+
+                            <small>
+                                Trusted Platform
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ABOUT
+========================================================= -->
+
+<section id="about"
+         class="rn-section bg-white">
+
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+
+                <span class="rn-section-label">
+                    ABOUT RISHTANATA
+                </span>
+
+                <h2 class="rn-section-title">
+
+                    Bringing Marriage Services
+
+                    <span>Together.</span>
+
+                </h2>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <p class="text-secondary fs-5">
+
+                    Rishtanata provides a centralized platform
+                    where Jama'at members can manage their
+                    marriage-related processes while authorized
+                    Jama'at officials can review applications,
+                    verify information, and manage certificates.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SERVICES
+========================================================= -->
+
+<section id="services"
+         class="rn-section rn-light-section">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <span class="rn-section-label">
+                OUR SERVICES
+            </span>
+
+            <h2 class="rn-section-title">
+                Everything You Need
+                <span>In One Place.</span>
+            </h2>
+
+            <p class="text-secondary mx-auto rn-section-description">
+
+                Manage your important marriage and family
+                services through one secure platform.
+
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- Marriage -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card rn-service-card h-100">
+
+                    <div class="rn-service-icon pink">
+                        <i class="bi bi-heart-fill"></i>
+                    </div>
+
+                    <h4>
+                        Marriage Application
+                    </h4>
+
+                    <p>
+                        Submit and manage your Nikah application
+                        and provide the required information
+                        through a guided process.
+                    </p>
+
+                    <a href="#application"
+                       class="rn-service-link">
+
+                        Start Application
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Certificate -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card rn-service-card h-100">
+
+                    <div class="rn-service-icon gold">
+                        <i class="bi bi-file-earmark-check-fill"></i>
+                    </div>
+
+                    <h4>
+                        Marriage Certificates
+                    </h4>
+
+                    <p>
+                        Manage verified marriage records and
+                        certificates through the Rishtanata system.
+                    </p>
+
+                    <a href="#dashboards"
+                       class="rn-service-link">
+
+                        View Dashboard
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Aqiqah -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card rn-service-card h-100">
+
+                    <div class="rn-service-icon green">
+                        <i class="bi bi-stars"></i>
+                    </div>
+
+                    <h4>
+                        Aqiqah Certificates
+                    </h4>
+
+                    <p>
+                        Manage Aqiqah information and certificates
+                        through a simple digital workflow.
+                    </p>
+
+                    <a href="#dashboards"
+                       class="rn-service-link">
+
+                        Explore Service
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     DASHBOARDS
+========================================================= -->
+
+<section id="dashboards" class="rn-section bg-white">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <span class="rn-section-label">
+                PORTALS
+            </span>
+
+            <h2 class="rn-section-title">
+                Access Your
+                <span>Dashboard.</span>
+            </h2>
+
+            <p class="text-secondary mx-auto rn-section-description">
+                Select the portal that matches your role
+                within the Rishtanata system.
+            </p>
+
+        </div>
+
+
+        <!-- DASHBOARD CARDS -->
+        <div class="row g-4">
+
+            <!-- MEMBER -->
+            <div class="col-md-6 col-lg-4">
+
+                <div class="rn-dashboard-card h-100">
+
+                    <div class="rn-dashboard-icon member">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="flex-grow-1">
+
+                        <span class="rn-dashboard-label">
+                            MEMBER PORTAL
+                        </span>
+
+                        <h4>
+                            Jama'at Member
+                        </h4>
+
+                        <p>
+                            Manage your profile, marriage
+                            applications, and certificates.
+                        </p>
+
+                        <a href="/MemberDashboard"
+                           class="btn btn-success rounded-pill px-4">
+
+                            Open Dashboard
+                            <i class="bi bi-arrow-right ms-2"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RISHTANATA SECRETARY -->
+            <div class="col-md-6 col-lg-4">
+
+                <div class="rn-dashboard-card rn-featured-dashboard h-100">
+
+                    <div class="rn-dashboard-icon rishtanata">
+                        <i class="bi bi-heart-fill"></i>
+                    </div>
+
+                    <div class="flex-grow-1">
+
+                        <span class="rn-dashboard-label">
+                            MAIN PORTAL
+                        </span>
+
+                        <h4>
+                            Rishtanata Secretary
+                        </h4>
+
+                        <p>
+                            Access the central Rishtanata
+                            management system.
+                        </p>
+
+                        <a href="/RishtanataSecretary/Dashboard"
+                           class="btn rn-btn-primary rounded-pill px-4">
+
+                            Open Dashboard
+                            <i class="bi bi-arrow-right ms-2"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRESIDENT -->
+            <div class="col-md-6 col-lg-4">
+
+                <div class="rn-dashboard-card h-100">
+
+                    <div class="rn-dashboard-icon president">
+                        <i class="bi bi-building-fill"></i>
+                    </div>
+
+                    <div class="flex-grow-1">
+
+                        <span class="rn-dashboard-label">
+                            ADMINISTRATION
+                        </span>
+
+                        <h4>
+                            Jama'at President
+                        </h4>
+
+                        <p>
+                            Review and manage pending marriage
+                            applications.
+                        </p>
+
+                        <a href="/JamaatPresident/Dashboard"
+                           class="btn btn-outline-success rounded-pill px-4">
+
+                            Open Dashboard
+                            <i class="bi bi-arrow-right ms-2"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ASSISTANCE SECRETARY -->
+            <div class="col-md-6 col-lg-4">
+
+                <div class="rn-dashboard-card h-100">
+
+                    <div class="rn-dashboard-icon secretary">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                    </div>
+
+                    <div class="flex-grow-1">
+
+                        <span class="rn-dashboard-label">
+                            ADMINISTRATION
+                        </span>
+
+                        <h4>
+                            Assistance Secretary
+                        </h4>
+
+                        <p>
+                            Manage applications, records,
+                            certificates, and reports.
+                        </p>
+
+                        <a href="/AssistanceSecretary/Dashboard"
+                           class="btn btn-outline-success rounded-pill px-4">
+
+                            Open Dashboard
+                            <i class="bi bi-arrow-right ms-2"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ADMIN -->
+            <div class="col-md-6 col-lg-4">
+
+                <div class="rn-dashboard-card h-100">
+
+                    <div class="rn-dashboard-icon admin">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+
+                    <div class="flex-grow-1">
+
+                        <span class="rn-dashboard-label">
+                            SYSTEM ADMINISTRATION
+                        </span>
+
+                        <h4>
+                            Admin Dashboard
+                        </h4>
+
+                        <p>
+                            Manage users, system settings,
+                            and administrative functions.
+                        </p>
+
+                        <a href="/Admin/Dashboard"
+                           class="btn btn-outline-success rounded-pill px-4">
+
+                            Open Dashboard
+                            <i class="bi bi-arrow-right ms-2"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =========================================================
+     HOW IT WORKS
+========================================================= -->
+
+<section id="how-it-works"
+         class="rn-section rn-light-section">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <span class="rn-section-label">
+                HOW IT WORKS
+            </span>
+
+            <h2 class="rn-section-title">
+                Simple.
+                <span>Secure.</span>
+                Straightforward.
+            </h2>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-md-3">
+
+                <div class="rn-step-card">
+
+                    <div class="rn-step-number">
+                        01
+                    </div>
+
+                    <i class="bi bi-person-plus-fill"></i>
+
+                    <h5>
+                        Register
+                    </h5>
+
+                    <p>
+                        Create or access your Jama'at
+                        member account.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="rn-step-card">
+
+                    <div class="rn-step-number">
+                        02
+                    </div>
+
+                    <i class="bi bi-pencil-square"></i>
+
+                    <h5>
+                        Apply
+                    </h5>
+
+                    <p>
+                        Complete your marriage application
+                        and submit the required details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="rn-step-card">
+
+                    <div class="rn-step-number">
+                        03
+                    </div>
+
+                    <i class="bi bi-shield-check"></i>
+
+                    <h5>
+                        Verification
+                    </h5>
+
+                    <p>
+                        Authorized Jama'at officials review
+                        and verify your application.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="rn-step-card">
+
+                    <div class="rn-step-number">
+                        04
+                    </div>
+
+                    <i class="bi bi-file-earmark-check-fill"></i>
+
+                    <h5>
+                        Certificate
+                    </h5>
+
+                    <p>
+                        Complete the process and manage
+                        your verified certificate.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CTA
+========================================================= -->
+
+<section id="application"
+         class="rn-cta">
+
+    <div class="container">
+
+        <div class="row align-items-center g-4">
+
+            <div class="col-lg-8">
+
+                <span>
+                    BEGIN YOUR JOURNEY
+                </span>
+
+                <h2>
+                    Ready to Start Your Marriage Application?
+                </h2>
+
+                <p>
+                    Login to Rishtanata and begin your application
+                    through our secure digital platform.
+                </p>
+
+            </div>
+
+
+            <div class="col-lg-4 text-lg-end">
+
+                <a asp-controller="Auth"
+                   asp-action="Login"
+                   class="btn btn-light btn-lg rounded-pill px-4">
+
+                    Login & Continue
+
+                    <i class="bi bi-arrow-right ms-2"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer id="contact"
+        class="rn-footer">
+
+    <div class="container">
+
+        <div class="row g-5">
+
+            <div class="col-lg-5">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <div class="rn-logo-icon me-2">
+
+                        <i class="bi bi-heart-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="rn-footer-logo">
+                            Rishtanata
+                        </div>
+
+                        <small>
+                            MARRIAGE MANAGEMENT SYSTEM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <p>
+                    A secure digital platform for managing
+                    marriage applications, certificates,
+                    Aqiqah services, and Jama'at workflows.
+                </p>
+
+            </div>
+
+
+            <div class="col-6 col-lg-2">
+
+                <h6>
+                    Navigation
+                </h6>
+
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#how-it-works">How It Works</a>
+
+            </div>
+
+
+            <div class="col-6 col-lg-2">
+
+                <h6>
+                    Portals
+                </h6>
+
+                <a href="/MemberDashboard">
+                    Member
+                </a>
+
+                <a href="/JamaatPresident/Dashboard">
+                    President
+                </a>
+
+                <a href="/RishtanataSecretary/Dashboard">
+                    Secretary
+                </a>
+
+                <a href="/AssistanceSecretary/Dashboard">
+                    Assistance Secretary
+                </a>
+
+                <a href="/Admin/Dashboard">
+                    Admin
+                </a>
+
+            </div>
+
+
+            <div class="col-lg-3">
+
+                <h6>
+                    Contact
+                </h6>
+
+                <p>
+                    <i class="bi bi-envelope me-2"></i>
+                    info@rishtanata.org
+                </p>
+
+                <p>
+                    <i class="bi bi-telephone me-2"></i>
+                    +234 800 123 4567
+                </p>
+
+                <p>
+                    <i class="bi bi-geo-alt me-2"></i>
+                    Jama'at Office
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <hr />
+
+
+        <div class="text-center">
+
+            <small>
+                © @DateTime.Now.Year Rishtanata Management System.
+                All rights reserved.
+            </small>
+
+        </div>
+
+    </div>
+</footer>

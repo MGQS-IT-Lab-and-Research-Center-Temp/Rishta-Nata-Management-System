@@ -1,0 +1,73 @@
+@model IEnumerable<Presentation.ViewModels.MemberApplicationViewModel>
+
+@{
+    ViewData["Title"] = "My Applications";
+}
+
+<div class="dashboard-hero">
+    <h1>My Applications</h1>
+    <p>Your marriage applications with the Jama'at.</p>
+</div>
+
+<div class="card dashboard-card">
+    <div class="card-header">Applications</div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Reference</th>
+                            <th>Spouse</th>
+                            <th>Role</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Next</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.ReferenceNumber</strong></td>
+                                <td>@item.SpouseName</td>
+                                <td>@item.Role</td>
+                                <td>@item.SubmittedDate.ToString("dd MMM yyyy")</td>
+                                <td>@item.Status</td>
+                                <td>
+                                    <div class="small text-muted">@Presentation.ViewModels.FormStageLabels.For(item.FormStage)</div>
+                                    @if (item.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses)
+                                    {
+                                        <a asp-controller="SectionLinks"
+                                           asp-action="Index"
+                                           asp-route-applicationId="@item.Id"
+                                           class="btn btn-sm btn-outline-primary mt-1">
+                                            Signature links
+                                        </a>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.IsAwaitingYourSection)
+                                    {
+                                        <a asp-controller="MarriageApplication"
+                                           asp-action="Continue"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-primary">
+                                            Continue
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted mb-0">You have no marriage applications yet.</p>
+        }
+    </div>
+</div>
