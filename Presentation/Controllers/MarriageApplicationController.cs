@@ -122,13 +122,9 @@ public class MarriageApplicationController : Controller
             return View(model);
         }
 
-        var eligibility = await _eligibility.ValidateAsync(
+        var eligibility = await _eligibility.ValidateCreateAsync(
             partnerMembershipNo ?? string.Empty,
             !isGroomFirst,
-            model.IsSecondThirdOrFourthNikah,
-            model.FormerWifeIsDead,
-            model.HasDivorcedFormerWife,
-            model.BrideMaritalStatus,
             ct);
 
         if (!eligibility.IsAllowed)
@@ -166,6 +162,7 @@ public class MarriageApplicationController : Controller
             BrideGenotype = model.Bride.Genotype,
             BrideBloodGroup = model.Bride.BloodGroup,
             BrideMaritalStatus = model.BrideMaritalStatus,
+            BrideDivorceEvidence = model.BrideDivorceEvidence,
             BrideProposedDowerAmount = model.BrideProposedDowerAmount,
             BrideDowerAmountReceivedInCash = model.BrideDowerAmountReceivedInCash,
             BrideSignatureTel = (isGroomFirst ? partnerPhone : model.Bride.Phone.Trim()),
@@ -182,6 +179,7 @@ public class MarriageApplicationController : Controller
             IsSecondThirdOrFourthNikah = model.IsSecondThirdOrFourthNikah,
             FormerWifeIsDead = model.FormerWifeIsDead,
             HasDivorcedFormerWife = model.HasDivorcedFormerWife,
+            BridegroomDivorceEvidence = model.BridegroomDivorceEvidence,
             FormerWifeIsPresent = model.FormerWifeIsPresent,
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
             BridegroomSignatureTel = (isGroomFirst ? model.Bridegroom.Phone.Trim() : partnerPhone),
