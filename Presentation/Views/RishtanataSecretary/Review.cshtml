@@ -1,4 +1,3 @@
-@page
 @model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.ReviewApplicationViewModel
 
 @{
@@ -491,4 +490,5 @@
 
 @* Rejection Modal *@
 @{ ViewData["FormId"] = Model.Id; }
+@{ ViewData["CurrentStage"] = Model.CurrentStage; }
 @await Html.PartialAsync("_RejectionModalPartial")

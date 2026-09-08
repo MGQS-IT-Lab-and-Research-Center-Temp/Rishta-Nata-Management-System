@@ -21,6 +21,7 @@ public class MarriageFormController : Controller
 
     // POST api/marriage-forms/{formId}/revert
     [HttpPost("{formId:guid}/revert")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> RevertStage(
         Guid formId,
         [FromBody] RevertStageRequest request,
@@ -30,8 +31,24 @@ public class MarriageFormController : Controller
         if (string.IsNullOrWhiteSpace(membershipNo))
             return Unauthorized();
 
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .Where(m => !string.IsNullOrWhiteSpace(m))
+                .ToList();
+
+            return BadRequest(new
+            {
+                message = errors.Count > 0
+                    ? string.Join(" ", errors)
+                    : "A valid target stage and rejection reason are required."
+            });
+        }
+
         var result = await _formService.RevertStageAsync(
-            formId, request.TargetStage, request.Reason, membershipNo, cancellationToken);
+            formId, request.TargetStage!.Value, request.Reason, membershipNo, cancellationToken);
 
         return result switch
         {
