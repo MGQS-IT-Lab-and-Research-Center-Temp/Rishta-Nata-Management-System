@@ -1,17 +1,17 @@
 name: "C# .NET Code Scan"
 
 on:
-  push:
-    branches: [ "**" ] # Triggers on EVERY branch push
+  # Majorly scan when PRs are made to the dev branch (and master)
   pull_request:
-    branches: [ "master", "dev" ] # Standard practice: also scan PRs targeting main
+    branches: [ "dev", "master" ]
+  # Scan when code is pushed/merged directly into dev
+  push:
+    branches: [ "dev" ]
   workflow_dispatch:
 
 jobs:
   analyze:
     name: Analyze C# Code
-    # Use windows-latest if you are on legacy .NET Framework. 
-    # Use ubuntu-latest for modern .NET (Core, 5, 6, 7, 8, 9)
     runs-on: ubuntu-latest 
     
     permissions:
@@ -28,24 +28,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Optional: If your app requires a specific .NET version, install it here
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v4
-    #   with:
-    #     dotnet-version: '8.0.x'
+    # .slnx requires .NET SDK 8.0.300 or higher. 8.0.x ensures you get the latest patch.
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' 
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
 
-    # Autobuild attempts to build any compiled languages (C# in this case)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
-      
-    # NOTE: If Autobuild fails for complex .NET solutions, comment it out and use:
-    # - name: Build .NET
-    #   run: dotnet build --configuration Release
+    # MANUAL BUILD: Replaces autobuild because CodeQL doesn't recognize .slnx yet
+    - name: Build .NET Solution
+      # The .NET CLI automatically detects .slnx files in the root directory.
+      # NOTE: If you have multiple .slnx files, replace the line below with: 
+      # run: dotnet build YourExactSolutionName.slnx --configuration Release
+      run: dotnet build --configuration Release
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
