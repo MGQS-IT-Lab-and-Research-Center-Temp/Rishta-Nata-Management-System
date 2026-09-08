@@ -287,9 +287,9 @@
                 var isGroom = groomRadio && groomRadio.checked;
                 var container = groomCard.parentNode;
                 if (isGroom) {
-                    if (container.firstElementChild !== groomCard) { container.insertBefore(groomCard, container.firstElementChild); }
+                    container.insertBefore(groomCard, brideCard);
                 } else {
-                    if (container.lastElementChild !== brideCard) { container.insertBefore(brideCard, groomCard); }
+                    container.insertBefore(brideCard, groomCard);
                 }
             }
 
