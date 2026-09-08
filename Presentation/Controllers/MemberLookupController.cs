@@ -28,13 +28,13 @@ public class MemberLookupController : ControllerBase
     }
 
     [HttpGet("partner-eligibility/{chandaNo}")]
-    public async Task<IActionResult> PartnerEligibility(string chandaNo, CancellationToken ct)
+    public async Task<IActionResult> PartnerEligibility(string chandaNo, CancellationToken ct, bool partnerIsGroom = false)
     {
         var dto = await _lookup.LookupAsync(chandaNo, ct);
         if (dto is null)
             return NotFound();
 
-        var result = await _eligibility.ValidateCreateAsync(chandaNo, partnerIsGroom: false, ct);
+        var result = await _eligibility.ValidateCreateAsync(chandaNo, partnerIsGroom, ct);
         return Ok(new { member = dto, blocked = !result.IsAllowed, message = result.Message });
     }
 }

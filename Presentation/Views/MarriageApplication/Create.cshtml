@@ -332,7 +332,8 @@
                     var notFound = document.getElementById('partnerNotFound');
                     var blocked = document.getElementById('partnerBlocked');
                     if (!chandaNo) { return; }
-                    fetch('/api/members/partner-eligibility/' + encodeURIComponent(chandaNo))
+                    var partnerIsGroom = !(groomRadio && groomRadio.checked);
+                    fetch('/api/members/partner-eligibility/' + encodeURIComponent(chandaNo) + '?partnerIsGroom=' + partnerIsGroom)
                         .then(function (r) { return r.ok ? r.json() : null; })
                         .then(function (m) {
                             if (!m) {
