@@ -87,6 +87,8 @@ public class JamaatMemberService : IJamaatMemberService
 
     public bool IsProfileFresh(JamaatMember member, TimeSpan? maxAge = null)
     {
+        ArgumentNullException.ThrowIfNull(member);
+
         maxAge ??= DefaultFreshnessWindow;
 
         var stamp = member.ModifiedAt != default ? member.ModifiedAt : member.CreatedAt;
