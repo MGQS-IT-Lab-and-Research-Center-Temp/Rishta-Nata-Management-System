@@ -15,11 +15,15 @@
       wrap.style.display = yes.checked ? '' : 'none';
     }
 
+    var lastLookup = '';
+
     function lookup() {
       if (!yes.checked) { return; }
       var chandaNo = (membership.value || '').trim();
       var token = (tokenInput.value || '').trim();
       if (!chandaNo || !token) { return; }
+      if (chandaNo === lastLookup) { return; }
+      lastLookup = chandaNo;
 
       if (notice) { notice.classList.add('d-none'); }
 
@@ -29,8 +33,10 @@
       fetch(url)
         .then(function (res) {
           if (!res.ok) {
-            if (res.status === 404 && notice) {
-              notice.textContent = 'That membership number was not found. Please enter your details manually.';
+            if (notice) {
+              notice.textContent = res.status === 404
+                ? 'That membership number was not found. Please enter your details manually.'
+                : 'Could not load your details. Please enter them manually.';
               notice.classList.remove('d-none');
             }
             return null;
