@@ -63,7 +63,7 @@ public class AuthService : IAuthService
             return AuthResult.Success(localMember, roles);
         }
         catch (Exception ex) when (
-            ex is HttpRequestException or TaskCanceledException or TimeoutException)
+            ex is HttpRequestException or TaskCanceledException or TimeoutException or OperationCanceledException)
         {
             // Transport-level failure (DNS, connection refused, timeout,
             // gateway 5xx). Never present this as a bad-credentials message —
