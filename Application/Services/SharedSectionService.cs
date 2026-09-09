@@ -351,11 +351,14 @@ public class SharedSectionService : ISharedSectionService
             complete = !string.IsNullOrWhiteSpace(filledByName);
         }
 
+        var token = form.SectionAccessTokens.FirstOrDefault(t =>
+            t.SectionType == section && !t.RevokedAt.HasValue);
+
         return new SectionLinkStatus
         {
             Section = section,
-            HasActiveToken = form.SectionAccessTokens.Any(t =>
-                t.SectionType == section && !t.RevokedAt.HasValue),
+            HasActiveToken = token is not null,
+            RawToken = token?.RawToken,
             Complete = complete,
             FilledByName = filledByName
         };

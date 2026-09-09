@@ -63,10 +63,8 @@ public class SectionLinksController : Controller
 
         try
         {
-            var raw = await _sharedSectionService.GenerateSectionTokenAsync(
+            await _sharedSectionService.GenerateSectionTokenAsync(
                 form.Id, section, membershipNo, ct);
-            TempData["RawLink"] = BuildFillUrl(raw);
-            TempData["SectionLabel"] = SectionTitle(section);
         }
         catch (InvalidOperationException ex)
         {
@@ -88,10 +86,8 @@ public class SectionLinksController : Controller
 
         try
         {
-            var raw = await _sharedSectionService.RegenerateSectionTokenAsync(
+            await _sharedSectionService.RegenerateSectionTokenAsync(
                 form.Id, section, membershipNo, ct);
-            TempData["RawLink"] = BuildFillUrl(raw);
-            TempData["SectionLabel"] = SectionTitle(section);
         }
         catch (InvalidOperationException ex)
         {
@@ -101,16 +97,25 @@ public class SectionLinksController : Controller
         return RedirectToAction(nameof(Index), new { applicationId });
     }
 
-    private string BuildFillUrl(string raw) =>
-        Url.Action("Fill", "SharedSection", new { token = raw }, Request.Scheme)!;
-
-    private static string SectionTitle(SectionType section) => section switch
+    [HttpPost("Revoke")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Revoke(Guid applicationId, SectionType section, CancellationToken ct)
     {
-        SectionType.Guardian => "Guardian / Waliy",
-        SectionType.WitnessOne => "Witness 1",
-        SectionType.WitnessTwo => "Witness 2",
-        _ => section.ToString()
-    };
+        var form = await _formService.GetByIdAsync(applicationId, ct);
+        if (form is null || !IsParty(form, MembershipNo()))
+            return RedirectToAction("Index", "Applications");
+
+        try
+        {
+            await _sharedSectionService.RevokeSectionTokenAsync(form.Id, section, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index), new { applicationId });
+    }
 
     private static bool IsParty(MarriageApplicationForm form, string membershipNo) =>
         !string.IsNullOrWhiteSpace(membershipNo) &&

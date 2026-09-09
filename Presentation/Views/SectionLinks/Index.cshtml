@@ -1,8 +1,6 @@
 @model Presentation.ViewModels.SectionLinksViewModel
 @{
     ViewData["Title"] = "Signature Links";
-    var rawLink = TempData["RawLink"] as string;
-    var sectionLabel = TempData["SectionLabel"] as string;
     var error = TempData["Error"] as string;
     var signatureWaitActive = Model.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses;
 }
@@ -35,6 +33,7 @@
                     <th>Section</th>
                     <th>Status</th>
                     <th>Filled by</th>
+                    <th>Link</th>
                     <th></th>
                 </tr>
             </thead>
@@ -49,19 +48,39 @@
                         else { <span class="text-muted">No link</span> }
                     </td>
                     <td>@(item.FilledByName ?? "—")</td>
+                    <td>
+                        @if (signatureWaitActive && !string.IsNullOrWhiteSpace(item.RawToken))
+                        {
+                            var url = Url.Action("Fill", "SharedSection", new { token = item.RawToken }, Context.Request.Scheme)!;
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-sm" value="@url" readonly aria-label="Signature link" />
+                                <button type="button" class="btn btn-outline-primary" onclick="copyLink(this)">Copy</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
                     <td class="text-end">
                         @if (signatureWaitActive)
                         {
                             @if (item.HasActiveToken)
                             {
-                                <form asp-action="Regenerate" asp-controller="SectionLinks" method="post" class="d-inline">
+                                <form asp-action="Revoke" asp-controller="SectionLinks" method="post" class="d-inline">
+                                    <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
+                                    <input type="hidden" name="section" value="@item.Section" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Revoke</button>
+                                </form>
+                                <form asp-action="Regenerate" asp-controller="SectionLinks" method="post" class="d-inline ms-1">
                                     <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
                                     <input type="hidden" name="section" value="@item.Section" />
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-sm btn-outline-primary">Regenerate</button>
                                 </form>
                             }
-                            else
+                            else if (!item.Complete)
                             {
                                 <form asp-action="Generate" asp-controller="SectionLinks" method="post" class="d-inline">
                                     <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
@@ -76,27 +95,16 @@
             }
             </tbody>
         </table>
-
-        @if (!string.IsNullOrWhiteSpace(rawLink))
-        {
-            <div class="alert alert-info mt-3">
-                <strong>@sectionLabel link created — show this to them once:</strong>
-                <div class="input-group mt-2">
-                    <input id="rawLink" class="form-control" value="@rawLink" readonly />
-                    <button type="button" class="btn btn-outline-primary" onclick="copyRaw()">Copy</button>
-                </div>
-            </div>
-        }
     </div>
 </div>
 
 <script>
-    function copyRaw() {
-        const el = document.getElementById('rawLink');
-        el.select();
+    function copyLink(btn) {
+        const input = btn.closest('.input-group').querySelector('input');
+        input.select();
         document.execCommand('copy');
-        el.setAttribute('aria-live', 'polite');
-        alert('Link copied to clipboard.');
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
     }
 </script>
 
