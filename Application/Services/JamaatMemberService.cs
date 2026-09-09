@@ -91,7 +91,7 @@ public class JamaatMemberService : IJamaatMemberService
 
         maxAge ??= DefaultFreshnessWindow;
 
-        var stamp = member.ModifiedAt != default ? member.ModifiedAt : member.CreatedAt;
+        var stamp = member.ModifiedAt ?? member.CreatedAt;
 
         return DateTime.UtcNow - stamp < maxAge.Value;
     }
