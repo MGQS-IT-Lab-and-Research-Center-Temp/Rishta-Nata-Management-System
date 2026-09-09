@@ -10,10 +10,6 @@ namespace Application.Services;
 
 public class MemberLookupService : IMemberLookupService
 {
-    private const int MaxGatewayAttempts = 3;
-    private static readonly TimeSpan InitialRetryDelay = TimeSpan.FromMilliseconds(200);
-    private static readonly TimeSpan AttemptTimeout = TimeSpan.FromSeconds(5);
-
     private readonly IGatewayHandler _gateway;
     private readonly RishtanataDbContext _context;
     private readonly ILogger<MemberLookupService> _logger;
@@ -37,7 +33,7 @@ public class MemberLookupService : IMemberLookupService
 
         var no = chandaNo.Trim();
 
-        var member = await LookupGatewayWithBackoffAsync(no, cancellationToken);
+        var member = await LookupGatewayAsync(no, cancellationToken);
 
         member ??= await _context.JamaatMembers
             .AsNoTracking()
@@ -46,49 +42,31 @@ public class MemberLookupService : IMemberLookupService
         return member is null ? null : Map(member, no);
     }
 
-    private async Task<JamaatMember?> LookupGatewayWithBackoffAsync(
+    // Retry/backoff, the attempt and total-request timeouts, and the circuit
+    // breaker all live on the shared IGatewayHandler HttpClient
+    // (AddStandardResilienceHandler in Presentation/Extensions/DependencyInjection.cs),
+    // so a single call here is enough; no hand-rolled retry loop is stacked on top.
+    private async Task<JamaatMember?> LookupGatewayAsync(
         string no,
         CancellationToken cancellationToken)
     {
-        for (var attempt = 1; attempt <= MaxGatewayAttempts; attempt++)
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            try
-            {
-                using var attemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                attemptCts.CancelAfter(AttemptTimeout);
-
-                return await _gateway.GetMemberByMemberNoAsync(no, attemptCts.Token);
-            }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-            {
-                throw;
-            }
-            catch (Exception ex) when (attempt < MaxGatewayAttempts)
-            {
-                var delay = TimeSpan.FromMilliseconds(
-                    InitialRetryDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
-
-                _logger.LogWarning(
-                    ex,
-                    "Gateway member lookup failed for {ChandaNo} (attempt {Attempt}/{MaxAttempts}); retrying in {DelayMs}ms.",
-                    no, attempt, MaxGatewayAttempts, delay.TotalMilliseconds);
-
-                await Task.Delay(delay, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(
-                    ex,
-                    "Gateway member lookup failed for {ChandaNo} after {MaxAttempts} attempts; falling back to local cache.",
-                    no, MaxGatewayAttempts);
-
-                return null;
-            }
+            return await _gateway.GetMemberByMemberNoAsync(no, cancellationToken);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Gateway member lookup failed for {ChandaNo}; falling back to local cache.",
+                no);
 
-        return null;
+            return null;
+        }
     }
 
     private static MemberLookupDto Map(JamaatMember member, string chandaNo)

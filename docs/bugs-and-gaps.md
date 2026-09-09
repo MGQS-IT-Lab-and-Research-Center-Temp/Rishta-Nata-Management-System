@@ -47,6 +47,23 @@ file as items are fixed.
   retry on transient/5xx + circuit breaker + attempt/total timeouts) on the
   `IGatewayHandler` HttpClient in `Presentation/Extensions/DependencyInjection.cs`.
   Non-retryable credential codes (400/401/404) are not retried.
+- **Every Tajneed endpoint is behind the circuit breaker.** `GatewayHandler`
+  routes both Tajneed calls (POST `/token` and GET `/members/{no}`) through the
+  one `IGatewayHandler` HttpClient that is wrapped by
+  `AddStandardResilienceHandler`, so both are circuit-protected (nothing else
+  constructs an `HttpClient`). The wiring is now explicit in
+  `DependencyInjection.cs` (attempt timeout 10s, total timeout 30s, circuit
+  breaker sample 30s / min throughput 100 / ratio 0.1 / break 5s).
+  `GatewayHandler.GenerateToken` throws `HttpRequestException` on 5xx (matching
+  `GetMemberByMemberNoAsync`) so server failures trip the breaker and surface as
+  "the member service is temporarily unreachable" instead of a raw 5xx message;
+  400/401/404 stay credential-error tuples. `AuthService.LoginAsync` also catches
+  `Polly.CircuitBreaker.BrokenCircuitException`, so a login attempt while the
+  circuit is open yields the same friendly message instead of a 500.
+- **`MemberLookupService` double-retry removed (was #17).** The hand-rolled
+  3-attempt/5s-timeout loop in `LookupGatewayWithBackoffAsync` is gone; a single
+  `GetMemberByMemberNoAsync` call now relies on the resilience handler's retry,
+  timeouts and circuit breaker, keeping the local-cache fallback.
 - **Missing null guards fixed.** `RishtanataSecretaryService.GetById` /
   `GetMemberProfile` return `null` instead of throwing; `Approve`/`Reject`/
   `ReturnToPresident` return `false` on a miss. Controllers (`RishtanataSecretaryController`,
@@ -123,16 +140,20 @@ file as items are fixed.
 
 ## Design / decision
 
-3. **Login role provisioning — coherent (see note).** Roles are supplied by the
-   Tajneed login response (`Data.roles`), persisted as the comma-separated
-   `JamaatMember.Roles` string on the local row at every login (both the
-   returning-user fast path via `UpdateRolesAsync` and the fresh path via
-   upsert in `JamaatMemberService`), and issued as `ClaimTypes.Role` claims in
-   the auth cookie. There is intentionally no local role table; role strings are
-   matched case-insensitively against `Domain/Constants/RoleNames.cs`. Open
-   limitation: role claims are fixed at `SignInAsync` time — a member whose Tajneed
-   roles change will only get the updated roles on their next login (this also
-   refreshes the DB `Roles` string). No `IClaimsTransformation` refresh exists.
+3. **Login role provisioning — coherent (with mid-session refresh).** Roles are
+   supplied by the Tajneed login response (`Data.roles`), persisted as the
+   comma-separated `JamaatMember.Roles` string on the local row at every login
+   (both the returning-user fast path via `UpdateRolesAsync` and the fresh path
+   via upsert in `JamaatMemberService`), and issued as `ClaimTypes.Role` claims
+   in the auth cookie. There is intentionally no local role table; role strings
+   are matched case-insensitively against `Domain/Constants/RoleNames.cs`.
+   `Infrastructure/Authentication/RoleClaimsTransformation.cs` (an
+   `IClaimsTransformation` registered in
+   `Presentation/Extensions/DependencyInjection.cs`) re-syncs the
+   `ClaimTypes.Role` / `member_roles` claims from the DB `Roles` string on every
+   authenticated request, so role changes to the local row take effect
+   mid-session without a re-login. It is a mirror only — it never grants roles
+   not present on the member record, and it no-ops when claims already match.
 
 4. **Policy vs implementation divergence on claims — RESOLVED.**
    `docs/stage-authorization-policy.md` §3.2 requires a `membership_no` claim and
@@ -184,12 +205,16 @@ file as items are fixed.
     `*.csproj.user`). (The old `API/API.csproj.user` reference — the `API/` folder
     no longer exists — and the `API/appsettings.json` hardcoded password are gone.)
 
-12. **`AuditLog` does not inherit `AuditableEntity`**
-    (`Domain/Entities/AuditLog.cs`) — it rolls its own `Id`/`Timestamp` and lacks
-    `CreatedBy`/`ModifiedBy`.
+12. **`AuditLog` does not inherit `AuditableEntity` — RESOLVED.**
+    `Domain/Entities/AuditLog.cs` now inherits `AuditableEntity` and carries the
+    full audit trail (`CreatedAt`/`CreatedBy`/`ModifiedAt`/`ModifiedBy`); it no
+    longer rolls its own `Id`/`Timestamp` (no `Timestamp` remains anywhere in the
+    tree).
 
-13. **Nullable warnings** (not errors): `JamaatPresidentService.cs:97` (CS8602),
-    `MarriageFormStageRevertedEventHandler.cs:96` (CS8629).
+13. **Nullable warnings — RESOLVED.** The build is 0 warnings; the two cited
+    sites are clean: `JamaatPresidentService` no longer nullable-dereferences in
+    `MapToViewModel` and `MarriageFormStageRevertedEventHandler` uses `!` on the
+    HasValue-filtered `CreatedBy` values (no CS8629).
 
 14. **Additive migrations — applied to the local dev MySQL; live-deploy pending.**
     `20260908155154_AddDivorceEvidence` (4 × `varchar(500)`:
@@ -214,9 +239,3 @@ file as items are fixed.
     status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
     without the corresponding divorced flag. Harden server-side only if such data
     integrity becomes important.
-
-17. **`MemberLookupService` stacks its own retry atop the resilience handler.**
-    `MemberLookupService.LookupGatewayWithBackoffAsync` maintains its own 3-attempt
-    loop with a 5s attempt timeout on top of the standard resilience handler's
-    retries (worst case ~9 physical calls on a pathological lookup). Bounded and
-    idempotent, so not a correctness bug — a candidate follow-up to simplify.

@@ -50,7 +50,7 @@ public class GatewayHandler : IGatewayHandler
             return null;
         }
 
-        throw new HttpRequestException($"Member API returned" + $"{(int)response.StatusCode} ({response.StatusCode}).");
+        throw new HttpRequestException($"Member API returned {(int)response.StatusCode} ({response.StatusCode}).");
     }
 
     public async Task<(MemberApiLoginResponse?, string? ErrorMessage)> GenerateToken(TokenRequest tokenRequest)
@@ -73,7 +73,10 @@ public class GatewayHandler : IGatewayHandler
             Content = jsonContent
         };
 
-        var response = await _client.SendAsync(request);
+        // POST /token flows through the same resilient client as the member
+        // endpoint (AddStandardResilienceHandler), so the attempt timeout and
+        // circuit breaker apply here too.
+        var response = await _client.SendAsync(request, CancellationToken.None);
 
         var errorContent = await response.Content.ReadAsStringAsync();
 
@@ -85,11 +88,19 @@ public class GatewayHandler : IGatewayHandler
             return (null, errorMessage);
         }
 
+        // Server-side failures (5xx) indicate the Tajneed service itself is
+        // unhealthy => surface as an HttpRequestException so the circuit breaker
+        // counts them and AuthService maps them to "service temporarily
+        // unreachable". Other non-success codes stay as specific error tuples.
+        if ((int)response.StatusCode >= 500)
+        {
+            throw new HttpRequestException($"Token API returned {(int)response.StatusCode} ({response.StatusCode}).");
+        }
+
         if (!response.IsSuccessStatusCode)
         {
             return (null, $"Token API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {errorContent}");
         }
-
 
         var content = await response.Content.ReadAsStringAsync();
         var successData = JsonConvert.DeserializeObject<MemberApiLoginResponse>(content);

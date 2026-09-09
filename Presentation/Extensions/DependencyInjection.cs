@@ -1,7 +1,10 @@
 using Application.Interfaces.Gateway;
 using Domain.Constants;
 using Gateway.Implementation;
+using Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Http.Resilience;
 using System.Security.Claims;
 using Presentation.Services;
 
@@ -12,10 +15,33 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
-        // Timeouts are governed by the standard resilience pipeline (attempt and
-        // total request timeouts), so no client.Timeout is set here.
+
+        // Backs the claims in the auth cookie with the DB Roles value on every
+        // authenticated request so role changes take effect mid-session (#3).
+        services.AddScoped<IClaimsTransformation, RoleClaimsTransformation>();
+
+        // The standard resilience pipeline (circuit breaker + retry + rate
+        // limiter + attempt/total timeouts) wraps the single typed client that
+        // GatewayHandler uses for EVERY Tajneed endpoint (POST /token and
+        // GET /members/{no}), so all Tajneed traffic is circuit-protected.
+        // Timeouts are governed by this pipeline, not client.Timeout.
         services.AddHttpClient<IGatewayHandler, GatewayHandler>()
-            .AddStandardResilienceHandler();
+            .AddStandardResilienceHandler(options =>
+            {
+                options.TotalRequestTimeout = new HttpTimeoutStrategyOptions
+                {
+                    Timeout = TimeSpan.FromSeconds(30)
+                };
+                options.AttemptTimeout = new HttpTimeoutStrategyOptions
+                {
+                    Timeout = TimeSpan.FromSeconds(10)
+                };
+                options.Retry.MaxRetryAttempts = 3;
+                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+                options.CircuitBreaker.MinimumThroughput = 100;
+                options.CircuitBreaker.FailureRatio = 0.1;
+                options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(5);
+            });
         services.AddScoped<IDashboardRedirector, DashboardRedirector>();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

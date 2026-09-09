@@ -210,9 +210,15 @@ resubmitted implicitly.
 7.3 **UI/API parity.** `MarriageApplicationFormDetailDto.CanCurrentUserEdit`
 (C3) calls the same `IStageAuthorizationService` logic — never a re-implementation.
 
-7.4 **Stale roles.** Role claims are minted at login. If office-holders change
-mid-workflow, the next denial surfaces it; operators re-authenticate. (If this
-proves painful, add a role-refresh hook later — out of scope for v1.)
+7.4 **Stale roles.** Role claims are minted at login, but
+`Infrastructure/Authentication/RoleClaimsTransformation.cs` (an
+`IClaimsTransformation`, registered in `Presentation/Extensions/DependencyInjection.cs`)
+re-syncs the `ClaimTypes.Role` / `member_roles` claims from the member row's
+`Roles` string on every authenticated request, so office-holder changes on the
+local record take effect mid-session. It mirrors the record only — it is not an
+authorization decision and never grants unrecorded roles. (Note: the source of
+truth for section-level decisions remains `IStageAuthorizationService`, which
+reads the DB `Roles` string directly.)
 
 7.5 **Auditability.** Every deny decision should be loggable with
 `userId, applicationFormId, targetStage, reason` so support can diagnose

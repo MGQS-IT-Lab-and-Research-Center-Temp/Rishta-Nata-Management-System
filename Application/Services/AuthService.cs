@@ -88,7 +88,8 @@ public class AuthService : IAuthService
         }
         catch (Exception ex) when (
             ex is HttpRequestException or TaskCanceledException or TimeoutException
-            or OperationCanceledException or Polly.Timeout.TimeoutRejectedException)
+            or OperationCanceledException or Polly.Timeout.TimeoutRejectedException
+            or Polly.CircuitBreaker.BrokenCircuitException)
         {
             var sanitizedChandaNo = (chandaNo ?? string.Empty)
                 .Replace("\r", string.Empty)
