@@ -57,10 +57,19 @@ public class AuthService : IAuthService
             if (existingMember is not null &&
                 _jamaatMemberService.IsProfileFresh(existingMember))
             {
-                var updatedMember = await _jamaatMemberService
-                    .UpdateRolesAsync(chandaNo, roles, CancellationToken.None);
+                try
+                {
+                    var updatedMember = await _jamaatMemberService
+                        .UpdateRolesAsync(chandaNo, roles, CancellationToken.None);
 
-                return AuthResult.Success(updatedMember, roles);
+                    return AuthResult.Success(updatedMember, roles);
+                }
+                catch (InvalidOperationException)
+                {
+                    // The local row was deleted between the lookup and the role update
+                    // (a race). Fall through to the slow path, which re-fetches from
+                    // Tajneed and creates a fresh local row.
+                }
             }
 
             // First-time / stale path: fetch the profile from Tajneed and upsert.
