@@ -11,7 +11,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMemoryCache();
         services.AddHttpContextAccessor();
         // Timeouts are governed by the standard resilience pipeline (attempt and
         // total request timeouts), so no client.Timeout is set here.

@@ -87,7 +87,8 @@ public class AuthService : IAuthService
             return AuthResult.Success(localMember, roles);
         }
         catch (Exception ex) when (
-            ex is HttpRequestException or TaskCanceledException or TimeoutException or OperationCanceledException)
+            ex is HttpRequestException or TaskCanceledException or TimeoutException
+            or OperationCanceledException or Polly.Timeout.TimeoutRejectedException)
         {
             var sanitizedChandaNo = (chandaNo ?? string.Empty)
                 .Replace("\r", string.Empty)
