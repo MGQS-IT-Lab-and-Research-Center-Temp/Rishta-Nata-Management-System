@@ -82,6 +82,13 @@ file as items are fixed.
   returns 400 on invalid/absent `targetStage` or empty reason;
   `RevertStageRequest.TargetStage` is now nullable `[Required]` so a missing
   value no longer silently binds to `0`.
+- **Gateway lookup survives null `dateOfBirth`.** `GatewayHandler.DeserializeMember`
+  deserialized the Tajneed member payload with default Newtonsoft settings, so a
+  `"dateOfBirth": null` (member with no recorded DOB) made `ToObject<JamaatMember>`
+  throw "Null object cannot be converted to a value type", which
+  `MemberLookupService` swallowed and logged as "falling back to local cache".
+  `DeserializeMember` now uses `NullValueHandling.Ignore`, leaving `DateOfBirth`
+  at `default(DateTime)`, which `MemberLookupService.Map` already maps to `null`.
 - **Hardcoded MySQL password removed.** `Presentation/appsettings.json` no longer
   carries a plaintext password (was `Password=yuzzypizzy2007?`). Connection is via
   `.env` / user-secrets.

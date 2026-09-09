@@ -135,6 +135,14 @@ public class GatewayHandler : IGatewayHandler
             token = data;
         }
 
-        return token.ToObject<JamaatMember>();
+        // The Tajneed member payload may send null for non-nullable value-type
+        // fields (e.g. dateOfBirth for a member with no recorded DOB). With the
+        // default settings Newtonsoft throws "Null object cannot be converted
+        // to a value type". Ignoring nulls leaves such members at their default,
+        // which downstream code already treats as "unknown" (DateOfBirth.Year > 1).
+        var serializer = JsonSerializer.Create(
+            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+        return token.ToObject<JamaatMember>(serializer);
     }
 }
