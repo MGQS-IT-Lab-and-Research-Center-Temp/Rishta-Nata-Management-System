@@ -9,7 +9,7 @@
     <p>Start your Nikah application. You can apply as the groom or the bride — your details are pre-filled from your membership record.</p>
 </div>
 
-<form asp-controller="MarriageApplication" asp-action="Create" method="post">
+<form asp-controller="MarriageApplication" asp-action="Create" method="post" id="appForm">
     @Html.AntiForgeryToken()
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -128,6 +128,7 @@
                     </div>
                 </div>
                 <div id="partnerNotFound" class="alert alert-warning d-none mt-3">We couldn't find that membership number. Please check it and try again.</div>
+                <div id="partnerBlocked" class="alert alert-danger d-none mt-3"></div>
             </div>
         </div>
     }
@@ -253,6 +254,7 @@
                     </div>
                 </div>
                 <div id="partnerNotFound" class="alert alert-warning d-none mt-3">We couldn't find that membership number. Please check it and try again.</div>
+                <div id="partnerBlocked" class="alert alert-danger d-none mt-3"></div>
             </div>
         </div>
     }
@@ -319,36 +321,75 @@
             if (brideRadio) { brideRadio.addEventListener('change', updateLayout); }
             updateLayout();
 
+            var partnerAllowed = false;
+            var appForm = document.getElementById('appForm');
+            var submitBtn = document.querySelector('button[type="submit"]');
+            if (submitBtn) { submitBtn.disabled = true; }
+
+            function refreshSubmit() {
+                if (!submitBtn) { return; }
+                var errorEls = document.querySelectorAll('.input-validation-error, .field-validation-error, .validation-summary-errors');
+                var anyErrorVisible = false;
+                for (var i = 0; i < errorEls.length; i++) {
+                    if (errorEls[i].offsetParent !== null) { anyErrorVisible = true; break; }
+                }
+                var clientValid = true;
+                if (appForm && window.jQuery && jQuery.fn.validate) {
+                    clientValid = jQuery(appForm).validate().checkForm();
+                }
+                submitBtn.disabled = !(partnerAllowed && !anyErrorVisible && clientValid);
+            }
+
+            function setPartnerAllowed(allowed) {
+                partnerAllowed = allowed;
+                refreshSubmit();
+            }
+
+            if (appForm) {
+                appForm.addEventListener('input', refreshSubmit);
+                appForm.addEventListener('change', refreshSubmit);
+            }
+
             function wirePartnerLookup(membershipId) {
                 var input = document.getElementById(membershipId);
                 if (!input) { return; }
-                var submit = document.querySelector('button[type="submit"]');
-                if (submit) { submit.disabled = true; }
                 input.addEventListener('change', function () {
                     var chandaNo = input.value.trim();
                     var preview = document.getElementById('partnerPreview');
                     var notFound = document.getElementById('partnerNotFound');
+                    var blocked = document.getElementById('partnerBlocked');
+                    setPartnerAllowed(false);
                     if (!chandaNo) { return; }
-                    fetch('/api/members/lookup/' + encodeURIComponent(chandaNo))
+                    var partnerIsGroom = !(groomRadio && groomRadio.checked);
+                    fetch('/api/members/partner-eligibility/' + encodeURIComponent(chandaNo) + '?partnerIsGroom=' + partnerIsGroom)
                         .then(function (r) { return r.ok ? r.json() : null; })
                         .then(function (m) {
                             if (!m) {
                                 if (preview) { preview.classList.add('d-none'); }
+                                if (blocked) { blocked.classList.add('d-none'); }
                                 if (notFound) { notFound.classList.remove('d-none'); }
-                                if (submit) { submit.disabled = true; }
+                                setPartnerAllowed(false);
+                                return;
+                            }
+                            if (m.blocked) {
+                                if (preview) { preview.classList.add('d-none'); }
+                                if (notFound) { notFound.classList.add('d-none'); }
+                                if (blocked) { blocked.textContent = m.message || ''; blocked.classList.remove('d-none'); }
+                                setPartnerAllowed(false);
                                 return;
                             }
                             if (notFound) { notFound.classList.add('d-none'); }
+                            if (blocked) { blocked.classList.add('d-none'); }
                             if (preview) { preview.classList.remove('d-none'); }
                             function set(id, v) { var el = document.getElementById(id); if (el) { el.textContent = v || ''; } }
-                            set('pvName', m.fullName);
-                            set('pvDob', m.dateOfBirth ? m.dateOfBirth.slice(0, 10) : '');
-                            set('pvAddress', m.address);
-                            set('pvPhone', m.phoneNo);
-                            if (submit) { submit.disabled = false; }
+                            set('pvName', m.member.fullName);
+                            set('pvDob', m.member.dateOfBirth ? m.member.dateOfBirth.slice(0, 10) : '');
+                            set('pvAddress', m.member.address);
+                            set('pvPhone', m.member.phoneNo);
+                            setPartnerAllowed(true);
                         })
                         .catch(function () {
-                            if (submit) { submit.disabled = true; }
+                            setPartnerAllowed(false);
                         });
                 });
             }
