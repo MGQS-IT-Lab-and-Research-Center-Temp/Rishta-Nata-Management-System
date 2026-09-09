@@ -15,10 +15,14 @@ namespace Presentation.Controllers;
 public class SharedSectionController : Controller
 {
     private readonly ISharedSectionService _sharedSectionService;
+    private readonly IMemberLookupService _memberLookup;
 
-    public SharedSectionController(ISharedSectionService sharedSectionService)
+    public SharedSectionController(
+        ISharedSectionService sharedSectionService,
+        IMemberLookupService memberLookup)
     {
         _sharedSectionService = sharedSectionService;
+        _memberLookup = memberLookup;
     }
 
     [HttpGet("Fill/{token}")]
@@ -66,6 +70,29 @@ public class SharedSectionController : Controller
 
         TempData["StageAdvanced"] = result.StageAdvanced.ToString();
         return View("ThankYou");
+    }
+
+    [HttpGet("MemberLookup")]
+    public async Task<IActionResult> MemberLookup(string token, string membershipNo, CancellationToken ct)
+    {
+        var status = await _sharedSectionService.ValidateTokenAsync(token, ct);
+        if (!status.IsValid)
+            return NotFound();
+
+        if (string.IsNullOrWhiteSpace(membershipNo))
+            return NotFound();
+
+        var member = await _memberLookup.LookupAsync(membershipNo, ct);
+        if (member is null)
+            return NotFound();
+
+        return Ok(new
+        {
+            chandaNo = member.ChandaNo,
+            fullName = member.FullName,
+            address = member.Address,
+            phoneNo = member.PhoneNo
+        });
     }
 
     [HttpGet("ThankYou")]
