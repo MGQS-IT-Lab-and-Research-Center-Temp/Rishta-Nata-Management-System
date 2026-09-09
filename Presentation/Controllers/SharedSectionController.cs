@@ -73,16 +73,16 @@ public class SharedSectionController : Controller
     }
 
     [HttpGet("MemberLookup")]
-    public async Task<IActionResult> MemberLookup(string token, string membershipNo, CancellationToken ct)
+    public async Task<IActionResult> MemberLookup(string token, string chandaNo, CancellationToken ct)
     {
         var status = await _sharedSectionService.ValidateTokenAsync(token, ct);
         if (!status.IsValid)
             return NotFound();
 
-        if (string.IsNullOrWhiteSpace(membershipNo))
+        if (string.IsNullOrWhiteSpace(chandaNo))
             return NotFound();
 
-        var member = await _memberLookup.LookupAsync(membershipNo, ct);
+        var member = await _memberLookup.LookupAsync(chandaNo, ct);
         if (member is null)
             return NotFound();
 
