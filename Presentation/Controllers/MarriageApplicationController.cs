@@ -9,6 +9,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Constants;
 using Presentation.Mapping;
 using Presentation.ViewModels;
 
@@ -118,7 +119,7 @@ public class MarriageApplicationController : Controller
 
         if (string.Equals(starterMembershipNo, partnerMembershipNo, StringComparison.OrdinalIgnoreCase))
         {
-            ModelState.AddModelError(string.Empty, "Your partner cannot be yourself.");
+            ModelState.AddModelError($"{partnerPrefix}.MembershipNo", PartnerMessages.CannotBeYourself);
             return View(model);
         }
 
@@ -129,7 +130,7 @@ public class MarriageApplicationController : Controller
 
         if (!eligibility.IsAllowed)
         {
-            ModelState.AddModelError(string.Empty, eligibility.Message);
+            ModelState.AddModelError($"{partnerPrefix}.MembershipNo", eligibility.Message);
             return View(model);
         }
 
@@ -145,7 +146,7 @@ public class MarriageApplicationController : Controller
         if (!string.IsNullOrWhiteSpace(currentMembershipNo) &&
             string.Equals(partner.ChandaNo, currentMembershipNo, StringComparison.OrdinalIgnoreCase))
         {
-            ModelState.AddModelError(string.Empty, "Your partner cannot be yourself.");
+            ModelState.AddModelError($"{partnerPrefix}.MembershipNo", PartnerMessages.CannotBeYourself);
             return View(model);
         }
 
