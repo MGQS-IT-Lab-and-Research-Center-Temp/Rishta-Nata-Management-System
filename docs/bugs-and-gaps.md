@@ -134,13 +134,15 @@ file as items are fixed.
    roles change will only get the updated roles on their next login (this also
    refreshes the DB `Roles` string). No `IClaimsTransformation` refresh exists.
 
-4. **Policy vs implementation divergence on claims.**
+4. **Policy vs implementation divergence on claims — RESOLVED.**
    `docs/stage-authorization-policy.md` §3.2 requires a `membership_no` claim and
    `member_roles` claims and says authorization must read *only* the
-   `membership_no` claim. The implementation issues `ClaimTypes.NameIdentifier`
-   (member Guid), `ClaimTypes.Name` (ChandaNo), `ClaimTypes.Role`, and
-   `StageAuthorizationService` resolves the member by `JamaatMember.Id == userId`
-   (Guid), not ChandaNo. Decide which is authoritative and align the other.
+   `membership_no` claim. `CookieAuthenticationService` issues `membership_no`
+   (ChandaNo, from the login response), `member_roles` (one per role) alongside
+   `ClaimTypes.Role`, plus `ClaimTypes.NameIdentifier` (member Guid) and
+   `ClaimTypes.Name` (ChandaNo). `StageAuthorizationService.ResolveMemberAsync`
+   reads the ChandaNo and resolves by `JamaatMember.ChandaNo`, never by Guid.
+   The policy is now authoritative and the implementation aligns.
 
 ## Security
 
@@ -149,9 +151,13 @@ file as items are fixed.
 
 ## Minor
 
-7. **Witness matching loads the whole table.**
-   `StageAuthorizationService.MatchesWitnessSlotAsync` fetches *all* `JamaatMembers`
-   into memory and counts matches client-side.
+7. **Witness matching — improved; remaining match uses a phone-filtered set.**
+   `StageAuthorizationService.MatchesWitnessSlotAsync` prefers the recorded
+   `Witness{n}MembershipNo` exact ChandaNo match (policy §4.2 Kind A) when one is
+   captured. Only when no ChandaNo is recorded does it fall back to the
+   name+telephone match, and that fallback no longer loads the whole table:
+   `CountAmbiguousWitnessMatchesAsync` filters `JamaatMembers` server-side by
+   telephone first and counts name matches on the phone-filtered result.
 
 8. **Design-time factory requires `.env`.** `Infrastructure/Persistence/RishtanataDbContextFactory.cs`
    reads `ConnectionStrings__DefaultConnection` from the environment / `.env`
@@ -172,10 +178,11 @@ file as items are fixed.
     reconciled (item 2). `JamaatMember` still carries leftover fields
     (`ResetToken`, `ResetTokenExpiry`, `IsSystemDefault`, `NewRole`).
 
-11. **Stray committed file.** Root `cls` is an accidental `git branch -a` dump
-    and `Presentation/Presentation.csproj.user` are committed but should be
-    gitignored. (The old `API/API.csproj.user` reference — the `API/` folder no
-    longer exists — and the `API/appsettings.json` hardcoded password are gone.)
+11. **Stray committed file — CLEANED.** Root `cls` (an accidental `git branch -a`
+    dump) and `Presentation/Presentation.csproj.user` were committed but should be
+    gitignored; both are now untracked and covered by `.gitignore` (`/cls`,
+    `*.csproj.user`). (The old `API/API.csproj.user` reference — the `API/` folder
+    no longer exists — and the `API/appsettings.json` hardcoded password are gone.)
 
 12. **`AuditLog` does not inherit `AuditableEntity`**
     (`Domain/Entities/AuditLog.cs`) — it rolls its own `Id`/`Timestamp` and lacks
@@ -184,16 +191,16 @@ file as items are fixed.
 13. **Nullable warnings** (not errors): `JamaatPresidentService.cs:97` (CS8602),
     `MarriageFormStageRevertedEventHandler.cs:96` (CS8629).
 
-14. **Additive migration not yet applied to a live MySQL.**
+14. **Additive migrations — applied to the local dev MySQL; live-deploy pending.**
     `20260908155154_AddDivorceEvidence` (4 × `varchar(500)`:
     `NikahApplications.BrideDivorceEvidence`/`BridegroomDivorceEvidence`,
     `NikahBrides.BrideDivorceEvidence`, `NikahGrooms.BridegroomDivorceEvidence`)
-    predates any live-DB apply. Until applied, the new divorce-evidence fields are
-    all empty and the eligible-divorce path will store nothing. Apply via
-    `dotnet ef database update` (or equivalent SQL) against MySQL when
-    appropriate — do not hand-edit `InitialCreate`. Also still awaiting live-DB
-    apply: `20260909110147_MakeAuditableModifiedAtNullable` (makes the 17
-    auditable `ModifiedAt` columns nullable).
+    and `20260909110147_MakeAuditableModifiedAtNullable` (makes the 17 auditable
+    `ModifiedAt` columns nullable) are both applied to the local `rishtanatahdb`
+    via `dotnet ef database update` (`AddDivorceEvidence` was already applied
+    earlier). Any *other* MySQL (e.g. a live server) still needs both applied
+    with the same command or equivalent SQL — do not hand-edit `InitialCreate`. 
+    The new divorce-evidence fields will remain empty on an un-upgraded deploy.
 
 15. **Eligibility denies reuse `WrongStage` deny reason.**
     `BrideSectionService`/`BridegroomSectionService` return

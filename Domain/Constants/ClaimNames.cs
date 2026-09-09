@@ -12,4 +12,8 @@ public static class ClaimNames
     // The member's display name (e.g. "Azeem Olanrewaju"), used by layouts to greet
     // the user by their real name instead of a hardcoded placeholder.
     public const string FullName = "FullName";
+
+    // One claim instance per role string, as the policy §3.2 requires authorization
+    // to read roles from (docs/stage-authorization-policy.md).
+    public const string MemberRole = "member_roles";
 }

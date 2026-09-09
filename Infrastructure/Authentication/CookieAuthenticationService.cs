@@ -50,6 +50,7 @@ public class CookieAuthenticationService : ICookieAuthenticationService
             .Distinct(StringComparer.OrdinalIgnoreCase))
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim(ClaimNames.MemberRole, role));
         }
 
         return claims;

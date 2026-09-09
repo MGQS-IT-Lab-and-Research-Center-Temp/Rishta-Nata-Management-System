@@ -490,3 +490,7 @@ docs/superpowers/
 
 # Git worktrees
 .worktrees/
+# Stray committed files (see docs/bugs-and-gaps.md #11)
+/cls
+*.csproj.user
+

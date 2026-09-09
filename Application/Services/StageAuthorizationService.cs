@@ -212,12 +212,25 @@ public class StageAuthorizationService : IStageAuthorizationService
     {
         var memberFullName = BuildFullName(member.FirstName, member.Surname);
 
-        foreach (var (name, tel, position) in new[]
+        foreach (var (membershipNo, name, tel, position) in new[]
                  {
-                     (form.WitnessOneName, form.WitnessOneTel, 1),
-                     (form.WitnessTwoName, form.WitnessTwoTel, 2)
+                     (form.WitnessOneMembershipNo, form.WitnessOneName, form.WitnessOneTel, 1),
+                     (form.WitnessTwoMembershipNo, form.WitnessTwoName, form.WitnessTwoTel, 2)
                  })
         {
+            // Preferred (Kind A): witness ChandaNo was captured on the section—
+            // match exactly like Kind A; the name/telephone fallback never applies.
+            if (!string.IsNullOrWhiteSpace(membershipNo))
+            {
+                if (MembershipNumbersMatch(member.ChandaNo, membershipNo))
+                {
+                    return StageAuthorizationResult.Allow();
+                }
+
+                continue;
+            }
+
+            // Fallback (Kind B): no ChandaNo recorded — match on name AND telephone.
             if (!NamesAndPhoneMatch(memberFullName, member.PhoneNo, name, tel))
             {
                 continue;
