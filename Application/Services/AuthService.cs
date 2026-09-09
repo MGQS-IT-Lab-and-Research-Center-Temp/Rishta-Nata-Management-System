@@ -47,14 +47,29 @@ public class AuthService : IAuthService
                         : tokenResponse.Message);
             }
 
+            var roles = tokenResponse.Data?.roles ?? Array.Empty<string>();
+
+            // Returning-user fast path: reuse a fresh local profile and only refresh
+            // roles (which come from the token), avoiding a Tajneed member fetch.
+            var existingMember = await _jamaatMemberService
+                .GetByChandaNoAsync(chandaNo, CancellationToken.None);
+
+            if (existingMember is not null &&
+                _jamaatMemberService.IsProfileFresh(existingMember))
+            {
+                var updatedMember = await _jamaatMemberService
+                    .UpdateRolesAsync(chandaNo, roles, CancellationToken.None);
+
+                return AuthResult.Success(updatedMember, roles);
+            }
+
+            // First-time / stale path: fetch the profile from Tajneed and upsert.
             var jamaatMember = await _gatewayHandler.GetMemberByMemberNoAsync(chandaNo);
 
             if (jamaatMember is null)
             {
                 return AuthResult.Failure("We could not find your member account.");
             }
-
-            var roles = tokenResponse.Data?.roles ?? Array.Empty<string>();
 
             jamaatMember.Roles = string.Join(",", roles);
 
@@ -65,9 +80,6 @@ public class AuthService : IAuthService
         catch (Exception ex) when (
             ex is HttpRequestException or TaskCanceledException or TimeoutException or OperationCanceledException)
         {
-            // Transport-level failure (DNS, connection refused, timeout,
-            // gateway 5xx). Never present this as a bad-credentials message —
-            // surface a clear "service unreachable" hint instead.
             var sanitizedChandaNo = (chandaNo ?? string.Empty)
                 .Replace("\r", string.Empty)
                 .Replace("\n", string.Empty);
