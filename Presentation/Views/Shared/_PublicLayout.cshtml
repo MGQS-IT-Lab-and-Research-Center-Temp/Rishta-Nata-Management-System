@@ -1,0 +1,132 @@
+@{
+    string? title = ViewData["Title"] as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(string.IsNullOrWhiteSpace(title) ? "Rishtanata" : title + " - Rishtanata")</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+
+    <style>
+        /* Public (anonymous) layout — standalone pages, no sidebar. */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            font-family: var(--font-body);
+            color: var(--ink);
+        }
+
+        .public-header {
+            background: linear-gradient(135deg, var(--green-800), var(--green-600));
+            color: #fff;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .public-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .public-brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            flex-shrink: 0;
+        }
+
+        .public-brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .public-brand-name {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            line-height: 1.1;
+        }
+
+        .public-brand-subtitle {
+            color: var(--green-100);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .public-main {
+            flex: 1;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 28px 16px 32px;
+        }
+
+        .public-footer {
+            padding: 16px 22px;
+            background: var(--green-950);
+            color: var(--green-200);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .public-footer a {
+            color: inherit;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="public-header">
+        <a class="public-brand" asp-controller="Home" asp-action="Index">
+            <div class="public-brand-icon">
+                <img src="~/img/logo.png" alt="Rishtanata logo" />
+            </div>
+            <div>
+                <div class="public-brand-name">Rishtanata</div>
+                <div class="public-brand-subtitle">Management System</div>
+            </div>
+        </a>
+    </header>
+
+    <main class="public-main">
+        @RenderBody()
+    </main>
+
+    <footer class="public-footer">
+        &copy; @DateTime.Now.Year Rishtanata Management System. All rights reserved.
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
