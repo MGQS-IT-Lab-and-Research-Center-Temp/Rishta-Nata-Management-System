@@ -232,8 +232,9 @@ reads the DB `Roles` string directly.)
   identity is holder-of-link. Their details are self-attested through the
   anonymous `SharedSection/Fill/{token}` flow (see `application-workflow.md`
   §6); member lookup is an optional convenience prefill, not a gate. Tokens are
-  stored hashed (SHA-256), one active token per (form, section), revocable by
-  regeneration.
+  stored as a SHA-256 hash (the validation path) plus the raw value (so the
+  active link can be re-displayed), one active token per (form, section),
+  revocable by an explicit Revoke or by regeneration.
 - **Q2 — Is `AwaitingWitnesses` one stage or two?** Tracked separately as
   Ticket F1; this policy is agnostic — whichever way it splits, each resulting
   stage gets its own row in the §4 tables.

@@ -132,15 +132,19 @@ Guardian/witness details are collected **anonymously** via revocable share
 links, stage-gated to `AwaitingWitnesses`:
 
 - `SectionLinks/Index/{applicationId}` (authenticated, party-only) — the
-  bride/groom mints and regenerates links per section (Guardian / Witness 1 /
-  Witness 2). The raw link is shown once and stored only as a SHA-256 hash.
+  bride/groom mints, revokes and regenerates links per section (Guardian /
+  Witness 1 / Witness 2). The raw token is stored (alongside its SHA-256 hash,
+  which stays the validation path) so the active link can be re-displayed on
+  the page until revoked.
 - `SharedSection/Fill/{token}` (fully anonymous) — validates the token, then
   upserts the guardian/witness section row + the flat mirror columns. Once all
   three sections are recorded the form auto-advances `AwaitingWitnesses` →
   `AwaitingImamVerification`.
-- A "I am a member" checkbox prefills name/address/phone from
-  `MemberLookupService` (`GET /api/members/lookup/{chandaNo}` → Tajneed gateway
-  with local-cache fallback), overriding only blank fields.
+- The first form field asks whether the signer is a Jama'at member. If yes, the
+  membership number is entered and name/address/phone auto-load from the
+  token-gated `SharedSection/MemberLookup` endpoint (→ Tajneed gateway with
+  local-cache fallback); fields stay editable. The server stamps the signature
+  date at submit.
 
 Legacy authenticated flows (`BrideGuardian/Create/{marriageApplicationId}`,
 `Witness/Create/{marriageApplicationId}`) remain wired but are now superseded.
