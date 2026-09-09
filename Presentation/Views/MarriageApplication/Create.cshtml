@@ -323,7 +323,7 @@
 
             var partnerAllowed = false;
             var appForm = document.getElementById('appForm');
-            var submitBtn = document.querySelector('button[type="submit"]');
+            var submitBtn = appForm ? appForm.querySelector('button[type="submit"]') : null;
             if (submitBtn) { submitBtn.disabled = true; }
 
             function refreshSubmit() {
