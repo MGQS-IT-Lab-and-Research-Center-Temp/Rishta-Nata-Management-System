@@ -142,6 +142,7 @@ public class SharedSectionService : ISharedSectionService
                 MarriageApplicationFormId = applicationFormId,
                 SectionType = section,
                 TokenHash = HashToken(raw),
+                RawToken = raw,
                 CreatedByMembershipNo = createdByMembershipNo,
                 RevokedAt = null,
                 CreatedAt = DateTime.UtcNow,
@@ -171,12 +172,35 @@ public class SharedSectionService : ISharedSectionService
 
         var raw = NewToken();
         row.TokenHash = HashToken(raw);
+        row.RawToken = raw;
         row.CreatedByMembershipNo = createdByMembershipNo;
         row.RevokedAt = null;
         row.ModifiedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
         return raw;
+    }
+
+    public async Task RevokeSectionTokenAsync(
+        Guid applicationFormId, SectionType section,
+        CancellationToken cancellationToken = default)
+    {
+        var row = await _context.SectionAccessTokens
+            .FirstOrDefaultAsync(
+                x => x.MarriageApplicationFormId == applicationFormId && x.SectionType == section,
+                cancellationToken)
+            ?? throw new InvalidOperationException(
+                $"No link exists for section {section}.");
+
+        if (row.RevokedAt.HasValue)
+            return;
+
+        row.RevokedAt = DateTime.UtcNow;
+        row.RawToken = string.Empty;
+        row.TokenHash = string.Empty;
+        row.ModifiedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     // ==================================================================

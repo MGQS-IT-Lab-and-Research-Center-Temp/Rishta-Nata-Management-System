@@ -73,8 +73,8 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.ReferenceNumber).HasMaxLength(50));
 
         // One revocable share-link token per form+section. Regeneration
-        // overwrites TokenHash in place, so at most one row ever exists per
-        // (MarriageApplicationFormId, SectionType).
+        // overwrites TokenHash and RawToken in place, so at most one row ever
+        // exists per (MarriageApplicationFormId, SectionType).
         modelBuilder.Entity<SectionAccessToken>(e =>
         {
             e.HasIndex(x => new { x.MarriageApplicationFormId, x.SectionType })
@@ -82,6 +82,7 @@ public class RishtanataDbContext : DbContext
 
             e.Property(x => x.TokenHash).HasMaxLength(64);
             e.Property(x => x.CreatedByMembershipNo).HasMaxLength(50);
+            e.Property(x => x.RawToken).HasMaxLength(200);
 
             e.HasOne(x => x.MarriageApplicationForm)
                 .WithMany(x => x.SectionAccessTokens)
