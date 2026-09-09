@@ -68,8 +68,12 @@ public class AuthService : IAuthService
             // Transport-level failure (DNS, connection refused, timeout,
             // gateway 5xx). Never present this as a bad-credentials message —
             // surface a clear "service unreachable" hint instead.
+            var sanitizedChandaNo = (chandaNo ?? string.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\n", string.Empty);
+
             _logger.LogError(ex,
-                "Tajneed service unreachable during login for ChandaNo {ChandaNo}.", chandaNo);
+                "Tajneed service unreachable during login for ChandaNo {ChandaNo}.", sanitizedChandaNo);
 
             return AuthResult.Failure(
                 "The member service is temporarily unreachable. Please try again in a few moments.");
