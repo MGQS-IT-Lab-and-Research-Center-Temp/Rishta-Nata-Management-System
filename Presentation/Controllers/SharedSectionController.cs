@@ -60,7 +60,7 @@ public class SharedSectionController : Controller
             RelationToBride = model.RelationToBride ?? string.Empty,
             IsMember = model.IsMember,
             MemberMembershipNo = model.MemberMembershipNo,
-            SignatureDate = model.SignatureDate ?? DateTime.UtcNow
+            SignatureDate = DateTime.UtcNow
         };
 
         var result = await _sharedSectionService.SubmitSectionAsync(model.Token, data, ct);

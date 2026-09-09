@@ -18,5 +18,5 @@ public class SectionFillViewModel
     public string? RelationToBride { get; set; }
     public bool IsMember { get; set; }
     public string? MemberMembershipNo { get; set; }
-    public DateTime? SignatureDate { get; set; }
+
 }
