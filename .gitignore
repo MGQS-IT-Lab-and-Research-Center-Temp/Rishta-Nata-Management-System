@@ -487,3 +487,6 @@ Presentation/appsettings.Development.json
 
 # Superpowers (brainstorming/planning) artifacts
 docs/superpowers/
+
+# Git worktrees
+.worktrees/
