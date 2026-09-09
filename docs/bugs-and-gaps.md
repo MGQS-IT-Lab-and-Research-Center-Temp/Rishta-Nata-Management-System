@@ -30,13 +30,23 @@ file as items are fixed.
   `MemberLookupController`, `InvitationsController.Generate` and the
   `GetForm` API action now require `[Authorize]`. `InvitationsController.Accept`
   stays anonymous because it is token-scoped.
+- **Returning-user login avoids a Tajneed member fetch.** `AuthService.LoginAsync`
+  validates the Tajneed token on every login (the authoritative credential check),
+  then, when a fresh (<=24h) local `JamaatMember` row exists, reuses it and only
+  refreshes `Roles` from the token via `JamaatMemberService.UpdateRolesAsync`,
+  skipping `GetMemberByMemberNoAsync`. First-time / stale profiles still fall back
+  to the full fetch + upsert. If the local row is deleted mid-login, the fast path
+  falls back to the slow path.
 - **Tajneed transport failures no longer masquerade as bad credentials.**
   `AuthService.LoginAsync` catches `HttpRequestException`/`TaskCanceledException`/
   `TimeoutException` and reports "the member service is temporarily unreachable"
   instead of swallowing them as invalid login.
-- **Retry added for Tajneed calls.** New `Presentation/Services/RetryDelegatingHandler`
-  (no extra package; fixed backoff, max 3 attempts) wired on the
+- **Tajneed resilience via official package.** The hand-rolled
+  `Presentation/Services/RetryDelegatingHandler` was replaced by the official
+  `Microsoft.Extensions.Http.Resilience` `AddStandardResilienceHandler()` (Polly v8:
+  retry on transient/5xx + circuit breaker + attempt/total timeouts) on the
   `IGatewayHandler` HttpClient in `Presentation/Extensions/DependencyInjection.cs`.
+  Non-retryable credential codes (400/401/404) are not retried.
 - **Missing null guards fixed.** `RishtanataSecretaryService.GetById` /
   `GetMemberProfile` return `null` instead of throwing; `Approve`/`Reject`/
   `ReturnToPresident` return `false` on a miss. Controllers (`RishtanataSecretaryController`,
@@ -113,17 +123,16 @@ file as items are fixed.
 
 ## Design / decision
 
-3. **Login role provisioning is unimplemented.** Login authenticates against
-   Tajneed (`GenerateToken`) and fetches the member (`GetMemberByChandaNoAsync`),
-   but never resolves the member's roles. Tajneed `GetMemberRoleAsync` is defined
-   but unused in the login flow, and `JamaatMemberService.CreateOrUpdateAsync`
-   copies the gateway's `RoleId` (likely dangling against local `Role` IDs).
-   Result: members sign in with no local `Role`, so the `ClaimTypes.Role` claim is
-   empty and role-gated policies/pages don't match. Need: map Tajneed role strings
-   → local `Domain.Entities.Role` and set it during login/sync. (Note: the login
-   flow does now map the gateway member payload into a local `JamaatMember` and
-   role strings are matched case-insensitively; the gap is resolving role strings
-   to local roles.)
+3. **Login role provisioning — coherent (see note).** Roles are supplied by the
+   Tajneed login response (`Data.roles`), persisted as the comma-separated
+   `JamaatMember.Roles` string on the local row at every login (both the
+   returning-user fast path via `UpdateRolesAsync` and the fresh path via
+   upsert in `JamaatMemberService`), and issued as `ClaimTypes.Role` claims in
+   the auth cookie. There is intentionally no local role table; role strings are
+   matched case-insensitively against `Domain/Constants/RoleNames.cs`. Open
+   limitation: role claims are fixed at `SignInAsync` time — a member whose Tajneed
+   roles change will only get the updated roles on their next login (this also
+   refreshes the DB `Roles` string). No `IClaimsTransformation` refresh exists.
 
 4. **Policy vs implementation divergence on claims.**
    `docs/stage-authorization-policy.md` §3.2 requires a `membership_no` claim and
@@ -182,7 +191,9 @@ file as items are fixed.
     predates any live-DB apply. Until applied, the new divorce-evidence fields are
     all empty and the eligible-divorce path will store nothing. Apply via
     `dotnet ef database update` (or equivalent SQL) against MySQL when
-    appropriate — do not hand-edit `InitialCreate`.
+    appropriate — do not hand-edit `InitialCreate`. Also still awaiting live-DB
+    apply: `20260909110147_MakeAuditableModifiedAtNullable` (makes the 17
+    auditable `ModifiedAt` columns nullable).
 
 15. **Eligibility denies reuse `WrongStage` deny reason.**
     `BrideSectionService`/`BridegroomSectionService` return
@@ -196,3 +207,9 @@ file as items are fixed.
     status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
     without the corresponding divorced flag. Harden server-side only if such data
     integrity becomes important.
+
+17. **`MemberLookupService` stacks its own retry atop the resilience handler.**
+    `MemberLookupService.LookupGatewayWithBackoffAsync` maintains its own 3-attempt
+    loop with a 5s attempt timeout on top of the standard resilience handler's
+    retries (worst case ~9 physical calls on a pathological lookup). Bounded and
+    idempotent, so not a correctness bug — a candidate follow-up to simplify.
