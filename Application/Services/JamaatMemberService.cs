@@ -7,6 +7,7 @@ namespace Application.Services;
 
 public class JamaatMemberService : IJamaatMemberService
 {
+    private static readonly TimeSpan DefaultFreshnessWindow = TimeSpan.FromHours(24);
     private readonly RishtanataDbContext _context;
 
     public JamaatMemberService(RishtanataDbContext context)
@@ -69,5 +70,43 @@ public class JamaatMemberService : IJamaatMemberService
         await _context.SaveChangesAsync();
 
         return existingMember;
+    }
+
+    public async Task<JamaatMember?> GetByChandaNoAsync(
+        string chandaNo, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(chandaNo))
+        {
+            return null;
+        }
+
+        return await _context.JamaatMembers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ChandaNo == chandaNo, cancellationToken);
+    }
+
+    public bool IsProfileFresh(JamaatMember member, TimeSpan? maxAge = null)
+    {
+        maxAge ??= DefaultFreshnessWindow;
+
+        var stamp = member.ModifiedAt != default ? member.ModifiedAt : member.CreatedAt;
+
+        return DateTime.UtcNow - stamp < maxAge.Value;
+    }
+
+    public async Task<JamaatMember> UpdateRolesAsync(
+        string chandaNo, IEnumerable<string> roles, CancellationToken cancellationToken = default)
+    {
+        var member = await _context.JamaatMembers
+            .FirstOrDefaultAsync(x => x.ChandaNo == chandaNo, cancellationToken)
+            ?? throw new InvalidOperationException(
+                $"Member {chandaNo} does not exist locally; cannot update roles.");
+
+        member.Roles = string.Join(",", roles ?? Array.Empty<string>());
+        member.ModifiedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return member;
     }
 }
