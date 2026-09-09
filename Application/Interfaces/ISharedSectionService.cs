@@ -31,8 +31,8 @@ public interface ISharedSectionService
     /// <summary>Overwrites the existing token (hash + raw) and returns the new raw token.</summary>
     Task<string> RegenerateSectionTokenAsync(Guid applicationFormId, SectionType section, string createdByMembershipNo, CancellationToken cancellationToken = default);
 
-    /// <summary>Revokes an existing token (sets RevokedAt, clears hash + raw). Idempotent:
-    /// revoking an already-revoked or missing token's section throws InvalidOperationException;
-    /// revoking an already-revoked token is a no-op.</summary>
+    /// <summary>Revokes an existing token (sets RevokedAt, clears hash + raw). Throws
+    /// InvalidOperationException if no token row exists for the section; revoking an
+    /// already-revoked token is a no-op.</summary>
     Task RevokeSectionTokenAsync(Guid applicationFormId, SectionType section, CancellationToken cancellationToken = default);
 }

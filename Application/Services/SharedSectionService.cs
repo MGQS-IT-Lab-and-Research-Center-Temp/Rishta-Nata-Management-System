@@ -149,6 +149,14 @@ public class SharedSectionService : ISharedSectionService
                 ModifiedAt = DateTime.UtcNow
             });
         }
+        else if (existing.RevokedAt.HasValue)
+        {
+            existing.TokenHash = HashToken(raw);
+            existing.RawToken = raw;
+            existing.CreatedByMembershipNo = createdByMembershipNo;
+            existing.RevokedAt = null;
+            existing.ModifiedAt = DateTime.UtcNow;
+        }
         else
         {
             throw new InvalidOperationException(
