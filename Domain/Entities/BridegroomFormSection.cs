@@ -1,4 +1,5 @@
 using Domain.Abstractions;
+using Domain.Enums;
 
 namespace Domain.Entities
 {
@@ -17,7 +18,7 @@ namespace Domain.Entities
         public decimal BridegroomDowerAmountPaidInCash { get; set; }
         public decimal BridegroomDowerAmountToBePaid { get; set; }
         public bool IsFirstNikah { get; set; }
-        public bool IsSecondThirdOrFourthNikah { get; set; }
+        public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
         public bool FormerWifeIsDead { get; set; }
         public bool HasDivorcedFormerWife { get; set; }
         public string BridegroomDivorceEvidence { get; set; } = string.Empty;
@@ -26,10 +27,4 @@ namespace Domain.Entities
         public string BridegroomSignatureTel { get; set; } = string.Empty;
         public string ReferenceNumber { get; set; } = string.Empty;
     }
-}
-
-public enum NikahOrdinal
-{
-    First,
-    SecondThirdOrFourth
 }
