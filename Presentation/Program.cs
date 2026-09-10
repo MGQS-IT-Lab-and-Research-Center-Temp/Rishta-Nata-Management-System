@@ -15,6 +15,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Validation is driven by explicit [Required] attributes only. Non-nullable
+// reference types (NRT) in the view models would otherwise get an implicit
+// [Required] that: (1) blocks client-side form submission for fields without
+// rendered validation spans (Genotype, BloodGroup, remarriage radios, divorce
+// evidence — no asp-validation-for), producing a silently-disabled
+// "Save & Continue" button; and (2) fails server-side ModelState invisibly,
+// re-rendering the form with no visible error. See docs/bugs-and-gaps.md.
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
+{
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
+
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddPresentationServices(builder.Configuration);
