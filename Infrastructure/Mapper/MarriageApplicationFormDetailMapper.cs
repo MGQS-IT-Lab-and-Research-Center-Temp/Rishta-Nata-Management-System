@@ -67,7 +67,7 @@ public static class MarriageApplicationFormDetailMapper
                     DowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
                     DowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
                     IsFirstNikah = form.IsFirstNikah,
-                    IsSecondThirdOrFourthNikah = form.IsSecondThirdOrFourthNikah,
+                    CurrentNikahOrdinal = form.CurrentNikahOrdinal,
                     FormerWifeIsDead = form.FormerWifeIsDead,
                     HasDivorcedFormerWife = form.HasDivorcedFormerWife,
                     FormerWifeIsPresent = form.FormerWifeIsPresent,

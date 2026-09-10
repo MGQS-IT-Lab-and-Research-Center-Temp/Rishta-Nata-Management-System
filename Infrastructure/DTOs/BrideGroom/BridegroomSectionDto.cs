@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Infrastructure.DTOs.BrideGroom;
 
 public class BridegroomSectionDto
@@ -11,9 +13,8 @@ public class BridegroomSectionDto
     public string BridegroomBloodGroup { get; set; } = string.Empty;
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
     public decimal BridegroomDowerAmountToBePaid { get; set; }
-    public NikahOrdinal NikahOrdinal { get; set; }
+    public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool IsFirstNikah { get; set; }
-    public bool IsSecondThirdOrFourthNikah { get; set; }
     public bool FormerWifeIsDead { get; set; }
     public bool HasDivorcedFormerWife { get; set; }
     public string BridegroomDivorceEvidence { get; set; } = string.Empty;

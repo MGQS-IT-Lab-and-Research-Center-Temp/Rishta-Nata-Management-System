@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Infrastructure.DTOs.MarriageApplicationFormDetail;
 
 public class BridegroomSectionDetailDto
@@ -11,7 +13,7 @@ public class BridegroomSectionDetailDto
     public decimal DowerAmountPaidInCash { get; set; }
     public decimal DowerAmountToBePaid { get; set; }
     public bool IsFirstNikah { get; set; }
-    public bool IsSecondThirdOrFourthNikah { get; set; }
+    public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool FormerWifeIsDead { get; set; }
     public bool HasDivorcedFormerWife { get; set; }
     public bool FormerWifeIsPresent { get; set; }

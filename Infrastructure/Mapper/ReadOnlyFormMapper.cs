@@ -36,7 +36,7 @@ namespace Infrastructure.Mapper;
                 BridegroomDowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
                 BridegroomDowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
                 IsFirstNikah = form.IsFirstNikah,
-                IsSecondThirdOrFourthNikah = form.IsSecondThirdOrFourthNikah,
+                CurrentNikahOrdinal = form.CurrentNikahOrdinal,
                 FormerWifeIsDead = form.FormerWifeIsDead,
                 HasDivorcedFormerWife = form.HasDivorcedFormerWife,
                 FormerWifeIsPresent = form.FormerWifeIsPresent,
