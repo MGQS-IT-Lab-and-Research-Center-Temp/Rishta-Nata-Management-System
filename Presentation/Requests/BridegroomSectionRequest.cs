@@ -1,4 +1,5 @@
 using System;
+using Domain.Enums;
 
 namespace Presentation.Requests;
 
@@ -14,7 +15,7 @@ public class BridegroomSectionRequest
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
     public decimal BridegroomDowerAmountToBePaid { get; set; }
     public bool IsFirstNikah { get; set; }
-    public bool IsSecondThirdOrFourthNikah { get; set; }
+    public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool FormerWifeIsDead { get; set; }
     public bool HasDivorcedFormerWife { get; set; }
     public bool FormerWifeIsPresent { get; set; }

@@ -1,6 +1,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 
 namespace Presentation.ViewModels;
 
@@ -59,7 +60,7 @@ public class BridegroomFormViewModel
 
     public bool IsFirstNikah { get; set; }
 
-    public bool IsSecondThirdOrFourthNikah { get; set; }
+    public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
 
 
     // =========================

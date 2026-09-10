@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 
 namespace Presentation.ViewModels;
 
@@ -31,7 +32,7 @@ public class NewApplicationViewModel
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
     public decimal BridegroomDowerAmountToBePaid { get; set; }
     public bool IsFirstNikah { get; set; }
-    public bool? IsSecondThirdOrFourthNikah { get; set; }
+    public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool? FormerWifeIsDead { get; set; }
     public bool? HasDivorcedFormerWife { get; set; }
     public string BridegroomDivorceEvidence { get; set; } = string.Empty;
