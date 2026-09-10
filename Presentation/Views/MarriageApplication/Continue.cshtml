@@ -126,8 +126,16 @@
                     <div class="col-md-6 d-none" id="remarriageGroup">
                         <label class="form-label d-block">If not your first Nikah, which applies?</label>
                         <div class="form-check">
-                            <input asp-for="IsSecondThirdOrFourthNikah" class="form-check-input remar-opt" type="radio" value="true" id="renSubseq" />
-                            <label class="form-check-label" for="renSubseq">Second, third or fourth Nikah</label>
+                            <input asp-for="CurrentNikahOrdinal" class="form-check-input remar-opt" type="radio" value="Mathna" id="renMathna" />
+                            <label class="form-check-label" for="renMathna">Mathna (second)</label>
+                        </div>
+                        <div class="form-check">
+                            <input asp-for="CurrentNikahOrdinal" class="form-check-input remar-opt" type="radio" value="Thulatha" id="renThulatha" />
+                            <label class="form-check-label" for="renThulatha">Thulatha (third)</label>
+                        </div>
+                        <div class="form-check">
+                            <input asp-for="CurrentNikahOrdinal" class="form-check-input remar-opt" type="radio" value="Arbaa" id="renArbaa" />
+                            <label class="form-check-label" for="renArbaa">Arba'a (fourth)</label>
                         </div>
                         <div class="form-check">
                             <input asp-for="FormerWifeIsDead" class="form-check-input remar-opt" type="radio" value="true" id="renWidower" />

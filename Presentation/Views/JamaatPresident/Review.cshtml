@@ -1,3 +1,4 @@
+@using Domain.Constants
 @model Presentation.ViewModels.JamaatPresidentReviewViewModel
 
 @{
@@ -385,18 +386,36 @@
 
 
                 <div class="col-md-6">
-                    <strong>Second / Third / Fourth Nikah:</strong>
+                    <strong>Current Nikah:</strong>
 
-                    @if (Model.IsSecondThirdOrFourthNikah)
+                    @if (Model.IsFirstNikah)
+                    {
+                        <span class="badge bg-success ms-2">
+                            First nikah
+                        </span>
+                    }
+                    else if (Model.CurrentNikahOrdinal is { } ordinal)
                     {
                         <span class="badge bg-warning text-dark ms-2">
-                            Yes
+                            @ordinal.Display()
+                        </span>
+                    }
+                    else if (Model.FormerWifeIsDead)
+                    {
+                        <span class="badge bg-warning text-dark ms-2">
+                            Remarriage (widower)
+                        </span>
+                    }
+                    else if (Model.HasDivorcedFormerWife)
+                    {
+                        <span class="badge bg-warning text-dark ms-2">
+                            Remarriage (divorced)
                         </span>
                     }
                     else
                     {
                         <span class="badge bg-secondary ms-2">
-                            No
+                            Remarriage
                         </span>
                     }
                 </div>
