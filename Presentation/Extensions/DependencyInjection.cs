@@ -30,14 +30,14 @@ public static class DependencyInjection
             {
                 options.TotalRequestTimeout = new HttpTimeoutStrategyOptions
                 {
-                    Timeout = TimeSpan.FromSeconds(30)
+                    Timeout = TimeSpan.FromSeconds(60)
                 };
                 options.AttemptTimeout = new HttpTimeoutStrategyOptions
                 {
-                    Timeout = TimeSpan.FromSeconds(10)
+                    Timeout = TimeSpan.FromSeconds(20)
                 };
                 options.Retry.MaxRetryAttempts = 3;
-                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(40);
                 options.CircuitBreaker.MinimumThroughput = 100;
                 options.CircuitBreaker.FailureRatio = 0.1;
                 options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(5);
