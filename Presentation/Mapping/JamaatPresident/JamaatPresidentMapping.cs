@@ -83,7 +83,7 @@ public static class JamaatPresidentMapping
             BridegroomDowerAmountPaidInCash = dto.BridegroomDowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = dto.BridegroomDowerAmountToBePaid,
             IsFirstNikah = dto.IsFirstNikah,
-            IsSecondThirdOrFourthNikah = dto.IsSecondThirdOrFourthNikah,
+            CurrentNikahOrdinal = dto.CurrentNikahOrdinal,
             FormerWifeIsDead = dto.FormerWifeIsDead,
             HasDivorcedFormerWife = dto.HasDivorcedFormerWife,
             FormerWifeIsPresent = dto.FormerWifeIsPresent,
