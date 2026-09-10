@@ -24,7 +24,7 @@ public sealed class BridegroomSectionDtoValidator : AbstractValidator<Bridegroom
 
     private static bool HaveValidNikahHistory(BridegroomSectionDto dto)
     {
-        if (dto.NikahOrdinal == NikahOrdinal.First)
+        if (dto.CurrentNikahOrdinal is null)
             return true;
 
         var selectedStatuses = new[]

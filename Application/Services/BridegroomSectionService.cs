@@ -71,7 +71,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         var eligibility = await _eligibility.ValidateSectionAsync(
             dto.BridegroomMembershipNo,
             partnerIsGroom: true,
-            dto.IsSecondThirdOrFourthNikah,
+            dto.CurrentNikahOrdinal is not null,
             dto.FormerWifeIsDead,
             dto.HasDivorcedFormerWife,
             dto.BridegroomDivorceEvidence,
@@ -96,7 +96,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         form.BridegroomDowerAmountPaidInCash = dto.BridegroomDowerAmountPaidInCash;
         form.BridegroomDowerAmountToBePaid = dto.BridegroomDowerAmountToBePaid;
         form.IsFirstNikah = dto.IsFirstNikah;
-        form.IsSecondThirdOrFourthNikah = dto.IsSecondThirdOrFourthNikah;
+        form.CurrentNikahOrdinal = dto.CurrentNikahOrdinal;
         form.FormerWifeIsDead = dto.FormerWifeIsDead;
         form.HasDivorcedFormerWife = dto.HasDivorcedFormerWife;
         form.FormerWifeIsPresent = dto.FormerWifeIsPresent;
@@ -121,7 +121,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         bridegroomSection.BridegroomDowerAmountPaidInCash = dto.BridegroomDowerAmountPaidInCash;
         bridegroomSection.BridegroomDowerAmountToBePaid = dto.BridegroomDowerAmountToBePaid;
         bridegroomSection.IsFirstNikah = dto.IsFirstNikah;
-        bridegroomSection.IsSecondThirdOrFourthNikah = dto.IsSecondThirdOrFourthNikah;
+        bridegroomSection.CurrentNikahOrdinal = dto.CurrentNikahOrdinal;
         bridegroomSection.FormerWifeIsDead = dto.FormerWifeIsDead;
         bridegroomSection.HasDivorcedFormerWife = dto.HasDivorcedFormerWife;
         bridegroomSection.FormerWifeIsPresent = dto.FormerWifeIsPresent;

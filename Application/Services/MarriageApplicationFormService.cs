@@ -116,7 +116,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
                 BridegroomDowerAmountPaidInCash = application.BridegroomDowerAmountPaidInCash,
                 BridegroomDowerAmountToBePaid = application.BridegroomDowerAmountToBePaid,
                 IsFirstNikah = application.IsFirstNikah,
-                IsSecondThirdOrFourthNikah = application.IsSecondThirdOrFourthNikah,
+                CurrentNikahOrdinal = application.CurrentNikahOrdinal,
                 FormerWifeIsDead = application.FormerWifeIsDead,
                 HasDivorcedFormerWife = application.HasDivorcedFormerWife,
                 BridegroomDivorceEvidence = application.BridegroomDivorceEvidence,

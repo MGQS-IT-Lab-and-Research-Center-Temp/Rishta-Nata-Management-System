@@ -43,7 +43,7 @@ public class BridegroomService : IBridegroomService
         existingBridegroom.BridegroomDowerAmountToBePaid = bridegroom.BridegroomDowerAmountToBePaid;
         existingBridegroom.BridegroomSignatureTel = bridegroom.BridegroomSignatureTel;
         existingBridegroom.IsFirstNikah = bridegroom.IsFirstNikah;
-        existingBridegroom.IsSecondThirdOrFourthNikah = bridegroom.IsSecondThirdOrFourthNikah;
+        existingBridegroom.CurrentNikahOrdinal = bridegroom.CurrentNikahOrdinal;
         existingBridegroom.FormerWifeIsDead = bridegroom.FormerWifeIsDead;
         existingBridegroom.HasDivorcedFormerWife = bridegroom.HasDivorcedFormerWife;
         existingBridegroom.FormerWifeIsPresent = bridegroom.FormerWifeIsPresent;
