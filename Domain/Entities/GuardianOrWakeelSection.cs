@@ -25,7 +25,7 @@ namespace Domain.Entities
 
         public string ReferenceNumber { get; set; } = string.Empty;
 
-        public JamaatMember JamaatMember { get; set; } = null!;
+        public JamaatMember? JamaatMember { get; set; }
 
     }
 }
