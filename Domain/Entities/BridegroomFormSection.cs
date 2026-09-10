@@ -21,7 +21,7 @@ namespace Domain.Entities
         public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
         public bool FormerWifeIsDead { get; set; }
         public bool HasDivorcedFormerWife { get; set; }
-        public string BridegroomDivorceEvidence { get; set; } = string.Empty;
+        public string? BridegroomDivorceEvidence { get; set; } = string.Empty;
         public bool FormerWifeIsPresent { get; set; }
         public bool FormerWifeObtainedKhula { get; set; }
         public string BridegroomSignatureTel { get; set; } = string.Empty;
