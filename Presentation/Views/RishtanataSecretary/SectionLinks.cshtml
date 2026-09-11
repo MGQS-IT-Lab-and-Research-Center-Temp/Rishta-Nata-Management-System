@@ -1,6 +1,6 @@
 @model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.SecretarySectionLinksViewModel
-
 @{
+    var error = TempData["Error"] as string;
     Layout = "_SecretaryLayout";
     ViewData["Title"] = "Manage Section Links";
 }
@@ -21,6 +21,11 @@
             (@Model.BrideName &hearts; @Model.BridegroomName)
         </p>
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-warning">@error</div>
+    }
 
     @if (Model.FormStage != Domain.Enums.MarriageFormStage.AwaitingWitnesses)
     {
