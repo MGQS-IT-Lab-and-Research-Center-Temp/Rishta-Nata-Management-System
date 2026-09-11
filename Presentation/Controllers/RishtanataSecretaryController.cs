@@ -8,6 +8,8 @@ using Presentation.Mapping.RishtanataSecretary;
 using Presentation.Mapping.JamaatMember;
 using Application.Interfaces;
 using Domain.Constants;
+using Domain.Enums;
+using Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
 
 namespace Presentation.Controllers;
 
@@ -15,11 +17,17 @@ namespace Presentation.Controllers;
 public class RishtanataSecretaryController : Controller
 {
     private readonly IRishtanataSecretaryService _service;
+    private readonly ISharedSectionService _sharedSectionService;
+    private readonly IMarriageApplicationFormService _formService;
 
     public RishtanataSecretaryController(
-        IRishtanataSecretaryService service)
+        IRishtanataSecretaryService service,
+        ISharedSectionService sharedSectionService,
+        IMarriageApplicationFormService formService)
     {
         _service = service;
+        _sharedSectionService = sharedSectionService;
+        _formService = formService;
     }
 
     // Dashboard page
@@ -98,6 +106,77 @@ public class RishtanataSecretaryController : Controller
         var model = MemberProfileMapping.ToViewModel(dto);
 
         return View(model);
+    }
+
+    [HttpGet("SectionLinks/{id:guid}")]
+    public async Task<IActionResult> SectionLinks(Guid id, CancellationToken ct)
+    {
+        var form = await _formService.GetByIdAsync(id, ct);
+        if (form is null)
+            return NotFound("Application not found.");
+
+        var statuses = await _sharedSectionService.GetSignatureLinksStatusAsync(form.Id, ct);
+
+        var model = new SecretarySectionLinksViewModel
+        {
+            ApplicationId = form.Id,
+            ReferenceNumber = form.ReferenceNumber,
+            BrideName = form.BrideName,
+            BridegroomName = form.BridegroomName,
+            FormStage = form.FormStage,
+            Items = statuses.ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost("RegenerateLink")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegenerateLink(Guid applicationId, SectionType section, CancellationToken ct)
+    {
+        var form = await _formService.GetByIdAsync(applicationId, ct);
+        if (form is null)
+            return NotFound("Application not found.");
+
+        var membershipNo = User.FindFirstValue(ClaimNames.MembershipNo)
+            ?? User.FindFirstValue(ClaimTypes.Name)
+            ?? string.Empty;
+
+        string? rawToken = null;
+        try
+        {
+            rawToken = await _sharedSectionService.RegenerateSectionTokenAsync(
+                form.Id, section, membershipNo, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        var statuses = await _sharedSectionService.GetSignatureLinksStatusAsync(form.Id, ct);
+        var sectionLabel = section switch
+        {
+            SectionType.Guardian => "Guardian / Waliy",
+            SectionType.WitnessOne => "Witness 1",
+            SectionType.WitnessTwo => "Witness 2",
+            _ => section.ToString()
+        };
+
+        var model = new SecretarySectionLinksViewModel
+        {
+            ApplicationId = form.Id,
+            ReferenceNumber = form.ReferenceNumber,
+            BrideName = form.BrideName,
+            BridegroomName = form.BridegroomName,
+            FormStage = form.FormStage,
+            Items = statuses.ToList(),
+            RegeneratedSection = sectionLabel,
+            RegeneratedUrl = rawToken is not null
+                ? Url.Action("Fill", "SharedSection", new { token = rawToken }, Request.Scheme)
+                : null
+        };
+
+        return View("SectionLinks", model);
     }
 
     [HttpPost]
