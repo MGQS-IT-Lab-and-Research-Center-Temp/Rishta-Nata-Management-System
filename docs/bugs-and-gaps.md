@@ -246,3 +246,26 @@ file as items are fixed.
     status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
     without the corresponding divorced flag. Harden server-side only if such data
     integrity becomes important.
+
+17. **Divorce-evidence columns were NOT NULL, blocking partner submission — FIXED.**
+    `BrideDivorceEvidence`/`BridegroomDivorceEvidence` were non-nullable `string`
+    properties, so EF created the columns `NOT NULL`. An unselected (hidden)
+    evidence input still POSTs `""`, and ASP.NET model binding converts empty
+    strings to `null`, so MySQL rejected the insert (`Column ... cannot be null`)
+    and the section could not be saved for either partner when they did not
+    select divorced. Fix: the entity properties are now `string?`
+    (house `= string.Empty` normalization), migration
+    `20260910220646_MakeDivorceEvidenceNullable` alters all four columns
+    (`NikahApplications` ×2, `NikahBrides`, `NikahGrooms`) to nullable, applied
+    locally, committed `b911b59`. "Required only when divorced" remains an
+    application-level rule in `PartnerEligibilityService`. E2E-verified: groom
+    Create and bride section both save with empty evidence.
+
+18. **Residual same-class risk: empty "Select" fields still 500 on other NOT NULL
+    string columns.** The empty-string→null binding bites every optional field
+    whose entity property is a non-nullable `string`: create blocks on
+    `BridegroomGenotype`/`BridegroomBloodGroup`, and the bride section blocks on
+    `BrideMaritalStatus`/`BrideGenotype`/`BrideBloodGroup` (E2E-confirmed; the
+    groom section analog likely too) when the user leaves a dropdown on its
+    default "Select". NOT part of the evidence fix; decision needed: make those
+    columns nullable like the evidence fields, or mark the dropdowns required.
