@@ -1,7 +1,3 @@
-
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Application.Interfaces;
 using Infrastructure.Mapper;
 using Microsoft.AspNetCore.Mvc;

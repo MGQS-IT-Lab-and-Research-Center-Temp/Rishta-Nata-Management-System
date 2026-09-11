@@ -1,12 +1,9 @@
-﻿using System;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Workflow;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Presentation.Mapping;
 using Presentation.Requests;
 

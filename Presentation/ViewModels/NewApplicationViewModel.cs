@@ -23,15 +23,26 @@ public class NewApplicationViewModel
     public ApplicantPartyInfo Bridegroom { get; set; } = new();
 
     // ===== Bride-only =====
+    [Display(Name = "Marital Status")]
     public string BrideMaritalStatus { get; set; } = string.Empty;
+
+    [Display(Name = "Divorce Evidence")]
     public string BrideDivorceEvidence { get; set; } = string.Empty;
+
+    [Display(Name = "Proposed Dower Amount")]
     public decimal BrideProposedDowerAmount { get; set; }
+
+    [Display(Name = "Dower Amount Received In Cash")]
     public decimal BrideDowerAmountReceivedInCash { get; set; }
 
     // ===== Groom-only =====
+    [Display(Name = "Dower Amount Paid In Cash")]
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
+
+    [Display(Name = "Dower Amount To Be Paid")]
     public decimal BridegroomDowerAmountToBePaid { get; set; }
     public bool IsFirstNikah { get; set; }
+
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool? FormerWifeIsDead { get; set; }
     public bool? HasDivorcedFormerWife { get; set; }
