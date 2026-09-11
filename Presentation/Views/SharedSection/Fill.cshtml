@@ -11,7 +11,7 @@
     <p class="text-muted mb-0">By submitting you confirm your role and details for the Nikah record.</p>
 </div>
 
-<form asp-action="Fill" asp-controller="SharedSection" method="post" class="card dashboard-card">
+<form asp-action="Fill" asp-controller="SharedSection" asp-route-token="" method="post" class="card dashboard-card">
     <div class="card-header">Your details</div>
     <div class="card-body">
         @Html.AntiForgeryToken()

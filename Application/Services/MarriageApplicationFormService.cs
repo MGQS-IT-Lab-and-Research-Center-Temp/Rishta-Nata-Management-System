@@ -54,10 +54,20 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
 
     public async Task<MarriageApplicationForm> StartApplicationAsync(
         MarriageApplicationForm application,
+        string? createdByMembershipNo = null,
         CancellationToken cancellationToken = default)
     {
         if (application == null)
             throw new ArgumentNullException(nameof(application));
+
+        Guid? creatorId = null;
+        if (!string.IsNullOrWhiteSpace(createdByMembershipNo))
+        {
+            creatorId = await _dbContext.JamaatMembers
+                .Where(m => m.ChandaNo == createdByMembershipNo)
+                .Select(m => (Guid?)m.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
 
         // The marriage form is the dependent side of the 1:1 with
         // FormApplication (MarriageApplicationForm.MarriageApplicationId is the
@@ -66,7 +76,8 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         {
             Status = ApplicationStatus.Submitted,
             AppliedAt = DateTime.UtcNow,
-            CertificateId = Guid.Empty
+            CertificateId = null,
+            CreatedBy = creatorId
         };
 
         _dbContext.FormApplications.Add(formApplication);
@@ -129,6 +140,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             };
         }
 
+        application.CreatedBy = creatorId;
         _dbContext.MarriageApplicationForms.Add(application);
         await _dbContext.SaveChangesAsync(cancellationToken);
 

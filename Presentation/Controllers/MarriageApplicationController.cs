@@ -191,7 +191,7 @@ public class MarriageApplicationController : Controller
                 : MarriageFormStage.AwaitingBridegroom
         };
 
-        var created = await _formService.StartApplicationAsync(form, ct);
+        var created = await _formService.StartApplicationAsync(form, GetCurrentMembershipNo(), ct);
 
         TempData["Success"] =
             $"Application {created.ReferenceNumber} started. Your partner can sign in and continue it from their dashboard.";

@@ -22,6 +22,7 @@ namespace Application.Interfaces
         /// </summary>
         Task<MarriageApplicationForm> StartApplicationAsync(
             MarriageApplicationForm application,
+            string? createdByMembershipNo = null,
             CancellationToken cancellationToken = default);
 
         // Get application by ID
