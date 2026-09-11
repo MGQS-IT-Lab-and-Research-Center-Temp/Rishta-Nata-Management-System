@@ -43,13 +43,14 @@
                 <tr>
                     <td><strong>@SectionTitle(item.Section)</strong></td>
                     <td>
-                        @if (item.Complete) { <span class="text-success">Completed</span> }
+                        @if (item.Submitted) { <span class="text-success"><i class="bi bi-check-circle-fill"></i> Submitted</span> }
+                        else if (item.Complete) { <span class="text-success">Completed</span> }
                         else if (item.HasActiveToken) { <span class="text-warning">Link active</span> }
                         else { <span class="text-muted">No link</span> }
                     </td>
                     <td>@(item.FilledByName ?? "—")</td>
                     <td>
-                        @if (signatureWaitActive && !string.IsNullOrWhiteSpace(item.RawToken))
+                        @if (!item.Submitted && signatureWaitActive && !string.IsNullOrWhiteSpace(item.RawToken))
                         {
                             var url = Url.Action("Fill", "SharedSection", new { token = item.RawToken }, Context.Request.Scheme)!;
                             <div class="input-group input-group-sm">
@@ -63,7 +64,11 @@
                         }
                     </td>
                     <td class="text-end">
-                        @if (signatureWaitActive)
+                        @if (item.Submitted)
+                        {
+                            <span class="text-muted small">Locked</span>
+                        }
+                        else if (signatureWaitActive)
                         {
                             @if (item.HasActiveToken)
                             {
