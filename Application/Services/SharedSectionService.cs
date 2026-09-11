@@ -35,7 +35,21 @@ public class SharedSectionService : ISharedSectionService
 
         var form = tokenRow.MarriageApplicationForm;
         if (tokenRow.RevokedAt.HasValue)
+        {
+            if (tokenRow.SubmittedAt.HasValue)
+                return new SectionTokenStatus
+                {
+                    IsValid = false,
+                    IsSubmitted = true,
+                    FormId = form.Id,
+                    SectionType = tokenRow.SectionType,
+                    ReferenceNumber = form.ReferenceNumber,
+                    BrideName = form.BrideName,
+                    BridegroomName = form.BridegroomName
+                };
+
             return Invalid("This link has been revoked.");
+        }
 
         if (form.FormStage != MarriageFormStage.AwaitingWitnesses)
             return Invalid("These signatures are no longer being collected.");
@@ -93,6 +107,13 @@ public class SharedSectionService : ISharedSectionService
             advanced = true;
         }
 
+        await _context.SaveChangesAsync(cancellationToken);
+
+        // Auto-revoke: seal the token so the couple cannot re-use this link.
+        tokenRow.SubmittedAt = DateTime.UtcNow;
+        tokenRow.RevokedAt = DateTime.UtcNow;
+        tokenRow.RawToken = string.Empty;
+        tokenRow.TokenHash = string.Empty;
         await _context.SaveChangesAsync(cancellationToken);
 
         return new SectionSubmitResult
@@ -352,15 +373,18 @@ public class SharedSectionService : ISharedSectionService
         }
 
         var token = form.SectionAccessTokens.FirstOrDefault(t =>
-            t.SectionType == section && !t.RevokedAt.HasValue);
+            t.SectionType == section);
+
+        var submitted = token?.SubmittedAt.HasValue == true;
 
         return new SectionLinkStatus
         {
             Section = section,
-            HasActiveToken = token is not null,
+            HasActiveToken = token is not null && !token.RevokedAt.HasValue,
             RawToken = token?.RawToken,
             Complete = complete,
-            FilledByName = filledByName
+            FilledByName = filledByName,
+            Submitted = submitted
         };
     }
 
