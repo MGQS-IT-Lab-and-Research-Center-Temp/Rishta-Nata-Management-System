@@ -176,6 +176,7 @@ public class SharedSectionService : ISharedSectionService
             existing.TokenHash = HashToken(raw);
             existing.RawToken = raw;
             existing.CreatedByMembershipNo = createdByMembershipNo;
+            existing.SubmittedAt = null;
             existing.RevokedAt = null;
             existing.ModifiedAt = DateTime.UtcNow;
         }
@@ -204,6 +205,7 @@ public class SharedSectionService : ISharedSectionService
         row.TokenHash = HashToken(raw);
         row.RawToken = raw;
         row.CreatedByMembershipNo = createdByMembershipNo;
+        row.SubmittedAt = null;
         row.RevokedAt = null;
         row.ModifiedAt = DateTime.UtcNow;
 
