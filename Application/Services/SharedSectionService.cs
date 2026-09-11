@@ -107,13 +107,14 @@ public class SharedSectionService : ISharedSectionService
             advanced = true;
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
-
-        // Auto-revoke: seal the token so the couple cannot re-use this link.
+        // Auto-revoke: seal the token so the couple cannot re-use or manage this link.
+        // The hash is retained so a re-visit identifies as "already submitted";
+        // the raw token is cleared so the link itself stops working.
         tokenRow.SubmittedAt = DateTime.UtcNow;
         tokenRow.RevokedAt = DateTime.UtcNow;
         tokenRow.RawToken = string.Empty;
-        tokenRow.TokenHash = string.Empty;
+        tokenRow.ModifiedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return new SectionSubmitResult
