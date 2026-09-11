@@ -30,7 +30,12 @@ public class SharedSectionController : Controller
     {
         var status = await _sharedSectionService.ValidateTokenAsync(token, ct);
         if (!status.IsValid)
+        {
+            if (status.IsSubmitted)
+                return View("Submitted");
+
             return View("Invalid");
+        }
 
         var model = new SectionFillViewModel
         {
