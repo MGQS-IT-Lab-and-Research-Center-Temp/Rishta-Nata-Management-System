@@ -1,0 +1,109 @@
+@model Presentation.ViewModels.RishtanataSecretaryDashboardViewModel.SecretarySectionLinksViewModel
+
+@{
+    Layout = "_SecretaryLayout";
+    ViewData["Title"] = "Manage Section Links";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <a asp-controller="RishtanataSecretary"
+           asp-action="Review"
+           asp-route-id="@Model.ApplicationId"
+           class="btn btn-outline-secondary btn-sm mb-3">
+            &larr; Back to Review
+        </a>
+
+        <h2 class="fw-bold">Manage Section Links</h2>
+        <p class="text-muted">
+            Application <strong>@Model.ReferenceNumber</strong>
+            (@Model.BrideName &hearts; @Model.BridegroomName)
+        </p>
+    </div>
+
+    @if (Model.FormStage != Domain.Enums.MarriageFormStage.AwaitingWitnesses)
+    {
+        <div class="alert alert-info">
+            Current stage: <strong>@Model.FormStage</strong>. Links can be regenerated regardless of stage.
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.RegeneratedUrl))
+    {
+        <div class="alert alert-success">
+            <strong>Link regenerated for @Model.RegeneratedSection.</strong><br />
+            Share this link with the relevant party:
+            <div class="input-group input-group-sm mt-2">
+                <input class="form-control form-control-sm" value="@Model.RegeneratedUrl" readonly />
+                <button type="button" class="btn btn-outline-primary" onclick="copyLink(this)">Copy</button>
+            </div>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white"><h5 class="mb-0">Section Status</h5></div>
+        <div class="card-body">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Section</th>
+                        <th>Status</th>
+                        <th>Filled by</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><strong>@SectionTitle(item.Section)</strong></td>
+                        <td>
+                            @if (item.Submitted) { <span class="text-success"><i class="bi bi-check-circle-fill"></i> Submitted</span> }
+                            else if (item.Complete) { <span class="text-info">Completed (not submitted via link)</span> }
+                            else if (item.HasActiveToken) { <span class="text-warning">Link active</span> }
+                            else { <span class="text-muted">No link</span> }
+                        </td>
+                        <td>@(item.FilledByName ?? "&mdash;")</td>
+                        <td class="text-end">
+                            @if (!item.HasActiveToken || item.Submitted)
+                            {
+                                <form asp-action="RegenerateLink" asp-controller="RishtanataSecretary" method="post" class="d-inline">
+                                    <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
+                                    <input type="hidden" name="section" value="@item.Section" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Regenerate Link</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Link active</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyLink(btn) {
+        const input = btn.closest('.input-group').querySelector('input');
+        input.select();
+        document.execCommand('copy');
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+    }
+</script>
+
+@functions {
+    private static string SectionTitle(Domain.Enums.SectionType s) => s switch
+    {
+        Domain.Enums.SectionType.Guardian => "Guardian / Waliy",
+        Domain.Enums.SectionType.WitnessOne => "Witness 1",
+        Domain.Enums.SectionType.WitnessTwo => "Witness 2",
+        _ => s.ToString()
+    };
+}
