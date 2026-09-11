@@ -64,8 +64,11 @@
                             else if (item.HasActiveToken) { <span class="text-warning">Link active</span> }
                             else { <span class="text-muted">No link</span> }
                         </td>
-                        <td>@(item.FilledByName ?? "&mdash;")</td>
+                        <td>@(item.FilledByName ?? "—")</td>
                         <td class="text-end">
+                            @* Submitted sections always have an inactive token, but the
+                               explicit check also guards legacy rows where SubmittedAt was
+                               set on an already-active token. *@
                             @if (!item.HasActiveToken || item.Submitted)
                             {
                                 <form asp-action="RegenerateLink" asp-controller="RishtanataSecretary" method="post" class="d-inline">
