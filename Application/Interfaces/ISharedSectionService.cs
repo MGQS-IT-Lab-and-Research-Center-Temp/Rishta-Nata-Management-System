@@ -25,11 +25,13 @@ public interface ISharedSectionService
     /// the raw token when a link is currently active.</summary>
     Task<IReadOnlyList<SectionLinkStatus>> GetSignatureLinksStatusAsync(Guid applicationFormId, CancellationToken cancellationToken = default);
 
-    /// <summary>Mints a new token (hash + raw stored) and returns the raw token; throws if an active token exists.</summary>
-    Task<string> GenerateSectionTokenAsync(Guid applicationFormId, SectionType section, string createdByMembershipNo, CancellationToken cancellationToken = default);
+    /// <summary>Mints a new token (hash + raw stored) and returns the raw token; throws if an active token exists.
+    /// Throws if the section was already submitted unless <paramref name="allowSubmitted"/> is true (Secretary-only re-open).</summary>
+    Task<string> GenerateSectionTokenAsync(Guid applicationFormId, SectionType section, string createdByMembershipNo, bool allowSubmitted = false, CancellationToken cancellationToken = default);
 
-    /// <summary>Overwrites the existing token (hash + raw) and returns the new raw token.</summary>
-    Task<string> RegenerateSectionTokenAsync(Guid applicationFormId, SectionType section, string createdByMembershipNo, CancellationToken cancellationToken = default);
+    /// <summary>Overwrites the existing token (hash + raw) and returns the new raw token.
+    /// Throws if the section was already submitted unless <paramref name="allowSubmitted"/> is true (Secretary-only re-open).</summary>
+    Task<string> RegenerateSectionTokenAsync(Guid applicationFormId, SectionType section, string createdByMembershipNo, bool allowSubmitted = false, CancellationToken cancellationToken = default);
 
     /// <summary>Revokes an existing token (sets RevokedAt, clears hash + raw). Throws
     /// InvalidOperationException if no token row exists for the section; revoking an

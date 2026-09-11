@@ -64,7 +64,7 @@ public class SectionLinksController : Controller
         try
         {
             await _sharedSectionService.GenerateSectionTokenAsync(
-                form.Id, section, membershipNo, ct);
+                form.Id, section, membershipNo, cancellationToken: ct);
         }
         catch (InvalidOperationException ex)
         {
@@ -87,7 +87,7 @@ public class SectionLinksController : Controller
         try
         {
             await _sharedSectionService.RegenerateSectionTokenAsync(
-                form.Id, section, membershipNo, ct);
+                form.Id, section, membershipNo, cancellationToken: ct);
         }
         catch (InvalidOperationException ex)
         {

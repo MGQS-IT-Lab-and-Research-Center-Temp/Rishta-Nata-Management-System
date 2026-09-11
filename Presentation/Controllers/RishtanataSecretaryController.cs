@@ -146,7 +146,7 @@ public class RishtanataSecretaryController : Controller
         try
         {
             rawToken = await _sharedSectionService.RegenerateSectionTokenAsync(
-                form.Id, section, membershipNo, ct);
+                form.Id, section, membershipNo, allowSubmitted: true, ct);
         }
         catch (InvalidOperationException ex)
         {

@@ -148,12 +148,18 @@ public class SharedSectionService : ISharedSectionService
 
     public async Task<string> GenerateSectionTokenAsync(
         Guid applicationFormId, SectionType section, string createdByMembershipNo,
-        CancellationToken cancellationToken = default)
+        bool allowSubmitted = false, CancellationToken cancellationToken = default)
     {
         var existing = await _context.SectionAccessTokens
             .FirstOrDefaultAsync(
                 x => x.MarriageApplicationFormId == applicationFormId && x.SectionType == section,
                 cancellationToken);
+
+        if (existing?.SubmittedAt is not null && !allowSubmitted)
+        {
+            throw new InvalidOperationException(
+                $"The section {section} was already submitted; only the Rishtanata Secretary may reopen its link.");
+        }
 
         var raw = NewToken();
 
@@ -192,7 +198,7 @@ public class SharedSectionService : ISharedSectionService
 
     public async Task<string> RegenerateSectionTokenAsync(
         Guid applicationFormId, SectionType section, string createdByMembershipNo,
-        CancellationToken cancellationToken = default)
+        bool allowSubmitted = false, CancellationToken cancellationToken = default)
     {
         var row = await _context.SectionAccessTokens
             .FirstOrDefaultAsync(
@@ -200,6 +206,12 @@ public class SharedSectionService : ISharedSectionService
                 cancellationToken)
             ?? throw new InvalidOperationException(
                 $"No link exists for section {section}; generate one first.");
+
+        if (row.SubmittedAt is not null && !allowSubmitted)
+        {
+            throw new InvalidOperationException(
+                $"The section {section} was already submitted; only the Rishtanata Secretary may reopen its link.");
+        }
 
         var raw = NewToken();
         row.TokenHash = HashToken(raw);
