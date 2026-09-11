@@ -24,4 +24,6 @@ public class SectionAccessToken : AuditableEntity
     public string CreatedByMembershipNo { get; set; } = string.Empty;
 
     public DateTime? RevokedAt { get; set; }
+
+    public DateTime? SubmittedAt { get; set; }
 }

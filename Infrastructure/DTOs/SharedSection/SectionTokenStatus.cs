@@ -11,4 +11,5 @@ public class SectionTokenStatus
     public string BrideName { get; init; } = string.Empty;
     public string BridegroomName { get; init; } = string.Empty;
     public string InvalidationReason { get; init; } = string.Empty;
+    public bool IsSubmitted { get; init; }
 }

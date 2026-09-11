@@ -9,4 +9,5 @@ public class SectionLinkStatus
     public bool Complete { get; init; }
     public string? FilledByName { get; init; }
     public string? RawToken { get; init; }
+    public bool Submitted { get; init; }
 }
