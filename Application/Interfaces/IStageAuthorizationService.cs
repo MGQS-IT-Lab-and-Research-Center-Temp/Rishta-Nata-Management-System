@@ -16,9 +16,9 @@ public interface IStageAuthorizationService
         ApplicationStage targetStage,
         CancellationToken cancellationToken = default);
 
-    /// Authorizes against the full paper-form workflow stage tracked on the form's FormStage field. 
-    /// Used by workflow methods whose stages — e.g.
-    /// AwaitingImamVerification, AwaitingWitnesses — have no counterpart in the review-chain
+    /// Authorizes against the full paper-form workflow stage tracked on the form's FormStage field.
+    /// Used by workflow methods whose stages — e.g. AwaitingApplicants and
+    /// Completed — have no counterpart in the review-chain
     
     Task<StageAuthorizationResult> CanUserActAsync(
         string membershipNo,

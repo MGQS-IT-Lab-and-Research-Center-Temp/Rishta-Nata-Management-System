@@ -15,4 +15,10 @@ public class RishtanataRecommendationSection : AuditableEntity
     public string WakeelDeclaration { get; set; } = string.Empty;
 
     public string SignatureDate { get; set; } = string.Empty;
+
+    /// <summary>
+    /// ChandaNo of the Imam the office designates to officiate the ceremony. The
+    /// designated imam is the ONLY person who may sign off (AwaitingImamSignoff).
+    /// </summary>
+    public string OfficiatingImamMembershipNo { get; set; } = string.Empty;
 }

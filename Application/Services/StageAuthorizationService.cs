@@ -161,6 +161,8 @@ public class StageAuthorizationService : IStageAuthorizationService
                 return RequireRole(member, "National Rishtanata Secretary", RoleNames.RishtanataSecretary);
             case ApplicationStage.AmirApproval:
                 return RequireRole(member, "National Amir", RoleNames.Amir);
+            case ApplicationStage.ImamSignoff:
+                return RequireDesignatedImam(member, form);
             default:
                 return StageAuthorizationResult.Deny(
                     StageAuthorizationDenyReason.WrongRole,
@@ -190,14 +192,18 @@ public class StageAuthorizationService : IStageAuthorizationService
                         $"Member '{member.ChandaNo}' is not the bridegroom named on this application.");
             case MarriageFormStage.AwaitingWitnesses:
                 return await MatchesWitnessSlotAsync(member, form, cancellationToken);
-            case MarriageFormStage.AwaitingImamVerification:
-                return RequireImamOrMissionary(member);
-            case MarriageFormStage.AwaitingJamaatPresident:
-                return RequireRole(member, "Jamaat President", RoleNames.JamaatPresident);
+            case MarriageFormStage.AwaitingBrideJamaatPresident:
+                return await RequireJamaatPresidentForAsync(
+                    member, form, form.BrideMembershipNo, cancellationToken);
+            case MarriageFormStage.AwaitingGroomJamaatPresident:
+                return await RequireJamaatPresidentForAsync(
+                    member, form, form.BridegroomMembershipNo, cancellationToken);
             case MarriageFormStage.AwaitingRishtanataSecretary:
                 return RequireRole(member, "National Rishtanata Secretary", RoleNames.RishtanataSecretary);
             case MarriageFormStage.AwaitingAmirApproval:
                 return RequireRole(member, "National Amir", RoleNames.Amir);
+            case MarriageFormStage.AwaitingImamSignoff:
+                return RequireDesignatedImam(member, form);
             default:
                 return StageAuthorizationResult.Deny(
                     StageAuthorizationDenyReason.WrongRole,
@@ -305,6 +311,73 @@ public class StageAuthorizationService : IStageAuthorizationService
             StageAuthorizationDenyReason.WrongRole,
             $"Member '{member.ChandaNo}' holds {actual}; " +
             "an Officiating Imam or Missionary is required for this stage.");
+    }
+
+    /// <summary>
+    /// President gate: the principal must hold the Jamaat President role AND be
+    /// the president of the Jama'at the given partner belongs to. The partner's
+    /// Jama'at is resolved from their member record by ChandaNo.
+    /// </summary>
+    private async Task<StageAuthorizationResult> RequireJamaatPresidentForAsync(
+        JamaatMember member,
+        MarriageApplicationForm form,
+        string partnerMembershipNo,
+        CancellationToken cancellationToken)
+    {
+        var roleGate = RequireRole(member, "Jamaat President", RoleNames.JamaatPresident);
+        if (!roleGate.IsAllowed)
+        {
+            return roleGate;
+        }
+
+        var partnerJamaat = await _context.JamaatMembers
+            .Where(p => p.ChandaNo == partnerMembershipNo)
+            .Select(p => p.JamaatName)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(partnerJamaat)
+            && string.Equals(member.JamaatName.Trim(), partnerJamaat.Trim(), StringComparison.OrdinalIgnoreCase))
+        {
+            return StageAuthorizationResult.Allow();
+        }
+
+        var actual = string.IsNullOrWhiteSpace(member.JamaatName)
+            ? "no Jama'at assigned"
+            : $"the president of '{member.JamaatName}'";
+
+        return StageAuthorizationResult.Deny(
+            StageAuthorizationDenyReason.WrongRole,
+            $"Member '{member.ChandaNo}' is {actual}; the partner on this application belongs to '{partnerJamaat}'.");
+    }
+
+    /// <summary>
+    /// Imam gate: the principal must hold an imam/missionary role AND be the very
+    /// imam the National Rishtanata office designated for this application.
+    /// </summary>
+    private static StageAuthorizationResult RequireDesignatedImam(
+        JamaatMember member,
+        MarriageApplicationForm form)
+    {
+        if (!HasRoleContaining(member, "imam", "missionary"))
+        {
+            var actual = string.IsNullOrWhiteSpace(member.Roles)
+                ? "no roles"
+                : $"roles '{member.Roles}'";
+
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongRole,
+                $"Member '{member.ChandaNo}' holds {actual}; " +
+                "an Officiating Imam or Missionary is required for this stage.");
+        }
+
+        if (MembershipNumbersMatch(member.ChandaNo, form.OfficiatingImamMembershipNo))
+        {
+            return StageAuthorizationResult.Allow();
+        }
+
+        return StageAuthorizationResult.Deny(
+            StageAuthorizationDenyReason.WrongRole,
+            $"Member '{member.ChandaNo}' is not the Imam designated to officiate this application.");
     }
 
     private static bool HasRole(JamaatMember member, params string[] roleNames)

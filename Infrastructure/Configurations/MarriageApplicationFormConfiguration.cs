@@ -52,6 +52,12 @@ public class MarriageApplicationFormConfiguration
                      s => s.MarriageApplicationFormId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne(f => f.GroomJamaatPresidentVerification)
+                .WithOne(s => s.MarriageApplicationForm)
+                .HasForeignKey<GroomJamaatPresidentVerificationSection>(
+                     s => s.MarriageApplicationFormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasOne(f => f.RishtanataRecommendation)
                 .WithOne(s => s.MarriageApplicationForm)
                 .HasForeignKey<RishtanataRecommendationSection>(
@@ -241,10 +247,19 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.OfficiatingImamSignatureDate)
             .HasMaxLength(50);
 
+        builder.Property(f => f.OfficiatingImamMembershipNo)
+            .HasMaxLength(50);
+
         builder.Property(f => f.JamaatPresidentName)
             .HasMaxLength(200);
 
         builder.Property(f => f.JamaatPresidentSignatureDate)
+            .HasMaxLength(50);
+
+        builder.Property(f => f.GroomJamaatPresidentName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.GroomJamaatPresidentSignatureDate)
             .HasMaxLength(50);
 
         builder.Property(f => f.NationalRishtanataSecretaryName)
