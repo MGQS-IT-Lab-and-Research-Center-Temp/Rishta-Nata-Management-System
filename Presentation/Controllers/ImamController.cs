@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Workflow;
 using Domain.Constants;
+using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ViewModels.Imam;
@@ -14,15 +15,18 @@ public class ImamController : Controller
     private readonly IImamSignoffService _signoffService;
     private readonly IMarriageApplicationFormService _formService;
     private readonly IMarriageFormWorkflowService _workflowService;
+    private readonly IStageAuthorizationService _authorizationService;
 
     public ImamController(
         IImamSignoffService signoffService,
         IMarriageApplicationFormService formService,
-        IMarriageFormWorkflowService workflowService)
+        IMarriageFormWorkflowService workflowService,
+        IStageAuthorizationService authorizationService)
     {
         _signoffService = signoffService;
         _formService = formService;
         _workflowService = workflowService;
+        _authorizationService = authorizationService;
     }
 
     private string CurrentMembershipNo =>
@@ -56,6 +60,13 @@ public class ImamController : Controller
     [HttpGet("Imam/Signoff/{id:guid}")]
     public async Task<IActionResult> Signoff(Guid id, CancellationToken ct)
     {
+        var authorization = await _authorizationService.CanUserActAsync(
+            CurrentMembershipNo, id, MarriageFormStage.AwaitingImamSignoff, ct);
+        if (!authorization.IsAllowed)
+        {
+            return NotFound("Application not found.");
+        }
+
         var form = await _formService.GetByIdAsync(id, ct);
         if (form is null)
         {

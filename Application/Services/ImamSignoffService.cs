@@ -28,6 +28,7 @@ public class ImamSignoffService : IImamSignoffService
             .Where(f => f.FormStage == MarriageFormStage.AwaitingImamSignoff)
             .Where(f => f.OfficiatingImamMembershipNo == membershipNo)
             .OrderBy(f => f.ModifiedAt)
+            .ThenBy(f => f.Id)
             .Select(f => new ImamPendingApplicationDto
             {
                 FormId = f.Id,
