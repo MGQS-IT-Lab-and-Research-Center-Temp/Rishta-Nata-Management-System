@@ -76,5 +76,10 @@ public class JamaatPresidentReviewDto
     public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
 
     public DateTime? ApprovedDateOfNikah { get; set; }
+
+    /// <summary>True when the bride and groom belong to the same Jama'at
+    /// (the president signs once for both partners).</summary>
+    public bool PartnersShareJamaat { get; set; }
+
     public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
 }
