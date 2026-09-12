@@ -296,23 +296,6 @@ public class StageAuthorizationService : IStageAuthorizationService
             $"{officeName} is required for this stage.");
     }
 
-    private static StageAuthorizationResult RequireImamOrMissionary(JamaatMember member)
-    {
-        if (HasRoleContaining(member, "imam", "missionary"))
-        {
-            return StageAuthorizationResult.Allow();
-        }
-
-        var actual = string.IsNullOrWhiteSpace(member.Roles)
-            ? "no roles"
-            : $"roles '{member.Roles}'";
-
-        return StageAuthorizationResult.Deny(
-            StageAuthorizationDenyReason.WrongRole,
-            $"Member '{member.ChandaNo}' holds {actual}; " +
-            "an Officiating Imam or Missionary is required for this stage.");
-    }
-
     /// <summary>
     /// President gate: the principal must hold the Jamaat President role AND be
     /// the president of the Jama'at the given partner belongs to. The partner's
