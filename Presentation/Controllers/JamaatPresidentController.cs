@@ -9,6 +9,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using Domain.Constants;
+using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -21,13 +23,16 @@ public class JamaatPresidentController : Controller
 {
     private readonly IJamaatPresidentService _service;
     private readonly ICertificateService _certificateService;
+    private readonly IStageAuthorizationService _authorizationService;
 
     public JamaatPresidentController(
         IJamaatPresidentService service,
-        ICertificateService certificateService)
+        ICertificateService certificateService,
+        IStageAuthorizationService authorizationService)
     {
         _service = service;
         _certificateService = certificateService;
+        _authorizationService = authorizationService;
     }
 
     // ============================================================
@@ -49,6 +54,11 @@ public class JamaatPresidentController : Controller
     [HttpGet]
     public async Task<IActionResult> Review(Guid id)
     {
+        if (!await CanReviewAsync(id))
+        {
+            return NotFound("Marriage application or its form was not found.");
+        }
+
         var dto = await _service.GetReviewByIdAsync(id);
 
         if (dto == null)
@@ -67,6 +77,11 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(Guid id)
     {
+        if (!await CanReviewAsync(id))
+        {
+            return NotFound("Marriage application or its form was not found.");
+        }
+
         var success = await _service.ApproveAsync(id, GetCurrentUserId());
 
         TempData["Success"] = success
@@ -88,6 +103,11 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(Guid id)
     {
+        if (!await CanReviewAsync(id))
+        {
+            return NotFound("Marriage application or its form was not found.");
+        }
+
         var success = await _service.RejectAsync(id, GetCurrentUserId());
 
         TempData["Success"] = success
@@ -109,6 +129,11 @@ public class JamaatPresidentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RequestMoreInformation(Guid id)
     {
+        if (!await CanReviewAsync(id))
+        {
+            return NotFound("Marriage application or its form was not found.");
+        }
+
         var success = await _service.RequestMoreInformationAsync(id, GetCurrentUserId());
 
         TempData["Success"] = success
@@ -146,6 +171,27 @@ public class JamaatPresidentController : Controller
     // ============================================================
     // CURRENT USER
     // ============================================================
+
+    private string CurrentMembershipNo =>
+        User.FindFirstValue(ClaimNames.MembershipNo)
+        ?? User.FindFirstValue(ClaimTypes.Name)
+        ?? string.Empty;
+
+    private async Task<bool> CanReviewAsync(Guid id)
+    {
+        var brideStage = await _authorizationService.CanUserActAsync(
+            CurrentMembershipNo, id, MarriageFormStage.AwaitingBrideJamaatPresident);
+
+        if (brideStage.IsAllowed)
+        {
+            return true;
+        }
+
+        var groomStage = await _authorizationService.CanUserActAsync(
+            CurrentMembershipNo, id, MarriageFormStage.AwaitingGroomJamaatPresident);
+
+        return groomStage.IsAllowed;
+    }
 
     private Guid? GetCurrentUserId()
     {
