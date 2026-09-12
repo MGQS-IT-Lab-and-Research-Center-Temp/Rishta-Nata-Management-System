@@ -391,6 +391,41 @@
 
     </div>
 
+    <!-- Officiating Imam designation -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">Officiating Imam</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="SaveImamDesignation" asp-controller="RishtanataSecretary" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Designated Imam (membership no)</label>
+                        <input name="officiatingImamMembershipNo"
+                               value="@Model.OfficiatingImamMembershipNo"
+                               class="form-control"
+                               placeholder="e.g. 12345" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Approved Nikah date</label>
+                        <input name="approvedDateOfNikah"
+                               type="date"
+                               value="@(Model.ApprovedDateOfNikah?.ToString("yyyy-MM-dd"))"
+                               class="form-control" />
+                        <small class="text-muted">
+                            Only changeable when the partners communicate a change to the office.
+                        </small>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Save designation</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Workflow -->
 
     <div class="card shadow-sm border-0">

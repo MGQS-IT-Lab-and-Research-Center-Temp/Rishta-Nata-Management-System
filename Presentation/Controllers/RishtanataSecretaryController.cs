@@ -199,4 +199,22 @@ public class RishtanataSecretaryController : Controller
 
         return RedirectToAction(nameof(PendingApprovals));
     }
+
+    [HttpPost("SaveImamDesignation")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveImamDesignation(
+        Guid id,
+        string officiatingImamMembershipNo,
+        DateTime? approvedDateOfNikah,
+        CancellationToken ct)
+    {
+        var ok = await _service.UpdateImamDesignationAsync(
+            id, officiatingImamMembershipNo, approvedDateOfNikah, ct);
+
+        TempData[ok ? "Success" : "Error"] = ok
+            ? "Officiating imam designation saved."
+            : "Could not save the designation — application not found.";
+
+        return RedirectToAction(nameof(Review), new { id });
+    }
 }

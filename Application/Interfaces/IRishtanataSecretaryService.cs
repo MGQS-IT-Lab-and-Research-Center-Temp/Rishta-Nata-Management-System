@@ -2,6 +2,10 @@
 using Infrastructure.DTOs.MarriedCoupleDto;
 using Infrastructure.DTOs.RishtanataSecretaryDashboardDto;
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Application.Interfaces;
 
 /// <summary>
@@ -31,4 +35,14 @@ public interface IRishtanataSecretaryService
     Task<bool> Reject(Guid id);
 
     Task<bool> ReturnToPresident(Guid id);
+
+    /// <summary>
+    /// Records the officiating imam (and any partner-communicated agreed-date
+    /// change) the National Rishtanata office designates for the application.
+    /// </summary>
+    Task<bool> UpdateImamDesignationAsync(
+        Guid id,
+        string officiatingImamMembershipNo,
+        DateTime? approvedDateOfNikah,
+        CancellationToken cancellationToken = default);
 }
