@@ -103,7 +103,7 @@ public class SharedSectionService : ISharedSectionService
         if (form.FormStage == MarriageFormStage.AwaitingWitnesses &&
             IsBlockComplete(form))
         {
-            form.FormStage = MarriageFormStage.AwaitingImamVerification;
+            form.FormStage = MarriageFormStage.AwaitingBrideJamaatPresident;
             advanced = true;
         }
 
@@ -122,7 +122,7 @@ public class SharedSectionService : ISharedSectionService
             Success = true,
             StageAdvanced = advanced,
             Message = advanced
-                ? "All signatures are recorded; the application moves to Imam verification."
+                ? "All signatures are recorded; the application moves to the Jama'at President's review."
                 : "Your section has been recorded."
         };
     }

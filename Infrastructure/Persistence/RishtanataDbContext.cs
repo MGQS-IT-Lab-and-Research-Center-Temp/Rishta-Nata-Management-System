@@ -33,6 +33,7 @@ public class RishtanataDbContext : DbContext
         modelBuilder.Entity<GuardianOrWakeelSection>().ToTable("NikahGuardians");
         modelBuilder.Entity<ImamVerificationSection>().ToTable("ImamVerifications");
         modelBuilder.Entity<JamaatPresidentVerificationSection>().ToTable("JamaatPresidentVerifications");
+        modelBuilder.Entity<GroomJamaatPresidentVerificationSection>().ToTable("GroomJamaatPresidentVerifications");
         modelBuilder.Entity<RishtanataRecommendationSection>().ToTable("RishtanataRecommendations");
         modelBuilder.Entity<AmirApprovalSection>().ToTable("AmirApprovals");
         modelBuilder.Entity<WitnessSignatureSection>().ToTable("WitnessSignatures");
@@ -71,6 +72,16 @@ public class RishtanataDbContext : DbContext
 
         modelBuilder.Entity<WitnessSignatureSection>(e =>
             e.Property(x => x.ReferenceNumber).HasMaxLength(50));
+
+        modelBuilder.Entity<GroomJamaatPresidentVerificationSection>(e =>
+        {
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.Property(x => x.Tel).HasMaxLength(30);
+            e.Property(x => x.SignatureDate).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<RishtanataRecommendationSection>(e =>
+            e.Property(x => x.OfficiatingImamMembershipNo).HasMaxLength(50));
 
         // One revocable share-link token per form+section. Regeneration
         // overwrites TokenHash and RawToken in place, so at most one row ever

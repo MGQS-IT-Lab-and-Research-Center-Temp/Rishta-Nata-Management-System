@@ -1,0 +1,60 @@
+@model Presentation.ViewModels.Imam.ImamDashboardViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "My Sign-offs";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Ceremonies awaiting my sign-off</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (!Model.PendingSignoffs.Any())
+    {
+        <div class="alert alert-info">
+            No ceremonies are waiting on your sign-off right now.
+        </div>
+    }
+
+    <div class="row g-4">
+        @foreach (var item in Model.PendingSignoffs)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Couple</h5>
+                        <p class="text-muted mb-1">
+                            Ref: @item.ReferenceNumber
+                        </p>
+                        <p class="mb-1">
+                            Nikah date:
+                            <strong>
+                                @(item.ApprovedDateOfNikah?.ToString("dd MMMM yyyy") ?? "—")
+                            </strong>
+                        </p>
+                        <p class="mb-3">
+                            Venue: @(string.IsNullOrWhiteSpace(item.Venue) ? "—" : item.Venue)
+                        </p>
+
+                        @if (item.Signed)
+                        {
+                            <span class="badge bg-success">Signed @item.SignatureDate</span>
+                        }
+                        else
+                        {
+                            <a asp-action="Signoff"
+                               asp-route-id="@item.FormId"
+                               class="btn btn-primary btn-sm">
+                                Review &amp; sign off
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

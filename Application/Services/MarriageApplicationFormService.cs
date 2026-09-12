@@ -299,18 +299,28 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
             await RemoveSectionsAsync<GuardianOrWakeelSection>(formId, cancellationToken);
             await RemoveSectionsAsync<ImamVerificationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<JamaatPresidentVerificationSection>(formId, cancellationToken);
+            await RemoveSectionsAsync<GroomJamaatPresidentVerificationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<RishtanataRecommendationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<AmirApprovalSection>(formId, cancellationToken);
             await RemoveSectionsAsync<WitnessSignatureSection>(formId, cancellationToken);
         }
         else if (targetStage == ApplicationStage.JamaatPresidentReview)
         {
+            // The groom-president step (when it happened) and everything after the
+            // president chain must be redone; the imam sign-off is forward too.
+            await RemoveSectionsAsync<GroomJamaatPresidentVerificationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<RishtanataRecommendationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<AmirApprovalSection>(formId, cancellationToken);
+            await RemoveSectionsAsync<ImamVerificationSection>(formId, cancellationToken);
         }
         else if (targetStage == ApplicationStage.NationalRishtanataSecretaryVerification)
         {
             await RemoveSectionsAsync<AmirApprovalSection>(formId, cancellationToken);
+            await RemoveSectionsAsync<ImamVerificationSection>(formId, cancellationToken);
+        }
+        else if (targetStage == ApplicationStage.AmirApproval)
+        {
+            await RemoveSectionsAsync<ImamVerificationSection>(formId, cancellationToken);
         }
     }
 
@@ -381,7 +391,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         if (guardianOrWakeelSigned && bothWitnessesSigned)
         {
             application.FormStage =
-                MarriageFormStage.AwaitingImamVerification;
+                MarriageFormStage.AwaitingBrideJamaatPresident;
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -454,7 +464,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         if (guardianOrWakeelSigned && bothWitnessesSigned)
         {
             application.FormStage =
-                MarriageFormStage.AwaitingImamVerification;
+                MarriageFormStage.AwaitingBrideJamaatPresident;
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);

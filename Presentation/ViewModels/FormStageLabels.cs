@@ -11,10 +11,15 @@ public static class FormStageLabels
         MarriageFormStage.AwaitingBridegroom => "Waiting on the bridegroom's section",
         MarriageFormStage.AwaitingWitnesses =>
             "Signatures needed — Guardian/Waliy, Witness 1, Witness 2",
-        MarriageFormStage.AwaitingImamVerification => "Waiting on the Imam's verification",
-        MarriageFormStage.AwaitingJamaatPresident => "Waiting on the Jamaat President",
-        MarriageFormStage.AwaitingRishtanataSecretary => "Waiting on the National Rishtanata Secretary",
+        MarriageFormStage.AwaitingBrideJamaatPresident =>
+            "Waiting on the Bride's Jama'at President",
+        MarriageFormStage.AwaitingGroomJamaatPresident =>
+            "Waiting on the Bridegroom's Jama'at President",
+        MarriageFormStage.AwaitingRishtanataSecretary =>
+            "Waiting on the National Rishtanata Secretary",
         MarriageFormStage.AwaitingAmirApproval => "Waiting on the National Amir's approval",
+        MarriageFormStage.AwaitingImamSignoff =>
+            "Waiting on the Imam's sign-off after the ceremony",
         MarriageFormStage.Completed => "Completed",
         _ => null
     };

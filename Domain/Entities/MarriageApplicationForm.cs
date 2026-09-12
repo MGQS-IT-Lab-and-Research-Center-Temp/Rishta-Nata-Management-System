@@ -98,12 +98,21 @@ namespace Domain.Entities
         public string WitnessTwoSignatureDate { get; set; } = string.Empty;
 
         // ===== Verification & Approval =====
+        /// <summary>
+        /// ChandaNo of the Imam designated by the National Rishtanata office to
+        /// officiate the ceremony. Authorizes the AwaitingImamSignoff step.
+        /// </summary>
+        public string OfficiatingImamMembershipNo { get; set; } = string.Empty;
+
         public string OfficiatingImamName { get; set; } = string.Empty;
         public string OfficiatingImamAddressJamaat { get; set; } = string.Empty;
         public string OfficiatingImamSignatureDate { get; set; } = string.Empty;
 
         public string JamaatPresidentName { get; set; } = string.Empty;
         public string JamaatPresidentSignatureDate { get; set; } = string.Empty;
+
+        public string GroomJamaatPresidentName { get; set; } = string.Empty;
+        public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
 
         public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
         public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
@@ -124,6 +133,8 @@ namespace Domain.Entities
         public ImamVerificationSection? ImamVerification { get; set; }
 
         public JamaatPresidentVerificationSection? JamaatPresidentVerification { get; set; }
+
+        public GroomJamaatPresidentVerificationSection? GroomJamaatPresidentVerification { get; set; }
 
         public RishtanataRecommendationSection? RishtanataRecommendation { get; set; }
 

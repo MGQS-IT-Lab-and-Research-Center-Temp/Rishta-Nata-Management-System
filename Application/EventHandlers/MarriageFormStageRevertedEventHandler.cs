@@ -38,6 +38,7 @@ public class MarriageFormStageRevertedEventHandler : IEventHandler<MarriageFormS
             .Include(f => f.GuardianOrWakeelSection)
             .Include(f => f.ImamVerification)
             .Include(f => f.JamaatPresidentVerification)
+            .Include(f => f.GroomJamaatPresidentVerification)
             .Include(f => f.RishtanataRecommendation)
             .Include(f => f.AmirApproval)
             .FirstOrDefaultAsync(f => f.Id == domainEvent.MarriageFormId, cancellationToken);
@@ -94,14 +95,16 @@ public class MarriageFormStageRevertedEventHandler : IEventHandler<MarriageFormS
                 form.BridegroomSection?.CreatedBy is Guid bridegroomId ? new[] { bridegroomId } : Enumerable.Empty<Guid>(),
             MarriageFormStage.AwaitingWitnesses =>
                 form.WitnessSignatures.Where(w => w.CreatedBy.HasValue).Select(w => w.CreatedBy!.Value).Distinct(),
-            MarriageFormStage.AwaitingImamVerification =>
-                form.ImamVerification?.CreatedBy is Guid imamId ? new[] { imamId } : Enumerable.Empty<Guid>(),
-            MarriageFormStage.AwaitingJamaatPresident =>
+            MarriageFormStage.AwaitingBrideJamaatPresident =>
                 form.JamaatPresidentVerification?.CreatedBy is Guid presidentId ? new[] { presidentId } : Enumerable.Empty<Guid>(),
+            MarriageFormStage.AwaitingGroomJamaatPresident =>
+                form.GroomJamaatPresidentVerification?.CreatedBy is Guid groomPresidentId ? new[] { groomPresidentId } : Enumerable.Empty<Guid>(),
             MarriageFormStage.AwaitingRishtanataSecretary =>
                 form.RishtanataRecommendation?.CreatedBy is Guid secretaryId ? new[] { secretaryId } : Enumerable.Empty<Guid>(),
             MarriageFormStage.AwaitingAmirApproval =>
                 form.AmirApproval?.CreatedBy is Guid amirId ? new[] { amirId } : Enumerable.Empty<Guid>(),
+            MarriageFormStage.AwaitingImamSignoff =>
+                form.ImamVerification?.CreatedBy is Guid imamId ? new[] { imamId } : Enumerable.Empty<Guid>(),
             _ => Enumerable.Empty<Guid>()
         };
     }
