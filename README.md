@@ -58,8 +58,8 @@ The default route is the login page (`Auth/Login`).
 
 The application is a staged Nikah form: either the groom or the bride can start
 it, the intending partner connects by membership number, and the form then moves
-through witnesses → guardian → Imam → Jamaat President → National Rishtanata
-Secretary → Amir approval.
+through witnesses → guardian → Jamaat President(s) → National Rishtanata
+Secretary → Amir approval → Nikkah ceremony → Imam sign-off.
 
 - **Workflow** (how the data moves): `docs/application-workflow.md`
 - **Authorization** (who may act on each stage): `docs/stage-authorization-policy.md`
