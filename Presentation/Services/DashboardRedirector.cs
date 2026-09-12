@@ -28,6 +28,9 @@ public class DashboardRedirector : IDashboardRedirector
         if (HasRole(RoleNames.MissionaryInCharge))
             return RedirectTo("Dashboard", "MissionaryInCharge");
 
+        if (roles.Any(r => r.Contains("imam", StringComparison.OrdinalIgnoreCase)))
+            return RedirectTo("Dashboard", "Imam");
+
         if (HasRole(RoleNames.CircuitPresident))
             return RedirectTo("Dashboard", "CircuitPresident");
 
