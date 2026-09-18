@@ -54,6 +54,8 @@ public class JamaatPresidentService : IJamaatPresidentService
         var pendingApplications = await _context.FormApplications
             .Where(x => pendingStatuses.Contains(x.Status))
             .Include(x => x.MarriageApplicationForm)
+            .Where(x => x.MarriageApplicationForm.FormStage == MarriageFormStage.AwaitingBrideJamaatPresident
+                        || x.MarriageApplicationForm.FormStage == MarriageFormStage.AwaitingGroomJamaatPresident)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
@@ -83,15 +85,22 @@ public class JamaatPresidentService : IJamaatPresidentService
             })
             .ToListAsync();
 
+        var myJamaat = jamaatMember.JamaatName ?? string.Empty;
+
+        var eligible = pendingApplications
+            .Where(app => app.MarriageApplicationForm is not null
+                          && IsResponsiblePresident(myJamaat, app.MarriageApplicationForm))
+            .ToList();
+
         return new JamaatPresidentDashboardDto
         {
             PresidentName = BuildFullName(jamaatMember.FirstName, jamaatMember.Surname),
             JamaatName = jamaatMember.JamaatName ?? "Jama'at",
             CircuitName = jamaatMember.CircuitName ?? "Circuit",
-            PendingNikahReviews = pendingApplications.Count,
+            PendingNikahReviews = eligible.Count,
             //ReviewedToday = reviewedToday,
             TotalNikahApplications = totalApplications,
-            PendingApplications = pendingApplications
+            PendingApplications = eligible
                 .Select(x => new NikahApplicationDto
                 {
                     Id = x.Id,
@@ -133,6 +142,9 @@ public class JamaatPresidentService : IJamaatPresidentService
             Status = application.Status.ToString(),
             SubmittedDate = application.CreatedAt,
             CurrentStage = form.ApplicationStage,
+            PartnersShareJamaat = SameJamaatIgnoreCase(
+                ResolveJamaat(form.BrideMembershipNo),
+                ResolveJamaat(form.BridegroomMembershipNo)),
 
             ProposedNikahDate = form.ProposedNikahDate,
             Venue = form.Venue,
@@ -291,4 +303,53 @@ public class JamaatPresidentService : IJamaatPresidentService
 
     private static string BuildFullName(string? firstName, string? surname) =>
         $"{firstName} {surname}".Trim();
+
+    private readonly Dictionary<string, string> _jamaatByChanda = new(StringComparer.OrdinalIgnoreCase);
+
+    private string ResolveJamaat(string chandaNo)
+    {
+        if (string.IsNullOrWhiteSpace(chandaNo))
+            return string.Empty;
+
+        if (_jamaatByChanda.TryGetValue(chandaNo, out var cached))
+            return cached;
+
+        var jamaat = _context.JamaatMembers
+            .Where(m => m.ChandaNo == chandaNo)
+            .Select(m => m.JamaatName)
+            .FirstOrDefault() ?? string.Empty;
+
+        _jamaatByChanda[chandaNo] = jamaat;
+        return jamaat;
+    }
+
+    private static bool SameJamaatIgnoreCase(string a, string b) =>
+        !string.IsNullOrWhiteSpace(a)
+        && !string.IsNullOrWhiteSpace(b)
+        && string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+
+    private bool IsResponsiblePresident(
+        string presidentJamaat,
+        MarriageApplicationForm form)
+    {
+        if (string.IsNullOrWhiteSpace(presidentJamaat) || form is null)
+            return false;
+
+        string partnerJamaat;
+        if (form.FormStage == MarriageFormStage.AwaitingBrideJamaatPresident)
+        {
+            partnerJamaat = ResolveJamaat(form.BrideMembershipNo);
+        }
+        else if (form.FormStage == MarriageFormStage.AwaitingGroomJamaatPresident)
+        {
+            partnerJamaat = ResolveJamaat(form.BridegroomMembershipNo);
+        }
+        else
+        {
+            return false;
+        }
+
+        return !string.IsNullOrWhiteSpace(partnerJamaat)
+            && string.Equals(presidentJamaat, partnerJamaat, StringComparison.OrdinalIgnoreCase);
+    }
 }

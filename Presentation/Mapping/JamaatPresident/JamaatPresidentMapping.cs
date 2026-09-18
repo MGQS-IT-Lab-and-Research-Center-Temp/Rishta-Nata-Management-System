@@ -125,6 +125,7 @@ public static class JamaatPresidentMapping
             NationalRishtanataSecretarySignatureDate = dto.NationalRishtanataSecretarySignatureDate,
 
             ApprovedDateOfNikah = dto.ApprovedDateOfNikah,
+            PartnersShareJamaat = dto.PartnersShareJamaat,
             NationalAmirOrMissionarySignatureDate = dto.NationalAmirOrMissionarySignatureDate
         };
     }

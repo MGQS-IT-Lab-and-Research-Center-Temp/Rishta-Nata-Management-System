@@ -5,6 +5,13 @@ file as items are fixed.
 
 ## Fixed (recent session)
 
+- The verification chain previously had the Imam sign during the filling phase
+  (before the Jama'at President) with no ceremony step. Corrected — the Imam now
+  signs off only after Amir approval and the ceremony (`AwaitingImamSignoff`),
+  the president sign-off is split per-partner for different-Jamaat couples, and
+  the National Rishtanata office designates the officiating imam. See
+  `docs/superpowers/specs/2026-09-11-imam-post-ceremony-workflow-reorder-design.md`.
+
 - **FormStage/Revert deadlock resolved.** `MarriageApplicationForm.ApplicationStage`
   was initialised once (`ApplicantsReview`) and never advanced, so
   `RevertStageAsync` (which requires `targetStage < currentStage`) always failed.

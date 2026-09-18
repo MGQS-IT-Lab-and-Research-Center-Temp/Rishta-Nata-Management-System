@@ -19,16 +19,24 @@ public class RishtanataSecretaryController : Controller
     private readonly IRishtanataSecretaryService _service;
     private readonly ISharedSectionService _sharedSectionService;
     private readonly IMarriageApplicationFormService _formService;
+    private readonly IStageAuthorizationService _authorizationService;
 
     public RishtanataSecretaryController(
         IRishtanataSecretaryService service,
         ISharedSectionService sharedSectionService,
-        IMarriageApplicationFormService formService)
+        IMarriageApplicationFormService formService,
+        IStageAuthorizationService authorizationService)
     {
         _service = service;
         _sharedSectionService = sharedSectionService;
         _formService = formService;
+        _authorizationService = authorizationService;
     }
+
+    private string CurrentMembershipNo =>
+        User.FindFirstValue(ClaimNames.MembershipNo)
+        ?? User.FindFirstValue(ClaimTypes.Name)
+        ?? string.Empty;
 
     // Dashboard page
     public IActionResult Dashboard()
@@ -198,5 +206,35 @@ public class RishtanataSecretaryController : Controller
         await _service.Reject(id);
 
         return RedirectToAction(nameof(PendingApprovals));
+    }
+
+    [HttpPost("SaveImamDesignation")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveImamDesignation(
+        Guid id,
+        string officiatingImamMembershipNo,
+        DateTime? approvedDateOfNikah,
+        CancellationToken ct)
+    {
+        var authorized = await _authorizationService.CanUserActAsync(
+            CurrentMembershipNo,
+            id,
+            ApplicationStage.NationalRishtanataSecretaryVerification,
+            ct);
+
+        if (!authorized.IsAllowed)
+        {
+            TempData["Error"] = "The application is not in the secretary review stage.";
+            return RedirectToAction(nameof(Review), new { id });
+        }
+
+        var ok = await _service.UpdateImamDesignationAsync(
+            id, officiatingImamMembershipNo, approvedDateOfNikah, ct);
+
+        TempData[ok ? "Success" : "Error"] = ok
+            ? "Officiating imam designation saved."
+            : "Could not save the designation — application not found.";
+
+        return RedirectToAction(nameof(Review), new { id });
     }
 }

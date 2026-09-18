@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IMemberLookupService, MemberLookupService>();
         services.AddScoped<IPartnerEligibilityService, PartnerEligibilityService>();
         services.AddScoped<ISharedSectionService, SharedSectionService>();
+        services.AddScoped<IImamSignoffService, ImamSignoffService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEventHandler<MarriageFormStageRevertedEvent>, MarriageFormStageRevertedEventHandler>();
 

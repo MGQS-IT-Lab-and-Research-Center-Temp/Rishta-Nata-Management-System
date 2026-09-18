@@ -13,6 +13,12 @@ namespace Application.Workflow;
 /// initialised once and never advanced), which deadlocked revert. This mapping
 /// is the single source of truth that keeps them in sync. Update the reverse
 /// mapping when adding a new stage.
+///
+/// Chain order (Imam signs AFTER the ceremony, not during filling):
+///   AwaitingBride/AwaitingBridegroom/AwaitingWitnesses
+///     → AwaitingBrideJamaatPresident → [AwaitingGroomJamaatPresident]
+///     → AwaitingRishtanataSecretary → AwaitingAmirApproval
+///     → AwaitingImamSignoff → Completed
 /// </summary>
 public static class WorkflowStageMapping
 {
@@ -22,11 +28,11 @@ public static class WorkflowStageMapping
         {
             MarriageFormStage.AwaitingBride or
             MarriageFormStage.AwaitingBridegroom or
-            MarriageFormStage.AwaitingWitnesses or
-            MarriageFormStage.AwaitingImamVerification =>
+            MarriageFormStage.AwaitingWitnesses =>
                 ApplicationStage.ApplicantsReview,
 
-            MarriageFormStage.AwaitingJamaatPresident =>
+            MarriageFormStage.AwaitingBrideJamaatPresident or
+            MarriageFormStage.AwaitingGroomJamaatPresident =>
                 ApplicationStage.JamaatPresidentReview,
 
             MarriageFormStage.AwaitingRishtanataSecretary =>
@@ -35,7 +41,11 @@ public static class WorkflowStageMapping
             MarriageFormStage.AwaitingAmirApproval =>
                 ApplicationStage.AmirApproval,
 
-            // Completed/neutral start have no coarse counterpart.
+            MarriageFormStage.AwaitingImamSignoff =>
+                ApplicationStage.ImamSignoff,
+
+            // Completed and AwaitingApplicants have no coarse counterpart (the
+            // obsolete pre-ceremony Imam-verification stage maps to null too).
             _ => null
         };
 
@@ -51,13 +61,16 @@ public static class WorkflowStageMapping
                 MarriageFormStage.AwaitingWitnesses,
 
             ApplicationStage.JamaatPresidentReview =>
-                MarriageFormStage.AwaitingJamaatPresident,
+                MarriageFormStage.AwaitingBrideJamaatPresident,
 
             ApplicationStage.NationalRishtanataSecretaryVerification =>
                 MarriageFormStage.AwaitingRishtanataSecretary,
 
             ApplicationStage.AmirApproval =>
                 MarriageFormStage.AwaitingAmirApproval,
+
+            ApplicationStage.ImamSignoff =>
+                MarriageFormStage.AwaitingImamSignoff,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(stage), stage, "Unknown application stage.")

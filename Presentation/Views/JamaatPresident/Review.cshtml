@@ -27,6 +27,23 @@
     </div>
 
 
+    @if (Model.PartnersShareJamaat)
+    {
+        <div class="alert alert-info">
+            The bride and bridegroom belong to the same Jama'at, so your sign-off covers
+            <strong>both partners</strong> — review both sections below before signing.
+        </div>
+    }
+    else if (Model.CurrentStage.HasValue && Model.CurrentStage.Value == Domain.Enums.ApplicationStage.JamaatPresidentReview)
+    {
+        <div class="alert alert-warning">
+            This couple are from different Jama'ats, so each partner's Jama'at President
+            reviews separately. Ensure this is the <strong>respective partner's</strong>
+            submission before signing.
+        </div>
+    }
+
+
     <!-- Status -->
     <div class="alert alert-warning">
 

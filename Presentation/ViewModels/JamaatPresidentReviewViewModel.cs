@@ -168,5 +168,7 @@ public class JamaatPresidentReviewViewModel
 
     public DateTime? ApprovedDateOfNikah { get; set; }
 
+    public bool PartnersShareJamaat { get; set; }
+
     public string NationalAmirOrMissionarySignatureDate { get; set; } = string.Empty;
 }
