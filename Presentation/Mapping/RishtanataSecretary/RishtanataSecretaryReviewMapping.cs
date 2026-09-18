@@ -22,7 +22,9 @@ namespace Presentation.Mapping.RishtanataSecretary;
             PresidentName = dto.PresidentName,
             Status = dto.Status,
             SubmittedDate = dto.SubmittedDate,
-            CurrentStage = dto.CurrentStage
+            CurrentStage = dto.CurrentStage,
+            OfficiatingImamMembershipNo = dto.OfficiatingImamMembershipNo,
+            ApprovedDateOfNikah = dto.ApprovedDateOfNikah,
         };
     }
 

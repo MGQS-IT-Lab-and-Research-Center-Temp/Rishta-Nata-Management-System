@@ -96,7 +96,9 @@ namespace Application.Services
                 PresidentName = form.JamaatPresidentName,
                 SubmittedDate = form.CreatedAt,
                 Status = form.MarriageApplication.Status.ToString(),
-                CurrentStage = form.ApplicationStage
+                CurrentStage = form.ApplicationStage,
+                OfficiatingImamMembershipNo = form.OfficiatingImamMembershipNo,
+                ApprovedDateOfNikah = form.ApprovedDateOfNikah,
             };
         }
 
@@ -209,6 +211,35 @@ namespace Application.Services
             application.Status = ApplicationStatus.ApplicationApproved;
 
             await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> UpdateImamDesignationAsync(
+            Guid id,
+            string officiatingImamMembershipNo,
+            DateTime? approvedDateOfNikah,
+            CancellationToken cancellationToken = default)
+        {
+            var form = await _context.MarriageApplicationForms
+                .FirstOrDefaultAsync(
+                    x => x.MarriageApplicationId == id || x.Id == id,
+                    cancellationToken);
+
+            if (form == null)
+                return false;
+
+            form.OfficiatingImamMembershipNo =
+                officiatingImamMembershipNo?.Trim() ?? string.Empty;
+            form.ModifiedAt = DateTime.UtcNow;
+
+            // The agreed date may change only as communicated by the partners.
+            if (approvedDateOfNikah.HasValue)
+            {
+                form.ApprovedDateOfNikah = approvedDateOfNikah.Value;
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return true;
         }

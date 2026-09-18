@@ -35,4 +35,8 @@ public class ReviewApplicationViewModel
 
     /// <summary>The form's current review-chain stage, for the revert modal.</summary>
     public ApplicationStage? CurrentStage { get; set; }
+
+    public string? OfficiatingImamMembershipNo { get; set; }
+
+    public DateTime? ApprovedDateOfNikah { get; set; }
 }

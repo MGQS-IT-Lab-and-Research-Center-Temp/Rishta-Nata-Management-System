@@ -7,7 +7,7 @@ namespace Application.Interfaces;
 /// Anonymous shared-section flow: token validation, section submission with
 /// the signature-block stage advance, panel status, minting, regeneration and
 /// revocation. The guardian/witness block advances AwaitingWitnesses →
-/// AwaitingImamVerification once all three sections are recorded.
+/// AwaitingBrideJamaatPresident once all three sections are recorded.
 /// </summary>
 public interface ISharedSectionService
 {

@@ -85,8 +85,10 @@ The micro stage moves through the paper-form order:
 ```
 AwaitingApplicants ──┬─ (bride first) ──→ AwaitingBride ──→ AwaitingWitnesses
                      └─ (groom first) ──→ AwaitingBridegroom ─┘
-AwaitingWitnesses → AwaitingImamVerification → AwaitingJamaatPresident
-                 → AwaitingRishtanataSecretary → AwaitingAmirApproval → Completed
+AwaitingWitnesses → AwaitingBrideJamaatPresident
+                 → [AwaitingGroomJamaatPresident only when partners are from different Jamaats]
+                 → AwaitingRishtanataSecretary → AwaitingAmirApproval
+                 → AwaitingImamSignoff (post-ceremony) → Completed
 ```
 
 - `AwaitingApplicants` is the neutral start state (added to remove the old
@@ -103,8 +105,9 @@ Section submission goes through the API surface in
 | `PUT .../bridegroom` | `AwaitingApplicants` or `AwaitingBridegroom` | `BridegroomSectionService` |
 | `PUT .../guardian-or-wakeel` | (blocked, backlog D2) | — |
 | `PUT .../witnesses` | (blocked, backlog D2) | — |
-| `PUT .../imam-verification` | `AwaitingImamVerification` | `MarriageFormWorkflowService` |
-| `PUT .../jamaat-president` | `AwaitingJamaatPresident` | `MarriageFormWorkflowService` |
+| `PUT .../imam-signoff` | `AwaitingImamSignoff` | `MarriageFormWorkflowService` |
+| `PUT .../jamaat-president` | `AwaitingBrideJamaatPresident` | `MarriageFormWorkflowService` |
+| `PUT .../groom-jamaat-president` | `AwaitingGroomJamaatPresident` | `MarriageFormWorkflowService` |
 | `PUT .../rishtanata-recommendation` | `AwaitingRishtanataSecretary` | `MarriageFormWorkflowService` |
 | `PUT .../amir-approval` | `AwaitingAmirApproval` | `MarriageFormWorkflowService` |
 
@@ -138,8 +141,8 @@ links, stage-gated to `AwaitingWitnesses`:
   the page until revoked.
 - `SharedSection/Fill/{token}` (fully anonymous) — validates the token, then
   upserts the guardian/witness section row + the flat mirror columns. Once all
-  three sections are recorded the form auto-advances `AwaitingWitnesses` →
-  `AwaitingImamVerification`.
+three sections are recorded the form auto-advances `AwaitingWitnesses` →
+   `AwaitingBrideJamaatPresident`.
 - The first form field asks whether the signer is a Jama'at member. If yes, the
   membership number is entered and name/address/phone auto-load from the
   token-gated `SharedSection/MemberLookup` endpoint (→ Tajneed gateway with
@@ -155,13 +158,18 @@ Legacy authenticated flows (`BrideGuardian/Create/{marriageApplicationId}`,
 re-checks authorization immediately before writing, upserts its section row
 (attributing `CreatedBy`/`CreatedAt`), and advances `FormStage`:
 
-1. **Imam** → `ImamVerificationSection` → advances to `AwaitingJamaatPresident`.
-2. **Jamaat President** → `JamaatPresidentVerificationSection` → advances to
-   `AwaitingRishtanataSecretary`.
-3. **National Rishtanata Secretary** → `RishtanataRecommendationSection` →
-   advances to `AwaitingAmirApproval`.
-4. **Amir** → `AmirApprovalSection`, sets `ApprovedDateOfNikah`, advances to
-   `Completed` and locks the form.
+1. **Bride's Jama'at President** → `JamaatPresidentVerificationSection` → advances
+   to `AwaitingGroomJamaatPresident` (different Jama'ats) or
+   `AwaitingRishtanataSecretary` (same Jama'at — the president signs for both).
+2. **Groom's Jama'at President** (different Jama'ats only) →
+   `GroomJamaatPresidentVerificationSection` → advances to `AwaitingRishtanataSecretary`.
+3. **National Rishtanata Secretary** → `RishtanataRecommendationSection` (also
+   designates the officiating imam via `OfficiatingImamMembershipNo` and may
+   record an agreed-date change) → advances to `AwaitingAmirApproval`.
+4. **Amir** → `AmirApprovalSection`; `ApprovedDateOfNikah` defaults to the
+   couple's proposed date → advances to `AwaitingImamSignoff`.
+5. **Officiating Imam (post-ceremony)** → `ImamVerificationSection`, mirroring the
+   flat `OfficiatingImam*` columns → advances to `Completed` and locks the form.
 
 The Jamaat President and Secretary also have MVC review views
 (`JamaatPresident/Review`, `RishtanataSecretary/Review`) that approve, reject,
@@ -181,7 +189,8 @@ for the current stage to revert to an earlier `ApplicationStage`, recording a
   `MarriageApplicationForm` and 1:1 with `Certificate` (Certificate is the
   dependent; issued after the application).
 - `MarriageApplicationForm` — the flat form: both parties' details, witnesses,
-  guardian, verification names, `FormStage`, `ApplicationStage`, `ReferenceNumber`.
+  guardian, verification names, `OfficiatingImamMembershipNo` (designated by the
+  National Rishtanata office), `FormStage`, `ApplicationStage`, `ReferenceNumber`.
 - `Certificate` — issued certificate, related through `FormApplication`
   (NOT directly off `MarriageApplicationForm`; the direct navigation is
   `Ignore`d in the EF config).
@@ -189,8 +198,8 @@ for the current stage to revert to an earlier `ApplicationStage`, recording a
   comma-separated string.
 - Section rows — `BrideFormSection`, `BridegroomFormSection`,
   `GuardianOrWakeelSection`, `ImamVerificationSection`,
-  `JamaatPresidentVerificationSection`, `RishtanataRecommendationSection`,
-  `AmirApprovalSection`, `WitnessSignatureSection`.
+  `JamaatPresidentVerificationSection`, `GroomJamaatPresidentVerificationSection`,
+  `RishtanataRecommendationSection`, `AmirApprovalSection`, `WitnessSignatureSection`.
 - `MarriageFormRejection`, `Invitation`, `Review`, `AuditLog`.
 
 ## 10. Known quirks

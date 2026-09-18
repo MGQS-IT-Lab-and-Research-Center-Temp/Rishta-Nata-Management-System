@@ -130,10 +130,11 @@ assignment (`Data.JamaatName` / `JamaatMember.JamaatName`):
 
 | Stage | Office | Match rule |
 |---|---|---|
-| `AwaitingImamVerification` | Officiating Imam / Missionary | principal holds the Imam-or-Missionary role **and** (v1) performed/is performing the ceremony for this application. Attribution is via `CreatedBy` on the `ImamVerification` row. |
-| `AwaitingJamaatPresident` | Jamaat (branch) President | principal holds the President role **and** `principal.JamaatName == application's Jamaat` (the branch whose members are marrying). |
+| `AwaitingBrideJamaatPresident` | Bride's Jama'at President | principal holds the President role **and** `principal.JamaatName == bride's Jama'at`. When the partners share a Jama'at, this president signs for both. |
+| `AwaitingGroomJamaatPresident` | Groom's Jama'at President | principal holds the President role **and** `principal.JamaatName == groom's Jama'at`. Reachable only when the partners are from different Jama'ats. |
 | `AwaitingRishtanataSecretary` | National Rishtanata Secretary | principal holds the national Rishtanata Secretary role. |
 | `AwaitingAmirApproval` | National Amir  | principal holds the Amir  role. |
+| `AwaitingImamSignoff` | Officiating Imam / Missionary | principal holds the Imam-or-Missionary role **and** `principal.ChandaNo == form.OfficiatingImamMembershipNo` (the imam designated by the National Rishtanata office). Signs AFTER the ceremony. |
 
 Notes:
 
@@ -144,9 +145,9 @@ Notes:
   acted is permanently attributable through `AuditableEntity.CreatedBy /
   CreatedAt` on the section row. We authorize the *office*, we audit the
   *person*.
-- Scoping the Imam and Jamaat-President checks to the application's Jamaat is
-  v1 behavior; tightening to circuit/national level later must not change the
-  shape of the rule, only the comparison inside it.
+- Scoping the president checks to the partners' Jama'ats is v1 behavior;
+  tightening to circuit/national level later must not change the shape of the
+  rule, only the comparison inside it.
 
 ### 4.4 Who may reject/revert (Epic D4, F3)
 
@@ -165,9 +166,11 @@ yet reached their stage.
   skipping stages is impossible. Example: an Imam attempting to verify while
   the form is at `AwaitingWitnesses` fails the stage gate even though his role
   would match.
-- When the final approval (`ApproveByAmirAsync`) advances the stage to
-  `Completed`, the form is locked: every subsequent `CanUserActAsync` call
-  denies with reason `FormCompleted`. Read access is unaffected.
+- When the imam signs off, the stage advances from `AwaitingImamSignoff` to
+  `Completed` and the form is locked: every subsequent `CanUserActAsync` call
+  denies with reason `FormCompleted`. `AwaitingImamSignoff` itself is **not**
+  locked — Amir approval advances the form to it and the officiating imam still
+  acts. Read access is unaffected.
 - Services must **re-check** the stage immediately before writing (inside the
   same transaction/unit-of-work), even though the controller already called the
   authorization service (Ticket D1's AC). Controllers are a convenience check;

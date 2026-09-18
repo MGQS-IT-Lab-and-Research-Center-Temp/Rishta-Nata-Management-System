@@ -86,22 +86,30 @@ public class MarriageApplicationFormController : ControllerBase
         return StatusCode(501, "Witness submission is not yet implemented (backlog D2).");
     }
 
-    [HttpPut("imam-verification")]
+    [HttpPut("imam-signoff")]
     [ValidateAntiForgeryToken]
-    [Authorize(Policy = "CanFillImamVerificationSection")]
-    public async Task<IActionResult> SubmitImamVerification(Guid id, [FromBody] ImamVerificationSubmission submission, CancellationToken ct)
+    [Authorize(Policy = "CanFillImamSignoffSection")]
+    public async Task<IActionResult> SubmitImamSignoff(Guid id, [FromBody] ImamSignoffSubmission submission, CancellationToken ct)
     {
-        var result = await _workflowService.SubmitImamVerificationAsync(CurrentMembershipNo, id, submission, ct);
+        var result = await _workflowService.SubmitImamSignoffAsync(CurrentMembershipNo, id, submission, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
     [HttpPut("jamaat-president")]
     [ValidateAntiForgeryToken]
     [Authorize(Policy = "CanFillJamaatPresidentSection")]
-
     public async Task<IActionResult> SubmitJamaatPresident(Guid id, [FromBody] JamaatPresidentVerificationSubmission submission, CancellationToken ct)
     {
         var result = await _workflowService.SubmitJamaatPresidentVerificationAsync(CurrentMembershipNo, id, submission, ct);
+        return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
+    }
+
+    [HttpPut("groom-jamaat-president")]
+    [ValidateAntiForgeryToken]
+    [Authorize(Policy = "CanFillGroomJamaatPresidentSection")]
+    public async Task<IActionResult> SubmitGroomJamaatPresident(Guid id, [FromBody] JamaatPresidentVerificationSubmission submission, CancellationToken ct)
+    {
+        var result = await _workflowService.SubmitGroomJamaatPresidentVerificationAsync(CurrentMembershipNo, id, submission, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 

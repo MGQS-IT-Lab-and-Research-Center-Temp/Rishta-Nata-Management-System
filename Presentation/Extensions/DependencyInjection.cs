@@ -66,12 +66,13 @@ public static class DependencyInjection
         options.AddPolicy("CanFillBridegroomSection", p => p.RequireAuthenticatedUser());
         options.AddPolicy("CanFillGuardianOrWakeelSection", p => p.RequireAuthenticatedUser());
         options.AddPolicy("CanFillWitnessesSection", p => p.RequireAuthenticatedUser());
-        options.AddPolicy("CanFillImamVerificationSection", p => p.RequireAssertion(ctx =>
+        options.AddPolicy("CanFillImamSignoffSection", p => p.RequireAssertion(ctx =>
             ctx.User.Claims.Any(c =>
                 c.Type == ClaimTypes.Role &&
                 (c.Value.Contains("imam", StringComparison.OrdinalIgnoreCase) ||
                  c.Value.Contains("missionary", StringComparison.OrdinalIgnoreCase)))));
         options.AddPolicy("CanFillJamaatPresidentSection", p => p.RequireRole(RoleNames.JamaatPresident));
+        options.AddPolicy("CanFillGroomJamaatPresidentSection", p => p.RequireRole(RoleNames.JamaatPresident));
         options.AddPolicy("CanFillRishtanataSection", p => p.RequireRole(RoleNames.RishtanataSecretary));
         options.AddPolicy("CanFillAmirApprovalSection", p => p.RequireRole(RoleNames.Amir));
     });
