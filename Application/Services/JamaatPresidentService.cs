@@ -33,10 +33,7 @@ public class JamaatPresidentService : IJamaatPresidentService
             ApplicationStatus.AwaitingMoreInformation
         };
 
-        var jamaatMember = currentUserId.HasValue
-            ? await _context.JamaatMembers
-                .FirstOrDefaultAsync(x => x.Id == currentUserId.Value)
-            : null;
+        var jamaatMember = await ResolveJamaatMemberAsync(currentUserId);
 
         if (jamaatMember == null)
         {
@@ -51,13 +48,24 @@ public class JamaatPresidentService : IJamaatPresidentService
             };
         }
 
+        var jamaatChandaNumbers = await GetJamaatChandaNumbersAsync(
+            jamaatMember.JamaatName ?? string.Empty);
+
         var pendingApplications = await _context.FormApplications
-            .Where(x => pendingStatuses.Contains(x.Status))
+            .Where(x =>
+                pendingStatuses.Contains(x.Status) &&
+                (
+                    jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BrideMembershipNo) ||
+                    jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BridegroomMembershipNo)
+                ))
             .Include(x => x.MarriageApplicationForm)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
-        var totalApplications = await _context.FormApplications.CountAsync();
+        var totalApplications = await _context.FormApplications
+            .CountAsync(x =>
+                jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BrideMembershipNo) ||
+                jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BridegroomMembershipNo));
 
         var today = DateTime.UtcNow.Date;
         var tomorrow = today.AddDays(1);
@@ -105,6 +113,99 @@ public class JamaatPresidentService : IJamaatPresidentService
                 .ToList(),
             //RecentActivities = recentActivities
         };
+    }
+
+    public async Task<List<NikahApplicationDto>> GetPendingApplicationsAsync(
+        Guid? currentUserId)
+    {
+        var pendingStatuses = new[]
+        {
+            ApplicationStatus.ApplicationPending,
+            ApplicationStatus.AwaitingMoreInformation
+        };
+
+        return await GetApplicationsByStatusesAsync(
+            currentUserId,
+            pendingStatuses,
+            orderByCreatedAt: true);
+    }
+
+    public async Task<List<NikahApplicationDto>> GetReviewedApplicationsAsync(
+        Guid? currentUserId)
+    {
+        var reviewedStatuses = new[]
+        {
+            ApplicationStatus.ApplicationApproved,
+            ApplicationStatus.ApplicationRejected,
+            ApplicationStatus.AwaitingMoreInformation
+        };
+
+        return await GetApplicationsByStatusesAsync(
+            currentUserId,
+            reviewedStatuses,
+            orderByCreatedAt: false);
+    }
+
+    /// <summary>
+    /// Applications belonging to the president's own Jama'at (either marrying
+    /// party is a local member of that branch) that are currently in one of the
+    /// given statuses (docs/stage-authorization-policy.md §4.3 Kind C).
+    /// </summary>
+    private async Task<List<NikahApplicationDto>> GetApplicationsByStatusesAsync(
+        Guid? currentUserId,
+        ApplicationStatus[] statuses,
+        bool orderByCreatedAt)
+    {
+        var jamaatMember = await ResolveJamaatMemberAsync(currentUserId);
+
+        if (jamaatMember == null)
+        {
+            return new List<NikahApplicationDto>();
+        }
+
+        var jamaatChandaNumbers = await GetJamaatChandaNumbersAsync(
+            jamaatMember.JamaatName ?? string.Empty);
+
+        var query = _context.FormApplications
+            .Where(x =>
+                statuses.Contains(x.Status) &&
+                (
+                    jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BrideMembershipNo) ||
+                    jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BridegroomMembershipNo)
+                ))
+            .OrderByDescending(x => orderByCreatedAt ? x.CreatedAt : (x.ModifiedAt ?? x.CreatedAt));
+
+        return await query
+            .Select(x => new NikahApplicationDto
+            {
+                Id = x.Id,
+                ReferenceNumber = x.MarriageApplicationForm.ReferenceNumber,
+                GroomName = x.MarriageApplicationForm.BridegroomName,
+                BrideName = x.MarriageApplicationForm.BrideName,
+                JamaatName = x.MarriageApplicationForm.Venue,
+                SubmittedDate = x.CreatedAt,
+                Status = x.Status.ToString()
+            })
+            .ToListAsync();
+    }
+
+    private Task<JamaatMember?> ResolveJamaatMemberAsync(Guid? currentUserId) =>
+        currentUserId.HasValue
+            ? _context.JamaatMembers
+                .FirstOrDefaultAsync(x => x.Id == currentUserId.Value)
+            : Task.FromResult<JamaatMember?>(null);
+
+    private async Task<List<string>> GetJamaatChandaNumbersAsync(string jamaatName)
+    {
+        if (string.IsNullOrWhiteSpace(jamaatName))
+        {
+            return new List<string>();
+        }
+
+        return await _context.JamaatMembers
+            .Where(m => m.JamaatName == jamaatName)
+            .Select(m => m.ChandaNo)
+            .ToListAsync();
     }
 
     public async Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id)

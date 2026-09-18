@@ -1,0 +1,113 @@
+@model List<Presentation.ViewModels.NikahApplicationViewModel>
+
+@{
+    Layout = "_JamaatPresidentLayout";
+    ViewData["Title"] = "Reviewed Applications";
+}
+
+<div class="president-dashboard">
+
+    <div class="dashboard-header">
+
+        <div>
+            <h2>Reviewed Applications</h2>
+            <p class="text-muted mb-1">
+                Nikah applications you have already acted on.
+            </p>
+        </div>
+
+        <div class="dashboard-date">
+            @DateTime.Now.ToString("dddd, dd MMMM yyyy")
+        </div>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <div class="card-heading card-heading-row">
+
+            <div>
+                <h4>Reviewed Nikah Applications</h4>
+                <p>
+                    Applications approved, rejected or returned for more information.
+                </p>
+            </div>
+
+            <span class="pending-badge">
+                @(Model?.Count ?? 0) Reviewed
+            </span>
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="president-table">
+
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Groom</th>
+                        <th>Bride</th>
+                        <th>Jama'at</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    <strong>@item.ReferenceNumber</strong>
+                                </td>
+
+                                <td>@item.GroomName</td>
+
+                                <td>@item.BrideName</td>
+
+                                <td>@item.JamaatName</td>
+
+                                <td>@item.SubmittedDate.ToString("dd MMM yyyy")</td>
+
+                                <td>
+                                    <span class="status-badge">@StatusLabel(item.Status)</span>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                You have not reviewed any applications for your Jama'at yet.
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+@functions
+{
+    public static string StatusLabel(string status) => status switch
+    {
+        "ApplicationPending" => "Pending Review",
+        "AwaitingMoreInformation" => "Awaiting More Information",
+        "ApplicationApproved" => "Approved",
+        "ApplicationRejected" => "Rejected",
+        _ => status
+    };
+}

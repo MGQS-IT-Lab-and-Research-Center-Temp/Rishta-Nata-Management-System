@@ -10,6 +10,12 @@ public interface IJamaatPresidentService
     Task<JamaatPresidentDashboardDto> GetDashboardAsync(
         Guid? currentUserId);
 
+    Task<List<NikahApplicationDto>> GetPendingApplicationsAsync(
+        Guid? currentUserId);
+
+    Task<List<NikahApplicationDto>> GetReviewedApplicationsAsync(
+        Guid? currentUserId);
+
     Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id);
 
     Task<bool> ApproveAsync(Guid id, Guid? currentUserId);

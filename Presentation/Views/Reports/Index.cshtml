@@ -1,0 +1,223 @@
+@model Presentation.ViewModels.ReportsViewModel
+
+@{
+    Layout = "~/Views/RishtanataSecretary/_SecretaryLayout.cshtml";
+    ViewData["Title"] = "Reports";
+}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="page-heading">
+
+        <div>
+            <h1>
+                <span class="kicker">Rishtanata Secretary</span>
+                Reports
+            </h1>
+
+            <p>
+                National summary of applications, marriages and members.
+            </p>
+        </div>
+
+        <span class="date-pill">
+            <i class="bi bi-calendar3"></i>
+            @DateTime.Now.ToString("dddd, dd MMMM yyyy")
+        </span>
+
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4 mb-5">
+
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Pending Approvals</small>
+                    <h2 class="fw-bold text-warning mt-2">@Model.PendingApprovals</h2>
+                    <small class="text-muted">Awaiting Review</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Approved Applications</small>
+                    <h2 class="fw-bold text-success mt-2">@Model.ApprovedApplications</h2>
+                    <small class="text-muted">Successfully Approved</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Rejected Applications</small>
+                    <h2 class="fw-bold text-danger mt-2">@Model.RejectedApplications</h2>
+                    <small class="text-muted">Not Approved</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Married Couples</small>
+                    <h2 class="fw-bold text-primary mt-2">@Model.MarriedCouples</h2>
+                    <small class="text-muted">Registered Marriages</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Jama'at Members</small>
+                    <h2 class="fw-bold text-info mt-2">@Model.TotalMembers</h2>
+                    <small class="text-muted">Total Members</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Marriage Register -->
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">Marriage Register</h4>
+                    <small class="text-muted">Official list of approved Nikah records.</small>
+                </div>
+
+                <span class="badge bg-success fs-6">
+                    @Model.MarriedCouplesList.Count Registered
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Application No.</th>
+                        <th>Groom Name</th>
+                        <th>Bride Name</th>
+                        <th>Nikah Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.MarriedCouplesList.Any())
+                    {
+                        @foreach (var couple in Model.MarriedCouplesList)
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">
+                                        @couple.ApplicationNumber
+                                    </strong>
+                                </td>
+                                <td>@couple.GroomName</td>
+                                <td>@couple.BrideName</td>
+                                <td>@couple.NikahDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        @couple.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <h5 class="text-muted">No registered marriages found.</h5>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Jama'at Members -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">Jama'at Members</h4>
+                    <small class="text-muted">Registered members across all Jama'ats.</small>
+                </div>
+
+                <span class="badge bg-primary fs-6">
+                    @Model.JamaatMembersList.Count Members
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Chanda No.</th>
+                        <th>Full Name</th>
+                        <th>Jama'at</th>
+                        <th>Marital Status</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.JamaatMembersList.Any())
+                    {
+                        @foreach (var member in Model.JamaatMembersList)
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">
+                                        @member.ChandaNo
+                                    </strong>
+                                </td>
+                                <td>@member.FullName</td>
+                                <td>@member.JamaatName</td>
+                                <td>
+                                    @if (member.MaritalStatus == "Married")
+                                    {
+                                        <span class="badge bg-success">Married</span>
+                                    }
+                                    else if (member.MaritalStatus == "Single")
+                                    {
+                                        <span class="badge bg-warning text-dark">Single</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@member.MaritalStatus</span>
+                                    }
+                                </td>
+                                <td>@member.PhoneNumber</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <h5 class="text-muted">No registered members found.</h5>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>

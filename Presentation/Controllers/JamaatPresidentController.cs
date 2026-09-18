@@ -43,6 +43,34 @@ public class JamaatPresidentController : Controller
     }
 
     // ============================================================
+    // PENDING APPLICATIONS
+    // ============================================================
+
+    public async Task<IActionResult> PendingApplications()
+    {
+        var applications = await _service.GetPendingApplicationsAsync(
+            GetCurrentUserId());
+
+        return View(applications
+            .Select(JamaatPresidentMapping.ToViewModel)
+            .ToList());
+    }
+
+    // ============================================================
+    // REVIEWED APPLICATIONS
+    // ============================================================
+
+    public async Task<IActionResult> ReviewedApplications()
+    {
+        var applications = await _service.GetReviewedApplicationsAsync(
+            GetCurrentUserId());
+
+        return View(applications
+            .Select(JamaatPresidentMapping.ToViewModel)
+            .ToList());
+    }
+
+    // ============================================================
     // REVIEW APPLICATION
     // ============================================================
 
