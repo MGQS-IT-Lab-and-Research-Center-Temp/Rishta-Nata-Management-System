@@ -8,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services;
 
 /// <summary>
-/// Jamaat (branch) President dashboard plus per-application review actions
-/// (approve / reject / request more info).
+/// Jamaat (branch) President dashboard plus per-application review actions.
+/// The Jama'at President may only sign (approve) or leave an application
+/// pending — reject/request-more-information are not part of this flow.
 /// Cleanup: namespace was Application.Interfaces; moved to Application.Services
 /// so the namespace matches the folder where the implementation lives.
 /// </summary>
@@ -373,28 +374,6 @@ public class JamaatPresidentService : IJamaatPresidentService
             ApplicationStatus.ApplicationApproved,
             "Approved Nikah Application",
             "and forwarded it for National Rishtanata Secretary review.");
-    }
-
-    public async Task<bool> RejectAsync(Guid id, Guid? currentUserId)
-    {
-        return await ChangeStatusAsync(
-            id,
-            currentUserId,
-            ApplicationStatus.ApplicationRejected,
-            "Rejected Nikah Application",
-            "");
-    }
-
-    public async Task<bool> RequestMoreInformationAsync(Guid id, Guid? currentUserId)
-    {
-        // Cleanup: was ApplicationPending (a no-op). The distinct
-        // AwaitingMoreInformation status now records the request for corrections.
-        return await ChangeStatusAsync(
-            id,
-            currentUserId,
-            ApplicationStatus.AwaitingMoreInformation,
-            "Requested More Information",
-            "");
     }
 
     private async Task<bool> ChangeStatusAsync(

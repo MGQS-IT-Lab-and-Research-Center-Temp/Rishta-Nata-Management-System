@@ -901,7 +901,8 @@
             </h4>
 
             <small class="text-muted">
-                Make your decision after reviewing the complete application.
+                Sign to approve and forward this application, or leave it pending
+                to review again later.
             </small>
 
         </div>
@@ -925,33 +926,6 @@
                             onclick="return confirm('Are you sure you want to approve this application?');">
 
                         <i class="bi bi-check-lg"></i> Approve & Forward
-
-                    </button>
-
-                </form>
-
-
-                                <!-- REJECT -->
-                <button type="button" 
-                        class="btn btn-danger" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#rejectionModal">
-                    <i class="bi bi-x-lg"></i> Reject Application
-                </button>
-<!-- MORE INFORMATION -->
-                <form asp-controller="JamaatPresident"
-                      asp-action="RequestMoreInformation"
-                      method="post">
-
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.Id" />
-
-                    <button type="submit"
-                            class="btn btn-warning"
-                            onclick="return confirm('Request additional information for this application?');">
-
-                        <i class="bi bi-question-circle"></i> Request More Information
 
                     </button>
 
@@ -1050,7 +1024,3 @@
     </div>
 
 </div>
-@* Rejection Modal *@
-@{ ViewData["FormId"] = Model.Id; }
-@{ ViewData["CurrentStage"] = Model.CurrentStage; }
-@await Html.PartialAsync("_RejectionModalPartial")

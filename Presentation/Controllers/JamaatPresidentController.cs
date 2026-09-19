@@ -162,58 +162,6 @@ public class JamaatPresidentController : Controller
     }
 
     // ============================================================
-    // REJECT
-    // ============================================================
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Reject(Guid id)
-    {
-        if (!await CanReviewAsync(id))
-        {
-            return NotFound("Marriage application or its form was not found.");
-        }
-
-        var success = await _service.RejectAsync(id, GetCurrentUserId());
-
-        TempData["Success"] = success
-            ? "Nikah application has been rejected."
-            : null;
-
-        TempData["Error"] = success
-            ? null
-            : "This application is no longer awaiting Jama'at President review.";
-
-        return RedirectToAction(nameof(Dashboard));
-    }
-
-    // ============================================================
-    // REQUEST MORE INFORMATION
-    // ============================================================
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RequestMoreInformation(Guid id)
-    {
-        if (!await CanReviewAsync(id))
-        {
-            return NotFound("Marriage application or its form was not found.");
-        }
-
-        var success = await _service.RequestMoreInformationAsync(id, GetCurrentUserId());
-
-        TempData["Success"] = success
-            ? "More information has been requested for this Nikah application."
-            : null;
-
-        TempData["Error"] = success
-            ? null
-            : "This application is no longer awaiting Jama'at President review.";
-
-        return RedirectToAction(nameof(Dashboard));
-    }
-
-    // ============================================================
     // MARRIAGE CERTIFICATES
     // ============================================================
 
