@@ -117,7 +117,9 @@ public class JamaatPresidentService : IJamaatPresidentService
                     BrideName = x.MarriageApplicationForm?.BrideName ?? "Not provided",
                     JamaatName = x.MarriageApplicationForm?.Venue ?? "Not provided",
                     SubmittedDate = x.CreatedAt,
-                    Status = x.Status.ToString()
+                    Status = x.Status.ToString(),
+                    // eligible was already filtered to IsResponsiblePresident.
+                    IsActionableByMe = true
                 })
                 .ToList(),
             //RecentActivities = recentActivities
@@ -172,10 +174,12 @@ public class JamaatPresidentService : IJamaatPresidentService
             return new List<NikahApplicationDto>();
         }
 
-        var jamaatChandaNumbers = await GetJamaatChandaNumbersAsync(
-            jamaatMember.JamaatName ?? string.Empty);
+        var myJamaat = jamaatMember.JamaatName ?? string.Empty;
+
+        var jamaatChandaNumbers = await GetJamaatChandaNumbersAsync(myJamaat);
 
         var query = _context.FormApplications
+            .Include(x => x.MarriageApplicationForm)
             .Where(x =>
                 statuses.Contains(x.Status) &&
                 (
@@ -184,18 +188,48 @@ public class JamaatPresidentService : IJamaatPresidentService
                 ))
             .OrderByDescending(x => orderByCreatedAt ? x.CreatedAt : (x.ModifiedAt ?? x.CreatedAt));
 
-        return await query
-            .Select(x => new NikahApplicationDto
+        var applications = await query.ToListAsync();
+
+        // IsActionableByMe/AwaitingJamaatName need the FormStage-vs-jamaat
+        // comparison in IsResponsiblePresident/ResolveJamaat, which isn't
+        // SQL-translatable, so map in-memory (same pattern as GetDashboardAsync).
+        return applications
+            .Select(x =>
             {
-                Id = x.Id,
-                ReferenceNumber = x.MarriageApplicationForm.ReferenceNumber,
-                GroomName = x.MarriageApplicationForm.BridegroomName,
-                BrideName = x.MarriageApplicationForm.BrideName,
-                JamaatName = x.MarriageApplicationForm.Venue,
-                SubmittedDate = x.CreatedAt,
-                Status = x.Status.ToString()
+                var form = x.MarriageApplicationForm;
+                var isActionable = form is not null && IsResponsiblePresident(myJamaat, form);
+
+                return new NikahApplicationDto
+                {
+                    Id = x.Id,
+                    ReferenceNumber = form?.ReferenceNumber ?? "N/A",
+                    GroomName = form?.BridegroomName ?? "Not provided",
+                    BrideName = form?.BrideName ?? "Not provided",
+                    JamaatName = form?.Venue ?? "Not provided",
+                    SubmittedDate = x.CreatedAt,
+                    Status = x.Status.ToString(),
+                    IsActionableByMe = isActionable,
+                    AwaitingJamaatName = isActionable ? string.Empty : ResolveAwaitingJamaat(form)
+                };
             })
-            .ToListAsync();
+            .ToList();
+    }
+
+    /// <summary>The Jama'at whose president must act next, for the "Awaiting X
+    /// Jama'at President" badge on rows the viewing president cannot act on.</summary>
+    private string ResolveAwaitingJamaat(MarriageApplicationForm? form)
+    {
+        if (form is null)
+        {
+            return string.Empty;
+        }
+
+        return form.FormStage switch
+        {
+            MarriageFormStage.AwaitingBrideJamaatPresident => ResolveJamaat(form.BrideMembershipNo),
+            MarriageFormStage.AwaitingGroomJamaatPresident => ResolveJamaat(form.BridegroomMembershipNo),
+            _ => string.Empty
+        };
     }
 
     private Task<JamaatMember?> ResolveJamaatMemberAsync(Guid? currentUserId) =>
@@ -227,6 +261,9 @@ public class JamaatPresidentService : IJamaatPresidentService
         // controller can turn a miss into a 404.
         var application = await _context.FormApplications
             .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.JamaatPresidentVerification)
+            .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.GroomJamaatPresidentVerification)
             .FirstOrDefaultAsync(x => x.Id == id);
 
         var form = application?.MarriageApplicationForm;
@@ -307,6 +344,16 @@ public class JamaatPresidentService : IJamaatPresidentService
 
             JamaatPresidentName = form.JamaatPresidentName,
             JamaatPresidentSignatureDate = form.JamaatPresidentSignatureDate,
+
+            // Read-only context for the controller to dispatch Approve/Reject to
+            // the matching workflow submit. Fine-grained stage + Tel come from the
+            // president verification sections (the flat form only carries Name and
+            // SignatureDate), so the query above Includes them.
+            CurrentFormStage = form.FormStage,
+            JamaatPresidentTel = form.JamaatPresidentVerification?.Tel ?? string.Empty,
+            GroomJamaatPresidentTel = form.GroomJamaatPresidentVerification?.Tel ?? string.Empty,
+            GroomJamaatPresidentName = form.GroomJamaatPresidentName,
+            GroomJamaatPresidentSignatureDate = form.GroomJamaatPresidentSignatureDate,
 
             NationalRishtanataSecretaryName = form.NationalRishtanataSecretaryName,
             NationalRishtanataSecretarySignatureDate =

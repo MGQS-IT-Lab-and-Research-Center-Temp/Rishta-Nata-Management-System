@@ -7,8 +7,10 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using Application.Workflow;
 using Domain.Constants;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -24,15 +26,18 @@ public class JamaatPresidentController : Controller
     private readonly IJamaatPresidentService _service;
     private readonly ICertificateService _certificateService;
     private readonly IStageAuthorizationService _authorizationService;
+    private readonly IMarriageFormWorkflowService _workflowService;
 
     public JamaatPresidentController(
         IJamaatPresidentService service,
         ICertificateService certificateService,
-        IStageAuthorizationService authorizationService)
+        IStageAuthorizationService authorizationService,
+        IMarriageFormWorkflowService workflowService)
     {
         _service = service;
         _certificateService = certificateService;
         _authorizationService = authorizationService;
+        _workflowService = workflowService;
     }
 
     // ============================================================
@@ -103,22 +108,55 @@ public class JamaatPresidentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Approve(Guid id)
+    public async Task<IActionResult> Approve(Guid id, CancellationToken ct)
     {
         if (!await CanReviewAsync(id))
         {
             return NotFound("Marriage application or its form was not found.");
         }
 
-        var success = await _service.ApproveAsync(id, GetCurrentUserId());
+        var dto = await _service.GetReviewByIdAsync(id);
 
-        TempData["Success"] = success
-            ? "Nikah application approved and forwarded to the National Rishtanata Secretary."
-            : null;
+        if (dto == null)
+        {
+            return NotFound("Marriage application or its form was not found.");
+        }
 
-        TempData["Error"] = success
-            ? null
-            : "This application is no longer awaiting Jama'at President review.";
+        var result = dto.CurrentFormStage switch
+        {
+            MarriageFormStage.AwaitingBrideJamaatPresident =>
+                await _workflowService.SubmitJamaatPresidentVerificationAsync(
+                    CurrentMembershipNo, id,
+                    new JamaatPresidentVerificationSubmission(
+                        dto.JamaatPresidentName,
+                        dto.JamaatPresidentTel,
+                        dto.JamaatPresidentSignatureDate),
+                    ct),
+            MarriageFormStage.AwaitingGroomJamaatPresident =>
+                await _workflowService.SubmitGroomJamaatPresidentVerificationAsync(
+                    CurrentMembershipNo, id,
+                    new JamaatPresidentVerificationSubmission(
+                        dto.GroomJamaatPresidentName,
+                        dto.GroomJamaatPresidentTel,
+                        dto.GroomJamaatPresidentSignatureDate),
+                    ct),
+            _ => null
+        };
+
+        if (result == null)
+        {
+            TempData["Error"] =
+                "This application is no longer awaiting Jama'at President review.";
+        }
+        else if (!result.IsAllowed)
+        {
+            TempData["Error"] = result.Message;
+        }
+        else
+        {
+            TempData["Success"] =
+                "Nikah application approved and forwarded to the National Rishtanata Secretary.";
+        }
 
         return RedirectToAction(nameof(Dashboard));
     }

@@ -160,7 +160,15 @@ public class JamaatPresidentReviewViewModel
 
     public string JamaatPresidentName { get; set; } = string.Empty;
 
+    public string JamaatPresidentTel { get; set; } = string.Empty;
+
     public string JamaatPresidentSignatureDate { get; set; } = string.Empty;
+
+    public string GroomJamaatPresidentName { get; set; } = string.Empty;
+
+    public string GroomJamaatPresidentTel { get; set; } = string.Empty;
+
+    public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
 
     public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
 

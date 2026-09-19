@@ -36,7 +36,9 @@ public static class JamaatPresidentMapping
             BrideName = dto.BrideName,
             JamaatName = dto.JamaatName,
             SubmittedDate = dto.SubmittedDate,
-            Status = dto.Status
+            Status = dto.Status,
+            IsActionableByMe = dto.IsActionableByMe,
+            AwaitingJamaatName = dto.AwaitingJamaatName
         };
     }
 
@@ -119,7 +121,12 @@ public static class JamaatPresidentMapping
             OfficiatingImamSignatureDate = dto.OfficiatingImamSignatureDate,
 
             JamaatPresidentName = dto.JamaatPresidentName,
+            JamaatPresidentTel = dto.JamaatPresidentTel,
             JamaatPresidentSignatureDate = dto.JamaatPresidentSignatureDate,
+
+            GroomJamaatPresidentName = dto.GroomJamaatPresidentName,
+            GroomJamaatPresidentTel = dto.GroomJamaatPresidentTel,
+            GroomJamaatPresidentSignatureDate = dto.GroomJamaatPresidentSignatureDate,
 
             NationalRishtanataSecretaryName = dto.NationalRishtanataSecretaryName,
             NationalRishtanataSecretarySignatureDate = dto.NationalRishtanataSecretarySignatureDate,

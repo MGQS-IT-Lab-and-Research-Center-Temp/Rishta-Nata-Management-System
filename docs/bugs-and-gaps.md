@@ -5,6 +5,43 @@ file as items are fixed.
 
 ## Fixed (recent session)
 
+- **Jama'at President Approve deadlocked the form.** `JamaatPresidentController
+  .Approve` called the flat `JamaatPresidentService.ApproveAsync`, which only
+  wrote `ApplicationStatus` and an audit log entry — it never advanced
+  `MarriageFormStage`, so the form sat at `AwaitingBrideJamaatPresident` forever
+  and the groom's president / National Rishtanata Secretary never got their
+  turn. `Approve` now reads the fine-grained stage and pre-entered president
+  data (Name/Tel/SignatureDate) via `JamaatPresidentReviewDto`
+  (`CurrentFormStage`, `JamaatPresidentTel`, `GroomJamaatPresidentTel`,
+  `GroomJamaatPresidentName`, `GroomJamaatPresidentSignatureDate` — the flat
+  form has no Tel column, so `GetReviewByIdAsync` now also `Include`s the two
+  president verification sections) and dispatches through
+  `IMarriageFormWorkflowService.Submit(Groom)JamaatPresidentVerificationAsync`
+  by stage, mirroring `MarriageApplicationFormController`. The controller no
+  longer writes `FormStage`/`ApplicationStage` itself — the workflow service
+  remains the single writer. Fixed alongside: the groom-side dispatch was
+  briefly building its submission from the *bride's* president Name/Tel/
+  SignatureDate instead of the groom's own (`GroomJamaatPresidentName`/
+  `GroomJamaatPresidentSignatureDate` didn't exist on the DTO yet); and
+  `NikahApplicationDto.IsActionableByMe`/`AwaitingJamaatName` (added for the
+  Dashboard/PendingApplications "Awaiting X Jama'at President" badge) were
+  never populated by `JamaatPresidentService`, which would have hidden every
+  Review link on both pages.
+- **Post-witness "Imam verification" message removed.** `SharedSection/ThankYou.cshtml`
+  told the couple the application "moves to Imam verification" after the signature
+  block — a leftover from the pre-reorder workflow. It now says the application
+  moves to the Jama'at President's review (matching `SharedSectionService`'s actual
+  advance to `AwaitingBrideJamaatPresident`).
+- **Jama'at President saw no pending applications.** New applications are created
+  with `FormApplication.Status = Submitted` and nothing in the applicant/witness
+  phase ever advanced it, while the president dashboard only lists
+  `ApplicationPending`/`AwaitingMoreInformation`; `SharedSectionService.SubmitSectionAsync`
+  also advanced only `FormStage` without syncing `ApplicationStage` (the exact
+  FormStage/ApplicationStage drift the revert-deadlock fix was meant to prevent).
+  The witnesses-block completion now (a) syncs `ApplicationStage` to
+  `JamaatPresidentReview` via `WorkflowStageMapping`, and (b) sets the wrapping
+  application to `ApplicationPending` so the president's queue surfaces it.
+
 - The verification chain previously had the Imam sign during the filling phase
   (before the Jama'at President) with no ceremony step. Corrected — the Imam now
   signs off only after Amir approval and the ceremony (`AwaitingImamSignoff`),

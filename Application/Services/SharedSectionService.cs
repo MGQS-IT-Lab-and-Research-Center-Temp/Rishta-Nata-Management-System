@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Application.Interfaces;
+using Application.Workflow;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs.Members;
@@ -31,9 +32,12 @@ public class SharedSectionService : ISharedSectionService
             .FirstOrDefaultAsync(x => x.TokenHash == hash, cancellationToken);
 
         if (tokenRow is null)
+        {
             return Invalid("No matching token.");
+        }
 
         var form = tokenRow.MarriageApplicationForm;
+
         if (tokenRow.RevokedAt.HasValue)
         {
             if (tokenRow.SubmittedAt.HasValue)
@@ -74,6 +78,8 @@ public class SharedSectionService : ISharedSectionService
                 .ThenInclude(f => f.GuardianOrWakeelSection)
             .Include(x => x.MarriageApplicationForm)
                 .ThenInclude(f => f.WitnessSignatures)
+            .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.MarriageApplication)
             .FirstOrDefaultAsync(x => x.TokenHash == hash, cancellationToken);
 
         if (tokenRow is null || tokenRow.RevokedAt.HasValue ||
@@ -104,6 +110,20 @@ public class SharedSectionService : ISharedSectionService
             IsBlockComplete(form))
         {
             form.FormStage = MarriageFormStage.AwaitingBrideJamaatPresident;
+
+            // The signature block hands the form to the review chain. Keep the
+            // coarse ApplicationStage in sync (the revert flow authorizes on it;
+            // see docs/stage-authorization-policy.md §5) and flip the wrapping
+            // application to "pending review" so the Jama'at President's
+            // dashboard actually surfaces it.
+            form.ApplicationStage = WorkflowStageMapping.ToApplicationStage(
+                MarriageFormStage.AwaitingBrideJamaatPresident);
+
+            if (form.MarriageApplication is not null)
+            {
+                form.MarriageApplication.Status = ApplicationStatus.ApplicationPending;
+            }
+
             advanced = true;
         }
 

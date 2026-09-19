@@ -34,6 +34,10 @@ public class NikahApplicationViewModel
     public DateTime SubmittedDate { get; set; }
 
     public string Status { get; set; } = "";
+
+    public bool IsActionableByMe { get; set; }
+
+    public string AwaitingJamaatName { get; set; } = "";
 }
 
 

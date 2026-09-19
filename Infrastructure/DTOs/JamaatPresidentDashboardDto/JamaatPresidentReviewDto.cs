@@ -11,6 +11,24 @@ public class JamaatPresidentReviewDto
 
     /// <summary>The form's current review-chain stage, for the revert modal.</summary>
     public ApplicationStage? CurrentStage { get; set; }
+
+    /// <summary>The form's fine-grained form stage, read-only. Lets the controller
+    /// dispatch Approve/Reject to the matching workflow submit without writing any
+    /// stage itself (workflow remains the single source of truth).</summary>
+    public MarriageFormStage? CurrentFormStage { get; set; }
+
+    /// <summary>The bride's president's phone, surfaced for the workflow submission
+    /// payload (the flat form carries no Tel column).</summary>
+    public string JamaatPresidentTel { get; set; } = string.Empty;
+
+    /// <summary>The groom's president's phone (different-Jama'at path only).</summary>
+    public string GroomJamaatPresidentTel { get; set; } = string.Empty;
+
+    /// <summary>The groom's president's name (different-Jama'at path only).</summary>
+    public string GroomJamaatPresidentName { get; set; } = string.Empty;
+
+    /// <summary>The groom's president's signature date (different-Jama'at path only).</summary>
+    public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
     public DateTime ProposedNikahDate { get; set; }
     public string Venue { get; set; } = string.Empty;
 
