@@ -5,6 +5,18 @@ file as items are fixed.
 
 ## Fixed (recent session)
 
+- **Reject/revert POST returned an empty 400 ("Unexpected end of JSON input").**
+  The rejection modal (`_RejectionModalPartial.cshtml`) posts the antiforgery
+  request token only as the `X-CSRF-TOKEN` header (JSON body, no form field),
+  but nothing registered `AntiforgeryOptions.HeaderName` — ASP.NET Core's
+  default is `RequestVerificationToken`, so `[ValidateAntiForgeryToken]` on
+  `MarriageFormController.RevertStage` failed with a bare `BadRequestResult`
+  (empty body). The JS then threw on `response.json()`. This hit every reviewer
+  (Jama'at Presidents and the National Rishtanata Secretary), not just the
+  groom's president. Fix: `services.AddAntiforgery(o => o.HeaderName =
+  "X-CSRF-TOKEN")` in `AddPresentationServices` (`docs/stage-authorization-policy.md`
+  and AGENTS.md documented the `X-CSRF-TOKEN` convention — the config was
+  intended but never wired up).
 - **Jama'at President Approve deadlocked the form.** `JamaatPresidentController
   .Approve` called the flat `JamaatPresidentService.ApproveAsync`, which only
   wrote `ApplicationStatus` and an audit log entry — it never advanced

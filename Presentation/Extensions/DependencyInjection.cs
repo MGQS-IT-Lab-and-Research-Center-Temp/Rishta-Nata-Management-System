@@ -16,6 +16,15 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
 
+        // The rejection modal and JSON section APIs send the request token in
+        // the X-CSRF-TOKEN header (ASP.NET Core's default is
+        // "RequestVerificationToken"); without this, [ValidateAntiForgeryToken]
+        // fails with a bare 400 and empty body.
+        services.AddAntiforgery(options =>
+        {
+            options.HeaderName = "X-CSRF-TOKEN";
+        });
+
         // Backs the claims in the auth cookie with the DB Roles value on every
         // authenticated request so role changes take effect mid-session (#3).
         services.AddScoped<IClaimsTransformation, RoleClaimsTransformation>();
