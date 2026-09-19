@@ -62,6 +62,7 @@ public static class JamaatPresidentMapping
             Status = dto.Status,
             SubmittedDate = dto.SubmittedDate,
             CurrentStage = dto.CurrentStage,
+            CurrentFormStage = dto.CurrentFormStage,
             ProposedNikahDate = dto.ProposedNikahDate,
             Venue = dto.Venue,
 

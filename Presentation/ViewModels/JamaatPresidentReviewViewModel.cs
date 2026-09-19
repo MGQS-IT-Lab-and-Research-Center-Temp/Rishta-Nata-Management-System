@@ -20,6 +20,11 @@ public class JamaatPresidentReviewViewModel
     /// <summary>The form's current review-chain stage, for the revert modal.</summary>
     public ApplicationStage? CurrentStage { get; set; }
 
+    /// <summary>The form's fine-grained stage, read-only (bride/groom president
+    /// dispatch context). The Approve action dispatches off the DTO directly,
+    /// not this view model; this mirrors it for display use.</summary>
+    public MarriageFormStage? CurrentFormStage { get; set; }
+
     public DateTime ProposedNikahDate { get; set; }
 
     public string Venue { get; set; } = string.Empty;
