@@ -104,9 +104,13 @@ public class BridegroomSectionService : IBridegroomSectionService
         form.FormerWifeObtainedKhula = dto.FormerWifeObtainedKhula;
         form.BridegroomSignatureTel = dto.BridegroomSignatureTel;
         form.BridegroomDivorceEvidence = dto.BridegroomDivorceEvidence;
+
+        var wakeelName = dto.CanAttendNikahInPerson ? string.Empty : dto.WakeelName?.Trim() ?? string.Empty;
+        var wakeelTel = dto.CanAttendNikahInPerson ? string.Empty : dto.WakeelTel?.Trim() ?? string.Empty;
+
         form.CanAttendNikahInPerson = dto.CanAttendNikahInPerson;
-        form.WakeelName = dto.WakeelName;
-        form.WakeelTel = dto.WakeelTel;
+        form.WakeelName = wakeelName;
+        form.WakeelTel = wakeelTel;
 
         // Authoritative per-party store, kept in parity with the flat mirror.
         var bridegroomSection = form.BridegroomSection ??= new BridegroomFormSection
@@ -133,23 +137,23 @@ public class BridegroomSectionService : IBridegroomSectionService
         bridegroomSection.BridegroomSignatureTel = dto.BridegroomSignatureTel;
         bridegroomSection.BridegroomDivorceEvidence = dto.BridegroomDivorceEvidence;
         bridegroomSection.CanAttendNikahInPerson = dto.CanAttendNikahInPerson;
-        bridegroomSection.WakeelName = dto.WakeelName;
-        bridegroomSection.WakeelTel = dto.WakeelTel;
+        bridegroomSection.WakeelName = wakeelName;
+        bridegroomSection.WakeelTel = wakeelTel;
         bridegroomSection.ModifiedAt = DateTime.UtcNow;
 
-        if (!dto.CanAttendNikahInPerson && !string.IsNullOrWhiteSpace(dto.WakeelName))
+        if (!dto.CanAttendNikahInPerson && !string.IsNullOrWhiteSpace(wakeelName))
         {
             var wakeelSection = form.GroomWakeelSection ??= new GroomWakeelSection
             {
                 ReferenceNumber = form.ReferenceNumber,
                 CreatedAt = DateTime.UtcNow
             };
-            wakeelSection.Name = dto.WakeelName;
-            wakeelSection.Tel = dto.WakeelTel;
+            wakeelSection.Name = wakeelName;
+            wakeelSection.Tel = wakeelTel;
             wakeelSection.ModifiedAt = DateTime.UtcNow;
 
-            form.GroomWakeelName = dto.WakeelName;
-            form.GroomWakeelTel = dto.WakeelTel;
+            form.GroomWakeelName = wakeelName;
+            form.GroomWakeelTel = wakeelTel;
         }
 
         form.FormStage = nextStage.Value;

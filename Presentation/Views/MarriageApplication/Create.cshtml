@@ -239,11 +239,11 @@
                     <div class="col-md-12">
                         <label class="form-label">Will you attend the Nikah in person?</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="CanAttendNikahInPerson" id="attendYes" value="true" checked />
+                            <input class="form-check-input" type="radio" asp-for="CanAttendNikahInPerson" id="attendYes" value="true" />
                             <label class="form-check-label" for="attendYes">Yes</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="CanAttendNikahInPerson" id="attendNo" value="false" />
+                            <input class="form-check-input" type="radio" asp-for="CanAttendNikahInPerson" id="attendNo" value="false" />
                             <label class="form-check-label" for="attendNo">No, I will appoint a Wakeel</label>
                         </div>
                     </div>
@@ -482,11 +482,17 @@
                 var nameGroup = document.getElementById('wakeelNameGroup');
                 var telGroup = document.getElementById('wakeelTelGroup');
                 if (!yes || !no || !nameGroup || !telGroup) return;
+                var nameInput = nameGroup.querySelector('input');
+                var telInput = telGroup.querySelector('input');
 
                 function toggle() {
                     var show = no.checked;
                     nameGroup.classList.toggle('d-none', !show);
                     telGroup.classList.toggle('d-none', !show);
+                    if (!show) {
+                        if (nameInput) { nameInput.value = ''; }
+                        if (telInput) { telInput.value = ''; }
+                    }
                 }
 
                 yes.addEventListener('change', toggle);

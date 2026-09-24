@@ -151,6 +151,7 @@ public class MarriageApplicationController : Controller
         }
 
         var partnerPhone = partner.PhoneNo;
+        var canAttendNikahInPerson = model.CanAttendNikahInPerson ?? true;
         var form = new MarriageApplicationForm
         {
             ProposedNikahDate = model.ProposedNikahDate,
@@ -185,9 +186,9 @@ public class MarriageApplicationController : Controller
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula ?? false,
             BridegroomSignatureTel = (isGroomFirst ? model.Bridegroom.Phone.Trim() : partnerPhone),
 
-            CanAttendNikahInPerson = model.CanAttendNikahInPerson ?? true,
-            WakeelName = model.WakeelName.Trim(),
-            WakeelTel = model.WakeelTel.Trim(),
+            CanAttendNikahInPerson = canAttendNikahInPerson,
+            WakeelName = canAttendNikahInPerson ? string.Empty : model.WakeelName.Trim(),
+            WakeelTel = canAttendNikahInPerson ? string.Empty : model.WakeelTel.Trim(),
 
             ApplicationStage = ApplicationStage.ApplicantsReview,
             FormStage = isGroomFirst
