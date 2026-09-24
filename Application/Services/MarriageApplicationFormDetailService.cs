@@ -43,6 +43,8 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
             .Include(f => f.MarriageApplication)
             .Include(f => f.Rejections)
             .Include(f => f.WitnessSignatures)
+            .Include(f => f.JamaatPresidentVerification)
+            .Include(f => f.GroomJamaatPresidentVerification)
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 f => f.Id == applicationFormId ||

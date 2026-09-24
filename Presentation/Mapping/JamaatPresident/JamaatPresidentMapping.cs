@@ -138,6 +138,7 @@ public static class JamaatPresidentMapping
             BrideLocalRishtanataSecretarySignatureDate = dto.BrideLocalRishtanataSecretarySignatureDate,
             GroomLocalRishtanataSecretaryName = dto.GroomLocalRishtanataSecretaryName,
             GroomLocalRishtanataSecretarySignatureDate = dto.GroomLocalRishtanataSecretarySignatureDate,
+            PresidentAttestations = dto.PresidentAttestations,
 
             NationalRishtanataSecretaryName = dto.NationalRishtanataSecretaryName,
             NationalRishtanataSecretarySignatureDate = dto.NationalRishtanataSecretarySignatureDate,

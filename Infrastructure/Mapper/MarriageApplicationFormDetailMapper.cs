@@ -5,8 +5,9 @@ using Infrastructure.DTOs.MarriageApplicationFormDetail;
 namespace Infrastructure.Mapper;
 
 /// <summary>
-/// Maps a MarriageApplicationForm (with its owning FormApplication and
-/// rejection history loaded) to the read-side detail DTO.
+/// Maps a MarriageApplicationForm (with its owning FormApplication, rejection
+/// history and both Jama'at President sections loaded) to the read-side
+/// detail DTO.
 ///
 /// A section is emitted only when it has been submitted; otherwise the DTO
 /// property stays null so the frontend can render "not completed yet".
@@ -145,6 +146,8 @@ public static class MarriageApplicationFormDetailMapper
                     SignatureDate = LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form)
                 }
                 : null,
+
+            PresidentAttestations = PresidentAttestationDisplay.From(form),
 
             NationalRishtanataSecretary = HasValue(form.NationalRishtanataSecretarySignatureDate)
                 ? new RishtanataSecretarySectionDetailDto

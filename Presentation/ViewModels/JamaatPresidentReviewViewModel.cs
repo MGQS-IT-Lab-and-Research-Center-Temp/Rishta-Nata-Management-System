@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Presentation.ViewModels;
 
@@ -196,6 +197,9 @@ public class JamaatPresidentReviewViewModel
     public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
 
     public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    /// <summary>Recorded president attestations (Gap 7), read-only.</summary>
+    public PresidentAttestationsDto PresidentAttestations { get; set; } = new();
 
     /// <summary>What the president enters to sign; posted back with prefix "Approve".</summary>
     public JamaatPresidentApproveInput Approve { get; set; } = new();

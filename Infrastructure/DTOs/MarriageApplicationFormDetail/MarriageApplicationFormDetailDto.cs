@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Infrastructure.DTOs.MarriageApplicationFormDetail;
 
@@ -60,6 +61,9 @@ public class MarriageApplicationFormDetailDto
     /// this repeats the bride-side entry, which covers both partners.
     /// </summary>
     public LocalRishtanataSecretarySectionDetailDto? GroomLocalRishtanataSecretary { get; set; }
+
+    /// <summary>Jama'at Presidents' attestations (Gap 7); null until any is recorded.</summary>
+    public PresidentAttestationsDto? PresidentAttestations { get; set; }
     public RishtanataSecretarySectionDetailDto? NationalRishtanataSecretary { get; set; }
     public AmirApprovalSectionDetailDto? AmirApproval { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Infrastructure.DTOs.JamaatPresidentDashboardDto;
 
@@ -101,6 +102,9 @@ public class JamaatPresidentReviewDto
     public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
     public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
     public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    /// <summary>Recorded president attestations (Gap 7).</summary>
+    public PresidentAttestationsDto PresidentAttestations { get; set; } = new();
 
     public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
     public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;

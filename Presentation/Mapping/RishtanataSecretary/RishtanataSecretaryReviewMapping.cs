@@ -24,6 +24,7 @@ namespace Presentation.Mapping.RishtanataSecretary;
             BrideLocalRishtanataSecretarySignatureDate = dto.BrideLocalRishtanataSecretarySignatureDate,
             GroomLocalRishtanataSecretaryName = dto.GroomLocalRishtanataSecretaryName,
             GroomLocalRishtanataSecretarySignatureDate = dto.GroomLocalRishtanataSecretarySignatureDate,
+            PresidentAttestations = dto.PresidentAttestations,
             Status = dto.Status,
             SubmittedDate = dto.SubmittedDate,
             CurrentStage = dto.CurrentStage,

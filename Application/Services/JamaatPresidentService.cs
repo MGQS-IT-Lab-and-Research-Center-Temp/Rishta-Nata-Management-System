@@ -357,6 +357,8 @@ public class JamaatPresidentService : IJamaatPresidentService
             GroomLocalRishtanataSecretaryName = LocalRishtanataSecretaryDisplay.GroomSideName(form),
             GroomLocalRishtanataSecretarySignatureDate = LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form),
 
+            PresidentAttestations = PresidentAttestationDisplay.FromOrEmpty(form),
+
             // Read-only context for the controller to dispatch Approve/Reject to
             // the matching workflow submit. Fine-grained stage + Tel come from the
             // president verification sections (the flat form only carries Name and
