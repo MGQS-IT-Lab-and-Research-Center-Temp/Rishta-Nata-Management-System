@@ -69,7 +69,11 @@ public class BrideSectionService : IBrideSectionService
                 $"Form is at {form.FormStage}, not awaiting the bride.");
 
         // Gap 6: the paper form's marital status is mandatory for the bride.
-        if (dto.BrideMaritalStatus is null)
+        // The JsonStringEnumConverter on BrideMaritalStatus still accepts raw
+        // integers, so an out-of-range number (e.g. 7) binds successfully to an
+        // undefined enum value instead of failing model binding — reject that
+        // the same way as a missing value.
+        if (dto.BrideMaritalStatus is null || !Enum.IsDefined(dto.BrideMaritalStatus.Value))
             return StageAuthorizationResult.Deny(
                 StageAuthorizationDenyReason.WrongStage,
                 "Select the bride's marital status.");
