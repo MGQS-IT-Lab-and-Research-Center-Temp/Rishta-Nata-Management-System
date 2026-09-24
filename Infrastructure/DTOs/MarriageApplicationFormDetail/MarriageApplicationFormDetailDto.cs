@@ -32,6 +32,7 @@ public class MarriageApplicationFormDetailDto
     public BridegroomSectionDetailDto? Bridegroom { get; set; }
     public GuardianSectionDetailDto? Guardian { get; set; }
     public RepresentativeSectionDetailDto? Representative { get; set; }
+    public GroomWakeelSectionDetailDto? GroomWakeel { get; set; }
 
     /// <summary>Witnesses that have submitted, in paper-form order (One, Two).</summary>
     public IReadOnlyList<WitnessDetailDto> Witnesses { get; set; } = Array.Empty<WitnessDetailDto>();

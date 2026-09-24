@@ -63,6 +63,12 @@ public class ReadOnlyFormDto
     public string RepresentativeActingFor { get; set; } = string.Empty;
     public string RepresentativeSignatureDate { get; set; } = string.Empty;
 
+    // ===== Groom's Wakeel =====
+    public string GroomWakeelName { get; set; } = string.Empty;
+    public string GroomWakeelFatherName { get; set; } = string.Empty;
+    public string GroomWakeelTel { get; set; } = string.Empty;
+    public string GroomWakeelSignatureDate { get; set; } = string.Empty;
+
     // ===== Witness One =====
     public string WitnessOneName { get; set; } = string.Empty;
     public string WitnessOneAddress { get; set; } = string.Empty;

@@ -97,6 +97,16 @@ public static class MarriageApplicationFormDetailMapper
                 }
                 : null,
 
+            GroomWakeel = HasValue(form.GroomWakeelName)
+                ? new GroomWakeelSectionDetailDto
+                {
+                    Name = form.GroomWakeelName,
+                    FatherName = form.GroomWakeelFatherName,
+                    Tel = form.GroomWakeelTel,
+                    SignatureDate = form.GroomWakeelSignatureDate
+                }
+                : null,
+
             Witnesses = CollectWitnesses(form),
 
             OfficiatingImam = HasValue(form.OfficiatingImamSignatureDate)

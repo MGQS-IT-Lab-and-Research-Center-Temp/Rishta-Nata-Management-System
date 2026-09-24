@@ -107,6 +107,11 @@ public static class JamaatPresidentMapping
             RepresentativeActingFor = dto.RepresentativeActingFor,
             RepresentativeSignatureDate = dto.RepresentativeSignatureDate,
 
+            GroomWakeelName = dto.GroomWakeelName,
+            GroomWakeelFatherName = dto.GroomWakeelFatherName,
+            GroomWakeelTel = dto.GroomWakeelTel,
+            GroomWakeelSignatureDate = dto.GroomWakeelSignatureDate,
+
             WitnessOneName = dto.WitnessOneName,
             WitnessOneAddress = dto.WitnessOneAddress,
             WitnessOneTel = dto.WitnessOneTel,

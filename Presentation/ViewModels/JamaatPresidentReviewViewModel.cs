@@ -128,6 +128,19 @@ public class JamaatPresidentReviewViewModel
 
 
     // =========================================================
+    // GROOM'S WAKEEL
+    // =========================================================
+
+    public string GroomWakeelName { get; set; } = string.Empty;
+
+    public string GroomWakeelFatherName { get; set; } = string.Empty;
+
+    public string GroomWakeelTel { get; set; } = string.Empty;
+
+    public string GroomWakeelSignatureDate { get; set; } = string.Empty;
+
+
+    // =========================================================
     // WITNESS ONE
     // =========================================================
 
