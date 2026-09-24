@@ -29,4 +29,23 @@ public class JamaatPresidentVerificationSection : AuditableEntity
     public string LocalRishtanataSecretaryTel { get; set; } = string.Empty;
 
     public string LocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    // President's attestations (Gap 7). Null = not recorded (signed before Gap 7).
+    public bool? BrideIsBornAhmadi { get; set; }
+
+    /// <summary>Null when the bride is a born Ahmadi.</summary>
+    public int? BrideYearsAsAhmadi { get; set; }
+
+    public string BrideMarriageReason { get; set; } = string.Empty;
+
+    /// <summary>Only recorded when the partners share a Jama'at (this president signs for both).</summary>
+    public bool? GroomIsBornAhmadi { get; set; }
+
+    public int? GroomYearsAsAhmadi { get; set; }
+
+    public string GroomMarriageReason { get; set; } = string.Empty;
+
+    public bool GuardianIsBonafide { get; set; }
+
+    public bool BrideSignedFreely { get; set; }
 }

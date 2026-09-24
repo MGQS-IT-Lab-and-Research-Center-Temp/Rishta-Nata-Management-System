@@ -92,6 +92,7 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.LocalRishtanataSecretaryName).HasMaxLength(200);
             e.Property(x => x.LocalRishtanataSecretaryTel).HasMaxLength(30);
             e.Property(x => x.LocalRishtanataSecretarySignatureDate).HasMaxLength(50);
+            e.Property(x => x.GroomMarriageReason).HasMaxLength(200);
         });
 
         // Bride's president section: only the new columns get lengths. Its
@@ -103,6 +104,8 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.LocalRishtanataSecretaryName).HasMaxLength(200);
             e.Property(x => x.LocalRishtanataSecretaryTel).HasMaxLength(30);
             e.Property(x => x.LocalRishtanataSecretarySignatureDate).HasMaxLength(50);
+            e.Property(x => x.BrideMarriageReason).HasMaxLength(200);
+            e.Property(x => x.GroomMarriageReason).HasMaxLength(200);
         });
 
         modelBuilder.Entity<RishtanataRecommendationSection>(e =>

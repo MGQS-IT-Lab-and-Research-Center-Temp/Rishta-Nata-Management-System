@@ -25,4 +25,12 @@ public class GroomJamaatPresidentVerificationSection : AuditableEntity
     public string LocalRishtanataSecretaryTel { get; set; } = string.Empty;
 
     public string LocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    // President's attestation for the groom (Gap 7). Null = not recorded.
+    public bool? GroomIsBornAhmadi { get; set; }
+
+    /// <summary>Null when the groom is a born Ahmadi.</summary>
+    public int? GroomYearsAsAhmadi { get; set; }
+
+    public string GroomMarriageReason { get; set; } = string.Empty;
 }
