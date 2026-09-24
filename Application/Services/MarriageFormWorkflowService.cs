@@ -1,3 +1,4 @@
+using System.Globalization;
 using Application.Authorization;
 using Application.Interfaces;
 using Application.Workflow;
@@ -51,6 +52,12 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             return denied;
         }
 
+        var invalid = ValidateLocalRishtanataSecretary(submission);
+        if (invalid is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, invalid);
+        }
+
         var now = DateTime.UtcNow;
 
         if (form.JamaatPresidentVerification is null)
@@ -61,6 +68,9 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 Name = submission.Name,
                 Tel = submission.Tel,
                 SignatureDate = submission.SignatureDate,
+                LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim(),
+                LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim(),
+                LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim(),
                 CreatedAt = now,
                 CreatedBy = memberId
             };
@@ -73,6 +83,9 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.JamaatPresidentVerification.Name = submission.Name;
             form.JamaatPresidentVerification.Tel = submission.Tel;
             form.JamaatPresidentVerification.SignatureDate = submission.SignatureDate;
+            form.JamaatPresidentVerification.LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+            form.JamaatPresidentVerification.LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim();
+            form.JamaatPresidentVerification.LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
             form.JamaatPresidentVerification.ModifiedAt = now;
             form.JamaatPresidentVerification.ModifiedBy = memberId;
         }
@@ -80,6 +93,8 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         // Mirror onto the flat form columns (used by the read side).
         form.JamaatPresidentName = submission.Name;
         form.JamaatPresidentSignatureDate = submission.SignatureDate;
+        form.BrideLocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+        form.BrideLocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
 
         // Same-Jamaat couples: this president signs for both partners and the
         // form advances straight to the secretary. Different Jamaats: forward to
@@ -107,6 +122,12 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             return denied;
         }
 
+        var invalid = ValidateLocalRishtanataSecretary(submission);
+        if (invalid is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, invalid);
+        }
+
         var now = DateTime.UtcNow;
 
         if (form.GroomJamaatPresidentVerification is null)
@@ -117,6 +138,9 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 Name = submission.Name,
                 Tel = submission.Tel,
                 SignatureDate = submission.SignatureDate,
+                LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim(),
+                LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim(),
+                LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim(),
                 CreatedAt = now,
                 CreatedBy = memberId
             };
@@ -129,17 +153,51 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.GroomJamaatPresidentVerification.Name = submission.Name;
             form.GroomJamaatPresidentVerification.Tel = submission.Tel;
             form.GroomJamaatPresidentVerification.SignatureDate = submission.SignatureDate;
+            form.GroomJamaatPresidentVerification.LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+            form.GroomJamaatPresidentVerification.LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim();
+            form.GroomJamaatPresidentVerification.LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
             form.GroomJamaatPresidentVerification.ModifiedAt = now;
             form.GroomJamaatPresidentVerification.ModifiedBy = memberId;
         }
 
         form.GroomJamaatPresidentName = submission.Name;
         form.GroomJamaatPresidentSignatureDate = submission.SignatureDate;
+        form.GroomLocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+        form.GroomLocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
 
         return await AdvanceAsync(
             form, memberId, now,
             MarriageFormStage.AwaitingRishtanataSecretary,
             "groom Jamaat president verification");
+    }
+
+    /// <summary>
+    /// Signing requires the Local Rishtanata Secretary block (Gap 4). Returns a
+    /// user-facing error, or null when valid. Lengths match the narrowest
+    /// columns (GroomJamaatPresidentVerifications: 200 / 30 / 50).
+    /// </summary>
+    private static string? ValidateLocalRishtanataSecretary(JamaatPresidentVerificationSubmission submission)
+    {
+        var name = submission.LocalRishtanataSecretaryName?.Trim();
+        var tel = submission.LocalRishtanataSecretaryTel?.Trim();
+        var date = submission.LocalRishtanataSecretarySignatureDate?.Trim();
+
+        if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(tel) || string.IsNullOrEmpty(date))
+        {
+            return "Enter the Local Rishtanata Secretary's name, telephone and signature date before signing.";
+        }
+
+        if (name.Length > 200 || tel.Length > 30)
+        {
+            return "The Local Rishtanata Secretary's name or telephone is too long.";
+        }
+
+        if (!DateOnly.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+        {
+            return "The Local Rishtanata Secretary's signature date must be a valid date (yyyy-MM-dd).";
+        }
+
+        return null;
     }
 
     public async Task<StageAuthorizationResult> SubmitRishtanataRecommendationAsync(

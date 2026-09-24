@@ -14,12 +14,18 @@ public sealed record ImamSignoffSubmission(
 /// <summary>
 /// Payload for SubmitJamaatPresidentVerificationAsync and
 /// SubmitGroomJamaatPresidentVerificationAsync. Maps to the "Jamaat President"
-/// section of the paper form.
+/// section of the paper form, plus that side's "Local Rishtanata Secretary"
+/// block, which the president records when signing (Gap 4). All three
+/// LocalRishtanataSecretary* values are required to sign; the signature date
+/// is "yyyy-MM-dd".
 /// </summary>
 public sealed record JamaatPresidentVerificationSubmission(
     string Name,
     string Tel,
-    string SignatureDate);
+    string SignatureDate,
+    string LocalRishtanataSecretaryName,
+    string LocalRishtanataSecretaryTel,
+    string LocalRishtanataSecretarySignatureDate);
 
 /// <summary>
 /// Payload for SubmitRishtanataRecommendationAsync. Maps to the
