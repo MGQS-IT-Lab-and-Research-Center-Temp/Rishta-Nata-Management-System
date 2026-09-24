@@ -27,6 +27,16 @@ namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
 
         public string? PresidentRecommendation { get; set; }
 
+        // Local Rishtanata Secretary per side (Gap 4); the groom side falls back to
+        // the bride side on the same-Jama'at path.
+        public string? BrideLocalRishtanataSecretaryName { get; set; }
+
+        public string? BrideLocalRishtanataSecretarySignatureDate { get; set; }
+
+        public string? GroomLocalRishtanataSecretaryName { get; set; }
+
+        public string? GroomLocalRishtanataSecretarySignatureDate { get; set; }
+
         public DateTime SubmittedDate { get; set; }
 
         public string? Status { get; set; }

@@ -130,6 +130,22 @@ public static class MarriageApplicationFormDetailMapper
                 }
                 : null,
 
+            BrideLocalRishtanataSecretary = HasValue(form.BrideLocalRishtanataSecretarySignatureDate)
+                ? new LocalRishtanataSecretarySectionDetailDto
+                {
+                    Name = form.BrideLocalRishtanataSecretaryName,
+                    SignatureDate = form.BrideLocalRishtanataSecretarySignatureDate
+                }
+                : null,
+
+            GroomLocalRishtanataSecretary = HasValue(LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form))
+                ? new LocalRishtanataSecretarySectionDetailDto
+                {
+                    Name = LocalRishtanataSecretaryDisplay.GroomSideName(form),
+                    SignatureDate = LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form)
+                }
+                : null,
+
             NationalRishtanataSecretary = HasValue(form.NationalRishtanataSecretarySignatureDate)
                 ? new RishtanataSecretarySectionDetailDto
                 {

@@ -51,6 +51,15 @@ public class MarriageApplicationFormDetailDto
 
     public OfficiatingImamSectionDetailDto? OfficiatingImam { get; set; }
     public JamaatPresidentSectionDetailDto? JamaatPresident { get; set; }
+
+    /// <summary>F2 Local Rishtanata Secretary; null until the bride's president signs.</summary>
+    public LocalRishtanataSecretarySectionDetailDto? BrideLocalRishtanataSecretary { get; set; }
+
+    /// <summary>
+    /// F1 Local Rishtanata Secretary; null until recorded. On the same-Jama'at path
+    /// this repeats the bride-side entry, which covers both partners.
+    /// </summary>
+    public LocalRishtanataSecretarySectionDetailDto? GroomLocalRishtanataSecretary { get; set; }
     public RishtanataSecretarySectionDetailDto? NationalRishtanataSecretary { get; set; }
     public AmirApprovalSectionDetailDto? AmirApproval { get; set; }
 

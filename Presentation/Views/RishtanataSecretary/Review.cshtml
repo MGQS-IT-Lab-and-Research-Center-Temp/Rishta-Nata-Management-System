@@ -274,6 +274,46 @@
 
             </div>
 
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+
+                        Local Rishtanata Secretary (Bride's side)
+
+                    </label>
+
+                    <div class="fw-bold">
+
+                        @(string.IsNullOrWhiteSpace(Model.BrideLocalRishtanataSecretaryName) ? "Not recorded" : Model.BrideLocalRishtanataSecretaryName)
+
+                    </div>
+
+                    <div class="small">@Model.BrideLocalRishtanataSecretarySignatureDate</div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+
+                        Local Rishtanata Secretary (Bridegroom's side)
+
+                    </label>
+
+                    <div class="fw-bold">
+
+                        @(string.IsNullOrWhiteSpace(Model.GroomLocalRishtanataSecretaryName) ? "Not recorded" : Model.GroomLocalRishtanataSecretaryName)
+
+                    </div>
+
+                    <div class="small">@Model.GroomLocalRishtanataSecretarySignatureDate</div>
+
+                </div>
+
+            </div>
+
             <div class="mb-3">
 
                 <label class="text-muted small">

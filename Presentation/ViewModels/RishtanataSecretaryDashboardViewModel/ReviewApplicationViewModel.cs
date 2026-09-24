@@ -27,6 +27,14 @@ public class ReviewApplicationViewModel
 
     public string? PresidentRecommendation { get; set; }
 
+    public string? BrideLocalRishtanataSecretaryName { get; set; }
+
+    public string? BrideLocalRishtanataSecretarySignatureDate { get; set; }
+
+    public string? GroomLocalRishtanataSecretaryName { get; set; }
+
+    public string? GroomLocalRishtanataSecretarySignatureDate { get; set; }
+
     public DateTime SubmittedDate { get; set; }
 
     public string? Status { get; set; }
