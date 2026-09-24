@@ -110,6 +110,13 @@ public class MarriageApplicationController : Controller
             ModelState.Remove($"{partnerPrefix}.{prop}");
         }
 
+        // Gap 6: a bride starting the application must choose her marital status.
+        // A groom-first application leaves it for the bride's Continue step.
+        if (!isGroomFirst && model.BrideMaritalStatus is null)
+        {
+            ModelState.AddModelError(nameof(model.BrideMaritalStatus), "Select the bride's marital status.");
+        }
+
         // The Wakeel fields only render on the groom-fills-it-themselves branch of
         // Create.cshtml (StartingParty == "Groom" / isGroomFirst); when the bride is
         // starting, the groom card is a partner-lookup stub with no Wakeel inputs, so
@@ -173,7 +180,7 @@ public class MarriageApplicationController : Controller
             BrideResidentOf = (isGroomFirst ? partner.Address : model.Bride.ResidentOf),
             BrideGenotype = model.Bride.Genotype,
             BrideBloodGroup = model.Bride.BloodGroup,
-            BrideMaritalStatus = model.BrideMaritalStatus,
+            BrideMaritalStatus = isGroomFirst ? null : model.BrideMaritalStatus,
             BrideDivorceEvidence = model.BrideDivorceEvidence,
             BrideProposedDowerAmount = model.BrideProposedDowerAmount,
             BrideDowerAmountReceivedInCash = model.BrideDowerAmountReceivedInCash,
@@ -263,6 +270,11 @@ public class MarriageApplicationController : Controller
         if (!string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase))
         {
             AddWakeelRequirementErrors(model.CanAttendNikahInPerson, model.WakeelName, model.WakeelTel);
+        }
+
+        if (string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase) && model.MaritalStatus is null)
+        {
+            ModelState.AddModelError(nameof(model.MaritalStatus), "Select the bride's marital status.");
         }
 
         if (!ModelState.IsValid)

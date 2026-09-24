@@ -68,6 +68,12 @@ public class BrideSectionService : IBrideSectionService
                 StageAuthorizationDenyReason.WrongStage,
                 $"Form is at {form.FormStage}, not awaiting the bride.");
 
+        // Gap 6: the paper form's marital status is mandatory for the bride.
+        if (dto.BrideMaritalStatus is null)
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage,
+                "Select the bride's marital status.");
+
         var eligibility = await _eligibility.ValidateSectionAsync(
             dto.BrideMembershipNo,
             partnerIsGroom: false,
