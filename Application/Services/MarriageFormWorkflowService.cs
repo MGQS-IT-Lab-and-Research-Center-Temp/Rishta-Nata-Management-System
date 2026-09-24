@@ -58,6 +58,21 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, invalid);
         }
 
+        // Same-Jamaat couples: this president signs for both partners, so they
+        // also attest the groom (Gap 7). Decided before any write.
+        var sharesJamaat = await PartnersShareJamaatAsync(form, cancellationToken);
+
+        var attestationError =
+            ValidatePartnerAttestation(submission.Bride, "bride")
+            ?? (sharesJamaat ? ValidatePartnerAttestation(submission.Groom, "bridegroom") : null)
+            ?? (!submission.GuardianIsBonafide || !submission.BrideSignedFreely
+                ? "Confirm that the guardian is bona fide and that the bride signed freely before signing."
+                : null);
+        if (attestationError is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, attestationError);
+        }
+
         var now = DateTime.UtcNow;
 
         if (form.JamaatPresidentVerification is null)
@@ -90,6 +105,33 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.JamaatPresidentVerification.ModifiedBy = memberId;
         }
 
+        // President's attestations (Gap 7); validated above. Years only apply to
+        // converts. The groom's answers live here only on the same-Jamaat path;
+        // otherwise they're cleared (e.g. after a revert) and the groom's
+        // president records them.
+        var verification = form.JamaatPresidentVerification!;
+        var brideAttestation = submission.Bride!;
+        verification.BrideIsBornAhmadi = brideAttestation.IsBornAhmadi;
+        verification.BrideYearsAsAhmadi = brideAttestation.IsBornAhmadi == true ? null : brideAttestation.YearsAsAhmadi;
+        verification.BrideMarriageReason = brideAttestation.MarriageReason?.Trim() ?? string.Empty;
+
+        if (sharesJamaat)
+        {
+            var groomAttestation = submission.Groom!;
+            verification.GroomIsBornAhmadi = groomAttestation.IsBornAhmadi;
+            verification.GroomYearsAsAhmadi = groomAttestation.IsBornAhmadi == true ? null : groomAttestation.YearsAsAhmadi;
+            verification.GroomMarriageReason = groomAttestation.MarriageReason?.Trim() ?? string.Empty;
+        }
+        else
+        {
+            verification.GroomIsBornAhmadi = null;
+            verification.GroomYearsAsAhmadi = null;
+            verification.GroomMarriageReason = string.Empty;
+        }
+
+        verification.GuardianIsBonafide = submission.GuardianIsBonafide;
+        verification.BrideSignedFreely = submission.BrideSignedFreely;
+
         // Mirror onto the flat form columns (used by the read side).
         form.JamaatPresidentName = submission.Name;
         form.JamaatPresidentSignatureDate = submission.SignatureDate;
@@ -99,7 +141,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         // Same-Jamaat couples: this president signs for both partners and the
         // form advances straight to the secretary. Different Jamaats: forward to
         // the groom's president first.
-        var nextStage = await PartnersShareJamaatAsync(form, cancellationToken)
+        var nextStage = sharesJamaat
             ? MarriageFormStage.AwaitingRishtanataSecretary
             : MarriageFormStage.AwaitingGroomJamaatPresident;
 
@@ -126,6 +168,13 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         if (invalid is not null)
         {
             return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, invalid);
+        }
+
+        // The groom's president attests the groom only (Gap 7).
+        var attestationError = ValidatePartnerAttestation(submission.Groom, "bridegroom");
+        if (attestationError is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, attestationError);
         }
 
         var now = DateTime.UtcNow;
@@ -159,6 +208,13 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.GroomJamaatPresidentVerification.ModifiedAt = now;
             form.GroomJamaatPresidentVerification.ModifiedBy = memberId;
         }
+
+        // President's attestation for the groom (Gap 7); validated above.
+        var groomVerification = form.GroomJamaatPresidentVerification!;
+        var groomAttestation = submission.Groom!;
+        groomVerification.GroomIsBornAhmadi = groomAttestation.IsBornAhmadi;
+        groomVerification.GroomYearsAsAhmadi = groomAttestation.IsBornAhmadi == true ? null : groomAttestation.YearsAsAhmadi;
+        groomVerification.GroomMarriageReason = groomAttestation.MarriageReason?.Trim() ?? string.Empty;
 
         form.GroomJamaatPresidentName = submission.Name;
         form.GroomJamaatPresidentSignatureDate = submission.SignatureDate;
@@ -195,6 +251,31 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         if (!DateOnly.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
         {
             return "The Local Rishtanata Secretary's signature date must be a valid date (yyyy-MM-dd).";
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// One partner's attestation (Gap 7). Returns a user-facing error, or null
+    /// when valid. Limits match the columns (MarriageReason varchar(200)).
+    /// </summary>
+    private static string? ValidatePartnerAttestation(PartnerAttestationSubmission? attestation, string partner)
+    {
+        if (attestation?.IsBornAhmadi is null)
+        {
+            return $"Record whether the {partner} is a born Ahmadi before signing.";
+        }
+
+        if (attestation.IsBornAhmadi == false &&
+            (attestation.YearsAsAhmadi is null || attestation.YearsAsAhmadi < 0 || attestation.YearsAsAhmadi > 120))
+        {
+            return $"Enter how many years (0–120) the {partner} has been an Ahmadi before signing.";
+        }
+
+        if ((attestation.MarriageReason?.Trim().Length ?? 0) > 200)
+        {
+            return $"The {partner}'s marriage reason must be 200 characters or fewer.";
         }
 
         return null;
