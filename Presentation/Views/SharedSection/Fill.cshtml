@@ -48,6 +48,13 @@
                 <input asp-for="RelationToBride" class="form-control" />
             </div>
         }
+        else if (Model.SectionType == Domain.Enums.SectionType.GroomWakeel)
+        {
+            <div class="mb-3">
+                <label asp-for="RelationToBride" class="form-label">Father's Name (S/o)</label>
+                <input asp-for="RelationToBride" class="form-control" />
+            </div>
+        }
 
         <div class="mb-3">
             <label asp-for="Name" class="form-label">Full name</label>
