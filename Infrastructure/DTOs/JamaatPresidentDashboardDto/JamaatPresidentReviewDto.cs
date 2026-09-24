@@ -95,6 +95,13 @@ public class JamaatPresidentReviewDto
     public string JamaatPresidentName { get; set; } = string.Empty;
     public string JamaatPresidentSignatureDate { get; set; } = string.Empty;
 
+    /// <summary>Recorded Local Rishtanata Secretary entries per side (Gap 4). The
+    /// groom side falls back to the bride side on the same-Jama'at path.</summary>
+    public string BrideLocalRishtanataSecretaryName { get; set; } = string.Empty;
+    public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+    public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
+    public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
     public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
     public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
 

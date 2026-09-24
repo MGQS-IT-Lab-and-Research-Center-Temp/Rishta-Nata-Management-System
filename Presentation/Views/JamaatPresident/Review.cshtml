@@ -942,6 +942,36 @@
 
                 <div class="col-md-6">
                     <small class="text-muted">
+                        Local Rishtanata Secretary (Bride's side)
+                    </small>
+
+                    <div class="fw-bold">
+                        @(string.IsNullOrWhiteSpace(Model.BrideLocalRishtanataSecretaryName) ? "Not yet recorded" : Model.BrideLocalRishtanataSecretaryName)
+                    </div>
+
+                    <div>
+                        @Model.BrideLocalRishtanataSecretarySignatureDate
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Local Rishtanata Secretary (Bridegroom's side)
+                    </small>
+
+                    <div class="fw-bold">
+                        @(string.IsNullOrWhiteSpace(Model.GroomLocalRishtanataSecretaryName) ? "Not yet recorded" : Model.GroomLocalRishtanataSecretaryName)
+                    </div>
+
+                    <div>
+                        @Model.GroomLocalRishtanataSecretarySignatureDate
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
                         National Rishtanata Secretary
                     </small>
 
@@ -976,16 +1006,55 @@
 
         <div class="card-body">
 
+            @{
+                var signingForGroomSide = Model.CurrentFormStage == Domain.Enums.MarriageFormStage.AwaitingGroomJamaatPresident;
+            }
+
             <div class="d-flex gap-2 flex-wrap">
 
                 <!-- APPROVE -->
                 <form asp-controller="JamaatPresident"
                       asp-action="Approve"
-                      method="post">
+                      method="post"
+                      class="w-100">
 
                     <input type="hidden"
                            name="id"
                            value="@Model.Id" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <h5 class="mb-1">
+                        Local Rishtanata Secretary
+                        (@(signingForGroomSide ? "Bridegroom's side" : Model.PartnersShareJamaat ? "both partners" : "Bride's side"))
+                    </h5>
+
+                    <p class="text-muted small mb-3">
+                        Required to sign. Record the Local Rishtanata Secretary who
+                        endorsed this side of the form.
+                    </p>
+
+                    <div class="row g-3 mb-3">
+
+                        <div class="col-md-5">
+                            <label asp-for="Approve.LocalRishtanataSecretaryName" class="form-label"></label>
+                            <input asp-for="Approve.LocalRishtanataSecretaryName" class="form-control" maxlength="200" required />
+                            <span asp-validation-for="Approve.LocalRishtanataSecretaryName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Approve.LocalRishtanataSecretaryTel" class="form-label"></label>
+                            <input asp-for="Approve.LocalRishtanataSecretaryTel" type="tel" class="form-control" maxlength="30" required />
+                            <span asp-validation-for="Approve.LocalRishtanataSecretaryTel" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="Approve.LocalRishtanataSecretarySignatureDate" class="form-label"></label>
+                            <input asp-for="Approve.LocalRishtanataSecretarySignatureDate" type="date" class="form-control" required />
+                            <span asp-validation-for="Approve.LocalRishtanataSecretarySignatureDate" class="text-danger small"></span>
+                        </div>
+
+                    </div>
 
                     <button type="submit"
                             class="btn btn-success"

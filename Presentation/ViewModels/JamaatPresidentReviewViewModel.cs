@@ -188,6 +188,18 @@ public class JamaatPresidentReviewViewModel
 
     public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
 
+    // Recorded Local Rishtanata Secretary entries (Gap 4), read-only.
+    public string BrideLocalRishtanataSecretaryName { get; set; } = string.Empty;
+
+    public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
+
+    public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    /// <summary>What the president enters to sign; posted back with prefix "Approve".</summary>
+    public JamaatPresidentApproveInput Approve { get; set; } = new();
+
     public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
 
     public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
