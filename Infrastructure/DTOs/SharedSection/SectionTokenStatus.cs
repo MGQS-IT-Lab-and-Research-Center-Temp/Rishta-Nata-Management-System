@@ -12,4 +12,7 @@ public class SectionTokenStatus
     public string BridegroomName { get; init; } = string.Empty;
     public string InvalidationReason { get; init; } = string.Empty;
     public bool IsSubmitted { get; init; }
+
+    /// <summary>Saved guardian choice; prefills the Fill form for SectionType.Guardian. False for other sections.</summary>
+    public bool AppointsRepresentative { get; set; }
 }

@@ -44,7 +44,8 @@ public class SharedSectionController : Controller
             ReferenceNumber = status.ReferenceNumber,
             BrideName = status.BrideName,
             BridegroomName = status.BridegroomName,
-            SectionLabel = SectionTitle(status.SectionType)
+            SectionLabel = SectionTitle(status.SectionType),
+            AppointsRepresentative = status.SectionType == SectionType.Guardian && status.AppointsRepresentative
         };
 
         return View(model);

@@ -29,6 +29,7 @@ public class SharedSectionService : ISharedSectionService
         var tokenRow = await _context.SectionAccessTokens
             .AsNoTracking()
             .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.GuardianOrWakeelSection)
             .FirstOrDefaultAsync(x => x.TokenHash == hash, cancellationToken);
 
         if (tokenRow is null)
@@ -65,7 +66,9 @@ public class SharedSectionService : ISharedSectionService
             SectionType = tokenRow.SectionType,
             ReferenceNumber = form.ReferenceNumber,
             BrideName = form.BrideName,
-            BridegroomName = form.BridegroomName
+            BridegroomName = form.BridegroomName,
+            AppointsRepresentative = tokenRow.SectionType == SectionType.Guardian &&
+                form.GuardianOrWakeelSection?.AppointsRepresentative == true
         };
     }
 
