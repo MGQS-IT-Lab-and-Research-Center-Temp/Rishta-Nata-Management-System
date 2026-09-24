@@ -109,6 +109,14 @@ public class MarriageApplicationController : Controller
             ModelState.Remove($"{partnerPrefix}.{prop}");
         }
 
+        if (model.CanAttendNikahInPerson == false)
+        {
+            if (string.IsNullOrWhiteSpace(model.WakeelName))
+                ModelState.AddModelError(nameof(model.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
+            if (string.IsNullOrWhiteSpace(model.WakeelTel))
+                ModelState.AddModelError(nameof(model.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -248,6 +256,15 @@ public class MarriageApplicationController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Continue(Guid id, ContinueApplicationViewModel model, CancellationToken ct)
     {
+        if (string.Equals(model.Party, "Groom", StringComparison.OrdinalIgnoreCase) &&
+            model.CanAttendNikahInPerson == false)
+        {
+            if (string.IsNullOrWhiteSpace(model.WakeelName))
+                ModelState.AddModelError(nameof(model.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
+            if (string.IsNullOrWhiteSpace(model.WakeelTel))
+                ModelState.AddModelError(nameof(model.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);

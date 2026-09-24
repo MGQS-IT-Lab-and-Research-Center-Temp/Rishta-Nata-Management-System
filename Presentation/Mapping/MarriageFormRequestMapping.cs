@@ -44,7 +44,10 @@ public static class MarriageFormRequestMapping
             HasDivorcedFormerWife = request.HasDivorcedFormerWife,
             FormerWifeIsPresent = request.FormerWifeIsPresent,
             FormerWifeObtainedKhula = request.FormerWifeObtainedKhula,
-            BridegroomSignatureTel = request.BridegroomSignatureTel
+            BridegroomSignatureTel = request.BridegroomSignatureTel,
+            CanAttendNikahInPerson = request.CanAttendNikahInPerson,
+            WakeelName = request.WakeelName,
+            WakeelTel = request.WakeelTel
         };
     }
 
