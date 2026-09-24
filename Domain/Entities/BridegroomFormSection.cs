@@ -26,5 +26,9 @@ namespace Domain.Entities
         public bool FormerWifeObtainedKhula { get; set; }
         public string BridegroomSignatureTel { get; set; } = string.Empty;
         public string ReferenceNumber { get; set; } = string.Empty;
+
+        public bool CanAttendNikahInPerson { get; set; } = true;
+        public string WakeelName { get; set; } = string.Empty;
+        public string WakeelTel { get; set; } = string.Empty;
     }
 }

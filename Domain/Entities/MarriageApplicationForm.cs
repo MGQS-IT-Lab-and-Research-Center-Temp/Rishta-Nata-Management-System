@@ -62,6 +62,10 @@ namespace Domain.Entities
 
         public string BridegroomSignatureTel { get; set; } = string.Empty;
 
+        public bool CanAttendNikahInPerson { get; set; } = true;
+        public string WakeelName { get; set; } = string.Empty;
+        public string WakeelTel { get; set; } = string.Empty;
+
         // ===== Bride's Parent =====
         public string BrideFatherName { get; set; } = string.Empty;
         public string BrideFatherMembershipNo { get; set; } = string.Empty;
@@ -82,6 +86,12 @@ namespace Domain.Entities
         public string RepresentativeAddress { get; set; } = string.Empty;
         public string RepresentativeActingFor { get; set; } = string.Empty;
         public string RepresentativeSignatureDate { get; set; } = string.Empty;
+
+        // ===== Groom's Wakeel =====
+        public string GroomWakeelName { get; set; } = string.Empty;
+        public string GroomWakeelFatherName { get; set; } = string.Empty;
+        public string GroomWakeelTel { get; set; } = string.Empty;
+        public string GroomWakeelSignatureDate { get; set; } = string.Empty;
 
         // ===== Witness One =====
         public string WitnessOneName { get; set; } = string.Empty;
@@ -129,6 +139,8 @@ namespace Domain.Entities
         public BridegroomFormSection? BridegroomSection { get; set; }
 
         public GuardianOrWakeelSection? GuardianOrWakeelSection { get; set; }
+
+        public GroomWakeelSection? GroomWakeelSection { get; set; }
 
         public ImamVerificationSection? ImamVerification { get; set; }
 
