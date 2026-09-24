@@ -268,6 +268,24 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
 
         var now = DateTime.UtcNow;
 
+        // The ceremony witnesses (F1 §IX) sign through their shared links at this
+        // stage; the imam cannot close the form before both have signed.
+        var ceremonyWitnessNames = await _context.Set<WitnessSignatureSection>()
+            .AsNoTracking()
+            .Where(w => w.MarriageApplicationFormId == form.Id &&
+                        w.WitnessContext == WitnessContext.NikahCeremony &&
+                        (w.WitnessNumber == 1 || w.WitnessNumber == 2))
+            .Select(w => w.Name)
+            .ToListAsync(cancellationToken);
+
+        if (ceremonyWitnessNames.Count(n => !string.IsNullOrWhiteSpace(n)) < 2)
+        {
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage,
+                "Both Nikah ceremony witnesses must sign before the imam can sign off. " +
+                "The applicants can send the ceremony witness links from their Signature Links page.");
+        }
+
         if (form.ImamVerification is null)
         {
             var section = new ImamVerificationSection
