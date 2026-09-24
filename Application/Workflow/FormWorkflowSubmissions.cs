@@ -34,8 +34,8 @@ public sealed record JamaatPresidentVerificationSubmission(
 /// change communicated by the partners.
 /// </summary>
 public sealed record RishtanataRecommendationSubmission(
-    string WakeelName,
-    string WakeelDeclaration,
+    string Name,
+    string Recommendation,
     string SignatureDate,
     string OfficiatingImamMembershipNo,
     DateTime? ApprovedDateOfNikah);

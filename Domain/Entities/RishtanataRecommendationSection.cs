@@ -1,18 +1,24 @@
 ﻿using Domain.Abstractions;
 
 namespace Domain.Entities;
-/// Section row created by the National Rishtanata Secretary with the national-level recommendation. 
-// Maps to the "National Rishtanata Secretary" section of the paper form.
 
+/// <summary>
+/// Section row created by the National Rishtanata Secretary with the
+/// national-level recommendation. Maps to the "National Rishtanata Secretary"
+/// section of the paper form. Name and SignatureDate are mirrored onto
+/// MarriageApplicationForm.NationalRishtanataSecretaryName / …SignatureDate.
+/// </summary>
 public class RishtanataRecommendationSection : AuditableEntity
 {
     public Guid MarriageApplicationFormId { get; set; }
 
     public MarriageApplicationForm MarriageApplicationForm { get; set; } = null!;
 
-    public string WakeelName { get; set; } = string.Empty;
+    /// <summary>The National Rishtanata Secretary's name.</summary>
+    public string Name { get; set; } = string.Empty;
 
-    public string WakeelDeclaration { get; set; } = string.Empty;
+    /// <summary>The secretary's national-level recommendation text.</summary>
+    public string Recommendation { get; set; } = string.Empty;
 
     public string SignatureDate { get; set; } = string.Empty;
 

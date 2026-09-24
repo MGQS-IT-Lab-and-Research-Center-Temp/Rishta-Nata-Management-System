@@ -222,8 +222,8 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             var section = new RishtanataRecommendationSection
             {
                 MarriageApplicationFormId = form.Id,
-                WakeelName = submission.WakeelName,
-                WakeelDeclaration = submission.WakeelDeclaration,
+                Name = submission.Name,
+                Recommendation = submission.Recommendation,
                 SignatureDate = submission.SignatureDate,
                 OfficiatingImamMembershipNo = submission.OfficiatingImamMembershipNo,
                 CreatedAt = now,
@@ -235,8 +235,8 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         }
         else
         {
-            form.RishtanataRecommendation.WakeelName = submission.WakeelName;
-            form.RishtanataRecommendation.WakeelDeclaration = submission.WakeelDeclaration;
+            form.RishtanataRecommendation.Name = submission.Name;
+            form.RishtanataRecommendation.Recommendation = submission.Recommendation;
             form.RishtanataRecommendation.SignatureDate = submission.SignatureDate;
             form.RishtanataRecommendation.OfficiatingImamMembershipNo = submission.OfficiatingImamMembershipNo;
             form.RishtanataRecommendation.ModifiedAt = now;
@@ -244,7 +244,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         }
 
         form.OfficiatingImamMembershipNo = submission.OfficiatingImamMembershipNo;
-        form.NationalRishtanataSecretaryName = submission.WakeelName;
+        form.NationalRishtanataSecretaryName = submission.Name;
         form.NationalRishtanataSecretarySignatureDate = submission.SignatureDate;
 
         // The agreed date changes only via partner-communication to the office.
