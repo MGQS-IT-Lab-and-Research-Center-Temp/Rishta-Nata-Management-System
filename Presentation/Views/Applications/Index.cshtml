@@ -38,7 +38,7 @@
                                 <td>@item.Status</td>
                                 <td>
                                     <div class="small text-muted">@Presentation.ViewModels.FormStageLabels.For(item.FormStage)</div>
-                                    @if (item.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses)
+                                    @if (item.FormStage is Domain.Enums.MarriageFormStage.AwaitingWitnesses or Domain.Enums.MarriageFormStage.AwaitingImamSignoff)
                                     {
                                         <a asp-controller="SectionLinks"
                                            asp-action="Index"
