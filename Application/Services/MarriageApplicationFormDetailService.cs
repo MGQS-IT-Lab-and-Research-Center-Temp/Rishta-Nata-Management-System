@@ -42,6 +42,7 @@ public class MarriageApplicationFormDetailService : IMarriageApplicationFormDeta
         var form = await _context.MarriageApplicationForms
             .Include(f => f.MarriageApplication)
             .Include(f => f.Rejections)
+            .Include(f => f.WitnessSignatures)
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 f => f.Id == applicationFormId ||

@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.DTOs.MarriageApplicationFormDetail;
 
 namespace Infrastructure.Mapper;
@@ -108,6 +109,9 @@ public static class MarriageApplicationFormDetailMapper
                 : null,
 
             Witnesses = CollectWitnesses(form),
+            WakeelAppointmentWitnesses = CollectWitnessesByContext(form, WitnessContext.WakeelAppointment),
+            GroomDeclarationWitnesses = CollectWitnessesByContext(form, WitnessContext.GroomDeclaration),
+            NikahCeremonyWitnesses = CollectWitnessesByContext(form, WitnessContext.NikahCeremony),
 
             OfficiatingImam = HasValue(form.OfficiatingImamSignatureDate)
                 ? new OfficiatingImamSectionDetailDto
@@ -191,6 +195,24 @@ public static class MarriageApplicationFormDetailMapper
 
         return witnesses.ToArray();
     }
+
+    /// <summary>
+    /// Reads one witness pair straight from the WitnessSignatures rows. These
+    /// pairs have no flat mirrors on MarriageApplicationForm.
+    /// </summary>
+    private static WitnessDetailDto[] CollectWitnessesByContext(MarriageApplicationForm form, WitnessContext context) =>
+        form.WitnessSignatures
+            .Where(w => w.WitnessContext == context && HasValue(w.Name))
+            .OrderBy(w => w.WitnessNumber)
+            .Select(w => new WitnessDetailDto
+            {
+                Position = w.WitnessNumber,
+                Name = w.Name,
+                Address = w.Address,
+                Tel = w.Tel,
+                SignatureDate = w.SignatureDate.ToString("yyyy-MM-dd")
+            })
+            .ToArray();
 
     private static bool HasValue(string? value) => !string.IsNullOrWhiteSpace(value);
 }

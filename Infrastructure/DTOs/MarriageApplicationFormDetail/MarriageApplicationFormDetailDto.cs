@@ -34,8 +34,20 @@ public class MarriageApplicationFormDetailDto
     public RepresentativeSectionDetailDto? Representative { get; set; }
     public GroomWakeelSectionDetailDto? GroomWakeel { get; set; }
 
-    /// <summary>Witnesses that have submitted, in paper-form order (One, Two).</summary>
+    /// <summary>
+    /// Guardian/bride agreement witnesses (F2 §III) that have submitted, in
+    /// paper-form order (One, Two). Read from the flat WitnessOne*/WitnessTwo* mirrors.
+    /// </summary>
     public IReadOnlyList<WitnessDetailDto> Witnesses { get; set; } = Array.Empty<WitnessDetailDto>();
+
+    /// <summary>Witnesses to the guardian's appointment of a representative (F2 §II).</summary>
+    public IReadOnlyList<WitnessDetailDto> WakeelAppointmentWitnesses { get; set; } = Array.Empty<WitnessDetailDto>();
+
+    /// <summary>Witnesses to the bridegroom's declaration (F1).</summary>
+    public IReadOnlyList<WitnessDetailDto> GroomDeclarationWitnesses { get; set; } = Array.Empty<WitnessDetailDto>();
+
+    /// <summary>Witnesses to the Nikah ceremony (F1 §IX), signed after the ceremony.</summary>
+    public IReadOnlyList<WitnessDetailDto> NikahCeremonyWitnesses { get; set; } = Array.Empty<WitnessDetailDto>();
 
     public OfficiatingImamSectionDetailDto? OfficiatingImam { get; set; }
     public JamaatPresidentSectionDetailDto? JamaatPresident { get; set; }
