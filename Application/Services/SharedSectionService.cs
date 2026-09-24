@@ -77,6 +77,8 @@ public class SharedSectionService : ISharedSectionService
             .Include(x => x.MarriageApplicationForm)
                 .ThenInclude(f => f.GuardianOrWakeelSection)
             .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.GroomWakeelSection)
+            .Include(x => x.MarriageApplicationForm)
                 .ThenInclude(f => f.WitnessSignatures)
             .Include(x => x.MarriageApplicationForm)
                 .ThenInclude(f => f.MarriageApplication)
@@ -153,17 +155,25 @@ public class SharedSectionService : ISharedSectionService
         var form = await _context.MarriageApplicationForms
             .AsNoTracking()
             .Include(x => x.GuardianOrWakeelSection)
+            .Include(x => x.GroomWakeelSection)
             .Include(x => x.WitnessSignatures)
             .Include(x => x.SectionAccessTokens)
             .FirstOrDefaultAsync(x => x.Id == applicationFormId, cancellationToken)
             ?? new MarriageApplicationForm { Id = applicationFormId };
 
-        return new[]
+        var statuses = new List<SectionLinkStatus>
         {
             BuildStatus(SectionType.Guardian, form),
             BuildStatus(SectionType.WitnessOne, form),
             BuildStatus(SectionType.WitnessTwo, form)
         };
+
+        if (!form.CanAttendNikahInPerson)
+        {
+            statuses.Add(BuildStatus(SectionType.GroomWakeel, form));
+        }
+
+        return statuses;
     }
 
     public async Task<string> GenerateSectionTokenAsync(
@@ -316,6 +326,35 @@ public class SharedSectionService : ISharedSectionService
                 form.GuardianSignatureDate = data.SignatureDate.ToString("yyyy-MM-dd");
                 break;
 
+            case SectionType.GroomWakeel:
+                if (form.GroomWakeelSection is null)
+                {
+                    form.GroomWakeelSection = new GroomWakeelSection
+                    {
+                        Name = data.Name,
+                        FatherName = data.RelationToBride,
+                        Tel = data.Tel,
+                        Signature = data.Name,
+                        Date = data.SignatureDate,
+                        CreatedAt = DateTime.UtcNow,
+                        ModifiedAt = DateTime.UtcNow
+                    };
+                }
+                else
+                {
+                    form.GroomWakeelSection.Name = data.Name;
+                    form.GroomWakeelSection.FatherName = data.RelationToBride;
+                    form.GroomWakeelSection.Tel = data.Tel;
+                    form.GroomWakeelSection.Signature = data.Name;
+                    form.GroomWakeelSection.Date = data.SignatureDate;
+                    form.GroomWakeelSection.ModifiedAt = DateTime.UtcNow;
+                }
+                form.GroomWakeelName = data.Name;
+                form.GroomWakeelFatherName = data.RelationToBride;
+                form.GroomWakeelTel = data.Tel;
+                form.GroomWakeelSignatureDate = data.SignatureDate.ToString("yyyy-MM-dd");
+                break;
+
             case SectionType.WitnessOne:
                 UpsertWitness(form, 1, data);
                 form.WitnessOneName = data.Name;
@@ -375,6 +414,9 @@ public class SharedSectionService : ISharedSectionService
             case SectionType.Guardian when form.GuardianOrWakeelSection is not null:
                 form.GuardianOrWakeelSection.ReferenceNumber = referenceNumber;
                 break;
+            case SectionType.GroomWakeel when form.GroomWakeelSection is not null:
+                form.GroomWakeelSection.ReferenceNumber = referenceNumber;
+                break;
             case SectionType.WitnessOne:
                 form.WitnessSignatures.FirstOrDefault(w => w.WitnessNumber == 1)!.ReferenceNumber = referenceNumber;
                 break;
@@ -387,7 +429,9 @@ public class SharedSectionService : ISharedSectionService
     private static bool IsBlockComplete(MarriageApplicationForm form) =>
         form.GuardianOrWakeelSection is not null &&
         !string.IsNullOrWhiteSpace(form.GuardianOrWakeelSection.Name) &&
-        form.WitnessSignatures.Count(w => w.WitnessNumber is 1 or 2 && !string.IsNullOrWhiteSpace(w.Name)) >= 2;
+        form.WitnessSignatures.Count(w => w.WitnessNumber is 1 or 2 && !string.IsNullOrWhiteSpace(w.Name)) >= 2 &&
+        (form.CanAttendNikahInPerson ||
+         (form.GroomWakeelSection is not null && !string.IsNullOrWhiteSpace(form.GroomWakeelSection.Name)));
 
     private static SectionLinkStatus BuildStatus(SectionType section, MarriageApplicationForm form)
     {
@@ -397,6 +441,11 @@ public class SharedSectionService : ISharedSectionService
         if (section == SectionType.Guardian)
         {
             filledByName = form.GuardianOrWakeelSection?.Name;
+            complete = !string.IsNullOrWhiteSpace(filledByName);
+        }
+        else if (section == SectionType.GroomWakeel)
+        {
+            filledByName = form.GroomWakeelSection?.Name;
             complete = !string.IsNullOrWhiteSpace(filledByName);
         }
         else
