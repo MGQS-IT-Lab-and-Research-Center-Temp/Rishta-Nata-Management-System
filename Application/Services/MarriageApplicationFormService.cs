@@ -188,6 +188,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
     {
         return await _dbContext.MarriageApplicationForms
             .Include(x => x.GuardianOrWakeelSection)
+            .Include(x => x.GroomWakeelSection)
             .Include(x => x.WitnessSignatures)
             .FirstOrDefaultAsync(
                 x => x.Id == id,
@@ -204,6 +205,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
     {
         return await _dbContext.MarriageApplicationForms
             .Include(x => x.GuardianOrWakeelSection)
+            .Include(x => x.GroomWakeelSection)
             .Include(x => x.WitnessSignatures)
             .FirstOrDefaultAsync(
                 x => x.MarriageApplicationId == marriageApplicationId);
@@ -315,6 +317,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         if (targetStage == ApplicationStage.ApplicantsReview)
         {
             await RemoveSectionsAsync<GuardianOrWakeelSection>(formId, cancellationToken);
+            await RemoveSectionsAsync<GroomWakeelSection>(formId, cancellationToken);
             await RemoveSectionsAsync<ImamVerificationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<JamaatPresidentVerificationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<GroomJamaatPresidentVerificationSection>(formId, cancellationToken);
