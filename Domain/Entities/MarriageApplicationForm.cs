@@ -124,6 +124,14 @@ namespace Domain.Entities
         public string GroomJamaatPresidentName { get; set; } = string.Empty;
         public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
 
+        // Local Rishtanata Secretary, recorded by each side's Jama'at President (Gap 4).
+        // Same-Jama'at couples only fill the bride side; it covers both.
+        public string BrideLocalRishtanataSecretaryName { get; set; } = string.Empty;
+        public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+        public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
+        public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
         public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
         public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
 

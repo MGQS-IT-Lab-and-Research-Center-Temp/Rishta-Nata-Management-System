@@ -89,6 +89,20 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.Name).HasMaxLength(200);
             e.Property(x => x.Tel).HasMaxLength(30);
             e.Property(x => x.SignatureDate).HasMaxLength(50);
+            e.Property(x => x.LocalRishtanataSecretaryName).HasMaxLength(200);
+            e.Property(x => x.LocalRishtanataSecretaryTel).HasMaxLength(30);
+            e.Property(x => x.LocalRishtanataSecretarySignatureDate).HasMaxLength(50);
+        });
+
+        // Bride's president section: only the new columns get lengths. Its
+        // existing Name/Tel/SignatureDate stay longtext (no drift). A NOT NULL
+        // longtext column can't take the literal DEFAULT '' that AddColumn emits
+        // (MySQL error 1101), so new string columns must be varchar.
+        modelBuilder.Entity<JamaatPresidentVerificationSection>(e =>
+        {
+            e.Property(x => x.LocalRishtanataSecretaryName).HasMaxLength(200);
+            e.Property(x => x.LocalRishtanataSecretaryTel).HasMaxLength(30);
+            e.Property(x => x.LocalRishtanataSecretarySignatureDate).HasMaxLength(50);
         });
 
         modelBuilder.Entity<RishtanataRecommendationSection>(e =>

@@ -284,6 +284,18 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.GroomJamaatPresidentSignatureDate)
             .HasMaxLength(50);
 
+        builder.Property(f => f.BrideLocalRishtanataSecretaryName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.BrideLocalRishtanataSecretarySignatureDate)
+            .HasMaxLength(50);
+
+        builder.Property(f => f.GroomLocalRishtanataSecretaryName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.GroomLocalRishtanataSecretarySignatureDate)
+            .HasMaxLength(50);
+
         builder.Property(f => f.NationalRishtanataSecretaryName)
             .HasMaxLength(200);
 
