@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Infrastructure.DTOs;
 
 public class BrideSectionDto
@@ -9,7 +11,7 @@ public class BrideSectionDto
     public string BrideResidentOf { get; set; } = string.Empty;
     public string BrideGenotype { get; set; } = string.Empty;
     public string BrideBloodGroup { get; set; } = string.Empty;
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
     public string BrideDivorceEvidence { get; set; } = string.Empty;
     public decimal BrideProposedDowerAmount { get; set; }
     public decimal BrideDowerAmountReceivedInCash { get; set; }

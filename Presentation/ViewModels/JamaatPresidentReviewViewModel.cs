@@ -46,7 +46,7 @@ public class JamaatPresidentReviewViewModel
 
     public string BrideBloodGroup { get; set; } = string.Empty;
 
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
 
     public decimal BrideProposedDowerAmount { get; set; }
 

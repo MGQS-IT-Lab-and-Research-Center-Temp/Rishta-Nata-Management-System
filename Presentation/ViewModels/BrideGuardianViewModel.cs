@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 
 namespace Presentation.ViewModel;
 
@@ -29,7 +30,7 @@ public class BrideGuardianViewModel
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
     public string BrideBloodGroup { get; set; } = string.Empty;
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
     public decimal BrideProposedDowerAmount { get; set; }
     // [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]

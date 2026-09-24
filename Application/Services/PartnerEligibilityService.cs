@@ -61,7 +61,7 @@ public class PartnerEligibilityService : IPartnerEligibilityService
         bool isWidower,
         bool isDivorced,
         string divorceEvidence,
-        string brideMaritalStatus,
+        BrideMaritalStatus? brideMaritalStatus,
         string brideDivorceEvidence,
         Guid? excludeFormId,
         CancellationToken cancellationToken = default)
@@ -88,10 +88,10 @@ public class PartnerEligibilityService : IPartnerEligibilityService
             return Deny(GroomNotEligibleMessage);
         }
 
-        if (string.Equals(brideMaritalStatus, "Widowed", StringComparison.OrdinalIgnoreCase))
+        if (brideMaritalStatus == BrideMaritalStatus.WidowedIddatComplete)
             return Allow();
 
-        if (string.Equals(brideMaritalStatus, "Divorced", StringComparison.OrdinalIgnoreCase))
+        if (brideMaritalStatus == BrideMaritalStatus.DivorcedIddatComplete)
             return string.IsNullOrWhiteSpace(brideDivorceEvidence)
                 ? Deny(BrideKhulaEvidenceMessage)
                 : Allow();

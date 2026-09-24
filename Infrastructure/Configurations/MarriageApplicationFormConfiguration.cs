@@ -100,6 +100,7 @@ public class MarriageApplicationFormConfiguration
             .HasMaxLength(10);
 
         builder.Property(f => f.BrideMaritalStatus)
+            .HasConversion<string>()
             .HasMaxLength(50);
 
         builder.Property(f => f.BrideDivorceEvidence)

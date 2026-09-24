@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.Enums;
 
 namespace Application.Interfaces;
 
@@ -23,7 +24,7 @@ public interface IPartnerEligibilityService
         bool isWidower,
         bool isDivorced,
         string divorceEvidence,
-        string brideMaritalStatus,
+        BrideMaritalStatus? brideMaritalStatus,
         string brideDivorceEvidence,
         Guid? excludeFormId,
         CancellationToken cancellationToken = default);

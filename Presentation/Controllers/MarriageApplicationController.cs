@@ -82,7 +82,8 @@ public class MarriageApplicationController : Controller
 
                 if (isBride)
                 {
-                    model.BrideMaritalStatus = profile.MaritalStatus ?? string.Empty;
+                    // Single/Widowed/Divorced map; anything else stays unset (Gap 6).
+                    model.BrideMaritalStatus = BrideMaritalStatusText.FromTajneed(profile.MaritalStatus);
                 }
             }
         }

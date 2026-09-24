@@ -31,7 +31,8 @@ namespace Domain.Entities
         public string BrideResidentOf { get; set; } = string.Empty;
         public string BrideGenotype { get; set; } = string.Empty;
         public string BrideBloodGroup { get; set; } = string.Empty;
-        public string BrideMaritalStatus { get; set; } = string.Empty;
+        /// <summary>Null until the bride chooses (Gap 6).</summary>
+        public BrideMaritalStatus? BrideMaritalStatus { get; set; }
         public string? BrideDivorceEvidence { get; set; } = string.Empty;
 
         public decimal BrideProposedDowerAmount { get; set; }

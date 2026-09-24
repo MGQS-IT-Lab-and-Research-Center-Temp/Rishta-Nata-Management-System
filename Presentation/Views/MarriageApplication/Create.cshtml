@@ -82,10 +82,13 @@
 
                     <div class="col-md-4">
                         <label asp-for="BrideMaritalStatus" class="form-label"></label>
-                        <select asp-for="BrideMaritalStatus" class="form-select">
+                        <select asp-for="BrideMaritalStatus" class="form-select" required>
                             <option value="">Select</option>
-                            <option>Single</option><option>Widowed</option><option>Divorced</option>
+                            <option value="Unmarried">@Domain.Enums.BrideMaritalStatusText.ToLabel(Domain.Enums.BrideMaritalStatus.Unmarried)</option>
+                            <option value="WidowedIddatComplete">@Domain.Enums.BrideMaritalStatusText.ToLabel(Domain.Enums.BrideMaritalStatus.WidowedIddatComplete)</option>
+                            <option value="DivorcedIddatComplete">@Domain.Enums.BrideMaritalStatusText.ToLabel(Domain.Enums.BrideMaritalStatus.DivorcedIddatComplete)</option>
                         </select>
+                        <span asp-validation-for="BrideMaritalStatus" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6 d-none" id="khulaEvidenceGroup">
                         <label asp-for="BrideDivorceEvidence" class="form-label">
@@ -467,9 +470,9 @@
                 var khula = document.getElementById('khulaEvidenceGroup');
                 if (!sel || !khula) { return; }
                 var khulaInput = khula.querySelector('input');
-                function render() { khula.classList.toggle('d-none', sel.value !== 'Divorced'); }
+                function render() { khula.classList.toggle('d-none', sel.value !== 'DivorcedIddatComplete'); }
                 sel.addEventListener('change', function () {
-                    if (sel.value !== 'Divorced') { khulaInput.value = ''; }
+                    if (sel.value !== 'DivorcedIddatComplete') { khulaInput.value = ''; }
                     render();
                 });
                 render();

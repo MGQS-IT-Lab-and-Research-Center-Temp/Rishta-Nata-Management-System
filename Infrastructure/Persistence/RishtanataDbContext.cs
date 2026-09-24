@@ -49,7 +49,7 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.BrideResidentOf).HasMaxLength(300);
             e.Property(x => x.BrideGenotype).HasMaxLength(10);
             e.Property(x => x.BrideBloodGroup).HasMaxLength(10);
-            e.Property(x => x.BrideMaritalStatus).HasMaxLength(50);
+            e.Property(x => x.BrideMaritalStatus).HasConversion<string>().HasMaxLength(50);
             e.Property(x => x.BrideDivorceEvidence).HasMaxLength(500);
             e.Property(x => x.BrideProposedDowerAmount).HasColumnType("decimal(18,2)");
             e.Property(x => x.BrideDowerAmountReceivedInCash).HasColumnType("decimal(18,2)");

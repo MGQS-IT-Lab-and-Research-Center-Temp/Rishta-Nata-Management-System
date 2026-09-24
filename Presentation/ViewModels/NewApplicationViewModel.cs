@@ -24,7 +24,7 @@ public class NewApplicationViewModel
 
     // ===== Bride-only =====
     [Display(Name = "Marital Status")]
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
 
     [Display(Name = "Divorce Evidence")]
     public string BrideDivorceEvidence { get; set; } = string.Empty;

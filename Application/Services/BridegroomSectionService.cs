@@ -76,7 +76,7 @@ public class BridegroomSectionService : IBridegroomSectionService
             dto.FormerWifeIsDead,
             dto.HasDivorcedFormerWife,
             dto.BridegroomDivorceEvidence,
-            brideMaritalStatus: string.Empty,
+            brideMaritalStatus: null,
             brideDivorceEvidence: string.Empty,
             applicationFormId,
             cancellationToken);

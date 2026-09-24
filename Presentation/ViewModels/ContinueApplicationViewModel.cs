@@ -38,7 +38,8 @@ public class ContinueApplicationViewModel
     public string BloodGroup { get; set; } = string.Empty;
 
     // ===== Bride-only =====
-    public string MaritalStatus { get; set; } = string.Empty;
+    [Display(Name = "Marital Status")]
+    public BrideMaritalStatus? MaritalStatus { get; set; }
     public string BrideDivorceEvidence { get; set; } = string.Empty;
     public decimal ProposedDowerAmount { get; set; }
     public decimal DowerAmountReceivedInCash { get; set; }
