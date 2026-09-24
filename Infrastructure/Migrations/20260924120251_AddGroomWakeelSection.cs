@@ -11,12 +11,14 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Existing rows are groom sections whose groom attends in person
+            // (domain default true).
             migrationBuilder.AddColumn<bool>(
                 name: "CanAttendNikahInPerson",
                 table: "NikahGrooms",
                 type: "tinyint(1)",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "WakeelName",
@@ -39,7 +41,7 @@ namespace Infrastructure.Migrations
                 table: "NikahApplications",
                 type: "tinyint(1)",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "GroomWakeelFatherName",
