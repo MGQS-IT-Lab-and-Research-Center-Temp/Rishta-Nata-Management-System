@@ -16,6 +16,7 @@ public class SectionFillViewModel
     public string? Address { get; set; }
     public string? Tel { get; set; }
     public string? RelationToBride { get; set; }
+    public bool AppointsRepresentative { get; set; }
     public bool IsMember { get; set; }
     public string? MemberMembershipNo { get; set; }
 

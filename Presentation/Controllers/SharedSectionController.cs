@@ -63,6 +63,7 @@ public class SharedSectionController : Controller
             Address = model.Address ?? string.Empty,
             Tel = model.Tel ?? string.Empty,
             RelationToBride = model.RelationToBride ?? string.Empty,
+            AppointsRepresentative = model.SectionType == SectionType.Guardian && model.AppointsRepresentative,
             IsMember = model.IsMember,
             MemberMembershipNo = model.MemberMembershipNo,
             SignatureDate = DateTime.UtcNow
