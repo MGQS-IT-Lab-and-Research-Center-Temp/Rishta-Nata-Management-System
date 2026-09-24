@@ -84,6 +84,9 @@ public static class MarriageFormRequestMapping
             BridegroomDivorceEvidence = model.BridegroomDivorceEvidence,
             FormerWifeIsPresent = model.FormerWifeIsPresent,
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
-            BridegroomSignatureTel = model.Phone
+            BridegroomSignatureTel = model.Phone,
+            CanAttendNikahInPerson = model.CanAttendNikahInPerson,
+            WakeelName = model.WakeelName,
+            WakeelTel = model.WakeelTel
         };
 }

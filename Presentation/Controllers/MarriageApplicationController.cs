@@ -315,7 +315,10 @@ public class MarriageApplicationController : Controller
         HasDivorcedFormerWife = form.HasDivorcedFormerWife,
         BridegroomDivorceEvidence = form.BridegroomDivorceEvidence ?? string.Empty,
         FormerWifeIsPresent = form.FormerWifeIsPresent,
-        FormerWifeObtainedKhula = form.FormerWifeObtainedKhula
+        FormerWifeObtainedKhula = form.FormerWifeObtainedKhula,
+        CanAttendNikahInPerson = form.CanAttendNikahInPerson,
+        WakeelName = form.WakeelName,
+        WakeelTel = form.WakeelTel
     };
 
     private static bool IsFemale(string? sex) =>
