@@ -61,6 +61,19 @@ public class MarriageApplicationFormController : ControllerBase
     [Authorize(Policy = "CanFillBridegroomSection")]
     public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionRequest request, CancellationToken ct)
     {
+        if (!request.CanAttendNikahInPerson)
+        {
+            if (string.IsNullOrWhiteSpace(request.WakeelName))
+                ModelState.AddModelError(nameof(request.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
+            if (string.IsNullOrWhiteSpace(request.WakeelTel))
+                ModelState.AddModelError(nameof(request.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         var dto = MarriageFormRequestMapping.ToDto(request);
         var result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(CurrentMembershipNo, id, dto, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);

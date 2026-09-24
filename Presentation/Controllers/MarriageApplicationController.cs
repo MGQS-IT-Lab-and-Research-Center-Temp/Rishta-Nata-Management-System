@@ -109,12 +109,13 @@ public class MarriageApplicationController : Controller
             ModelState.Remove($"{partnerPrefix}.{prop}");
         }
 
-        if (model.CanAttendNikahInPerson == false)
+        // The Wakeel fields only render on the groom-fills-it-themselves branch of
+        // Create.cshtml (StartingParty == "Groom" / isGroomFirst); when the bride is
+        // starting, the groom card is a partner-lookup stub with no Wakeel inputs, so
+        // this must not run for that branch.
+        if (isGroomFirst)
         {
-            if (string.IsNullOrWhiteSpace(model.WakeelName))
-                ModelState.AddModelError(nameof(model.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
-            if (string.IsNullOrWhiteSpace(model.WakeelTel))
-                ModelState.AddModelError(nameof(model.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+            AddWakeelRequirementErrors(model.CanAttendNikahInPerson ?? true, model.WakeelName, model.WakeelTel);
         }
 
         if (!ModelState.IsValid)
@@ -256,13 +257,11 @@ public class MarriageApplicationController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Continue(Guid id, ContinueApplicationViewModel model, CancellationToken ct)
     {
-        if (string.Equals(model.Party, "Groom", StringComparison.OrdinalIgnoreCase) &&
-            model.CanAttendNikahInPerson == false)
+        // Mirrors the Bride/else DTO-routing branch below: anything not explicitly
+        // "Bride" is treated as a groom submission and validated accordingly.
+        if (!string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase))
         {
-            if (string.IsNullOrWhiteSpace(model.WakeelName))
-                ModelState.AddModelError(nameof(model.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
-            if (string.IsNullOrWhiteSpace(model.WakeelTel))
-                ModelState.AddModelError(nameof(model.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+            AddWakeelRequirementErrors(model.CanAttendNikahInPerson, model.WakeelName, model.WakeelTel);
         }
 
         if (!ModelState.IsValid)
@@ -338,6 +337,24 @@ public class MarriageApplicationController : Controller
         WakeelName = form.WakeelName,
         WakeelTel = form.WakeelTel
     };
+
+    private void AddWakeelRequirementErrors(bool canAttendInPerson, string? wakeelName, string? wakeelTel)
+    {
+        if (canAttendInPerson)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(wakeelName))
+        {
+            ModelState.AddModelError(nameof(ContinueApplicationViewModel.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
+        }
+
+        if (string.IsNullOrWhiteSpace(wakeelTel))
+        {
+            ModelState.AddModelError(nameof(ContinueApplicationViewModel.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+        }
+    }
 
     private static bool IsFemale(string? sex) =>
         !string.IsNullOrWhiteSpace(sex) &&
