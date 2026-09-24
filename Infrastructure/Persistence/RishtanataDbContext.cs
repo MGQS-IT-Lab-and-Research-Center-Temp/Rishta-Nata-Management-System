@@ -31,6 +31,7 @@ public class RishtanataDbContext : DbContext
         modelBuilder.Entity<BrideFormSection>().ToTable("NikahBrides");
         modelBuilder.Entity<BridegroomFormSection>().ToTable("NikahGrooms");
         modelBuilder.Entity<GuardianOrWakeelSection>().ToTable("NikahGuardians");
+        modelBuilder.Entity<GroomWakeelSection>().ToTable("NikahGroomWakeels");
         modelBuilder.Entity<ImamVerificationSection>().ToTable("ImamVerifications");
         modelBuilder.Entity<JamaatPresidentVerificationSection>().ToTable("JamaatPresidentVerifications");
         modelBuilder.Entity<GroomJamaatPresidentVerificationSection>().ToTable("GroomJamaatPresidentVerifications");
@@ -65,10 +66,20 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.BridegroomGenotype).HasMaxLength(10);
             e.Property(x => x.BridegroomBloodGroup).HasMaxLength(10);
             e.Property(x => x.BridegroomSignatureTel).HasMaxLength(30);
+            e.Property(x => x.WakeelName).HasMaxLength(200);
+            e.Property(x => x.WakeelTel).HasMaxLength(30);
         });
 
         modelBuilder.Entity<GuardianOrWakeelSection>(e =>
             e.Property(x => x.ReferenceNumber).HasMaxLength(50));
+
+        modelBuilder.Entity<GroomWakeelSection>(e =>
+        {
+            e.Property(x => x.ReferenceNumber).HasMaxLength(50);
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.Property(x => x.FatherName).HasMaxLength(200);
+            e.Property(x => x.Tel).HasMaxLength(30);
+        });
 
         modelBuilder.Entity<WitnessSignatureSection>(e =>
             e.Property(x => x.ReferenceNumber).HasMaxLength(50));

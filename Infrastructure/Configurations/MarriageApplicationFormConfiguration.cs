@@ -145,6 +145,12 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.BridegroomDivorceEvidence)
             .HasMaxLength(500);
 
+        builder.Property(f => f.WakeelName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.WakeelTel)
+            .HasMaxLength(30);
+
         // =====================================================
         // Parents
         // =====================================================
@@ -194,6 +200,22 @@ public class MarriageApplicationFormConfiguration
             .HasMaxLength(50);
 
         builder.Property(f => f.RepresentativeSignatureDate)
+            .HasMaxLength(50);
+
+        // =====================================================
+        // Groom's Wakeel
+        // =====================================================
+
+        builder.Property(f => f.GroomWakeelName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.GroomWakeelFatherName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.GroomWakeelTel)
+            .HasMaxLength(30);
+
+        builder.Property(f => f.GroomWakeelSignatureDate)
             .HasMaxLength(50);
 
         // =====================================================
@@ -289,6 +311,13 @@ public class MarriageApplicationFormConfiguration
         builder.HasOne(f => f.GuardianOrWakeelSection)
             .WithOne(s => s.MarriageApplicationForm)
             .HasForeignKey<GuardianOrWakeelSection>(
+                s => s.MarriageApplicationFormId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Groom's Wakeel
+        builder.HasOne(f => f.GroomWakeelSection)
+            .WithOne(s => s.MarriageApplicationForm)
+            .HasForeignKey<GroomWakeelSection>(
                 s => s.MarriageApplicationFormId)
             .OnDelete(DeleteBehavior.Cascade);
 
