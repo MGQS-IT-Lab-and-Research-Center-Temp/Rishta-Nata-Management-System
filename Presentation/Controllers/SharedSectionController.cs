@@ -110,6 +110,7 @@ public class SharedSectionController : Controller
         SectionType.WitnessOne => "Witness 1",
         SectionType.WitnessTwo => "Witness 2",
         SectionType.GroomWakeel => "Groom's Wakeel",
+        SectionType.Representative => "Guardian's Representative (Wakeel)",
         _ => section.ToString()
     };
 }
