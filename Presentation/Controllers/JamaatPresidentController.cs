@@ -126,6 +126,18 @@ public class JamaatPresidentController : Controller
             return NotFound("Marriage application or its form was not found.");
         }
 
+        // Signing needs the president's attestations for the side(s) signed
+        // (Gap 7): the bride's president attests the bride, and the groom too
+        // when the partners share a Jama'at; the groom's president attests the groom.
+        var signingForBrideSide = dto.CurrentFormStage == MarriageFormStage.AwaitingBrideJamaatPresident;
+        var signingForGroomSide = dto.CurrentFormStage == MarriageFormStage.AwaitingGroomJamaatPresident;
+        foreach (var (field, message) in input.ValidateForSigning(
+                     attestsBride: signingForBrideSide,
+                     attestsGroom: signingForGroomSide || (signingForBrideSide && dto.PartnersShareJamaat)))
+        {
+            ModelState.AddModelError($"{nameof(JamaatPresidentReviewViewModel.Approve)}.{field}", message);
+        }
+
         // Signing needs the Local Rishtanata Secretary block (Gap 4). Redisplay
         // the review page with the entered values and errors; nothing is written.
         if (!ModelState.IsValid)
@@ -146,7 +158,13 @@ public class JamaatPresidentController : Controller
                         dto.JamaatPresidentSignatureDate,
                         input.LocalRishtanataSecretaryName,
                         input.LocalRishtanataSecretaryTel,
-                        input.LocalRishtanataSecretarySignatureDate),
+                        input.LocalRishtanataSecretarySignatureDate,
+                        new PartnerAttestationSubmission(
+                            input.BrideIsBornAhmadi, input.BrideYearsAsAhmadi, input.BrideMarriageReason),
+                        new PartnerAttestationSubmission(
+                            input.GroomIsBornAhmadi, input.GroomYearsAsAhmadi, input.GroomMarriageReason),
+                        input.GuardianIsBonafide,
+                        input.BrideSignedFreely),
                     ct),
             MarriageFormStage.AwaitingGroomJamaatPresident =>
                 await _workflowService.SubmitGroomJamaatPresidentVerificationAsync(
@@ -157,7 +175,12 @@ public class JamaatPresidentController : Controller
                         dto.GroomJamaatPresidentSignatureDate,
                         input.LocalRishtanataSecretaryName,
                         input.LocalRishtanataSecretaryTel,
-                        input.LocalRishtanataSecretarySignatureDate),
+                        input.LocalRishtanataSecretarySignatureDate,
+                        Bride: null,
+                        new PartnerAttestationSubmission(
+                            input.GroomIsBornAhmadi, input.GroomYearsAsAhmadi, input.GroomMarriageReason),
+                        GuardianIsBonafide: false,
+                        BrideSignedFreely: false),
                     ct),
             _ => null
         };

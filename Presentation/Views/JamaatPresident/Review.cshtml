@@ -1056,6 +1056,91 @@
 
                     </div>
 
+                    <h5 class="mb-1">President's attestation</h5>
+
+                    <p class="text-muted small mb-3">
+                        Required to sign. Years as an Ahmadi are only needed
+                        when the answer is "No".
+                    </p>
+
+                    @if (!signingForGroomSide)
+                    {
+                        <fieldset class="border rounded p-3 mb-3">
+                            <legend class="fs-6 fw-bold float-none w-auto px-1 mb-0">Bride</legend>
+
+                            <div class="mb-2">
+                                <span class="form-label d-block">Born Ahmadi?</span>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.BrideIsBornAhmadi" type="radio" value="True" id="Approve_BrideIsBornAhmadi_Yes" class="form-check-input" />
+                                    <label for="Approve_BrideIsBornAhmadi_Yes" class="form-check-label">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.BrideIsBornAhmadi" type="radio" value="False" id="Approve_BrideIsBornAhmadi_No" class="form-check-input" />
+                                    <label for="Approve_BrideIsBornAhmadi_No" class="form-check-label">No</label>
+                                </div>
+                                <span asp-validation-for="Approve.BrideIsBornAhmadi" class="text-danger small d-block"></span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="Approve.BrideYearsAsAhmadi" class="form-label"></label>
+                                    <input asp-for="Approve.BrideYearsAsAhmadi" type="number" min="0" max="120" class="form-control" />
+                                    <span asp-validation-for="Approve.BrideYearsAsAhmadi" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-8">
+                                    <label asp-for="Approve.BrideMarriageReason" class="form-label"></label>
+                                    <input asp-for="Approve.BrideMarriageReason" class="form-control" maxlength="200" placeholder="e.g. first marriage" />
+                                    <span asp-validation-for="Approve.BrideMarriageReason" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-check mt-3">
+                                <input asp-for="Approve.GuardianIsBonafide" type="checkbox" class="form-check-input" />
+                                <label asp-for="Approve.GuardianIsBonafide" class="form-check-label"></label>
+                                <span asp-validation-for="Approve.GuardianIsBonafide" class="text-danger small d-block"></span>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="Approve.BrideSignedFreely" type="checkbox" class="form-check-input" />
+                                <label asp-for="Approve.BrideSignedFreely" class="form-check-label"></label>
+                                <span asp-validation-for="Approve.BrideSignedFreely" class="text-danger small d-block"></span>
+                            </div>
+                        </fieldset>
+                    }
+
+                    @if (signingForGroomSide || Model.PartnersShareJamaat)
+                    {
+                        <fieldset class="border rounded p-3 mb-3">
+                            <legend class="fs-6 fw-bold float-none w-auto px-1 mb-0">Bridegroom</legend>
+
+                            <div class="mb-2">
+                                <span class="form-label d-block">Born Ahmadi?</span>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.GroomIsBornAhmadi" type="radio" value="True" id="Approve_GroomIsBornAhmadi_Yes" class="form-check-input" />
+                                    <label for="Approve_GroomIsBornAhmadi_Yes" class="form-check-label">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.GroomIsBornAhmadi" type="radio" value="False" id="Approve_GroomIsBornAhmadi_No" class="form-check-input" />
+                                    <label for="Approve_GroomIsBornAhmadi_No" class="form-check-label">No</label>
+                                </div>
+                                <span asp-validation-for="Approve.GroomIsBornAhmadi" class="text-danger small d-block"></span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="Approve.GroomYearsAsAhmadi" class="form-label"></label>
+                                    <input asp-for="Approve.GroomYearsAsAhmadi" type="number" min="0" max="120" class="form-control" />
+                                    <span asp-validation-for="Approve.GroomYearsAsAhmadi" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-8">
+                                    <label asp-for="Approve.GroomMarriageReason" class="form-label"></label>
+                                    <input asp-for="Approve.GroomMarriageReason" class="form-control" maxlength="200" placeholder="e.g. first marriage" />
+                                    <span asp-validation-for="Approve.GroomMarriageReason" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    }
+
                     <button type="submit"
                             class="btn btn-success"
                             onclick="return confirm('Are you sure you want to approve this application?');">
