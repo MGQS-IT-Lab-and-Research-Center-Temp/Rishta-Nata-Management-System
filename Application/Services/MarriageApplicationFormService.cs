@@ -134,10 +134,28 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
                 FormerWifeIsPresent = application.FormerWifeIsPresent,
                 FormerWifeObtainedKhula = application.FormerWifeObtainedKhula,
                 BridegroomSignatureTel = application.BridegroomSignatureTel,
+                CanAttendNikahInPerson = application.CanAttendNikahInPerson,
+                WakeelName = application.WakeelName,
+                WakeelTel = application.WakeelTel,
                 ReferenceNumber = application.ReferenceNumber,
                 CreatedAt = DateTime.UtcNow,
                 ModifiedAt = DateTime.UtcNow
             };
+        }
+
+        if (!application.CanAttendNikahInPerson && application.GroomWakeelSection is null &&
+            !string.IsNullOrWhiteSpace(application.WakeelName))
+        {
+            application.GroomWakeelSection = new GroomWakeelSection
+            {
+                Name = application.WakeelName,
+                Tel = application.WakeelTel,
+                ReferenceNumber = application.ReferenceNumber,
+                CreatedAt = DateTime.UtcNow,
+                ModifiedAt = DateTime.UtcNow
+            };
+            application.GroomWakeelName = application.WakeelName;
+            application.GroomWakeelTel = application.WakeelTel;
         }
 
         application.CreatedBy = creatorId;

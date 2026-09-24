@@ -235,6 +235,27 @@
                         </label>
                         <input asp-for="BridegroomDivorceEvidence" class="form-control" />
                     </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label">Will you attend the Nikah in person?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="CanAttendNikahInPerson" id="attendYes" value="true" checked />
+                            <label class="form-check-label" for="attendYes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="CanAttendNikahInPerson" id="attendNo" value="false" />
+                            <label class="form-check-label" for="attendNo">No, I will appoint a Wakeel</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 d-none" id="wakeelNameGroup">
+                        <label asp-for="WakeelName" class="form-label">Wakeel's Full Name</label>
+                        <input asp-for="WakeelName" class="form-control" />
+                    </div>
+                    <div class="col-md-6 d-none" id="wakeelTelGroup">
+                        <label asp-for="WakeelTel" class="form-label">Wakeel's Phone Number</label>
+                        <input asp-for="WakeelTel" class="form-control" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -454,6 +475,25 @@
                 render();
             }
             wireBrideEvidence();
+
+            function wireWakeel() {
+                var yes = document.getElementById('attendYes');
+                var no = document.getElementById('attendNo');
+                var nameGroup = document.getElementById('wakeelNameGroup');
+                var telGroup = document.getElementById('wakeelTelGroup');
+                if (!yes || !no || !nameGroup || !telGroup) return;
+
+                function toggle() {
+                    var show = no.checked;
+                    nameGroup.classList.toggle('d-none', !show);
+                    telGroup.classList.toggle('d-none', !show);
+                }
+
+                yes.addEventListener('change', toggle);
+                no.addEventListener('change', toggle);
+                toggle();
+            }
+            wireWakeel();
         })();
     </script>
 }

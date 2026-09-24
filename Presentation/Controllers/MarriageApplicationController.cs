@@ -185,6 +185,10 @@ public class MarriageApplicationController : Controller
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula ?? false,
             BridegroomSignatureTel = (isGroomFirst ? model.Bridegroom.Phone.Trim() : partnerPhone),
 
+            CanAttendNikahInPerson = model.CanAttendNikahInPerson ?? true,
+            WakeelName = model.WakeelName.Trim(),
+            WakeelTel = model.WakeelTel.Trim(),
+
             ApplicationStage = ApplicationStage.ApplicantsReview,
             FormStage = isGroomFirst
                 ? MarriageFormStage.AwaitingBride

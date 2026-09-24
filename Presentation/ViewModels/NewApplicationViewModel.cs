@@ -49,6 +49,10 @@ public class NewApplicationViewModel
     public string BridegroomDivorceEvidence { get; set; } = string.Empty;
     public bool? FormerWifeIsPresent { get; set; }
     public bool? FormerWifeObtainedKhula { get; set; }
+
+    public bool? CanAttendNikahInPerson { get; set; } = true;
+    public string WakeelName { get; set; } = string.Empty;
+    public string WakeelTel { get; set; } = string.Empty;
 }
 
 public class ApplicantPartyInfo
