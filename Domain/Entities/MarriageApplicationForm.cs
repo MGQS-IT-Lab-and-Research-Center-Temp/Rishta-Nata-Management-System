@@ -169,5 +169,8 @@ namespace Domain.Entities
 
         public ICollection<SectionAccessToken> SectionAccessTokens { get; set; }
             = new List<SectionAccessToken>();
+
+        public ICollection<DivorceEvidenceDocument> DivorceEvidenceDocuments { get; set; }
+            = new List<DivorceEvidenceDocument>();
     }
 }

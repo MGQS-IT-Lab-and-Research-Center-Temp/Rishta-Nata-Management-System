@@ -18,6 +18,7 @@ public class RishtanataDbContext : DbContext
     public DbSet<BrideFormSection> BrideFormSections => Set<BrideFormSection>();
     public DbSet<MarriageFormRejection> MarriageFormRejections => Set<MarriageFormRejection>();
     public DbSet<SectionAccessToken> SectionAccessTokens => Set<SectionAccessToken>();
+    public DbSet<DivorceEvidenceDocument> DivorceEvidenceDocuments => Set<DivorceEvidenceDocument>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
