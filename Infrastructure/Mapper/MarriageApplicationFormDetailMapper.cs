@@ -68,6 +68,7 @@ public static class MarriageApplicationFormDetailMapper
                     BloodGroup = form.BridegroomBloodGroup,
                     DowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
                     DowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
+                    TotalDowerAmount = form.BridegroomTotalDowerAmount,
                     IsFirstNikah = form.IsFirstNikah,
                     CurrentNikahOrdinal = form.CurrentNikahOrdinal,
                     FormerWifeIsDead = form.FormerWifeIsDead,

@@ -76,6 +76,8 @@ public class JamaatPresidentReviewViewModel
 
     public decimal BridegroomDowerAmountToBePaid { get; set; }
 
+    public decimal BridegroomTotalDowerAmount { get; set; }
+
     public bool IsFirstNikah { get; set; }
 
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }

@@ -308,6 +308,7 @@ public class JamaatPresidentService : IJamaatPresidentService
             BridegroomBloodGroup = form.BridegroomBloodGroup,
             BridegroomDowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
+            BridegroomTotalDowerAmount = form.BridegroomTotalDowerAmount,
             IsFirstNikah = form.IsFirstNikah,
             CurrentNikahOrdinal = form.CurrentNikahOrdinal,
             FormerWifeIsDead = form.FormerWifeIsDead,
