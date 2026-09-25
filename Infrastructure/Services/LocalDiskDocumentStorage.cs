@@ -57,6 +57,7 @@ public class LocalDiskDocumentStorage : IDocumentStorage
     private string ResolvePath(string storedFileName)
     {
         if (string.IsNullOrWhiteSpace(storedFileName) ||
+            storedFileName == "." || storedFileName == ".." ||
             !string.Equals(Path.GetFileName(storedFileName), storedFileName, StringComparison.Ordinal))
         {
             throw new ArgumentException("Invalid stored file name.", nameof(storedFileName));
