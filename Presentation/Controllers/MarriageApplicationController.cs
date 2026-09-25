@@ -27,6 +27,7 @@ public class MarriageApplicationController : Controller
     private readonly IMemberLookupService _memberLookupService;
     private readonly IPartnerEligibilityService _eligibility;
     private readonly IDivorceEvidenceService _divorceEvidence;
+    private readonly IStageAuthorizationService _stageAuthorization;
 
     public MarriageApplicationController(
         IMarriageApplicationFormService formService,
@@ -35,7 +36,8 @@ public class MarriageApplicationController : Controller
         IBridegroomSectionService bridegroomSectionService,
         IMemberLookupService memberLookupService,
         IPartnerEligibilityService eligibility,
-        IDivorceEvidenceService divorceEvidence)
+        IDivorceEvidenceService divorceEvidence,
+        IStageAuthorizationService stageAuthorization)
     {
         _formService = formService;
         _memberDashboardService = memberDashboardService;
@@ -44,6 +46,7 @@ public class MarriageApplicationController : Controller
         _memberLookupService = memberLookupService;
         _eligibility = eligibility;
         _divorceEvidence = divorceEvidence;
+        _stageAuthorization = stageAuthorization;
     }
 
     // GET: New Application (role-aware — either party can start)
@@ -317,7 +320,7 @@ public class MarriageApplicationController : Controller
             ? ToBrideViewModel(form)
             : ToBridegroomViewModel(form);
 
-        await LoadExistingDivorceEvidenceAsync(model, form.Id, ct);
+        await LoadExistingDivorceEvidenceAsync(model, membershipNo, form.Id, ct);
 
         return View(model);
     }
@@ -341,13 +344,13 @@ public class MarriageApplicationController : Controller
             ModelState.AddModelError(nameof(model.MaritalStatus), "Select the bride's marital status.");
         }
 
+        var membershipNo = GetCurrentMembershipNo() ?? string.Empty;
+
         if (!ModelState.IsValid)
         {
-            await LoadExistingDivorceEvidenceAsync(model, id, ct);
+            await LoadExistingDivorceEvidenceAsync(model, membershipNo, id, ct);
             return View(model);
         }
-
-        var membershipNo = GetCurrentMembershipNo() ?? string.Empty;
 
         StageAuthorizationResult result;
 
@@ -369,7 +372,7 @@ public class MarriageApplicationController : Controller
         if (!result.IsAllowed)
         {
             ModelState.AddModelError(string.Empty, result.Message);
-            await LoadExistingDivorceEvidenceAsync(model, id, ct);
+            await LoadExistingDivorceEvidenceAsync(model, membershipNo, id, ct);
             return View(model);
         }
 
@@ -441,10 +444,19 @@ public class MarriageApplicationController : Controller
     }
 
     // Gap 8: shows the party's stored certificate, if any, so a new upload is
-    // clearly a replacement.
+    // clearly a replacement. The POST paths reach this with any posted form id,
+    // so nothing is read unless the caller may view the form's documents.
     private async Task LoadExistingDivorceEvidenceAsync(
-        ContinueApplicationViewModel model, Guid formId, CancellationToken ct)
+        ContinueApplicationViewModel model, string membershipNo, Guid formId, CancellationToken ct)
     {
+        model.ExistingDivorceEvidenceFileName = null;
+
+        var access = await _stageAuthorization.CanViewFormDocumentsAsync(membershipNo, formId, ct);
+        if (!access.IsAllowed)
+        {
+            return;
+        }
+
         var party = string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase)
             ? DivorceEvidenceParty.Bride
             : DivorceEvidenceParty.Bridegroom;
