@@ -1,4 +1,5 @@
 using Application.Authorization;
+using Application.DivorceEvidence;
 using Infrastructure.DTOs;
 
 namespace Application.Interfaces;
@@ -10,7 +11,11 @@ namespace Application.Interfaces;
 /// </summary>
 public interface IBrideSectionService
 {
+    /// <param name="divorceEvidence">The Khula certificate posted with this
+    /// submission, or null. Required (here or already on file) when the bride
+    /// declares DivorcedIddatComplete; ignored otherwise (Gap 8).</param>
     Task<StageAuthorizationResult> SubmitBrideSectionAsync(
         string membershipNo, Guid applicationFormId, BrideSectionDto dto,
+        DivorceEvidenceUpload? divorceEvidence,
         CancellationToken cancellationToken = default);
 }

@@ -289,12 +289,12 @@ public class MarriageApplicationController : Controller
         if (string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase))
         {
             var dto = MarriageFormRequestMapping.ToBrideDto(model);
-            result = await _brideSectionService.SubmitBrideSectionAsync(membershipNo, id, dto, ct);
+            result = await _brideSectionService.SubmitBrideSectionAsync(membershipNo, id, dto, divorceEvidence: null, ct);
         }
         else
         {
             var dto = MarriageFormRequestMapping.ToBridegroomDto(model);
-            result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(membershipNo, id, dto, ct);
+            result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(membershipNo, id, dto, divorceEvidence: null, ct);
         }
 
         if (!result.IsAllowed)
