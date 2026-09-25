@@ -139,7 +139,8 @@ public class JamaatPresidentService : IJamaatPresidentService
         return await GetApplicationsByStatusesAsync(
             currentUserId,
             pendingStatuses,
-            orderByCreatedAt: true);
+            orderByCreatedAt: true,
+            restrictToPresidentStages: true);
     }
 
     public async Task<List<NikahApplicationDto>> GetReviewedApplicationsAsync(
@@ -155,7 +156,8 @@ public class JamaatPresidentService : IJamaatPresidentService
         return await GetApplicationsByStatusesAsync(
             currentUserId,
             reviewedStatuses,
-            orderByCreatedAt: false);
+            orderByCreatedAt: false,
+            restrictToPresidentStages: false);
     }
 
     /// <summary>
@@ -166,7 +168,8 @@ public class JamaatPresidentService : IJamaatPresidentService
     private async Task<List<NikahApplicationDto>> GetApplicationsByStatusesAsync(
         Guid? currentUserId,
         ApplicationStatus[] statuses,
-        bool orderByCreatedAt)
+        bool orderByCreatedAt,
+        bool restrictToPresidentStages)
     {
         var jamaatMember = await ResolveJamaatMemberAsync(currentUserId);
 
@@ -186,10 +189,23 @@ public class JamaatPresidentService : IJamaatPresidentService
                 (
                     jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BrideMembershipNo) ||
                     jamaatChandaNumbers.Contains(x.MarriageApplicationForm.BridegroomMembershipNo)
-                ))
-            .OrderByDescending(x => orderByCreatedAt ? x.CreatedAt : (x.ModifiedAt ?? x.CreatedAt));
+                ));
 
-        var applications = await query.ToListAsync();
+        // The flat ApplicationStatus never changes once a form leaves the
+        // president stages (it stays ApplicationPending all the way to the
+        // secretary/Amir/imam), so without this the "pending" list kept
+        // showing forms that had already advanced past both president
+        // stages, mislabeled as "Awaiting Jama'at President".
+        if (restrictToPresidentStages)
+        {
+            query = query.Where(x =>
+                x.MarriageApplicationForm.FormStage == MarriageFormStage.AwaitingBrideJamaatPresident ||
+                x.MarriageApplicationForm.FormStage == MarriageFormStage.AwaitingGroomJamaatPresident);
+        }
+
+        var applications = await query
+            .OrderByDescending(x => orderByCreatedAt ? x.CreatedAt : (x.ModifiedAt ?? x.CreatedAt))
+            .ToListAsync();
 
         // IsActionableByMe/AwaitingJamaatName need the FormStage-vs-jamaat
         // comparison in IsResponsiblePresident/ResolveJamaat, which isn't
