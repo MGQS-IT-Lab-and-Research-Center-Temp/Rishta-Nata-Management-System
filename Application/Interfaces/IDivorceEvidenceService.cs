@@ -17,10 +17,13 @@ public interface IDivorceEvidenceService
 
     /// <summary>
     /// Saves the file and its row, replacing (and deleting) any earlier upload
-    /// for the same form and party, and commits. Throws ArgumentException for
-    /// an upload that DivorceEvidenceRules rejects.
+    /// for the same form and party, and commits. Returns null on success, or
+    /// DivorceEvidenceRules.ConcurrentUploadMessage when a concurrent first
+    /// upload for the same form and party won the unique index (nothing is
+    /// saved). Throws ArgumentException for an upload that DivorceEvidenceRules
+    /// rejects.
     /// </summary>
-    Task SaveAsync(
+    Task<string?> SaveAsync(
         Guid formId, DivorceEvidenceParty party, DivorceEvidenceUpload upload,
         string uploadedByMembershipNo,
         CancellationToken cancellationToken = default);

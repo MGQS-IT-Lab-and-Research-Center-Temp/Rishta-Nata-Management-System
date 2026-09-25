@@ -33,7 +33,7 @@ public class DivorceEvidenceService : IDivorceEvidenceService
             d => d.MarriageApplicationFormId == formId && d.Party == party,
             cancellationToken);
 
-    public async Task SaveAsync(
+    public async Task<string?> SaveAsync(
         Guid formId, DivorceEvidenceParty party, DivorceEvidenceUpload upload,
         string uploadedByMembershipNo,
         CancellationToken cancellationToken = default)
@@ -51,6 +51,7 @@ public class DivorceEvidenceService : IDivorceEvidenceService
                 cancellationToken);
 
         var replacedFileName = document?.StoredFileName;
+        var isNewRow = document is null;
 
         if (document is null)
         {
@@ -82,6 +83,26 @@ public class DivorceEvidenceService : IDivorceEvidenceService
 
             await _context.SaveChangesAsync(cancellationToken);
         }
+        catch (DbUpdateException) when (isNewRow)
+        {
+            // Nothing references the new file unless the row saved.
+            _storage.Delete(storedFileName);
+            _context.Entry(document).State = EntityState.Detached;
+
+            // Two first uploads for the same form and party raced and the other
+            // one won the unique (MarriageApplicationFormId, Party) index. Any
+            // other database failure is not ours to hide.
+            var lostRace = await _context.DivorceEvidenceDocuments
+                .AsNoTracking()
+                .AnyAsync(
+                    d => d.MarriageApplicationFormId == formId && d.Party == party,
+                    cancellationToken);
+
+            if (!lostRace)
+                throw;
+
+            return DivorceEvidenceRules.ConcurrentUploadMessage;
+        }
         catch
         {
             // Nothing references the new file unless the row saved.
@@ -92,6 +113,8 @@ public class DivorceEvidenceService : IDivorceEvidenceService
         // The row now points at the new file, so the old one is unreferenced.
         if (replacedFileName is not null)
             _storage.Delete(replacedFileName);
+
+        return null;
     }
 
     public async Task<IReadOnlyList<DivorceEvidenceDocumentInfo>> ListAsync(
@@ -135,6 +158,8 @@ public class DivorceEvidenceService : IDivorceEvidenceService
             : new DivorceEvidenceFile(content, document.ContentType, document.OriginalFileName);
     }
 
+    // Keep this filter identical to StageAuthorizationService.LoadFormAsync:
+    // authorization and data resolution must pick the same form for an id.
     private async Task<Guid?> ResolveFormIdAsync(Guid formOrApplicationId, CancellationToken cancellationToken) =>
         await _context.MarriageApplicationForms
             .AsNoTracking()

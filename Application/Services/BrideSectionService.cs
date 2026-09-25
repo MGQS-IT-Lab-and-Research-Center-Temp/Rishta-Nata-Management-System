@@ -93,8 +93,9 @@ public class BrideSectionService : IBrideSectionService
             return StageAuthorizationResult.Deny(
                 StageAuthorizationDenyReason.WrongStage, uploadError);
 
+        // Only a divorced bride needs the certificate, so only then look for an earlier upload.
         var hasEvidence = upload is not null ||
-            await _divorceEvidence.HasDocumentAsync(form.Id, DivorceEvidenceParty.Bride, cancellationToken);
+            (isDivorced && await _divorceEvidence.HasDocumentAsync(form.Id, DivorceEvidenceParty.Bride, cancellationToken));
 
         if (isDivorced && !hasEvidence)
             return StageAuthorizationResult.Deny(
@@ -120,9 +121,11 @@ public class BrideSectionService : IBrideSectionService
 
         // Store the certificate before touching the section fields. SaveAsync
         // commits, and at this point only the document row is pending.
-        if (upload is not null)
+        if (upload is not null &&
             await _divorceEvidence.SaveAsync(
-                form.Id, DivorceEvidenceParty.Bride, upload, membershipNo, cancellationToken);
+                form.Id, DivorceEvidenceParty.Bride, upload, membershipNo, cancellationToken) is { } saveError)
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage, saveError);
 
         // Persist the bride's section fields onto the form
         form.BrideMembershipNo = dto.BrideMembershipNo;

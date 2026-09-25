@@ -159,6 +159,8 @@ public class StageAuthorizationService : IStageAuthorizationService
             "the National Rishtanata Secretary or the Amir/Missionary In Charge.");
     }
 
+    // Keep this filter identical to DivorceEvidenceService.ResolveFormIdAsync:
+    // authorization and data resolution must pick the same form for an id.
     private async Task<MarriageApplicationForm?> LoadFormAsync(Guid applicationFormId, CancellationToken cancellationToken) =>
         await _context.MarriageApplicationForms
             .Include(f => f.MarriageApplication)

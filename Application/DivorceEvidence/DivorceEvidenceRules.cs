@@ -20,6 +20,9 @@ public static class DivorceEvidenceRules
     public const string GroomMissingMessage =
         "You declared that you divorced a former wife. Upload the Talaq (divorce) certificate as a PDF, JPG or PNG file.";
 
+    public const string ConcurrentUploadMessage =
+        "Another upload of this divorce certificate was saved at the same time. Please submit again.";
+
     private static readonly byte[] PdfSignature = { 0x25, 0x50, 0x44, 0x46, 0x2D };
     private static readonly byte[] JpegSignature = { 0xFF, 0xD8, 0xFF };
     private static readonly byte[] PngSignature = { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };

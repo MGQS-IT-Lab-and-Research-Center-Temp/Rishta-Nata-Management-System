@@ -269,15 +269,22 @@ public class MarriageApplicationController : Controller
 
         var created = await _formService.StartApplicationAsync(form, GetCurrentMembershipNo(), ct);
 
-        // Validated above, so this only fails on a storage/database error.
+        // Validated above, so this only fails on a storage/database error or,
+        // in theory, a concurrent upload for the same party (reported below).
+        string? evidenceSaveError = null;
         if (divorceEvidence is not null)
         {
-            await _divorceEvidence.SaveAsync(
+            evidenceSaveError = await _divorceEvidence.SaveAsync(
                 created.Id,
                 isGroomFirst ? DivorceEvidenceParty.Bridegroom : DivorceEvidenceParty.Bride,
                 divorceEvidence,
                 GetCurrentMembershipNo() ?? string.Empty,
                 ct);
+        }
+
+        if (evidenceSaveError is not null)
+        {
+            TempData["Error"] = evidenceSaveError;
         }
 
         TempData["Success"] =

@@ -9,6 +9,12 @@ namespace Presentation.ViewComponents;
 /// pages. Renders nothing when none are on file. The Download action
 /// re-checks access on every request.
 /// </summary>
+/// <remarks>
+/// This component does no authorization of its own: it lists the original file
+/// names for any form id. Only invoke it from an action that has already
+/// authorized the caller to view the form's documents (see
+/// IStageAuthorizationService.CanViewFormDocumentsAsync).
+/// </remarks>
 public class DivorceEvidenceLinksViewComponent : ViewComponent
 {
     private readonly IDivorceEvidenceService _divorceEvidence;
