@@ -9,7 +9,7 @@
     <p>Reference @Model.ReferenceNumber — finish your @Model.Party section below.</p>
 </div>
 
-<form asp-controller="MarriageApplication" asp-action="Continue" asp-route-id="@Model.Id" method="post">
+<form asp-controller="MarriageApplication" asp-action="Continue" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
     <input type="hidden" asp-for="Id" />
@@ -88,6 +88,13 @@
                             Evidence of Khula (divorce certificate reference / number)
                         </label>
                         <input asp-for="BrideDivorceEvidence" class="form-control" />
+                        <label asp-for="BrideDivorceEvidenceFile" class="form-label mt-2"></label>
+                        <input asp-for="BrideDivorceEvidenceFile" type="file" class="form-control"
+                               accept="@Application.DivorceEvidence.DivorceEvidenceRules.AcceptAttribute" />
+                        @if (!string.IsNullOrEmpty(Model.ExistingDivorceEvidenceFileName))
+                        {
+                            <div class="form-text">On file: @Model.ExistingDivorceEvidenceFileName. Choose a file only to replace it.</div>
+                        }
                     </div>
                     <div class="col-md-4">
                         <label asp-for="ProposedDowerAmount" class="form-label"></label>
@@ -155,6 +162,13 @@
                             Evidence of Talaq (divorce certificate reference / number)
                         </label>
                         <input asp-for="BridegroomDivorceEvidence" class="form-control" />
+                        <label asp-for="BridegroomDivorceEvidenceFile" class="form-label mt-2"></label>
+                        <input asp-for="BridegroomDivorceEvidenceFile" type="file" class="form-control"
+                               accept="@Application.DivorceEvidence.DivorceEvidenceRules.AcceptAttribute" />
+                        @if (!string.IsNullOrEmpty(Model.ExistingDivorceEvidenceFileName))
+                        {
+                            <div class="form-text">On file: @Model.ExistingDivorceEvidenceFileName. Choose a file only to replace it.</div>
+                        }
                     </div>
 
                     <div class="col-md-12">
@@ -201,10 +215,11 @@
                 if (!firstNikahYes || !firstNikahNo || !group) { return; }
                 var options = group.querySelectorAll('.remar-opt');
                 var div = document.getElementById('renDivorced');
-                var talaqInput = document.querySelector('#talaqEvidenceGroup input');
+                // The reference text box and the certificate file (Gap 8).
+                var talaqInputs = document.querySelectorAll('#talaqEvidenceGroup input');
 
                 function clearTalaq() {
-                    if (talaqInput) { talaqInput.value = ''; }
+                    talaqInputs.forEach(function (i) { i.value = ''; });
                 }
 
                 function render() {
@@ -234,10 +249,10 @@
                 var sel = document.getElementById('MaritalStatus');
                 var khula = document.getElementById('khulaEvidenceGroup');
                 if (!sel || !khula) { return; }
-                var khulaInput = khula.querySelector('input');
+                var khulaInputs = khula.querySelectorAll('input');
                 function render() { khula.classList.toggle('d-none', sel.value !== 'DivorcedIddatComplete'); }
                 sel.addEventListener('change', function () {
-                    if (sel.value !== 'DivorcedIddatComplete') { khulaInput.value = ''; }
+                    if (sel.value !== 'DivorcedIddatComplete') { khulaInputs.forEach(function (i) { i.value = ''; }); }
                     render();
                 });
                 render();

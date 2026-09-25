@@ -9,7 +9,7 @@
     <p>Start your Nikah application. You can apply as the groom or the bride — your details are pre-filled from your membership record.</p>
 </div>
 
-<form asp-controller="MarriageApplication" asp-action="Create" method="post" id="appForm">
+<form asp-controller="MarriageApplication" asp-action="Create" method="post" id="appForm" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -95,6 +95,10 @@
                             Evidence of Khula (divorce certificate reference / number)
                         </label>
                         <input asp-for="BrideDivorceEvidence" class="form-control" />
+                        <label asp-for="BrideDivorceEvidenceFile" class="form-label mt-2"></label>
+                        <input asp-for="BrideDivorceEvidenceFile" type="file" class="form-control"
+                               accept="@Application.DivorceEvidence.DivorceEvidenceRules.AcceptAttribute" />
+                        <span asp-validation-for="BrideDivorceEvidenceFile" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="BrideProposedDowerAmount" class="form-label"></label>
@@ -237,6 +241,10 @@
                             Evidence of Talaq (divorce certificate reference / number)
                         </label>
                         <input asp-for="BridegroomDivorceEvidence" class="form-control" />
+                        <label asp-for="BridegroomDivorceEvidenceFile" class="form-label mt-2"></label>
+                        <input asp-for="BridegroomDivorceEvidenceFile" type="file" class="form-control"
+                               accept="@Application.DivorceEvidence.DivorceEvidenceRules.AcceptAttribute" />
+                        <span asp-validation-for="BridegroomDivorceEvidenceFile" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-12">
@@ -436,10 +444,11 @@
                 if (!firstNikahYes || !firstNikahNo || !group) { return; }
                 var options = group.querySelectorAll('.remar-opt');
                 var div = document.getElementById('renDivorced');
-                var talaqInput = document.querySelector('#talaqEvidenceGroup input');
+                // The reference text box and the certificate file (Gap 8).
+                var talaqInputs = document.querySelectorAll('#talaqEvidenceGroup input');
 
                 function clearTalaq() {
-                    if (talaqInput) { talaqInput.value = ''; }
+                    talaqInputs.forEach(function (i) { i.value = ''; });
                 }
 
                 function render() {
@@ -469,10 +478,10 @@
                 var sel = document.getElementById('BrideMaritalStatus');
                 var khula = document.getElementById('khulaEvidenceGroup');
                 if (!sel || !khula) { return; }
-                var khulaInput = khula.querySelector('input');
+                var khulaInputs = khula.querySelectorAll('input');
                 function render() { khula.classList.toggle('d-none', sel.value !== 'DivorcedIddatComplete'); }
                 sel.addEventListener('change', function () {
-                    if (sel.value !== 'DivorcedIddatComplete') { khulaInput.value = ''; }
+                    if (sel.value !== 'DivorcedIddatComplete') { khulaInputs.forEach(function (i) { i.value = ''; }); }
                     render();
                 });
                 render();
@@ -503,6 +512,24 @@
                 toggle();
             }
             wireWakeel();
+
+            // Gap 8: picking a new certificate clears the server's error for it,
+            // so refreshSubmit (which runs next, on the bubbled change) can
+            // re-enable the button.
+            function wireEvidenceFiles() {
+                document.querySelectorAll('#appForm input[type="file"]').forEach(function (f) {
+                    f.addEventListener('change', function () {
+                        f.classList.remove('input-validation-error');
+                        var msg = document.querySelector('[data-valmsg-for="' + f.name + '"]');
+                        if (msg) {
+                            msg.textContent = '';
+                            msg.classList.remove('field-validation-error');
+                            msg.classList.add('field-validation-valid');
+                        }
+                    });
+                });
+            }
+            wireEvidenceFiles();
         })();
     </script>
 }

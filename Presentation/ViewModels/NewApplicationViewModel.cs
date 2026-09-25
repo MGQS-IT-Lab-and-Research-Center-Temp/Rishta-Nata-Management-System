@@ -29,6 +29,10 @@ public class NewApplicationViewModel
     [Display(Name = "Divorce Evidence")]
     public string BrideDivorceEvidence { get; set; } = string.Empty;
 
+    // Gap 8: the certificate itself; the text above is now an optional reference number.
+    [Display(Name = "Khula certificate (PDF, JPG or PNG, max 5 MB)")]
+    public IFormFile? BrideDivorceEvidenceFile { get; set; }
+
     [Display(Name = "Proposed Dower Amount")]
     public decimal BrideProposedDowerAmount { get; set; }
 
@@ -47,6 +51,11 @@ public class NewApplicationViewModel
     public bool? FormerWifeIsDead { get; set; }
     public bool? HasDivorcedFormerWife { get; set; }
     public string BridegroomDivorceEvidence { get; set; } = string.Empty;
+
+    // Gap 8: the certificate itself; the text above is now an optional reference number.
+    [Display(Name = "Talaq certificate (PDF, JPG or PNG, max 5 MB)")]
+    public IFormFile? BridegroomDivorceEvidenceFile { get; set; }
+
     public bool? FormerWifeIsPresent { get; set; }
     public bool? FormerWifeObtainedKhula { get; set; }
 
