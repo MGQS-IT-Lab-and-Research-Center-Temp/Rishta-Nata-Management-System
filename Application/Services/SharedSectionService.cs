@@ -104,6 +104,13 @@ public class SharedSectionService : ISharedSectionService
             return new SectionSubmitResult { Success = false, Message = "This link is invalid or no longer active." };
         }
 
+        // Likewise, the groom's Wakeel signs only when the groom cannot attend
+        // the Nikah in person.
+        if (tokenRow.SectionType == SectionType.GroomWakeel && form.CanAttendNikahInPerson)
+        {
+            return new SectionSubmitResult { Success = false, Message = "This link is invalid or no longer active." };
+        }
+
         // Member-prefill (override only blank manual fields).
         if (data.IsMember && !string.IsNullOrWhiteSpace(data.MemberMembershipNo))
         {
@@ -615,6 +622,20 @@ public class SharedSectionService : ISharedSectionService
             {
                 throw new InvalidOperationException(
                     "The guardian has not appointed a representative, so no link for this section can be created.");
+            }
+        }
+
+        if (section == SectionType.GroomWakeel)
+        {
+            var attendsInPerson = await _context.MarriageApplicationForms
+                .Where(f => f.Id == applicationFormId)
+                .Select(f => f.CanAttendNikahInPerson)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (attendsInPerson)
+            {
+                throw new InvalidOperationException(
+                    "The groom will attend the Nikah in person, so no link for the groom's Wakeel can be created.");
             }
         }
     }

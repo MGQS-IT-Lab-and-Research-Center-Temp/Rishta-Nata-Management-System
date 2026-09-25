@@ -196,10 +196,47 @@ public class BridegroomSectionService : IBridegroomSectionService
             form.GroomWakeelName = wakeelName;
             form.GroomWakeelTel = wakeelTel;
         }
+        else if (dto.CanAttendNikahInPerson)
+        {
+            await ClearGroomWakeelAsync(form, cancellationToken);
+        }
 
         form.FormStage = nextStage.Value;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return StageAuthorizationResult.Allow();
+    }
+
+    /// <summary>
+    /// The groom now attends in person: drop any Wakeel appointment (section row
+    /// and flat mirrors) and kill any GroomWakeel link, the same way
+    /// SharedSectionService releases a withdrawn representative's links.
+    /// Tracked changes only; the caller saves.
+    /// </summary>
+    private async Task ClearGroomWakeelAsync(MarriageApplicationForm form, CancellationToken cancellationToken)
+    {
+        if (form.GroomWakeelSection is not null)
+        {
+            _dbContext.Remove(form.GroomWakeelSection);
+            form.GroomWakeelSection = null;
+        }
+
+        form.GroomWakeelName = string.Empty;
+        form.GroomWakeelFatherName = string.Empty;
+        form.GroomWakeelTel = string.Empty;
+        form.GroomWakeelSignatureDate = string.Empty;
+
+        var tokens = await _dbContext.SectionAccessTokens
+            .Where(x => x.MarriageApplicationFormId == form.Id && x.SectionType == SectionType.GroomWakeel)
+            .ToListAsync(cancellationToken);
+
+        foreach (var token in tokens)
+        {
+            token.RevokedAt ??= DateTime.UtcNow;
+            token.SubmittedAt = null;
+            token.RawToken = string.Empty;
+            token.TokenHash = string.Empty;
+            token.ModifiedAt = DateTime.UtcNow;
+        }
     }
 }

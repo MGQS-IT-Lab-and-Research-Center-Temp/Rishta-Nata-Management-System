@@ -219,7 +219,9 @@ public class MarriageApplicationController : Controller
         }
 
         var partnerPhone = partner.PhoneNo;
-        var canAttendNikahInPerson = model.CanAttendNikahInPerson ?? true;
+        // Only a groom-first Create renders (and validates) the attendance and
+        // Wakeel inputs; a bride-first post must not set them for the groom.
+        var canAttendNikahInPerson = !isGroomFirst || (model.CanAttendNikahInPerson ?? true);
         var form = new MarriageApplicationForm
         {
             ProposedNikahDate = model.ProposedNikahDate,
@@ -256,8 +258,8 @@ public class MarriageApplicationController : Controller
             BridegroomSignatureTel = (isGroomFirst ? model.Bridegroom.Phone.Trim() : partnerPhone),
 
             CanAttendNikahInPerson = canAttendNikahInPerson,
-            WakeelName = canAttendNikahInPerson ? string.Empty : model.WakeelName.Trim(),
-            WakeelTel = canAttendNikahInPerson ? string.Empty : model.WakeelTel.Trim(),
+            WakeelName = canAttendNikahInPerson ? string.Empty : model.WakeelName?.Trim() ?? string.Empty,
+            WakeelTel = canAttendNikahInPerson ? string.Empty : model.WakeelTel?.Trim() ?? string.Empty,
 
             ApplicationStage = ApplicationStage.ApplicantsReview,
             FormStage = isGroomFirst
