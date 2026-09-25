@@ -532,13 +532,22 @@ public class SharedSectionService : ISharedSectionService
              !HasWitnessPair(form, WitnessContext.WakeelAppointment)))
             return false;
 
-        if (!form.CanAttendNikahInPerson &&
-            (form.GroomWakeelSection is null || string.IsNullOrWhiteSpace(form.GroomWakeelSection.Name)))
+        if (!form.CanAttendNikahInPerson && !HasGroomWakeelSigned(form))
             return false;
 
         return HasWitnessPair(form, WitnessContext.GuardianAgreement) &&
                HasWitnessPair(form, WitnessContext.GroomDeclaration);
     }
+
+    /// <summary>
+    /// True once the groom's Wakeel has signed through their shared link.
+    /// GroomWakeelSection.Name is not enough: StartApplicationAsync and
+    /// BridegroomSectionService fill it from the groom's own entry. Only the
+    /// shared-link submit (ApplySectionUpsert, GroomWakeel case) writes Date,
+    /// and it always writes it.
+    /// </summary>
+    private static bool HasGroomWakeelSigned(MarriageApplicationForm form) =>
+        form.GroomWakeelSection?.Date is not null;
 
     private static SectionLinkStatus BuildStatus(SectionType section, MarriageApplicationForm form)
     {
@@ -552,8 +561,10 @@ public class SharedSectionService : ISharedSectionService
         }
         else if (section == SectionType.GroomWakeel)
         {
+            // Name is pre-filled from the groom's own entry, so it only says who
+            // was nominated; completion needs the Wakeel's own signature.
             filledByName = form.GroomWakeelSection?.Name;
-            complete = !string.IsNullOrWhiteSpace(filledByName);
+            complete = HasGroomWakeelSigned(form);
         }
         else if (section == SectionType.Representative)
         {
