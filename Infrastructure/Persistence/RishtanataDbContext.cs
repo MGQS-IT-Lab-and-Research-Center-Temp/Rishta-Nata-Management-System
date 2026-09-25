@@ -66,6 +66,7 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.BridegroomResidentOf).HasMaxLength(300);
             e.Property(x => x.BridegroomGenotype).HasMaxLength(10);
             e.Property(x => x.BridegroomBloodGroup).HasMaxLength(10);
+            e.Property(x => x.BridegroomTotalDowerAmount).HasColumnType("decimal(18,2)");
             e.Property(x => x.BridegroomSignatureTel).HasMaxLength(30);
             e.Property(x => x.WakeelName).HasMaxLength(200);
             e.Property(x => x.WakeelTel).HasMaxLength(30);

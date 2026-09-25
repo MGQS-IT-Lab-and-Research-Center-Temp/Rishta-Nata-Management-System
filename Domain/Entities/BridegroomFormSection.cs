@@ -17,6 +17,8 @@ namespace Domain.Entities
         public string BridegroomBloodGroup { get; set; } = string.Empty;
         public decimal BridegroomDowerAmountPaidInCash { get; set; }
         public decimal BridegroomDowerAmountToBePaid { get; set; }
+        // Gap 9: PaidInCash + ToBePaid must equal this (BridegroomDowerRules).
+        public decimal BridegroomTotalDowerAmount { get; set; }
         public bool IsFirstNikah { get; set; }
         public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
         public bool FormerWifeIsDead { get; set; }

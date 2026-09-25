@@ -140,6 +140,9 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.BridegroomDowerAmountToBePaid)
             .HasColumnType("decimal(18,2)");
 
+        builder.Property(f => f.BridegroomTotalDowerAmount)
+            .HasColumnType("decimal(18,2)");
+
         builder.Property(f => f.BridegroomSignatureTel)
             .HasMaxLength(30);
 
