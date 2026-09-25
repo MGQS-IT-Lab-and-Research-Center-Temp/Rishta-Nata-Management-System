@@ -114,13 +114,18 @@
             <div class="card-header">Bridegroom Details</div>
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label asp-for="DowerAmountPaidInCash" class="form-label"></label>
                         <input asp-for="DowerAmountPaidInCash" class="form-control" type="number" min="0" step="0.01" />
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label asp-for="DowerAmountToBePaid" class="form-label"></label>
                         <input asp-for="DowerAmountToBePaid" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="TotalDowerAmount" class="form-label"></label>
+                        <input asp-for="TotalDowerAmount" class="form-control" type="number" min="0" step="0.01" />
+                        <div id="dowerSumHint" class="form-text text-warning"></div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label d-block">Is this your first Nikah?</label>
@@ -203,6 +208,34 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Gap 9: live hint when paid in cash + to be paid differs from the total.
+        // The server enforces the rule; its message arrives in the validation summary.
+        (function () {
+            'use strict';
+
+            var paid = document.getElementById('DowerAmountPaidInCash');
+            var due = document.getElementById('DowerAmountToBePaid');
+            var total = document.getElementById('TotalDowerAmount');
+            var hint = document.getElementById('dowerSumHint');
+            if (!paid || !due || !total || !hint) { return; }
+
+            function cents(el) {
+                var v = parseFloat(el.value);
+                return isNaN(v) ? 0 : Math.round(v * 100);
+            }
+
+            function render() {
+                var sum = cents(paid) + cents(due);
+                hint.textContent = sum === cents(total)
+                    ? ''
+                    : 'Paid in cash + to be paid = ' + (sum / 100).toFixed(2) + ', which does not match the total.';
+            }
+
+            [paid, due, total].forEach(function (el) { el.addEventListener('input', render); });
+            render();
+        })();
+    </script>
     <script>
         (function () {
             'use strict';

@@ -52,6 +52,10 @@ public class ContinueApplicationViewModel
     // ===== Groom-only =====
     public decimal DowerAmountPaidInCash { get; set; }
     public decimal DowerAmountToBePaid { get; set; }
+
+    // Gap 9: must equal paid in cash + to be paid (BridegroomDowerRules).
+    [Display(Name = "Total Dower Amount")]
+    public decimal TotalDowerAmount { get; set; }
     public bool IsFirstNikah { get; set; }
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool FormerWifeIsDead { get; set; }

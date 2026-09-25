@@ -45,6 +45,10 @@ public class NewApplicationViewModel
 
     [Display(Name = "Dower Amount To Be Paid")]
     public decimal BridegroomDowerAmountToBePaid { get; set; }
+
+    // Gap 9: must equal paid in cash + to be paid (BridegroomDowerRules).
+    [Display(Name = "Total Dower Amount")]
+    public decimal BridegroomTotalDowerAmount { get; set; }
     public bool IsFirstNikah { get; set; }
 
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }

@@ -1,4 +1,5 @@
 using Application.Authorization;
+using Application.Dower;
 using Application.DivorceEvidence;
 using Application.Interfaces;
 using Domain.Entities;
@@ -74,6 +75,16 @@ public class BridegroomSectionService : IBridegroomSectionService
                 StageAuthorizationDenyReason.WrongStage,
                 $"Form is at {form.FormStage}, not awaiting the bridegroom.");
 
+        // Gap 9: paid in cash + still to be paid must equal the total dower.
+        var dowerError = BridegroomDowerRules.Validate(
+            dto.BridegroomDowerAmountPaidInCash,
+            dto.BridegroomDowerAmountToBePaid,
+            dto.BridegroomTotalDowerAmount);
+
+        if (dowerError is not null)
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage, dowerError);
+
         // Gap 8: a groom who divorced a former wife needs the Talaq certificate
         // on file, either uploaded with this submission or kept from an earlier
         // upload on this form. An upload is ignored unless he declares the divorce.
@@ -124,6 +135,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         form.BridegroomBloodGroup = dto.BridegroomBloodGroup;
         form.BridegroomDowerAmountPaidInCash = dto.BridegroomDowerAmountPaidInCash;
         form.BridegroomDowerAmountToBePaid = dto.BridegroomDowerAmountToBePaid;
+        form.BridegroomTotalDowerAmount = dto.BridegroomTotalDowerAmount;
         form.IsFirstNikah = dto.IsFirstNikah;
         form.CurrentNikahOrdinal = dto.CurrentNikahOrdinal;
         form.FormerWifeIsDead = dto.FormerWifeIsDead;
@@ -156,6 +168,7 @@ public class BridegroomSectionService : IBridegroomSectionService
         bridegroomSection.BridegroomBloodGroup = dto.BridegroomBloodGroup;
         bridegroomSection.BridegroomDowerAmountPaidInCash = dto.BridegroomDowerAmountPaidInCash;
         bridegroomSection.BridegroomDowerAmountToBePaid = dto.BridegroomDowerAmountToBePaid;
+        bridegroomSection.BridegroomTotalDowerAmount = dto.BridegroomTotalDowerAmount;
         bridegroomSection.IsFirstNikah = dto.IsFirstNikah;
         bridegroomSection.CurrentNikahOrdinal = dto.CurrentNikahOrdinal;
         bridegroomSection.FormerWifeIsDead = dto.FormerWifeIsDead;

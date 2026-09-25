@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Authorization;
+using Application.Dower;
 using Application.DivorceEvidence;
 using Application.Interfaces;
 using Domain.Constants;
@@ -116,6 +117,22 @@ public class MarriageApplicationController : Controller
             ModelState.Remove($"{partnerPrefix}.{prop}");
         }
 
+        // Gap 9: a groom starting the application fills in his dower line; paid
+        // in cash + still to be paid must equal the total. A bride-first
+        // application leaves the groom's dower for his Continue step.
+        if (isGroomFirst)
+        {
+            var dowerError = BridegroomDowerRules.Validate(
+                model.BridegroomDowerAmountPaidInCash,
+                model.BridegroomDowerAmountToBePaid,
+                model.BridegroomTotalDowerAmount);
+
+            if (dowerError is not null)
+            {
+                ModelState.AddModelError(nameof(model.BridegroomTotalDowerAmount), dowerError);
+            }
+        }
+
         // Gap 6: a bride starting the application must choose her marital status.
         // A groom-first application leaves it for the bride's Continue step.
         if (!isGroomFirst && model.BrideMaritalStatus is null)
@@ -225,6 +242,7 @@ public class MarriageApplicationController : Controller
             BridegroomBloodGroup = model.Bridegroom.BloodGroup,
             BridegroomDowerAmountPaidInCash = model.BridegroomDowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = model.BridegroomDowerAmountToBePaid,
+            BridegroomTotalDowerAmount = model.BridegroomTotalDowerAmount,
             IsFirstNikah = model.IsFirstNikah,
             CurrentNikahOrdinal = model.CurrentNikahOrdinal,
             FormerWifeIsDead = model.FormerWifeIsDead ?? false,
@@ -391,6 +409,7 @@ public class MarriageApplicationController : Controller
         BloodGroup = form.BridegroomBloodGroup,
         DowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
         DowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
+        TotalDowerAmount = form.BridegroomTotalDowerAmount,
         IsFirstNikah = form.IsFirstNikah,
         CurrentNikahOrdinal = form.CurrentNikahOrdinal,
         FormerWifeIsDead = form.FormerWifeIsDead,

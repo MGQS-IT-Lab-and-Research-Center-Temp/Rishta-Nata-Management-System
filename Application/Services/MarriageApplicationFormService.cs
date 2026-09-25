@@ -126,6 +126,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
                 BridegroomBloodGroup = application.BridegroomBloodGroup,
                 BridegroomDowerAmountPaidInCash = application.BridegroomDowerAmountPaidInCash,
                 BridegroomDowerAmountToBePaid = application.BridegroomDowerAmountToBePaid,
+                BridegroomTotalDowerAmount = application.BridegroomTotalDowerAmount,
                 IsFirstNikah = application.IsFirstNikah,
                 CurrentNikahOrdinal = application.CurrentNikahOrdinal,
                 FormerWifeIsDead = application.FormerWifeIsDead,
