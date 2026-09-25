@@ -302,6 +302,10 @@ file as items are fixed.
     status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
     without the corresponding divorced flag. Harden server-side only if such data
     integrity becomes important.
+    **Gap 8 update:** the uploaded certificate *file* is server-gated. `Create`
+    and the section services store an upload only when the party declares
+    divorce, and require one (new or already on file) when they do. The
+    free-text reference fields are still client-consented, as described above.
 
 17. **Divorce-evidence columns were NOT NULL, blocking partner submission — FIXED.**
     `BrideDivorceEvidence`/`BridegroomDivorceEvidence` were non-nullable `string`

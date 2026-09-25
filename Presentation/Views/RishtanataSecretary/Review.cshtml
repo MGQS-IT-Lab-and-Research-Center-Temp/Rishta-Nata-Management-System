@@ -242,6 +242,9 @@
 
     </div>
 
+    <!-- Divorce certificates (Gap 8) -->
+    @await Component.InvokeAsync("DivorceEvidenceLinks", new { formId = Model.Id })
+
     <!-- President Recommendation -->
 
     <div class="card shadow-sm border-0 mb-4">
