@@ -3,8 +3,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Authorization;
-using Application.Dower;
 using Application.DivorceEvidence;
+using Application.Dower;
 using Application.Interfaces;
 using Domain.Constants;
 using Domain.Entities;
@@ -140,7 +140,7 @@ public class MarriageApplicationController : Controller
         // A groom-first application leaves it for the bride's Continue step.
         if (!isGroomFirst && model.BrideMaritalStatus is null)
         {
-            ModelState.AddModelError(nameof(model.BrideMaritalStatus), "Select the bride's marital status.");
+            ModelState.AddModelError(nameof(model.BrideMaritalStatus), BrideMaritalStatusText.RequiredMessage);
         }
 
         // Gap 8: a divorced starter uploads their certificate with the application.
@@ -350,7 +350,7 @@ public class MarriageApplicationController : Controller
 
         if (string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase) && model.MaritalStatus is null)
         {
-            ModelState.AddModelError(nameof(model.MaritalStatus), "Select the bride's marital status.");
+            ModelState.AddModelError(nameof(model.MaritalStatus), BrideMaritalStatusText.RequiredMessage);
         }
 
         var membershipNo = GetCurrentMembershipNo() ?? string.Empty;

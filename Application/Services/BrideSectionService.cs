@@ -81,7 +81,7 @@ public class BrideSectionService : IBrideSectionService
         if (dto.BrideMaritalStatus is null || !Enum.IsDefined(dto.BrideMaritalStatus.Value))
             return StageAuthorizationResult.Deny(
                 StageAuthorizationDenyReason.WrongStage,
-                "Select the bride's marital status.");
+                BrideMaritalStatusText.RequiredMessage);
 
         // Gap 8: a divorced bride needs her Khula certificate on file, either
         // uploaded with this submission or kept from an earlier upload on this

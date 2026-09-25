@@ -64,6 +64,7 @@ public class MarriageApplicationFormDetailDto
 
     /// <summary>Jama'at Presidents' attestations (Gap 7); null until any is recorded.</summary>
     public PresidentAttestationsDto? PresidentAttestations { get; set; }
+
     public RishtanataSecretarySectionDetailDto? NationalRishtanataSecretary { get; set; }
     public AmirApprovalSectionDetailDto? AmirApproval { get; set; }
 

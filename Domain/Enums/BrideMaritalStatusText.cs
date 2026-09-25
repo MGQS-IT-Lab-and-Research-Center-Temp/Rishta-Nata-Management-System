@@ -8,6 +8,9 @@ namespace Domain.Enums
     /// </summary>
     public static class BrideMaritalStatusText
     {
+        /// <summary>The deny/validation message when the bride's marital status is missing or undefined.</summary>
+        public const string RequiredMessage = "Select the bride's marital status.";
+
         public static string ToLabel(BrideMaritalStatus? status) => status switch
         {
             BrideMaritalStatus.Unmarried => "Unmarried",

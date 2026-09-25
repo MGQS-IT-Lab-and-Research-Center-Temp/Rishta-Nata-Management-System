@@ -110,17 +110,13 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         // otherwise they're cleared (e.g. after a revert) and the groom's
         // president records them.
         var verification = form.JamaatPresidentVerification!;
-        var brideAttestation = submission.Bride!;
-        verification.BrideIsBornAhmadi = brideAttestation.IsBornAhmadi;
-        verification.BrideYearsAsAhmadi = brideAttestation.IsBornAhmadi == true ? null : brideAttestation.YearsAsAhmadi;
-        verification.BrideMarriageReason = brideAttestation.MarriageReason?.Trim() ?? string.Empty;
+        (verification.BrideIsBornAhmadi, verification.BrideYearsAsAhmadi, verification.BrideMarriageReason) =
+            ToStoredAttestation(submission.Bride!);
 
         if (sharesJamaat)
         {
-            var groomAttestation = submission.Groom!;
-            verification.GroomIsBornAhmadi = groomAttestation.IsBornAhmadi;
-            verification.GroomYearsAsAhmadi = groomAttestation.IsBornAhmadi == true ? null : groomAttestation.YearsAsAhmadi;
-            verification.GroomMarriageReason = groomAttestation.MarriageReason?.Trim() ?? string.Empty;
+            (verification.GroomIsBornAhmadi, verification.GroomYearsAsAhmadi, verification.GroomMarriageReason) =
+                ToStoredAttestation(submission.Groom!);
         }
         else
         {
@@ -211,10 +207,8 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
 
         // President's attestation for the groom (Gap 7); validated above.
         var groomVerification = form.GroomJamaatPresidentVerification!;
-        var groomAttestation = submission.Groom!;
-        groomVerification.GroomIsBornAhmadi = groomAttestation.IsBornAhmadi;
-        groomVerification.GroomYearsAsAhmadi = groomAttestation.IsBornAhmadi == true ? null : groomAttestation.YearsAsAhmadi;
-        groomVerification.GroomMarriageReason = groomAttestation.MarriageReason?.Trim() ?? string.Empty;
+        (groomVerification.GroomIsBornAhmadi, groomVerification.GroomYearsAsAhmadi, groomVerification.GroomMarriageReason) =
+            ToStoredAttestation(submission.Groom!);
 
         form.GroomJamaatPresidentName = submission.Name;
         form.GroomJamaatPresidentSignatureDate = submission.SignatureDate;
@@ -280,6 +274,16 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
 
         return null;
     }
+
+    /// <summary>
+    /// The stored values of one validated partner attestation (Gap 7). Years
+    /// only apply to converts; the reason is trimmed.
+    /// </summary>
+    private static (bool? IsBornAhmadi, int? YearsAsAhmadi, string MarriageReason) ToStoredAttestation(
+        PartnerAttestationSubmission attestation) =>
+        (attestation.IsBornAhmadi,
+         attestation.IsBornAhmadi == true ? null : attestation.YearsAsAhmadi,
+         attestation.MarriageReason?.Trim() ?? string.Empty);
 
     public async Task<StageAuthorizationResult> SubmitRishtanataRecommendationAsync(
         string membershipNo,
