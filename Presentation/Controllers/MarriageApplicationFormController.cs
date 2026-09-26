@@ -52,7 +52,9 @@ public class MarriageApplicationFormController : ControllerBase
     public async Task<IActionResult> SubmitBride(Guid id, [FromBody] BrideSectionRequest request, CancellationToken ct)
     {
         var dto = MarriageFormRequestMapping.ToDto(request);
-        var result = await _brideSectionService.SubmitBrideSectionAsync(CurrentMembershipNo, id, dto, ct);
+        // JSON cannot carry the certificate (Gap 8): a divorced bride needs one
+        // already on file, uploaded through the MVC Continue page.
+        var result = await _brideSectionService.SubmitBrideSectionAsync(CurrentMembershipNo, id, dto, divorceEvidence: null, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 
@@ -61,8 +63,23 @@ public class MarriageApplicationFormController : ControllerBase
     [Authorize(Policy = "CanFillBridegroomSection")]
     public async Task<IActionResult> SubmitBridegroom(Guid id, [FromBody] BridegroomSectionRequest request, CancellationToken ct)
     {
+        if (!request.CanAttendNikahInPerson)
+        {
+            if (string.IsNullOrWhiteSpace(request.WakeelName))
+                ModelState.AddModelError(nameof(request.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
+            if (string.IsNullOrWhiteSpace(request.WakeelTel))
+                ModelState.AddModelError(nameof(request.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         var dto = MarriageFormRequestMapping.ToDto(request);
-        var result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(CurrentMembershipNo, id, dto, ct);
+        // JSON cannot carry the certificate (Gap 8): a divorced groom needs one
+        // already on file, uploaded through the MVC Continue page.
+        var result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(CurrentMembershipNo, id, dto, divorceEvidence: null, ct);
         return result.IsAllowed ? Ok() : StatusCode(403, result.Message);
     }
 

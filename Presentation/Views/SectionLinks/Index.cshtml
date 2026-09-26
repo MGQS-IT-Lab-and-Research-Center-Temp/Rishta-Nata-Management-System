@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Signature Links";
     var error = TempData["Error"] as string;
-    var signatureWaitActive = Model.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses;
+    var signatureWaitActive = Model.Items.Any(i => i.Fillable);
 }
 
 <div class="dashboard-hero">
@@ -50,7 +50,7 @@
                     </td>
                     <td>@(item.FilledByName ?? "—")</td>
                     <td>
-                        @if (!item.Submitted && signatureWaitActive && !string.IsNullOrWhiteSpace(item.RawToken))
+                        @if (!item.Submitted && item.Fillable && !string.IsNullOrWhiteSpace(item.RawToken))
                         {
                             var url = Url.Action("Fill", "SharedSection", new { token = item.RawToken }, Context.Request.Scheme)!;
                             <div class="input-group input-group-sm">
@@ -68,7 +68,7 @@
                         {
                             <span class="text-muted small">Locked</span>
                         }
-                        else if (signatureWaitActive)
+                        else if (item.Fillable)
                         {
                             @if (item.HasActiveToken)
                             {
@@ -117,8 +117,16 @@
     private static string SectionTitle(Domain.Enums.SectionType s) => s switch
     {
         Domain.Enums.SectionType.Guardian => "Guardian / Waliy",
-        Domain.Enums.SectionType.WitnessOne => "Witness 1",
-        Domain.Enums.SectionType.WitnessTwo => "Witness 2",
+        Domain.Enums.SectionType.WitnessOne => "Witness 1 — Guardian's Agreement",
+        Domain.Enums.SectionType.WitnessTwo => "Witness 2 — Guardian's Agreement",
+        Domain.Enums.SectionType.GroomWakeel => "Groom's Wakeel",
+        Domain.Enums.SectionType.Representative => "Guardian's Representative (Wakeel)",
+        Domain.Enums.SectionType.WakeelAppointmentWitnessOne => "Witness 1 — Wakeel Appointment",
+        Domain.Enums.SectionType.WakeelAppointmentWitnessTwo => "Witness 2 — Wakeel Appointment",
+        Domain.Enums.SectionType.GroomDeclarationWitnessOne => "Witness 1 — Groom's Declaration",
+        Domain.Enums.SectionType.GroomDeclarationWitnessTwo => "Witness 2 — Groom's Declaration",
+        Domain.Enums.SectionType.NikahCeremonyWitnessOne => "Witness 1 — Nikah Ceremony",
+        Domain.Enums.SectionType.NikahCeremonyWitnessTwo => "Witness 2 — Nikah Ceremony",
         _ => s.ToString()
     };
 }

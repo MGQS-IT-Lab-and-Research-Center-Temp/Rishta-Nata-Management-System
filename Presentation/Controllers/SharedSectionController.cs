@@ -44,7 +44,8 @@ public class SharedSectionController : Controller
             ReferenceNumber = status.ReferenceNumber,
             BrideName = status.BrideName,
             BridegroomName = status.BridegroomName,
-            SectionLabel = SectionTitle(status.SectionType)
+            SectionLabel = SectionTitle(status.SectionType),
+            AppointsRepresentative = status.SectionType == SectionType.Guardian && status.AppointsRepresentative
         };
 
         return View(model);
@@ -63,6 +64,7 @@ public class SharedSectionController : Controller
             Address = model.Address ?? string.Empty,
             Tel = model.Tel ?? string.Empty,
             RelationToBride = model.RelationToBride ?? string.Empty,
+            AppointsRepresentative = model.SectionType == SectionType.Guardian && model.AppointsRepresentative,
             IsMember = model.IsMember,
             MemberMembershipNo = model.MemberMembershipNo,
             SignatureDate = DateTime.UtcNow
@@ -106,8 +108,16 @@ public class SharedSectionController : Controller
     private static string SectionTitle(SectionType section) => section switch
     {
         SectionType.Guardian => "Guardian / Waliy",
-        SectionType.WitnessOne => "Witness 1",
-        SectionType.WitnessTwo => "Witness 2",
+        SectionType.WitnessOne => "Witness 1 — Guardian's Agreement",
+        SectionType.WitnessTwo => "Witness 2 — Guardian's Agreement",
+        SectionType.GroomWakeel => "Groom's Wakeel",
+        SectionType.Representative => "Guardian's Representative (Wakeel)",
+        SectionType.WakeelAppointmentWitnessOne => "Witness 1 — Wakeel Appointment",
+        SectionType.WakeelAppointmentWitnessTwo => "Witness 2 — Wakeel Appointment",
+        SectionType.GroomDeclarationWitnessOne => "Witness 1 — Groom's Declaration",
+        SectionType.GroomDeclarationWitnessTwo => "Witness 2 — Groom's Declaration",
+        SectionType.NikahCeremonyWitnessOne => "Witness 1 — Nikah Ceremony",
+        SectionType.NikahCeremonyWitnessTwo => "Witness 2 — Nikah Ceremony",
         _ => section.ToString()
     };
 }

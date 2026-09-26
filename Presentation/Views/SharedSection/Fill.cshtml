@@ -47,6 +47,30 @@
                 <label asp-for="RelationToBride" class="form-label">Relation to bride</label>
                 <input asp-for="RelationToBride" class="form-control" />
             </div>
+            <div class="form-check mb-3">
+                <input asp-for="AppointsRepresentative" class="form-check-input" />
+                <label asp-for="AppointsRepresentative" class="form-check-label">
+                    I appoint a representative (Wakeel) to act on my behalf
+                </label>
+                <div class="form-text">
+                    If ticked, your representative must also sign through their own link
+                    before the application can move on.
+                </div>
+            </div>
+        }
+        else if (Model.SectionType == Domain.Enums.SectionType.GroomWakeel)
+        {
+            <div class="mb-3">
+                <label asp-for="RelationToBride" class="form-label">Father's Name (S/o)</label>
+                <input asp-for="RelationToBride" class="form-control" />
+            </div>
+        }
+        else if (Model.SectionType == Domain.Enums.SectionType.Representative)
+        {
+            <div class="mb-3">
+                <label asp-for="RelationToBride" class="form-label">Acting for</label>
+                <input asp-for="RelationToBride" class="form-control" />
+            </div>
         }
 
         <div class="mb-3">

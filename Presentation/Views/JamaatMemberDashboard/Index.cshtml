@@ -71,7 +71,7 @@
             </a>
         }
 
-        @if (Model.ActiveApplication.FormStage == Domain.Enums.MarriageFormStage.AwaitingWitnesses)
+        @if (Model.ActiveApplication.FormStage is Domain.Enums.MarriageFormStage.AwaitingWitnesses or Domain.Enums.MarriageFormStage.AwaitingImamSignoff)
         {
             <a asp-controller="SectionLinks"
                asp-action="Index"

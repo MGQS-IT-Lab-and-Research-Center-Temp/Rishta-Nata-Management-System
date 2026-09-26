@@ -1,0 +1,31 @@
+@model Presentation.ViewComponents.DivorceEvidenceLinksModel
+
+@if (Model.Documents.Count > 0)
+{
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                Divorce Certificates
+            </h4>
+        </div>
+
+        <div class="card-body">
+            <ul class="list-unstyled mb-0">
+                @foreach (var doc in Model.Documents)
+                {
+                    <li class="mb-2">
+                        <strong>@(doc.Party == Domain.Enums.DivorceEvidenceParty.Bride ? "Bride (Khula)" : "Bridegroom (Talaq)"):</strong>
+                        <a asp-controller="DivorceEvidence" asp-action="Download"
+                           asp-route-id="@Model.FormId" asp-route-party="@doc.Party"
+                           class="ms-1">@doc.OriginalFileName</a>
+                        <span class="text-muted small ms-2">
+                            @((doc.SizeBytes / 1024.0).ToString("0.#")) KB · uploaded @doc.UploadedAt.ToString("yyyy-MM-dd")
+                        </span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+    </div>
+}

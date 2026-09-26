@@ -126,6 +126,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
                 BridegroomBloodGroup = application.BridegroomBloodGroup,
                 BridegroomDowerAmountPaidInCash = application.BridegroomDowerAmountPaidInCash,
                 BridegroomDowerAmountToBePaid = application.BridegroomDowerAmountToBePaid,
+                BridegroomTotalDowerAmount = application.BridegroomTotalDowerAmount,
                 IsFirstNikah = application.IsFirstNikah,
                 CurrentNikahOrdinal = application.CurrentNikahOrdinal,
                 FormerWifeIsDead = application.FormerWifeIsDead,
@@ -134,10 +135,28 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
                 FormerWifeIsPresent = application.FormerWifeIsPresent,
                 FormerWifeObtainedKhula = application.FormerWifeObtainedKhula,
                 BridegroomSignatureTel = application.BridegroomSignatureTel,
+                CanAttendNikahInPerson = application.CanAttendNikahInPerson,
+                WakeelName = application.WakeelName,
+                WakeelTel = application.WakeelTel,
                 ReferenceNumber = application.ReferenceNumber,
                 CreatedAt = DateTime.UtcNow,
                 ModifiedAt = DateTime.UtcNow
             };
+        }
+
+        if (!application.CanAttendNikahInPerson && application.GroomWakeelSection is null &&
+            !string.IsNullOrWhiteSpace(application.WakeelName))
+        {
+            application.GroomWakeelSection = new GroomWakeelSection
+            {
+                Name = application.WakeelName,
+                Tel = application.WakeelTel,
+                ReferenceNumber = application.ReferenceNumber,
+                CreatedAt = DateTime.UtcNow,
+                ModifiedAt = DateTime.UtcNow
+            };
+            application.GroomWakeelName = application.WakeelName;
+            application.GroomWakeelTel = application.WakeelTel;
         }
 
         application.CreatedBy = creatorId;
@@ -170,6 +189,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
     {
         return await _dbContext.MarriageApplicationForms
             .Include(x => x.GuardianOrWakeelSection)
+            .Include(x => x.GroomWakeelSection)
             .Include(x => x.WitnessSignatures)
             .FirstOrDefaultAsync(
                 x => x.Id == id,
@@ -186,6 +206,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
     {
         return await _dbContext.MarriageApplicationForms
             .Include(x => x.GuardianOrWakeelSection)
+            .Include(x => x.GroomWakeelSection)
             .Include(x => x.WitnessSignatures)
             .FirstOrDefaultAsync(
                 x => x.MarriageApplicationId == marriageApplicationId);
@@ -297,6 +318,7 @@ public class MarriageApplicationFormService : IMarriageApplicationFormService
         if (targetStage == ApplicationStage.ApplicantsReview)
         {
             await RemoveSectionsAsync<GuardianOrWakeelSection>(formId, cancellationToken);
+            await RemoveSectionsAsync<GroomWakeelSection>(formId, cancellationToken);
             await RemoveSectionsAsync<ImamVerificationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<JamaatPresidentVerificationSection>(formId, cancellationToken);
             await RemoveSectionsAsync<GroomJamaatPresidentVerificationSection>(formId, cancellationToken);

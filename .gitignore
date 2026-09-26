@@ -494,3 +494,6 @@ docs/superpowers/
 /cls
 *.csproj.user
 
+# Uploaded divorce certificates (Gap 8, FileStorage:DivorceEvidencePath default)
+**/App_Data/
+

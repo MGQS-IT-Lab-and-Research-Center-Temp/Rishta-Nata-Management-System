@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Infrastructure.DTOs.JamaatPresidentDashboardDto;
 
@@ -38,7 +39,7 @@ public class JamaatPresidentReviewDto
     public string BrideResidentOf { get; set; } = string.Empty;
     public string BrideGenotype { get; set; } = string.Empty;
     public string BrideBloodGroup { get; set; } = string.Empty;
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
     public decimal BrideProposedDowerAmount { get; set; }
     public decimal BrideDowerAmountReceivedInCash { get; set; }
     public string BrideSignatureTel { get; set; } = string.Empty;
@@ -51,6 +52,7 @@ public class JamaatPresidentReviewDto
     public string BridegroomBloodGroup { get; set; } = string.Empty;
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
     public decimal BridegroomDowerAmountToBePaid { get; set; }
+    public decimal BridegroomTotalDowerAmount { get; set; }
     public bool IsFirstNikah { get; set; }
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool FormerWifeIsDead { get; set; }
@@ -73,6 +75,11 @@ public class JamaatPresidentReviewDto
     public string RepresentativeActingFor { get; set; } = string.Empty;
     public string RepresentativeSignatureDate { get; set; } = string.Empty;
 
+    public string GroomWakeelName { get; set; } = string.Empty;
+    public string GroomWakeelFatherName { get; set; } = string.Empty;
+    public string GroomWakeelTel { get; set; } = string.Empty;
+    public string GroomWakeelSignatureDate { get; set; } = string.Empty;
+
     public string WitnessOneName { get; set; } = string.Empty;
     public string WitnessOneAddress { get; set; } = string.Empty;
     public string WitnessOneTel { get; set; } = string.Empty;
@@ -89,6 +96,16 @@ public class JamaatPresidentReviewDto
 
     public string JamaatPresidentName { get; set; } = string.Empty;
     public string JamaatPresidentSignatureDate { get; set; } = string.Empty;
+
+    /// <summary>Recorded Local Rishtanata Secretary entries per side (Gap 4). The
+    /// groom side falls back to the bride side on the same-Jama'at path.</summary>
+    public string BrideLocalRishtanataSecretaryName { get; set; } = string.Empty;
+    public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+    public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
+    public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    /// <summary>Recorded president attestations (Gap 7).</summary>
+    public PresidentAttestationsDto PresidentAttestations { get; set; } = new();
 
     public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
     public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;

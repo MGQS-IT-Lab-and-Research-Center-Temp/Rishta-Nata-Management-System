@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Presentation.ViewModels.RishtanataSecretaryDashboardViewModel;
 
@@ -26,6 +27,16 @@ public class ReviewApplicationViewModel
     public string? PresidentName { get; set; }
 
     public string? PresidentRecommendation { get; set; }
+
+    public string? BrideLocalRishtanataSecretaryName { get; set; }
+
+    public string? BrideLocalRishtanataSecretarySignatureDate { get; set; }
+
+    public string? GroomLocalRishtanataSecretaryName { get; set; }
+
+    public string? GroomLocalRishtanataSecretarySignatureDate { get; set; }
+
+    public PresidentAttestationsDto PresidentAttestations { get; set; } = new();
 
     public DateTime SubmittedDate { get; set; }
 

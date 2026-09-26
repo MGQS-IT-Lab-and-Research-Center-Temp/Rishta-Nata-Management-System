@@ -24,10 +24,14 @@ public class NewApplicationViewModel
 
     // ===== Bride-only =====
     [Display(Name = "Marital Status")]
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
 
     [Display(Name = "Divorce Evidence")]
     public string BrideDivorceEvidence { get; set; } = string.Empty;
+
+    // Gap 8: the certificate itself; the text above is now an optional reference number.
+    [Display(Name = "Khula certificate (PDF, JPG or PNG, max 5 MB)")]
+    public IFormFile? BrideDivorceEvidenceFile { get; set; }
 
     [Display(Name = "Proposed Dower Amount")]
     public decimal BrideProposedDowerAmount { get; set; }
@@ -41,14 +45,27 @@ public class NewApplicationViewModel
 
     [Display(Name = "Dower Amount To Be Paid")]
     public decimal BridegroomDowerAmountToBePaid { get; set; }
+
+    // Gap 9: must equal paid in cash + to be paid (BridegroomDowerRules).
+    [Display(Name = "Total Dower Amount")]
+    public decimal BridegroomTotalDowerAmount { get; set; }
     public bool IsFirstNikah { get; set; }
 
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool? FormerWifeIsDead { get; set; }
     public bool? HasDivorcedFormerWife { get; set; }
     public string BridegroomDivorceEvidence { get; set; } = string.Empty;
+
+    // Gap 8: the certificate itself; the text above is now an optional reference number.
+    [Display(Name = "Talaq certificate (PDF, JPG or PNG, max 5 MB)")]
+    public IFormFile? BridegroomDivorceEvidenceFile { get; set; }
+
     public bool? FormerWifeIsPresent { get; set; }
     public bool? FormerWifeObtainedKhula { get; set; }
+
+    public bool? CanAttendNikahInPerson { get; set; } = true;
+    public string WakeelName { get; set; } = string.Empty;
+    public string WakeelTel { get; set; } = string.Empty;
 }
 
 public class ApplicantPartyInfo

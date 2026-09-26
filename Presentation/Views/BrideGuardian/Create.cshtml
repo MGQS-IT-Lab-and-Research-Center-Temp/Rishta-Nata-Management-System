@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-md-4 mb-3">
                     <span class="text-muted small d-block">Marital Status</span>
-                    <span>@Model.BrideMaritalStatus</span>
+                    <span>@Domain.Enums.BrideMaritalStatusText.ToLabel(Model.BrideMaritalStatus)</span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <span class="text-muted small d-block">Proposed Dower</span>

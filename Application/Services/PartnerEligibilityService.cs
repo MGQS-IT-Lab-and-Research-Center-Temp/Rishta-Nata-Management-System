@@ -27,13 +27,13 @@ public class PartnerEligibilityService : IPartnerEligibilityService
         "This groom is already married. He can only be registered again if he declares a second/third/fourth Nikah, or states that he is divorced or widowed.";
 
     private const string GroomTalaqEvidenceMessage =
-        "This groom has declared that he is divorced. Please provide evidence of Talaq (divorce certificate).";
+        "This groom has declared that he is divorced. Please upload the Talaq (divorce) certificate.";
 
     private const string BrideNotEligibleMessage =
         "This bride is already married. She can only be registered again if her marital status is Divorced or Widowed.";
 
     private const string BrideKhulaEvidenceMessage =
-        "This bride has declared that she is divorced. Please provide evidence of Khula (divorce certificate).";
+        "This bride has declared that she is divorced. Please upload the Khula (divorce) certificate.";
 
     private readonly RishtanataDbContext _context;
 
@@ -60,9 +60,9 @@ public class PartnerEligibilityService : IPartnerEligibilityService
         bool declaresSubsequentNikah,
         bool isWidower,
         bool isDivorced,
-        string divorceEvidence,
-        string brideMaritalStatus,
-        string brideDivorceEvidence,
+        bool hasDivorceEvidence,
+        BrideMaritalStatus? brideMaritalStatus,
+        bool brideHasDivorceEvidence,
         Guid? excludeFormId,
         CancellationToken cancellationToken = default)
     {
@@ -81,20 +81,20 @@ public class PartnerEligibilityService : IPartnerEligibilityService
                 return Allow();
 
             if (isDivorced)
-                return string.IsNullOrWhiteSpace(divorceEvidence)
-                    ? Deny(GroomTalaqEvidenceMessage)
-                    : Allow();
+                return hasDivorceEvidence
+                    ? Allow()
+                    : Deny(GroomTalaqEvidenceMessage);
 
             return Deny(GroomNotEligibleMessage);
         }
 
-        if (string.Equals(brideMaritalStatus, "Widowed", StringComparison.OrdinalIgnoreCase))
+        if (brideMaritalStatus == BrideMaritalStatus.WidowedIddatComplete)
             return Allow();
 
-        if (string.Equals(brideMaritalStatus, "Divorced", StringComparison.OrdinalIgnoreCase))
-            return string.IsNullOrWhiteSpace(brideDivorceEvidence)
-                ? Deny(BrideKhulaEvidenceMessage)
-                : Allow();
+        if (brideMaritalStatus == BrideMaritalStatus.DivorcedIddatComplete)
+            return brideHasDivorceEvidence
+                ? Allow()
+                : Deny(BrideKhulaEvidenceMessage);
 
         return Deny(BrideNotEligibleMessage);
     }

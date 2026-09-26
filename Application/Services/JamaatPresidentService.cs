@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs.JamaatPresidentDashboardDto;
+using Infrastructure.Mapper;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -323,6 +324,7 @@ public class JamaatPresidentService : IJamaatPresidentService
             BridegroomBloodGroup = form.BridegroomBloodGroup,
             BridegroomDowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
+            BridegroomTotalDowerAmount = form.BridegroomTotalDowerAmount,
             IsFirstNikah = form.IsFirstNikah,
             CurrentNikahOrdinal = form.CurrentNikahOrdinal,
             FormerWifeIsDead = form.FormerWifeIsDead,
@@ -345,6 +347,11 @@ public class JamaatPresidentService : IJamaatPresidentService
             RepresentativeActingFor = form.RepresentativeActingFor,
             RepresentativeSignatureDate = form.RepresentativeSignatureDate,
 
+            GroomWakeelName = form.GroomWakeelName,
+            GroomWakeelFatherName = form.GroomWakeelFatherName,
+            GroomWakeelTel = form.GroomWakeelTel,
+            GroomWakeelSignatureDate = form.GroomWakeelSignatureDate,
+
             WitnessOneName = form.WitnessOneName,
             WitnessOneAddress = form.WitnessOneAddress,
             WitnessOneTel = form.WitnessOneTel,
@@ -361,6 +368,13 @@ public class JamaatPresidentService : IJamaatPresidentService
 
             JamaatPresidentName = form.JamaatPresidentName,
             JamaatPresidentSignatureDate = form.JamaatPresidentSignatureDate,
+
+            BrideLocalRishtanataSecretaryName = form.BrideLocalRishtanataSecretaryName,
+            BrideLocalRishtanataSecretarySignatureDate = form.BrideLocalRishtanataSecretarySignatureDate,
+            GroomLocalRishtanataSecretaryName = LocalRishtanataSecretaryDisplay.GroomSideName(form),
+            GroomLocalRishtanataSecretarySignatureDate = LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form),
+
+            PresidentAttestations = PresidentAttestationDisplay.FromOrEmpty(form),
 
             // Read-only context for the controller to dispatch Approve/Reject to
             // the matching workflow submit. Fine-grained stage + Tel come from the

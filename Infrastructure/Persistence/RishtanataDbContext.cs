@@ -18,6 +18,7 @@ public class RishtanataDbContext : DbContext
     public DbSet<BrideFormSection> BrideFormSections => Set<BrideFormSection>();
     public DbSet<MarriageFormRejection> MarriageFormRejections => Set<MarriageFormRejection>();
     public DbSet<SectionAccessToken> SectionAccessTokens => Set<SectionAccessToken>();
+    public DbSet<DivorceEvidenceDocument> DivorceEvidenceDocuments => Set<DivorceEvidenceDocument>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -31,6 +32,7 @@ public class RishtanataDbContext : DbContext
         modelBuilder.Entity<BrideFormSection>().ToTable("NikahBrides");
         modelBuilder.Entity<BridegroomFormSection>().ToTable("NikahGrooms");
         modelBuilder.Entity<GuardianOrWakeelSection>().ToTable("NikahGuardians");
+        modelBuilder.Entity<GroomWakeelSection>().ToTable("NikahGroomWakeels");
         modelBuilder.Entity<ImamVerificationSection>().ToTable("ImamVerifications");
         modelBuilder.Entity<JamaatPresidentVerificationSection>().ToTable("JamaatPresidentVerifications");
         modelBuilder.Entity<GroomJamaatPresidentVerificationSection>().ToTable("GroomJamaatPresidentVerifications");
@@ -48,7 +50,7 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.BrideResidentOf).HasMaxLength(300);
             e.Property(x => x.BrideGenotype).HasMaxLength(10);
             e.Property(x => x.BrideBloodGroup).HasMaxLength(10);
-            e.Property(x => x.BrideMaritalStatus).HasMaxLength(50);
+            e.Property(x => x.BrideMaritalStatus).HasConversion<string>().HasMaxLength(50);
             e.Property(x => x.BrideDivorceEvidence).HasMaxLength(500);
             e.Property(x => x.BrideProposedDowerAmount).HasColumnType("decimal(18,2)");
             e.Property(x => x.BrideDowerAmountReceivedInCash).HasColumnType("decimal(18,2)");
@@ -64,11 +66,22 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.BridegroomResidentOf).HasMaxLength(300);
             e.Property(x => x.BridegroomGenotype).HasMaxLength(10);
             e.Property(x => x.BridegroomBloodGroup).HasMaxLength(10);
+            e.Property(x => x.BridegroomTotalDowerAmount).HasColumnType("decimal(18,2)");
             e.Property(x => x.BridegroomSignatureTel).HasMaxLength(30);
+            e.Property(x => x.WakeelName).HasMaxLength(200);
+            e.Property(x => x.WakeelTel).HasMaxLength(30);
         });
 
         modelBuilder.Entity<GuardianOrWakeelSection>(e =>
             e.Property(x => x.ReferenceNumber).HasMaxLength(50));
+
+        modelBuilder.Entity<GroomWakeelSection>(e =>
+        {
+            e.Property(x => x.ReferenceNumber).HasMaxLength(50);
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.Property(x => x.FatherName).HasMaxLength(200);
+            e.Property(x => x.Tel).HasMaxLength(30);
+        });
 
         modelBuilder.Entity<WitnessSignatureSection>(e =>
             e.Property(x => x.ReferenceNumber).HasMaxLength(50));
@@ -78,6 +91,23 @@ public class RishtanataDbContext : DbContext
             e.Property(x => x.Name).HasMaxLength(200);
             e.Property(x => x.Tel).HasMaxLength(30);
             e.Property(x => x.SignatureDate).HasMaxLength(50);
+            e.Property(x => x.LocalRishtanataSecretaryName).HasMaxLength(200);
+            e.Property(x => x.LocalRishtanataSecretaryTel).HasMaxLength(30);
+            e.Property(x => x.LocalRishtanataSecretarySignatureDate).HasMaxLength(50);
+            e.Property(x => x.GroomMarriageReason).HasMaxLength(200);
+        });
+
+        // Bride's president section: only the new columns get lengths. Its
+        // existing Name/Tel/SignatureDate stay longtext (no drift). A NOT NULL
+        // longtext column can't take the literal DEFAULT '' that AddColumn emits
+        // (MySQL error 1101), so new string columns must be varchar.
+        modelBuilder.Entity<JamaatPresidentVerificationSection>(e =>
+        {
+            e.Property(x => x.LocalRishtanataSecretaryName).HasMaxLength(200);
+            e.Property(x => x.LocalRishtanataSecretaryTel).HasMaxLength(30);
+            e.Property(x => x.LocalRishtanataSecretarySignatureDate).HasMaxLength(50);
+            e.Property(x => x.BrideMarriageReason).HasMaxLength(200);
+            e.Property(x => x.GroomMarriageReason).HasMaxLength(200);
         });
 
         modelBuilder.Entity<RishtanataRecommendationSection>(e =>

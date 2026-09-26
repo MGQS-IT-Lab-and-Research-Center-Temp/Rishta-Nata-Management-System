@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<IInvitationEmailService, InvitationEmailService>();
         services.AddScoped<IMarriageFormNotificationService, MarriageFormNotificationService>();
+        services.AddSingleton<IDocumentStorage, LocalDiskDocumentStorage>();
 
         return services;
     }

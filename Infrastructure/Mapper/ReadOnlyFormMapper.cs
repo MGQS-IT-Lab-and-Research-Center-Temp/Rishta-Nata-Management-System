@@ -54,6 +54,11 @@ namespace Infrastructure.Mapper;
                 RepresentativeActingFor = form.RepresentativeActingFor,
                 RepresentativeSignatureDate = form.RepresentativeSignatureDate,
 
+                GroomWakeelName = form.GroomWakeelName,
+                GroomWakeelFatherName = form.GroomWakeelFatherName,
+                GroomWakeelTel = form.GroomWakeelTel,
+                GroomWakeelSignatureDate = form.GroomWakeelSignatureDate,
+
                 WitnessOneName = form.WitnessOneName,
                 WitnessOneAddress = form.WitnessOneAddress,
                 WitnessOneTel = form.WitnessOneTel,

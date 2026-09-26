@@ -1,11 +1,13 @@
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.DTOs.MarriageApplicationFormDetail;
 
 namespace Infrastructure.Mapper;
 
 /// <summary>
-/// Maps a MarriageApplicationForm (with its owning FormApplication and
-/// rejection history loaded) to the read-side detail DTO.
+/// Maps a MarriageApplicationForm (with its owning FormApplication, rejection
+/// history and both Jama'at President sections loaded) to the read-side
+/// detail DTO.
 ///
 /// A section is emitted only when it has been submitted; otherwise the DTO
 /// property stays null so the frontend can render "not completed yet".
@@ -66,6 +68,7 @@ public static class MarriageApplicationFormDetailMapper
                     BloodGroup = form.BridegroomBloodGroup,
                     DowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
                     DowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
+                    TotalDowerAmount = form.BridegroomTotalDowerAmount,
                     IsFirstNikah = form.IsFirstNikah,
                     CurrentNikahOrdinal = form.CurrentNikahOrdinal,
                     FormerWifeIsDead = form.FormerWifeIsDead,
@@ -97,7 +100,20 @@ public static class MarriageApplicationFormDetailMapper
                 }
                 : null,
 
+            GroomWakeel = HasValue(form.GroomWakeelName)
+                ? new GroomWakeelSectionDetailDto
+                {
+                    Name = form.GroomWakeelName,
+                    FatherName = form.GroomWakeelFatherName,
+                    Tel = form.GroomWakeelTel,
+                    SignatureDate = form.GroomWakeelSignatureDate
+                }
+                : null,
+
             Witnesses = CollectWitnesses(form),
+            WakeelAppointmentWitnesses = CollectWitnessesByContext(form, WitnessContext.WakeelAppointment),
+            GroomDeclarationWitnesses = CollectWitnessesByContext(form, WitnessContext.GroomDeclaration),
+            NikahCeremonyWitnesses = CollectWitnessesByContext(form, WitnessContext.NikahCeremony),
 
             OfficiatingImam = HasValue(form.OfficiatingImamSignatureDate)
                 ? new OfficiatingImamSectionDetailDto
@@ -115,6 +131,24 @@ public static class MarriageApplicationFormDetailMapper
                     SignatureDate = form.JamaatPresidentSignatureDate
                 }
                 : null,
+
+            BrideLocalRishtanataSecretary = HasValue(form.BrideLocalRishtanataSecretarySignatureDate)
+                ? new LocalRishtanataSecretarySectionDetailDto
+                {
+                    Name = form.BrideLocalRishtanataSecretaryName,
+                    SignatureDate = form.BrideLocalRishtanataSecretarySignatureDate
+                }
+                : null,
+
+            GroomLocalRishtanataSecretary = HasValue(LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form))
+                ? new LocalRishtanataSecretarySectionDetailDto
+                {
+                    Name = LocalRishtanataSecretaryDisplay.GroomSideName(form),
+                    SignatureDate = LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form)
+                }
+                : null,
+
+            PresidentAttestations = PresidentAttestationDisplay.From(form),
 
             NationalRishtanataSecretary = HasValue(form.NationalRishtanataSecretarySignatureDate)
                 ? new RishtanataSecretarySectionDetailDto
@@ -181,6 +215,24 @@ public static class MarriageApplicationFormDetailMapper
 
         return witnesses.ToArray();
     }
+
+    /// <summary>
+    /// Reads one witness pair straight from the WitnessSignatures rows. These
+    /// pairs have no flat mirrors on MarriageApplicationForm.
+    /// </summary>
+    private static WitnessDetailDto[] CollectWitnessesByContext(MarriageApplicationForm form, WitnessContext context) =>
+        form.WitnessSignatures
+            .Where(w => w.WitnessContext == context && HasValue(w.Name))
+            .OrderBy(w => w.WitnessNumber)
+            .Select(w => new WitnessDetailDto
+            {
+                Position = w.WitnessNumber,
+                Name = w.Name,
+                Address = w.Address,
+                Tel = w.Tel,
+                SignatureDate = w.SignatureDate.ToString("yyyy-MM-dd")
+            })
+            .ToArray();
 
     private static bool HasValue(string? value) => !string.IsNullOrWhiteSpace(value);
 }

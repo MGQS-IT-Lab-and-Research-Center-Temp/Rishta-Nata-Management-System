@@ -100,6 +100,7 @@ public class MarriageApplicationFormConfiguration
             .HasMaxLength(10);
 
         builder.Property(f => f.BrideMaritalStatus)
+            .HasConversion<string>()
             .HasMaxLength(50);
 
         builder.Property(f => f.BrideDivorceEvidence)
@@ -139,11 +140,20 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.BridegroomDowerAmountToBePaid)
             .HasColumnType("decimal(18,2)");
 
+        builder.Property(f => f.BridegroomTotalDowerAmount)
+            .HasColumnType("decimal(18,2)");
+
         builder.Property(f => f.BridegroomSignatureTel)
             .HasMaxLength(30);
 
         builder.Property(f => f.BridegroomDivorceEvidence)
             .HasMaxLength(500);
+
+        builder.Property(f => f.WakeelName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.WakeelTel)
+            .HasMaxLength(30);
 
         // =====================================================
         // Parents
@@ -194,6 +204,22 @@ public class MarriageApplicationFormConfiguration
             .HasMaxLength(50);
 
         builder.Property(f => f.RepresentativeSignatureDate)
+            .HasMaxLength(50);
+
+        // =====================================================
+        // Groom's Wakeel
+        // =====================================================
+
+        builder.Property(f => f.GroomWakeelName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.GroomWakeelFatherName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.GroomWakeelTel)
+            .HasMaxLength(30);
+
+        builder.Property(f => f.GroomWakeelSignatureDate)
             .HasMaxLength(50);
 
         // =====================================================
@@ -262,6 +288,18 @@ public class MarriageApplicationFormConfiguration
         builder.Property(f => f.GroomJamaatPresidentSignatureDate)
             .HasMaxLength(50);
 
+        builder.Property(f => f.BrideLocalRishtanataSecretaryName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.BrideLocalRishtanataSecretarySignatureDate)
+            .HasMaxLength(50);
+
+        builder.Property(f => f.GroomLocalRishtanataSecretaryName)
+            .HasMaxLength(200);
+
+        builder.Property(f => f.GroomLocalRishtanataSecretarySignatureDate)
+            .HasMaxLength(50);
+
         builder.Property(f => f.NationalRishtanataSecretaryName)
             .HasMaxLength(200);
 
@@ -289,6 +327,13 @@ public class MarriageApplicationFormConfiguration
         builder.HasOne(f => f.GuardianOrWakeelSection)
             .WithOne(s => s.MarriageApplicationForm)
             .HasForeignKey<GuardianOrWakeelSection>(
+                s => s.MarriageApplicationFormId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Groom's Wakeel
+        builder.HasOne(f => f.GroomWakeelSection)
+            .WithOne(s => s.MarriageApplicationForm)
+            .HasForeignKey<GroomWakeelSection>(
                 s => s.MarriageApplicationFormId)
             .OnDelete(DeleteBehavior.Cascade);
 

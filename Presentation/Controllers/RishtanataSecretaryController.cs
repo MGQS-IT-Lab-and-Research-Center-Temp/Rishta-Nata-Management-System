@@ -165,8 +165,16 @@ public class RishtanataSecretaryController : Controller
         var sectionLabel = section switch
         {
             SectionType.Guardian => "Guardian / Waliy",
-            SectionType.WitnessOne => "Witness 1",
-            SectionType.WitnessTwo => "Witness 2",
+            SectionType.WitnessOne => "Witness 1 — Guardian's Agreement",
+            SectionType.WitnessTwo => "Witness 2 — Guardian's Agreement",
+            SectionType.GroomWakeel => "Groom's Wakeel",
+            SectionType.Representative => "Guardian's Representative (Wakeel)",
+            SectionType.WakeelAppointmentWitnessOne => "Witness 1 — Wakeel Appointment",
+            SectionType.WakeelAppointmentWitnessTwo => "Witness 2 — Wakeel Appointment",
+            SectionType.GroomDeclarationWitnessOne => "Witness 1 — Groom's Declaration",
+            SectionType.GroomDeclarationWitnessTwo => "Witness 2 — Groom's Declaration",
+            SectionType.NikahCeremonyWitnessOne => "Witness 1 — Nikah Ceremony",
+            SectionType.NikahCeremonyWitnessTwo => "Witness 2 — Nikah Ceremony",
             _ => section.ToString()
         };
 

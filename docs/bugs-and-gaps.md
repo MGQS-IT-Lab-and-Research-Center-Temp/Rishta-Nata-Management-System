@@ -302,6 +302,10 @@ file as items are fixed.
     status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
     without the corresponding divorced flag. Harden server-side only if such data
     integrity becomes important.
+    **Gap 8 update:** the uploaded certificate *file* is server-gated. `Create`
+    and the section services store an upload only when the party declares
+    divorce, and require one (new or already on file) when they do. The
+    free-text reference fields are still client-consented, as described above.
 
 17. **Divorce-evidence columns were NOT NULL, blocking partner submission — FIXED.**
     `BrideDivorceEvidence`/`BridegroomDivorceEvidence` were non-nullable `string`
@@ -325,3 +329,33 @@ file as items are fixed.
     groom section analog likely too) when the user leaves a dropdown on its
     default "Select". NOT part of the evidence fix; decision needed: make those
     columns nullable like the evidence fields, or mark the dropdowns required.
+
+19. **Divorce-certificate file deletes are best-effort (Gap 8).**
+    `DivorceEvidenceService.SaveAsync` deletes the replaced file after the new
+    row commits, and deletes the new file if the save fails. Both deletes are
+    best-effort (`IDocumentStorage.Delete`), so a storage failure leaves an
+    orphaned file under `App_Data`. Nothing references it, so this is only
+    wasted disk. Accepted for now; a possible follow-up is to log a warning when
+    a delete fails, or to sweep unreferenced files.
+
+20. **Create and the starter's certificate save are not atomic (Gap 8).**
+    `MarriageApplicationController.Create` calls `StartApplicationAsync`, which
+    commits the form, before `IDivorceEvidenceService.SaveAsync` stores the
+    starter's certificate. A storage or database failure in the save leaves a
+    created form with no certificate, and the user sees a 500 although their
+    application exists. The party can upload again on Continue, and the
+    certificate requirement is enforced again at their next section submit.
+    Accepted for now; a follow-up could catch the failure and redirect with a
+    "please re-upload your certificate" message.
+
+21. **Gap 2 representative columns are `longtext`, not `varchar`.**
+    Migration `20260924130433_AddGuardianRepresentative` (and the model
+    snapshot) create `RepresentativeName`, `RepresentativeAddress` and
+    `RepresentativeSignature` on the guardian section as `longtext`; the first
+    two are NOT NULL. The `GuardianOrWakeelSection` configuration only sets a
+    length on `ReferenceNumber`. The migration works on MySQL (no literal
+    DEFAULT is emitted; existing rows get `''`), but it breaks the "new string
+    columns are `varchar(n)`" convention every other Nikah-form gap follows.
+    Fixing it needs `HasMaxLength` on those properties plus a new migration
+    reconciled deliberately against a live MySQL (see #2), so it is left for a
+    later change.
