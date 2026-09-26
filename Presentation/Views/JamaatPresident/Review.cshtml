@@ -221,7 +221,7 @@
                     </small>
 
                     <div>
-                        @Model.BrideMaritalStatus
+                        @Domain.Enums.BrideMaritalStatusText.ToLabel(Model.BrideMaritalStatus)
                     </div>
                 </div>
 
@@ -362,6 +362,17 @@
 
                     <div class="fw-bold">
                         @Model.BridegroomDowerAmountToBePaid.ToString("N2")
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Total Dower
+                    </small>
+
+                    <div class="fw-bold">
+                        @Model.BridegroomTotalDowerAmount.ToString("N2")
                     </div>
                 </div>
 
@@ -516,6 +527,9 @@
 
     </div>
 
+
+    <!-- Divorce certificates (Gap 8) -->
+    @await Component.InvokeAsync("DivorceEvidenceLinks", new { formId = Model.Id })
 
     <!-- Parents -->
     <div class="card shadow-sm border-0 mb-4">
@@ -693,6 +707,72 @@
         </div>
 
     </div>
+
+
+    @if (!string.IsNullOrWhiteSpace(Model.GroomWakeelName))
+    {
+        <!-- Groom's Wakeel -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-white">
+                <h4 class="mb-0">
+                    Groom's Wakeel
+                </h4>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            Name
+                        </small>
+
+                        <div class="fw-bold">
+                            @Model.GroomWakeelName
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            Father's Name (S/o)
+                        </small>
+
+                        <div>
+                            @Model.GroomWakeelFatherName
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            Phone
+                        </small>
+
+                        <div>
+                            @Model.GroomWakeelTel
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            Signature Date
+                        </small>
+
+                        <div>
+                            @Model.GroomWakeelSignatureDate
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
 
 
     <!-- Witnesses -->
@@ -876,6 +956,45 @@
 
                 <div class="col-md-6">
                     <small class="text-muted">
+                        Local Rishtanata Secretary (Bride's side)
+                    </small>
+
+                    <div class="fw-bold">
+                        @(string.IsNullOrWhiteSpace(Model.BrideLocalRishtanataSecretaryName) ? "Not yet recorded" : Model.BrideLocalRishtanataSecretaryName)
+                    </div>
+
+                    <div>
+                        @Model.BrideLocalRishtanataSecretarySignatureDate
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Local Rishtanata Secretary (Bridegroom's side)
+                    </small>
+
+                    <div class="fw-bold">
+                        @(string.IsNullOrWhiteSpace(Model.GroomLocalRishtanataSecretaryName) ? "Not yet recorded" : Model.GroomLocalRishtanataSecretaryName)
+                    </div>
+
+                    <div>
+                        @Model.GroomLocalRishtanataSecretarySignatureDate
+                    </div>
+                </div>
+
+
+                <div class="col-12">
+                    <small class="text-muted d-block mb-2">
+                        President's attestations
+                    </small>
+
+                    <partial name="_PresidentAttestations" model="Model.PresidentAttestations" />
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-muted">
                         National Rishtanata Secretary
                     </small>
 
@@ -901,7 +1020,8 @@
             </h4>
 
             <small class="text-muted">
-                Make your decision after reviewing the complete application.
+                Sign to approve and forward this application, or leave it pending
+                to review again later.
             </small>
 
         </div>
@@ -909,49 +1029,146 @@
 
         <div class="card-body">
 
+            @{
+                var signingForGroomSide = Model.CurrentFormStage == Domain.Enums.MarriageFormStage.AwaitingGroomJamaatPresident;
+            }
+
             <div class="d-flex gap-2 flex-wrap">
 
                 <!-- APPROVE -->
                 <form asp-controller="JamaatPresident"
                       asp-action="Approve"
-                      method="post">
+                      method="post"
+                      class="w-100">
 
                     <input type="hidden"
                            name="id"
                            value="@Model.Id" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <h5 class="mb-1">
+                        Local Rishtanata Secretary
+                        (@(signingForGroomSide ? "Bridegroom's side" : Model.PartnersShareJamaat ? "both partners" : "Bride's side"))
+                    </h5>
+
+                    <p class="text-muted small mb-3">
+                        Required to sign. Record the Local Rishtanata Secretary who
+                        endorsed this side of the form.
+                    </p>
+
+                    <div class="row g-3 mb-3">
+
+                        <div class="col-md-5">
+                            <label asp-for="Approve.LocalRishtanataSecretaryName" class="form-label"></label>
+                            <input asp-for="Approve.LocalRishtanataSecretaryName" class="form-control" maxlength="200" required />
+                            <span asp-validation-for="Approve.LocalRishtanataSecretaryName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Approve.LocalRishtanataSecretaryTel" class="form-label"></label>
+                            <input asp-for="Approve.LocalRishtanataSecretaryTel" type="tel" class="form-control" maxlength="30" required />
+                            <span asp-validation-for="Approve.LocalRishtanataSecretaryTel" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="Approve.LocalRishtanataSecretarySignatureDate" class="form-label"></label>
+                            <input asp-for="Approve.LocalRishtanataSecretarySignatureDate" type="date" class="form-control" required />
+                            <span asp-validation-for="Approve.LocalRishtanataSecretarySignatureDate" class="text-danger small"></span>
+                        </div>
+
+                    </div>
+
+                    <h5 class="mb-1">President's attestation</h5>
+
+                    <p class="text-muted small mb-3">
+                        Required to sign. Years as an Ahmadi are only needed
+                        when the answer is "No".
+                    </p>
+
+                    @if (!signingForGroomSide)
+                    {
+                        <fieldset class="border rounded p-3 mb-3">
+                            <legend class="fs-6 fw-bold float-none w-auto px-1 mb-0">Bride</legend>
+
+                            <div class="mb-2">
+                                <span class="form-label d-block">Born Ahmadi?</span>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.BrideIsBornAhmadi" type="radio" value="True" id="Approve_BrideIsBornAhmadi_Yes" class="form-check-input" />
+                                    <label for="Approve_BrideIsBornAhmadi_Yes" class="form-check-label">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.BrideIsBornAhmadi" type="radio" value="False" id="Approve_BrideIsBornAhmadi_No" class="form-check-input" />
+                                    <label for="Approve_BrideIsBornAhmadi_No" class="form-check-label">No</label>
+                                </div>
+                                <span asp-validation-for="Approve.BrideIsBornAhmadi" class="text-danger small d-block"></span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="Approve.BrideYearsAsAhmadi" class="form-label"></label>
+                                    <input asp-for="Approve.BrideYearsAsAhmadi" type="number" min="0" max="120" class="form-control" />
+                                    <span asp-validation-for="Approve.BrideYearsAsAhmadi" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-8">
+                                    <label asp-for="Approve.BrideMarriageReason" class="form-label"></label>
+                                    <input asp-for="Approve.BrideMarriageReason" class="form-control" maxlength="200" placeholder="e.g. first marriage" />
+                                    <span asp-validation-for="Approve.BrideMarriageReason" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-check mt-3">
+                                <input asp-for="Approve.GuardianIsBonafide" type="checkbox" class="form-check-input" />
+                                <label asp-for="Approve.GuardianIsBonafide" class="form-check-label"></label>
+                                <span asp-validation-for="Approve.GuardianIsBonafide" class="text-danger small d-block"></span>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="Approve.BrideSignedFreely" type="checkbox" class="form-check-input" />
+                                <label asp-for="Approve.BrideSignedFreely" class="form-check-label"></label>
+                                <span asp-validation-for="Approve.BrideSignedFreely" class="text-danger small d-block"></span>
+                            </div>
+                        </fieldset>
+                    }
+
+                    @if (signingForGroomSide || Model.PartnersShareJamaat)
+                    {
+                        <fieldset class="border rounded p-3 mb-3">
+                            <legend class="fs-6 fw-bold float-none w-auto px-1 mb-0">Bridegroom</legend>
+
+                            <div class="mb-2">
+                                <span class="form-label d-block">Born Ahmadi?</span>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.GroomIsBornAhmadi" type="radio" value="True" id="Approve_GroomIsBornAhmadi_Yes" class="form-check-input" />
+                                    <label for="Approve_GroomIsBornAhmadi_Yes" class="form-check-label">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Approve.GroomIsBornAhmadi" type="radio" value="False" id="Approve_GroomIsBornAhmadi_No" class="form-check-input" />
+                                    <label for="Approve_GroomIsBornAhmadi_No" class="form-check-label">No</label>
+                                </div>
+                                <span asp-validation-for="Approve.GroomIsBornAhmadi" class="text-danger small d-block"></span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="Approve.GroomYearsAsAhmadi" class="form-label"></label>
+                                    <input asp-for="Approve.GroomYearsAsAhmadi" type="number" min="0" max="120" class="form-control" />
+                                    <span asp-validation-for="Approve.GroomYearsAsAhmadi" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-8">
+                                    <label asp-for="Approve.GroomMarriageReason" class="form-label"></label>
+                                    <input asp-for="Approve.GroomMarriageReason" class="form-control" maxlength="200" placeholder="e.g. first marriage" />
+                                    <span asp-validation-for="Approve.GroomMarriageReason" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    }
 
                     <button type="submit"
                             class="btn btn-success"
                             onclick="return confirm('Are you sure you want to approve this application?');">
 
                         <i class="bi bi-check-lg"></i> Approve & Forward
-
-                    </button>
-
-                </form>
-
-
-                                <!-- REJECT -->
-                <button type="button" 
-                        class="btn btn-danger" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#rejectionModal">
-                    <i class="bi bi-x-lg"></i> Reject Application
-                </button>
-<!-- MORE INFORMATION -->
-                <form asp-controller="JamaatPresident"
-                      asp-action="RequestMoreInformation"
-                      method="post">
-
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.Id" />
-
-                    <button type="submit"
-                            class="btn btn-warning"
-                            onclick="return confirm('Request additional information for this application?');">
-
-                        <i class="bi bi-question-circle"></i> Request More Information
 
                     </button>
 
@@ -1050,7 +1267,3 @@
     </div>
 
 </div>
-@* Rejection Modal *@
-@{ ViewData["FormId"] = Model.Id; }
-@{ ViewData["CurrentStage"] = Model.CurrentStage; }
-@await Html.PartialAsync("_RejectionModalPartial")

@@ -12,6 +12,7 @@ public class BridegroomSectionDetailDto
     public string BloodGroup { get; set; } = string.Empty;
     public decimal DowerAmountPaidInCash { get; set; }
     public decimal DowerAmountToBePaid { get; set; }
+    public decimal TotalDowerAmount { get; set; }
     public bool IsFirstNikah { get; set; }
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool FormerWifeIsDead { get; set; }

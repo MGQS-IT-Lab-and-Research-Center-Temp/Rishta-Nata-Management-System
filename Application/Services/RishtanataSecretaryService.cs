@@ -80,6 +80,8 @@ namespace Application.Services
         {
             var form = _context.MarriageApplicationForms
                 .Include(x => x.MarriageApplication)
+                .Include(x => x.JamaatPresidentVerification)
+                .Include(x => x.GroomJamaatPresidentVerification)
                 .FirstOrDefault(x => x.MarriageApplicationId == id);
 
             if (form == null)
@@ -94,6 +96,11 @@ namespace Application.Services
                 GroomPhone = form.BridegroomSignatureTel,
                 BridePhone = form.BrideSignatureTel,
                 PresidentName = form.JamaatPresidentName,
+                BrideLocalRishtanataSecretaryName = form.BrideLocalRishtanataSecretaryName,
+                BrideLocalRishtanataSecretarySignatureDate = form.BrideLocalRishtanataSecretarySignatureDate,
+                GroomLocalRishtanataSecretaryName = LocalRishtanataSecretaryDisplay.GroomSideName(form),
+                GroomLocalRishtanataSecretarySignatureDate = LocalRishtanataSecretaryDisplay.GroomSideSignatureDate(form),
+                PresidentAttestations = PresidentAttestationDisplay.FromOrEmpty(form),
                 SubmittedDate = form.CreatedAt,
                 Status = form.MarriageApplication.Status.ToString(),
                 CurrentStage = form.ApplicationStage,

@@ -5,6 +5,55 @@ file as items are fixed.
 
 ## Fixed (recent session)
 
+- **Reject/revert POST returned an empty 400 ("Unexpected end of JSON input").**
+  The rejection modal (`_RejectionModalPartial.cshtml`) posts the antiforgery
+  request token only as the `X-CSRF-TOKEN` header (JSON body, no form field),
+  but nothing registered `AntiforgeryOptions.HeaderName` — ASP.NET Core's
+  default is `RequestVerificationToken`, so `[ValidateAntiForgeryToken]` on
+  `MarriageFormController.RevertStage` failed with a bare `BadRequestResult`
+  (empty body). The JS then threw on `response.json()`. This hit every reviewer
+  (Jama'at Presidents and the National Rishtanata Secretary), not just the
+  groom's president. Fix: `services.AddAntiforgery(o => o.HeaderName =
+  "X-CSRF-TOKEN")` in `AddPresentationServices` (`docs/stage-authorization-policy.md`
+  and AGENTS.md documented the `X-CSRF-TOKEN` convention — the config was
+  intended but never wired up).
+- **Jama'at President Approve deadlocked the form.** `JamaatPresidentController
+  .Approve` called the flat `JamaatPresidentService.ApproveAsync`, which only
+  wrote `ApplicationStatus` and an audit log entry — it never advanced
+  `MarriageFormStage`, so the form sat at `AwaitingBrideJamaatPresident` forever
+  and the groom's president / National Rishtanata Secretary never got their
+  turn. `Approve` now reads the fine-grained stage and pre-entered president
+  data (Name/Tel/SignatureDate) via `JamaatPresidentReviewDto`
+  (`CurrentFormStage`, `JamaatPresidentTel`, `GroomJamaatPresidentTel`,
+  `GroomJamaatPresidentName`, `GroomJamaatPresidentSignatureDate` — the flat
+  form has no Tel column, so `GetReviewByIdAsync` now also `Include`s the two
+  president verification sections) and dispatches through
+  `IMarriageFormWorkflowService.Submit(Groom)JamaatPresidentVerificationAsync`
+  by stage, mirroring `MarriageApplicationFormController`. The controller no
+  longer writes `FormStage`/`ApplicationStage` itself — the workflow service
+  remains the single writer. Fixed alongside: the groom-side dispatch was
+  briefly building its submission from the *bride's* president Name/Tel/
+  SignatureDate instead of the groom's own (`GroomJamaatPresidentName`/
+  `GroomJamaatPresidentSignatureDate` didn't exist on the DTO yet); and
+  `NikahApplicationDto.IsActionableByMe`/`AwaitingJamaatName` (added for the
+  Dashboard/PendingApplications "Awaiting X Jama'at President" badge) were
+  never populated by `JamaatPresidentService`, which would have hidden every
+  Review link on both pages.
+- **Post-witness "Imam verification" message removed.** `SharedSection/ThankYou.cshtml`
+  told the couple the application "moves to Imam verification" after the signature
+  block — a leftover from the pre-reorder workflow. It now says the application
+  moves to the Jama'at President's review (matching `SharedSectionService`'s actual
+  advance to `AwaitingBrideJamaatPresident`).
+- **Jama'at President saw no pending applications.** New applications are created
+  with `FormApplication.Status = Submitted` and nothing in the applicant/witness
+  phase ever advanced it, while the president dashboard only lists
+  `ApplicationPending`/`AwaitingMoreInformation`; `SharedSectionService.SubmitSectionAsync`
+  also advanced only `FormStage` without syncing `ApplicationStage` (the exact
+  FormStage/ApplicationStage drift the revert-deadlock fix was meant to prevent).
+  The witnesses-block completion now (a) syncs `ApplicationStage` to
+  `JamaatPresidentReview` via `WorkflowStageMapping`, and (b) sets the wrapping
+  application to `ApplicationPending` so the president's queue surfaces it.
+
 - The verification chain previously had the Imam sign during the filling phase
   (before the Jama'at President) with no ceremony step. Corrected — the Imam now
   signs off only after Amir approval and the ceremony (`AwaitingImamSignoff`),
@@ -253,6 +302,10 @@ file as items are fixed.
     status group is hidden (commit `4316ce3`). A spoofed POST could store evidence
     without the corresponding divorced flag. Harden server-side only if such data
     integrity becomes important.
+    **Gap 8 update:** the uploaded certificate *file* is server-gated. `Create`
+    and the section services store an upload only when the party declares
+    divorce, and require one (new or already on file) when they do. The
+    free-text reference fields are still client-consented, as described above.
 
 17. **Divorce-evidence columns were NOT NULL, blocking partner submission — FIXED.**
     `BrideDivorceEvidence`/`BridegroomDivorceEvidence` were non-nullable `string`
@@ -276,3 +329,33 @@ file as items are fixed.
     groom section analog likely too) when the user leaves a dropdown on its
     default "Select". NOT part of the evidence fix; decision needed: make those
     columns nullable like the evidence fields, or mark the dropdowns required.
+
+19. **Divorce-certificate file deletes are best-effort (Gap 8).**
+    `DivorceEvidenceService.SaveAsync` deletes the replaced file after the new
+    row commits, and deletes the new file if the save fails. Both deletes are
+    best-effort (`IDocumentStorage.Delete`), so a storage failure leaves an
+    orphaned file under `App_Data`. Nothing references it, so this is only
+    wasted disk. Accepted for now; a possible follow-up is to log a warning when
+    a delete fails, or to sweep unreferenced files.
+
+20. **Create and the starter's certificate save are not atomic (Gap 8).**
+    `MarriageApplicationController.Create` calls `StartApplicationAsync`, which
+    commits the form, before `IDivorceEvidenceService.SaveAsync` stores the
+    starter's certificate. A storage or database failure in the save leaves a
+    created form with no certificate, and the user sees a 500 although their
+    application exists. The party can upload again on Continue, and the
+    certificate requirement is enforced again at their next section submit.
+    Accepted for now; a follow-up could catch the failure and redirect with a
+    "please re-upload your certificate" message.
+
+21. **Gap 2 representative columns are `longtext`, not `varchar`.**
+    Migration `20260924130433_AddGuardianRepresentative` (and the model
+    snapshot) create `RepresentativeName`, `RepresentativeAddress` and
+    `RepresentativeSignature` on the guardian section as `longtext`; the first
+    two are NOT NULL. The `GuardianOrWakeelSection` configuration only sets a
+    length on `ReferenceNumber`. The migration works on MySQL (no literal
+    DEFAULT is emitted; existing rows get `''`), but it breaks the "new string
+    columns are `varchar(n)`" convention every other Nikah-form gap follows.
+    Fixing it needs `HasMaxLength` on those properties plus a new migration
+    reconciled deliberately against a live MySQL (see #2), so it is left for a
+    later change.

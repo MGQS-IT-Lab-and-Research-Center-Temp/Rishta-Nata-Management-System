@@ -14,6 +14,7 @@ public class BridegroomSectionRequest
     public string BridegroomBloodGroup { get; set; } = string.Empty;
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
     public decimal BridegroomDowerAmountToBePaid { get; set; }
+    public decimal BridegroomTotalDowerAmount { get; set; }
     public bool IsFirstNikah { get; set; }
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool FormerWifeIsDead { get; set; }
@@ -21,4 +22,7 @@ public class BridegroomSectionRequest
     public bool FormerWifeIsPresent { get; set; }
     public bool FormerWifeObtainedKhula { get; set; }
     public string BridegroomSignatureTel { get; set; } = string.Empty;
+    public bool CanAttendNikahInPerson { get; set; } = true;
+    public string WakeelName { get; set; } = string.Empty;
+    public string WakeelTel { get; set; } = string.Empty;
 }

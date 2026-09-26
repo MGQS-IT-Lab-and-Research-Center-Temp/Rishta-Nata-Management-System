@@ -31,7 +31,8 @@ namespace Domain.Entities
         public string BrideResidentOf { get; set; } = string.Empty;
         public string BrideGenotype { get; set; } = string.Empty;
         public string BrideBloodGroup { get; set; } = string.Empty;
-        public string BrideMaritalStatus { get; set; } = string.Empty;
+        /// <summary>Null until the bride chooses (Gap 6).</summary>
+        public BrideMaritalStatus? BrideMaritalStatus { get; set; }
         public string? BrideDivorceEvidence { get; set; } = string.Empty;
 
         public decimal BrideProposedDowerAmount { get; set; }
@@ -50,6 +51,8 @@ namespace Domain.Entities
 
         public decimal BridegroomDowerAmountPaidInCash { get; set; }
         public decimal BridegroomDowerAmountToBePaid { get; set; }
+        // Gap 9: PaidInCash + ToBePaid must equal this (BridegroomDowerRules).
+        public decimal BridegroomTotalDowerAmount { get; set; }
 
         public bool IsFirstNikah { get; set; }
         public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
@@ -61,6 +64,10 @@ namespace Domain.Entities
         public bool FormerWifeObtainedKhula { get; set; }
 
         public string BridegroomSignatureTel { get; set; } = string.Empty;
+
+        public bool CanAttendNikahInPerson { get; set; } = true;
+        public string WakeelName { get; set; } = string.Empty;
+        public string WakeelTel { get; set; } = string.Empty;
 
         // ===== Bride's Parent =====
         public string BrideFatherName { get; set; } = string.Empty;
@@ -82,6 +89,12 @@ namespace Domain.Entities
         public string RepresentativeAddress { get; set; } = string.Empty;
         public string RepresentativeActingFor { get; set; } = string.Empty;
         public string RepresentativeSignatureDate { get; set; } = string.Empty;
+
+        // ===== Groom's Wakeel =====
+        public string GroomWakeelName { get; set; } = string.Empty;
+        public string GroomWakeelFatherName { get; set; } = string.Empty;
+        public string GroomWakeelTel { get; set; } = string.Empty;
+        public string GroomWakeelSignatureDate { get; set; } = string.Empty;
 
         // ===== Witness One =====
         public string WitnessOneName { get; set; } = string.Empty;
@@ -114,6 +127,14 @@ namespace Domain.Entities
         public string GroomJamaatPresidentName { get; set; } = string.Empty;
         public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
 
+        // Local Rishtanata Secretary, recorded by each side's Jama'at President (Gap 4).
+        // Same-Jama'at couples only fill the bride side; it covers both.
+        public string BrideLocalRishtanataSecretaryName { get; set; } = string.Empty;
+        public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+        public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
+        public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
         public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
         public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
 
@@ -129,6 +150,8 @@ namespace Domain.Entities
         public BridegroomFormSection? BridegroomSection { get; set; }
 
         public GuardianOrWakeelSection? GuardianOrWakeelSection { get; set; }
+
+        public GroomWakeelSection? GroomWakeelSection { get; set; }
 
         public ImamVerificationSection? ImamVerification { get; set; }
 
@@ -148,5 +171,8 @@ namespace Domain.Entities
 
         public ICollection<SectionAccessToken> SectionAccessTokens { get; set; }
             = new List<SectionAccessToken>();
+
+        public ICollection<DivorceEvidenceDocument> DivorceEvidenceDocuments { get; set; }
+            = new List<DivorceEvidenceDocument>();
     }
 }

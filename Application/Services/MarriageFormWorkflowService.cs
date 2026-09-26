@@ -1,3 +1,4 @@
+using System.Globalization;
 using Application.Authorization;
 using Application.Interfaces;
 using Application.Workflow;
@@ -51,6 +52,27 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             return denied;
         }
 
+        var invalid = ValidateLocalRishtanataSecretary(submission);
+        if (invalid is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, invalid);
+        }
+
+        // Same-Jamaat couples: this president signs for both partners, so they
+        // also attest the groom (Gap 7). Decided before any write.
+        var sharesJamaat = await PartnersShareJamaatAsync(form, cancellationToken);
+
+        var attestationError =
+            ValidatePartnerAttestation(submission.Bride, "bride")
+            ?? (sharesJamaat ? ValidatePartnerAttestation(submission.Groom, "bridegroom") : null)
+            ?? (!submission.GuardianIsBonafide || !submission.BrideSignedFreely
+                ? "Confirm that the guardian is bona fide and that the bride signed freely before signing."
+                : null);
+        if (attestationError is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, attestationError);
+        }
+
         var now = DateTime.UtcNow;
 
         if (form.JamaatPresidentVerification is null)
@@ -61,6 +83,9 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 Name = submission.Name,
                 Tel = submission.Tel,
                 SignatureDate = submission.SignatureDate,
+                LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim(),
+                LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim(),
+                LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim(),
                 CreatedAt = now,
                 CreatedBy = memberId
             };
@@ -73,18 +98,46 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.JamaatPresidentVerification.Name = submission.Name;
             form.JamaatPresidentVerification.Tel = submission.Tel;
             form.JamaatPresidentVerification.SignatureDate = submission.SignatureDate;
+            form.JamaatPresidentVerification.LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+            form.JamaatPresidentVerification.LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim();
+            form.JamaatPresidentVerification.LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
             form.JamaatPresidentVerification.ModifiedAt = now;
             form.JamaatPresidentVerification.ModifiedBy = memberId;
         }
 
+        // President's attestations (Gap 7); validated above. Years only apply to
+        // converts. The groom's answers live here only on the same-Jamaat path;
+        // otherwise they're cleared (e.g. after a revert) and the groom's
+        // president records them.
+        var verification = form.JamaatPresidentVerification!;
+        (verification.BrideIsBornAhmadi, verification.BrideYearsAsAhmadi, verification.BrideMarriageReason) =
+            ToStoredAttestation(submission.Bride!);
+
+        if (sharesJamaat)
+        {
+            (verification.GroomIsBornAhmadi, verification.GroomYearsAsAhmadi, verification.GroomMarriageReason) =
+                ToStoredAttestation(submission.Groom!);
+        }
+        else
+        {
+            verification.GroomIsBornAhmadi = null;
+            verification.GroomYearsAsAhmadi = null;
+            verification.GroomMarriageReason = string.Empty;
+        }
+
+        verification.GuardianIsBonafide = submission.GuardianIsBonafide;
+        verification.BrideSignedFreely = submission.BrideSignedFreely;
+
         // Mirror onto the flat form columns (used by the read side).
         form.JamaatPresidentName = submission.Name;
         form.JamaatPresidentSignatureDate = submission.SignatureDate;
+        form.BrideLocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+        form.BrideLocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
 
         // Same-Jamaat couples: this president signs for both partners and the
         // form advances straight to the secretary. Different Jamaats: forward to
         // the groom's president first.
-        var nextStage = await PartnersShareJamaatAsync(form, cancellationToken)
+        var nextStage = sharesJamaat
             ? MarriageFormStage.AwaitingRishtanataSecretary
             : MarriageFormStage.AwaitingGroomJamaatPresident;
 
@@ -107,6 +160,19 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             return denied;
         }
 
+        var invalid = ValidateLocalRishtanataSecretary(submission);
+        if (invalid is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, invalid);
+        }
+
+        // The groom's president attests the groom only (Gap 7).
+        var attestationError = ValidatePartnerAttestation(submission.Groom, "bridegroom");
+        if (attestationError is not null)
+        {
+            return StageAuthorizationResult.Deny(StageAuthorizationDenyReason.WrongStage, attestationError);
+        }
+
         var now = DateTime.UtcNow;
 
         if (form.GroomJamaatPresidentVerification is null)
@@ -117,6 +183,9 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
                 Name = submission.Name,
                 Tel = submission.Tel,
                 SignatureDate = submission.SignatureDate,
+                LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim(),
+                LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim(),
+                LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim(),
                 CreatedAt = now,
                 CreatedBy = memberId
             };
@@ -129,18 +198,92 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             form.GroomJamaatPresidentVerification.Name = submission.Name;
             form.GroomJamaatPresidentVerification.Tel = submission.Tel;
             form.GroomJamaatPresidentVerification.SignatureDate = submission.SignatureDate;
+            form.GroomJamaatPresidentVerification.LocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+            form.GroomJamaatPresidentVerification.LocalRishtanataSecretaryTel = submission.LocalRishtanataSecretaryTel.Trim();
+            form.GroomJamaatPresidentVerification.LocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
             form.GroomJamaatPresidentVerification.ModifiedAt = now;
             form.GroomJamaatPresidentVerification.ModifiedBy = memberId;
         }
 
+        // President's attestation for the groom (Gap 7); validated above.
+        var groomVerification = form.GroomJamaatPresidentVerification!;
+        (groomVerification.GroomIsBornAhmadi, groomVerification.GroomYearsAsAhmadi, groomVerification.GroomMarriageReason) =
+            ToStoredAttestation(submission.Groom!);
+
         form.GroomJamaatPresidentName = submission.Name;
         form.GroomJamaatPresidentSignatureDate = submission.SignatureDate;
+        form.GroomLocalRishtanataSecretaryName = submission.LocalRishtanataSecretaryName.Trim();
+        form.GroomLocalRishtanataSecretarySignatureDate = submission.LocalRishtanataSecretarySignatureDate.Trim();
 
         return await AdvanceAsync(
             form, memberId, now,
             MarriageFormStage.AwaitingRishtanataSecretary,
             "groom Jamaat president verification");
     }
+
+    /// <summary>
+    /// Signing requires the Local Rishtanata Secretary block (Gap 4). Returns a
+    /// user-facing error, or null when valid. Lengths match the narrowest
+    /// columns (GroomJamaatPresidentVerifications: 200 / 30 / 50).
+    /// </summary>
+    private static string? ValidateLocalRishtanataSecretary(JamaatPresidentVerificationSubmission submission)
+    {
+        var name = submission.LocalRishtanataSecretaryName?.Trim();
+        var tel = submission.LocalRishtanataSecretaryTel?.Trim();
+        var date = submission.LocalRishtanataSecretarySignatureDate?.Trim();
+
+        if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(tel) || string.IsNullOrEmpty(date))
+        {
+            return "Enter the Local Rishtanata Secretary's name, telephone and signature date before signing.";
+        }
+
+        if (name.Length > 200 || tel.Length > 30)
+        {
+            return "The Local Rishtanata Secretary's name or telephone is too long.";
+        }
+
+        if (!DateOnly.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+        {
+            return "The Local Rishtanata Secretary's signature date must be a valid date (yyyy-MM-dd).";
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// One partner's attestation (Gap 7). Returns a user-facing error, or null
+    /// when valid. Limits match the columns (MarriageReason varchar(200)).
+    /// </summary>
+    private static string? ValidatePartnerAttestation(PartnerAttestationSubmission? attestation, string partner)
+    {
+        if (attestation?.IsBornAhmadi is null)
+        {
+            return $"Record whether the {partner} is a born Ahmadi before signing.";
+        }
+
+        if (attestation.IsBornAhmadi == false &&
+            (attestation.YearsAsAhmadi is null || attestation.YearsAsAhmadi < 0 || attestation.YearsAsAhmadi > 120))
+        {
+            return $"Enter how many years (0–120) the {partner} has been an Ahmadi before signing.";
+        }
+
+        if ((attestation.MarriageReason?.Trim().Length ?? 0) > 200)
+        {
+            return $"The {partner}'s marriage reason must be 200 characters or fewer.";
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// The stored values of one validated partner attestation (Gap 7). Years
+    /// only apply to converts; the reason is trimmed.
+    /// </summary>
+    private static (bool? IsBornAhmadi, int? YearsAsAhmadi, string MarriageReason) ToStoredAttestation(
+        PartnerAttestationSubmission attestation) =>
+        (attestation.IsBornAhmadi,
+         attestation.IsBornAhmadi == true ? null : attestation.YearsAsAhmadi,
+         attestation.MarriageReason?.Trim() ?? string.Empty);
 
     public async Task<StageAuthorizationResult> SubmitRishtanataRecommendationAsync(
         string membershipNo,
@@ -164,8 +307,8 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
             var section = new RishtanataRecommendationSection
             {
                 MarriageApplicationFormId = form.Id,
-                WakeelName = submission.WakeelName,
-                WakeelDeclaration = submission.WakeelDeclaration,
+                Name = submission.Name,
+                Recommendation = submission.Recommendation,
                 SignatureDate = submission.SignatureDate,
                 OfficiatingImamMembershipNo = submission.OfficiatingImamMembershipNo,
                 CreatedAt = now,
@@ -177,8 +320,8 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         }
         else
         {
-            form.RishtanataRecommendation.WakeelName = submission.WakeelName;
-            form.RishtanataRecommendation.WakeelDeclaration = submission.WakeelDeclaration;
+            form.RishtanataRecommendation.Name = submission.Name;
+            form.RishtanataRecommendation.Recommendation = submission.Recommendation;
             form.RishtanataRecommendation.SignatureDate = submission.SignatureDate;
             form.RishtanataRecommendation.OfficiatingImamMembershipNo = submission.OfficiatingImamMembershipNo;
             form.RishtanataRecommendation.ModifiedAt = now;
@@ -186,7 +329,7 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         }
 
         form.OfficiatingImamMembershipNo = submission.OfficiatingImamMembershipNo;
-        form.NationalRishtanataSecretaryName = submission.WakeelName;
+        form.NationalRishtanataSecretaryName = submission.Name;
         form.NationalRishtanataSecretarySignatureDate = submission.SignatureDate;
 
         // The agreed date changes only via partner-communication to the office.
@@ -267,6 +410,24 @@ public class MarriageFormWorkflowService : IMarriageFormWorkflowService
         }
 
         var now = DateTime.UtcNow;
+
+        // The ceremony witnesses (F1 §IX) sign through their shared links at this
+        // stage; the imam cannot close the form before both have signed.
+        var ceremonyWitnessNames = await _context.Set<WitnessSignatureSection>()
+            .AsNoTracking()
+            .Where(w => w.MarriageApplicationFormId == form.Id &&
+                        w.WitnessContext == WitnessContext.NikahCeremony &&
+                        (w.WitnessNumber == 1 || w.WitnessNumber == 2))
+            .Select(w => w.Name)
+            .ToListAsync(cancellationToken);
+
+        if (ceremonyWitnessNames.Count(n => !string.IsNullOrWhiteSpace(n)) < 2)
+        {
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage,
+                "Both Nikah ceremony witnesses must sign before the imam can sign off. " +
+                "The applicants can send the ceremony witness links from their Signature Links page.");
+        }
 
         if (form.ImamVerification is null)
         {

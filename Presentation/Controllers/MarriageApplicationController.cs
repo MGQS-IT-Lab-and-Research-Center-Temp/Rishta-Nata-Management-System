@@ -3,6 +3,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Authorization;
+using Application.DivorceEvidence;
+using Application.Dower;
 using Application.Interfaces;
 using Domain.Constants;
 using Domain.Entities;
@@ -24,6 +26,8 @@ public class MarriageApplicationController : Controller
     private readonly IBridegroomSectionService _bridegroomSectionService;
     private readonly IMemberLookupService _memberLookupService;
     private readonly IPartnerEligibilityService _eligibility;
+    private readonly IDivorceEvidenceService _divorceEvidence;
+    private readonly IStageAuthorizationService _stageAuthorization;
 
     public MarriageApplicationController(
         IMarriageApplicationFormService formService,
@@ -31,7 +35,9 @@ public class MarriageApplicationController : Controller
         IBrideSectionService brideSectionService,
         IBridegroomSectionService bridegroomSectionService,
         IMemberLookupService memberLookupService,
-        IPartnerEligibilityService eligibility)
+        IPartnerEligibilityService eligibility,
+        IDivorceEvidenceService divorceEvidence,
+        IStageAuthorizationService stageAuthorization)
     {
         _formService = formService;
         _memberDashboardService = memberDashboardService;
@@ -39,6 +45,8 @@ public class MarriageApplicationController : Controller
         _bridegroomSectionService = bridegroomSectionService;
         _memberLookupService = memberLookupService;
         _eligibility = eligibility;
+        _divorceEvidence = divorceEvidence;
+        _stageAuthorization = stageAuthorization;
     }
 
     // GET: New Application (role-aware — either party can start)
@@ -82,7 +90,8 @@ public class MarriageApplicationController : Controller
 
                 if (isBride)
                 {
-                    model.BrideMaritalStatus = profile.MaritalStatus ?? string.Empty;
+                    // Single/Widowed/Divorced map; anything else stays unset (Gap 6).
+                    model.BrideMaritalStatus = BrideMaritalStatusText.FromTajneed(profile.MaritalStatus);
                 }
             }
         }
@@ -93,6 +102,8 @@ public class MarriageApplicationController : Controller
     // POST: New Application
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(DivorceEvidenceRules.MaxRequestBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = DivorceEvidenceRules.MaxRequestBytes)]
     public async Task<IActionResult> Create(NewApplicationViewModel model, CancellationToken ct)
     {
         var isGroomFirst = string.Equals(
@@ -107,6 +118,63 @@ public class MarriageApplicationController : Controller
         foreach (var prop in new[] { "Name", "DateOfBirth", "ResidentOf", "Phone" })
         {
             ModelState.Remove($"{partnerPrefix}.{prop}");
+        }
+
+        // Gap 9: a groom starting the application fills in his dower line; paid
+        // in cash + still to be paid must equal the total. A bride-first
+        // application leaves the groom's dower for his Continue step.
+        if (isGroomFirst)
+        {
+            var dowerError = BridegroomDowerRules.Validate(
+                model.BridegroomDowerAmountPaidInCash,
+                model.BridegroomDowerAmountToBePaid,
+                model.BridegroomTotalDowerAmount);
+
+            if (dowerError is not null)
+            {
+                ModelState.AddModelError(nameof(model.BridegroomTotalDowerAmount), dowerError);
+            }
+        }
+
+        // Gap 6: a bride starting the application must choose her marital status.
+        // A groom-first application leaves it for the bride's Continue step.
+        if (!isGroomFirst && model.BrideMaritalStatus is null)
+        {
+            ModelState.AddModelError(nameof(model.BrideMaritalStatus), BrideMaritalStatusText.RequiredMessage);
+        }
+
+        // Gap 8: a divorced starter uploads their certificate with the application.
+        // Only the starter's own file is read; the partner uploads theirs on Continue.
+        var starterIsDivorced = isGroomFirst
+            ? model.HasDivorcedFormerWife == true
+            : model.BrideMaritalStatus == BrideMaritalStatus.DivorcedIddatComplete;
+
+        DivorceEvidenceUpload? divorceEvidence = null;
+
+        if (starterIsDivorced)
+        {
+            divorceEvidence = await DivorceEvidenceFormFile.ReadAsync(
+                isGroomFirst ? model.BridegroomDivorceEvidenceFile : model.BrideDivorceEvidenceFile, ct);
+
+            var evidenceError = divorceEvidence is null
+                ? (isGroomFirst ? DivorceEvidenceRules.GroomMissingMessage : DivorceEvidenceRules.BrideMissingMessage)
+                : DivorceEvidenceRules.Validate(divorceEvidence);
+
+            if (evidenceError is not null)
+            {
+                ModelState.AddModelError(
+                    isGroomFirst ? nameof(model.BridegroomDivorceEvidenceFile) : nameof(model.BrideDivorceEvidenceFile),
+                    evidenceError);
+            }
+        }
+
+        // The Wakeel fields only render on the groom-fills-it-themselves branch of
+        // Create.cshtml (StartingParty == "Groom" / isGroomFirst); when the bride is
+        // starting, the groom card is a partner-lookup stub with no Wakeel inputs, so
+        // this must not run for that branch.
+        if (isGroomFirst)
+        {
+            AddWakeelRequirementErrors(model.CanAttendNikahInPerson ?? true, model.WakeelName, model.WakeelTel);
         }
 
         if (!ModelState.IsValid)
@@ -151,6 +219,9 @@ public class MarriageApplicationController : Controller
         }
 
         var partnerPhone = partner.PhoneNo;
+        // Only a groom-first Create renders (and validates) the attendance and
+        // Wakeel inputs; a bride-first post must not set them for the groom.
+        var canAttendNikahInPerson = !isGroomFirst || (model.CanAttendNikahInPerson ?? true);
         var form = new MarriageApplicationForm
         {
             ProposedNikahDate = model.ProposedNikahDate,
@@ -162,7 +233,7 @@ public class MarriageApplicationController : Controller
             BrideResidentOf = (isGroomFirst ? partner.Address : model.Bride.ResidentOf),
             BrideGenotype = model.Bride.Genotype,
             BrideBloodGroup = model.Bride.BloodGroup,
-            BrideMaritalStatus = model.BrideMaritalStatus,
+            BrideMaritalStatus = isGroomFirst ? null : model.BrideMaritalStatus,
             BrideDivorceEvidence = model.BrideDivorceEvidence,
             BrideProposedDowerAmount = model.BrideProposedDowerAmount,
             BrideDowerAmountReceivedInCash = model.BrideDowerAmountReceivedInCash,
@@ -176,6 +247,7 @@ public class MarriageApplicationController : Controller
             BridegroomBloodGroup = model.Bridegroom.BloodGroup,
             BridegroomDowerAmountPaidInCash = model.BridegroomDowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = model.BridegroomDowerAmountToBePaid,
+            BridegroomTotalDowerAmount = model.BridegroomTotalDowerAmount,
             IsFirstNikah = model.IsFirstNikah,
             CurrentNikahOrdinal = model.CurrentNikahOrdinal,
             FormerWifeIsDead = model.FormerWifeIsDead ?? false,
@@ -185,6 +257,10 @@ public class MarriageApplicationController : Controller
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula ?? false,
             BridegroomSignatureTel = (isGroomFirst ? model.Bridegroom.Phone.Trim() : partnerPhone),
 
+            CanAttendNikahInPerson = canAttendNikahInPerson,
+            WakeelName = canAttendNikahInPerson ? string.Empty : model.WakeelName?.Trim() ?? string.Empty,
+            WakeelTel = canAttendNikahInPerson ? string.Empty : model.WakeelTel?.Trim() ?? string.Empty,
+
             ApplicationStage = ApplicationStage.ApplicantsReview,
             FormStage = isGroomFirst
                 ? MarriageFormStage.AwaitingBride
@@ -192,6 +268,24 @@ public class MarriageApplicationController : Controller
         };
 
         var created = await _formService.StartApplicationAsync(form, GetCurrentMembershipNo(), ct);
+
+        // Validated above, so this only fails on a storage/database error or,
+        // in theory, a concurrent upload for the same party (reported below).
+        string? evidenceSaveError = null;
+        if (divorceEvidence is not null)
+        {
+            evidenceSaveError = await _divorceEvidence.SaveAsync(
+                created.Id,
+                isGroomFirst ? DivorceEvidenceParty.Bridegroom : DivorceEvidenceParty.Bride,
+                divorceEvidence,
+                GetCurrentMembershipNo() ?? string.Empty,
+                ct);
+        }
+
+        if (evidenceSaveError is not null)
+        {
+            TempData["Error"] = evidenceSaveError;
+        }
 
         TempData["Success"] =
             $"Application {created.ReferenceNumber} started. Your partner can sign in and continue it from their dashboard.";
@@ -235,37 +329,59 @@ public class MarriageApplicationController : Controller
             ? ToBrideViewModel(form)
             : ToBridegroomViewModel(form);
 
+        await LoadExistingDivorceEvidenceAsync(model, membershipNo, form.Id, ct);
+
         return View(model);
     }
 
     // POST: Continue
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(DivorceEvidenceRules.MaxRequestBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = DivorceEvidenceRules.MaxRequestBytes)]
     public async Task<IActionResult> Continue(Guid id, ContinueApplicationViewModel model, CancellationToken ct)
     {
-        if (!ModelState.IsValid)
+        // Mirrors the Bride/else DTO-routing branch below: anything not explicitly
+        // "Bride" is treated as a groom submission and validated accordingly.
+        if (!string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase))
         {
-            return View(model);
+            AddWakeelRequirementErrors(model.CanAttendNikahInPerson, model.WakeelName, model.WakeelTel);
+        }
+
+        if (string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase) && model.MaritalStatus is null)
+        {
+            ModelState.AddModelError(nameof(model.MaritalStatus), BrideMaritalStatusText.RequiredMessage);
         }
 
         var membershipNo = GetCurrentMembershipNo() ?? string.Empty;
 
+        if (!ModelState.IsValid)
+        {
+            await LoadExistingDivorceEvidenceAsync(model, membershipNo, id, ct);
+            return View(model);
+        }
+
         StageAuthorizationResult result;
 
+        // Gap 8: the section service decides whether the certificate is needed
+        // and validates it; the controller only hands over what was posted.
         if (string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase))
         {
             var dto = MarriageFormRequestMapping.ToBrideDto(model);
-            result = await _brideSectionService.SubmitBrideSectionAsync(membershipNo, id, dto, ct);
+            var evidence = await DivorceEvidenceFormFile.ReadAsync(model.BrideDivorceEvidenceFile, ct);
+            result = await _brideSectionService.SubmitBrideSectionAsync(membershipNo, id, dto, evidence, ct);
         }
         else
         {
             var dto = MarriageFormRequestMapping.ToBridegroomDto(model);
-            result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(membershipNo, id, dto, ct);
+            var evidence = await DivorceEvidenceFormFile.ReadAsync(model.BridegroomDivorceEvidenceFile, ct);
+            result = await _bridegroomSectionService.SubmitBridegroomSectionAsync(membershipNo, id, dto, evidence, ct);
         }
 
         if (!result.IsAllowed)
         {
             ModelState.AddModelError(string.Empty, result.Message);
+            await LoadExistingDivorceEvidenceAsync(model, membershipNo, id, ct);
             return View(model);
         }
 
@@ -286,7 +402,7 @@ public class MarriageApplicationController : Controller
         Genotype = form.BrideGenotype,
         BloodGroup = form.BrideBloodGroup,
         MaritalStatus = form.BrideMaritalStatus,
-        BrideDivorceEvidence = form.BrideDivorceEvidence,
+        BrideDivorceEvidence = form.BrideDivorceEvidence ?? string.Empty,
         ProposedDowerAmount = form.BrideProposedDowerAmount,
         DowerAmountReceivedInCash = form.BrideDowerAmountReceivedInCash
     };
@@ -305,14 +421,60 @@ public class MarriageApplicationController : Controller
         BloodGroup = form.BridegroomBloodGroup,
         DowerAmountPaidInCash = form.BridegroomDowerAmountPaidInCash,
         DowerAmountToBePaid = form.BridegroomDowerAmountToBePaid,
+        TotalDowerAmount = form.BridegroomTotalDowerAmount,
         IsFirstNikah = form.IsFirstNikah,
         CurrentNikahOrdinal = form.CurrentNikahOrdinal,
         FormerWifeIsDead = form.FormerWifeIsDead,
         HasDivorcedFormerWife = form.HasDivorcedFormerWife,
-        BridegroomDivorceEvidence = form.BridegroomDivorceEvidence,
+        BridegroomDivorceEvidence = form.BridegroomDivorceEvidence ?? string.Empty,
         FormerWifeIsPresent = form.FormerWifeIsPresent,
-        FormerWifeObtainedKhula = form.FormerWifeObtainedKhula
+        FormerWifeObtainedKhula = form.FormerWifeObtainedKhula,
+        CanAttendNikahInPerson = form.CanAttendNikahInPerson,
+        WakeelName = form.WakeelName,
+        WakeelTel = form.WakeelTel
     };
+
+    private void AddWakeelRequirementErrors(bool canAttendInPerson, string? wakeelName, string? wakeelTel)
+    {
+        if (canAttendInPerson)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(wakeelName))
+        {
+            ModelState.AddModelError(nameof(ContinueApplicationViewModel.WakeelName), "Wakeel's name is required when the groom cannot attend in person.");
+        }
+
+        if (string.IsNullOrWhiteSpace(wakeelTel))
+        {
+            ModelState.AddModelError(nameof(ContinueApplicationViewModel.WakeelTel), "Wakeel's phone number is required when the groom cannot attend in person.");
+        }
+    }
+
+    // Gap 8: shows the party's stored certificate, if any, so a new upload is
+    // clearly a replacement. The POST paths reach this with any posted form id,
+    // so nothing is read unless the caller may view the form's documents.
+    private async Task LoadExistingDivorceEvidenceAsync(
+        ContinueApplicationViewModel model, string membershipNo, Guid formId, CancellationToken ct)
+    {
+        model.ExistingDivorceEvidenceFileName = null;
+
+        var access = await _stageAuthorization.CanViewFormDocumentsAsync(membershipNo, formId, ct);
+        if (!access.IsAllowed)
+        {
+            return;
+        }
+
+        var party = string.Equals(model.Party, "Bride", StringComparison.OrdinalIgnoreCase)
+            ? DivorceEvidenceParty.Bride
+            : DivorceEvidenceParty.Bridegroom;
+
+        var documents = await _divorceEvidence.ListAsync(formId, ct);
+
+        model.ExistingDivorceEvidenceFileName = documents
+            .FirstOrDefault(d => d.Party == party)?.OriginalFileName;
+    }
 
     private static bool IsFemale(string? sex) =>
         !string.IsNullOrWhiteSpace(sex) &&

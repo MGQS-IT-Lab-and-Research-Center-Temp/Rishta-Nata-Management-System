@@ -155,6 +155,19 @@ Any user authorized under §4.3 for the stage the form is **currently sitting
 at** may submit a rejection. A verifier may never reject a form that has not
 yet reached their stage.
 
+### 4.5 Who may download uploaded documents (Gap 8)
+
+`IStageAuthorizationService.CanViewFormDocumentsAsync` decides who may
+download a form's divorce certificates. It is **not** stage-gated, so
+completed forms stay readable. Allowed:
+
+- the bride or bridegroom named on the form (by membership number);
+- the Jama'at President of either partner's Jama'at (the §4.3 president
+  match);
+- `RishtanataSecretary`, `Amir` and `MissionaryInCharge`.
+
+Everyone else gets `WrongRole`; an unknown form gets `FormNotFound`.
+
 ---
 
 ## 5. Gate 3 — The stage gate

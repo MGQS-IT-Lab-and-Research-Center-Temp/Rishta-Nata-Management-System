@@ -19,8 +19,4 @@ public interface IJamaatPresidentService
     Task<JamaatPresidentReviewDto?> GetReviewByIdAsync(Guid id);
 
     Task<bool> ApproveAsync(Guid id, Guid? currentUserId);
-
-    Task<bool> RejectAsync(Guid id, Guid? currentUserId);
-
-    Task<bool> RequestMoreInformationAsync(Guid id, Guid? currentUserId);
 }

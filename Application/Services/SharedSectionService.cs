@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Application.Interfaces;
+using Application.Workflow;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.DTOs.Members;
@@ -28,12 +29,16 @@ public class SharedSectionService : ISharedSectionService
         var tokenRow = await _context.SectionAccessTokens
             .AsNoTracking()
             .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.GuardianOrWakeelSection)
             .FirstOrDefaultAsync(x => x.TokenHash == hash, cancellationToken);
 
         if (tokenRow is null)
+        {
             return Invalid("No matching token.");
+        }
 
         var form = tokenRow.MarriageApplicationForm;
+
         if (tokenRow.RevokedAt.HasValue)
         {
             if (tokenRow.SubmittedAt.HasValue)
@@ -51,8 +56,8 @@ public class SharedSectionService : ISharedSectionService
             return Invalid("This link has been revoked.");
         }
 
-        if (form.FormStage != MarriageFormStage.AwaitingWitnesses)
-            return Invalid("These signatures are no longer being collected.");
+        if (form.FormStage != RequiredStageFor(tokenRow.SectionType))
+            return Invalid("This link can't be used at the application's current stage.");
 
         return new SectionTokenStatus
         {
@@ -61,7 +66,9 @@ public class SharedSectionService : ISharedSectionService
             SectionType = tokenRow.SectionType,
             ReferenceNumber = form.ReferenceNumber,
             BrideName = form.BrideName,
-            BridegroomName = form.BridegroomName
+            BridegroomName = form.BridegroomName,
+            AppointsRepresentative = tokenRow.SectionType == SectionType.Guardian &&
+                form.GuardianOrWakeelSection?.AppointsRepresentative == true
         };
     }
 
@@ -73,16 +80,36 @@ public class SharedSectionService : ISharedSectionService
             .Include(x => x.MarriageApplicationForm)
                 .ThenInclude(f => f.GuardianOrWakeelSection)
             .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.GroomWakeelSection)
+            .Include(x => x.MarriageApplicationForm)
                 .ThenInclude(f => f.WitnessSignatures)
+            .Include(x => x.MarriageApplicationForm)
+                .ThenInclude(f => f.MarriageApplication)
             .FirstOrDefaultAsync(x => x.TokenHash == hash, cancellationToken);
 
         if (tokenRow is null || tokenRow.RevokedAt.HasValue ||
-            tokenRow.MarriageApplicationForm.FormStage != MarriageFormStage.AwaitingWitnesses)
+            tokenRow.MarriageApplicationForm.FormStage != RequiredStageFor(tokenRow.SectionType))
         {
             return new SectionSubmitResult { Success = false, Message = "This link is invalid or no longer active." };
         }
 
         var form = tokenRow.MarriageApplicationForm;
+
+        // The representative and the witnesses to their appointment may only sign
+        // when the guardian declared one. Checked before any write so a rejected
+        // submission leaves no side effects.
+        if (DependsOnRepresentative(tokenRow.SectionType) &&
+            form.GuardianOrWakeelSection?.AppointsRepresentative != true)
+        {
+            return new SectionSubmitResult { Success = false, Message = "This link is invalid or no longer active." };
+        }
+
+        // Likewise, the groom's Wakeel signs only when the groom cannot attend
+        // the Nikah in person.
+        if (tokenRow.SectionType == SectionType.GroomWakeel && form.CanAttendNikahInPerson)
+        {
+            return new SectionSubmitResult { Success = false, Message = "This link is invalid or no longer active." };
+        }
 
         // Member-prefill (override only blank manual fields).
         if (data.IsMember && !string.IsNullOrWhiteSpace(data.MemberMembershipNo))
@@ -97,6 +124,13 @@ public class SharedSectionService : ISharedSectionService
         ApplySectionUpsert(form, tokenRow.SectionType, data);
         StampsSectionRowReferenceNumber(form, tokenRow.SectionType, form.ReferenceNumber);
 
+        // The guardian withdrew (or never made) a representative appointment:
+        // make sure no Representative or wakeel-appointment witness link stays usable.
+        if (tokenRow.SectionType == SectionType.Guardian && !data.AppointsRepresentative)
+        {
+            await ReleaseRepresentativeLinksAsync(form.Id, cancellationToken);
+        }
+
         // Idempotent block advancement — a re-save while still open is allowed,
         // but once advanced it stays advanced (never double-advances).
         var advanced = false;
@@ -104,6 +138,20 @@ public class SharedSectionService : ISharedSectionService
             IsBlockComplete(form))
         {
             form.FormStage = MarriageFormStage.AwaitingBrideJamaatPresident;
+
+            // The signature block hands the form to the review chain. Keep the
+            // coarse ApplicationStage in sync (the revert flow authorizes on it;
+            // see docs/stage-authorization-policy.md §5) and flip the wrapping
+            // application to "pending review" so the Jama'at President's
+            // dashboard actually surfaces it.
+            form.ApplicationStage = WorkflowStageMapping.ToApplicationStage(
+                MarriageFormStage.AwaitingBrideJamaatPresident);
+
+            if (form.MarriageApplication is not null)
+            {
+                form.MarriageApplication.Status = ApplicationStatus.ApplicationPending;
+            }
+
             advanced = true;
         }
 
@@ -133,23 +181,50 @@ public class SharedSectionService : ISharedSectionService
         var form = await _context.MarriageApplicationForms
             .AsNoTracking()
             .Include(x => x.GuardianOrWakeelSection)
+            .Include(x => x.GroomWakeelSection)
             .Include(x => x.WitnessSignatures)
             .Include(x => x.SectionAccessTokens)
             .FirstOrDefaultAsync(x => x.Id == applicationFormId, cancellationToken)
             ?? new MarriageApplicationForm { Id = applicationFormId };
 
-        return new[]
+        var statuses = new List<SectionLinkStatus>
         {
             BuildStatus(SectionType.Guardian, form),
             BuildStatus(SectionType.WitnessOne, form),
-            BuildStatus(SectionType.WitnessTwo, form)
+            BuildStatus(SectionType.WitnessTwo, form),
+            BuildStatus(SectionType.GroomDeclarationWitnessOne, form),
+            BuildStatus(SectionType.GroomDeclarationWitnessTwo, form)
         };
+
+        if (form.GuardianOrWakeelSection?.AppointsRepresentative == true)
+        {
+            statuses.Add(BuildStatus(SectionType.Representative, form));
+            statuses.Add(BuildStatus(SectionType.WakeelAppointmentWitnessOne, form));
+            statuses.Add(BuildStatus(SectionType.WakeelAppointmentWitnessTwo, form));
+        }
+
+        if (!form.CanAttendNikahInPerson)
+        {
+            statuses.Add(BuildStatus(SectionType.GroomWakeel, form));
+        }
+
+        // The ceremony witnesses sign after the ceremony. Their rows appear once the
+        // form reaches the imam's sign-off, and stay visible (locked) once it completes.
+        if (form.FormStage is MarriageFormStage.AwaitingImamSignoff or MarriageFormStage.Completed)
+        {
+            statuses.Add(BuildStatus(SectionType.NikahCeremonyWitnessOne, form));
+            statuses.Add(BuildStatus(SectionType.NikahCeremonyWitnessTwo, form));
+        }
+
+        return statuses;
     }
 
     public async Task<string> GenerateSectionTokenAsync(
         Guid applicationFormId, SectionType section, string createdByMembershipNo,
         bool allowSubmitted = false, CancellationToken cancellationToken = default)
     {
+        await EnsureSectionApplicableAsync(applicationFormId, section, cancellationToken);
+
         var existing = await _context.SectionAccessTokens
             .FirstOrDefaultAsync(
                 x => x.MarriageApplicationFormId == applicationFormId && x.SectionType == section,
@@ -200,6 +275,8 @@ public class SharedSectionService : ISharedSectionService
         Guid applicationFormId, SectionType section, string createdByMembershipNo,
         bool allowSubmitted = false, CancellationToken cancellationToken = default)
     {
+        await EnsureSectionApplicableAsync(applicationFormId, section, cancellationToken);
+
         var row = await _context.SectionAccessTokens
             .FirstOrDefaultAsync(
                 x => x.MarriageApplicationFormId == applicationFormId && x.SectionType == section,
@@ -273,6 +350,7 @@ public class SharedSectionService : ISharedSectionService
                         Address = data.Address,
                         Tel = data.Tel,
                         RelationToBride = data.RelationToBride,
+                        AppointsRepresentative = data.AppointsRepresentative,
                         Signature = data.Name,
                         Date = data.SignatureDate,
                         CreatedAt = DateTime.UtcNow,
@@ -285,6 +363,7 @@ public class SharedSectionService : ISharedSectionService
                     form.GuardianOrWakeelSection.Address = data.Address;
                     form.GuardianOrWakeelSection.Tel = data.Tel;
                     form.GuardianOrWakeelSection.RelationToBride = data.RelationToBride;
+                    form.GuardianOrWakeelSection.AppointsRepresentative = data.AppointsRepresentative;
                     form.GuardianOrWakeelSection.Signature = data.Name;
                     form.GuardianOrWakeelSection.Date = data.SignatureDate;
                     form.GuardianOrWakeelSection.ModifiedAt = DateTime.UtcNow;
@@ -294,10 +373,62 @@ public class SharedSectionService : ISharedSectionService
                 form.GuardianAddress = data.Address;
                 form.GuardianTel = data.Tel;
                 form.GuardianSignatureDate = data.SignatureDate.ToString("yyyy-MM-dd");
+
+                if (!data.AppointsRepresentative)
+                {
+                    ClearRepresentative(form);
+                    RemoveWitnessPair(form, WitnessContext.WakeelAppointment);
+                }
+                break;
+
+            case SectionType.GroomWakeel:
+                if (form.GroomWakeelSection is null)
+                {
+                    form.GroomWakeelSection = new GroomWakeelSection
+                    {
+                        Name = data.Name,
+                        FatherName = data.RelationToBride,
+                        Tel = data.Tel,
+                        Signature = data.Name,
+                        Date = data.SignatureDate,
+                        CreatedAt = DateTime.UtcNow,
+                        ModifiedAt = DateTime.UtcNow
+                    };
+                }
+                else
+                {
+                    form.GroomWakeelSection.Name = data.Name;
+                    form.GroomWakeelSection.FatherName = data.RelationToBride;
+                    form.GroomWakeelSection.Tel = data.Tel;
+                    form.GroomWakeelSection.Signature = data.Name;
+                    form.GroomWakeelSection.Date = data.SignatureDate;
+                    form.GroomWakeelSection.ModifiedAt = DateTime.UtcNow;
+                }
+                form.GroomWakeelName = data.Name;
+                form.GroomWakeelFatherName = data.RelationToBride;
+                form.GroomWakeelTel = data.Tel;
+                form.GroomWakeelSignatureDate = data.SignatureDate.ToString("yyyy-MM-dd");
+                break;
+
+            case SectionType.Representative:
+                // SubmitSectionAsync has already rejected this section unless the
+                // guardian's row exists with AppointsRepresentative == true.
+                var guardian = form.GuardianOrWakeelSection!;
+                guardian.RepresentativeName = data.Name;
+                guardian.RepresentativeAddress = data.Address;
+                guardian.ActingFor = data.RelationToBride;
+                guardian.RepresentativeSignature = data.Name;
+                guardian.RepresentativeDate = data.SignatureDate;
+                guardian.ModifiedAt = DateTime.UtcNow;
+
+                form.RepresentativeName = data.Name;
+                form.RepresentativeAddress = data.Address;
+                form.RepresentativeActingFor = data.RelationToBride;
+                form.RepresentativeSignatureDate = data.SignatureDate.ToString("yyyy-MM-dd");
                 break;
 
             case SectionType.WitnessOne:
-                UpsertWitness(form, 1, data);
+                UpsertWitness(form, 1, WitnessContext.GuardianAgreement, data);
                 form.WitnessOneName = data.Name;
                 form.WitnessOneAddress = data.Address;
                 form.WitnessOneTel = data.Tel;
@@ -306,26 +437,42 @@ public class SharedSectionService : ISharedSectionService
                 break;
 
             case SectionType.WitnessTwo:
-                UpsertWitness(form, 2, data);
+                UpsertWitness(form, 2, WitnessContext.GuardianAgreement, data);
                 form.WitnessTwoName = data.Name;
                 form.WitnessTwoAddress = data.Address;
                 form.WitnessTwoTel = data.Tel;
                 form.WitnessTwoMembershipNo = data.IsMember ? data.MemberMembershipNo ?? string.Empty : string.Empty;
                 form.WitnessTwoSignatureDate = data.SignatureDate.ToString("yyyy-MM-dd");
                 break;
+
+            // The other three pairs live only on their WitnessSignatureSection rows;
+            // there are no flat mirrors for them (the detail DTO reads the rows).
+            case SectionType.WakeelAppointmentWitnessOne:
+            case SectionType.WakeelAppointmentWitnessTwo:
+            case SectionType.GroomDeclarationWitnessOne:
+            case SectionType.GroomDeclarationWitnessTwo:
+            case SectionType.NikahCeremonyWitnessOne:
+            case SectionType.NikahCeremonyWitnessTwo:
+                var witnessSlot = WitnessSlot(section)!.Value;
+                UpsertWitness(form, witnessSlot.Number, witnessSlot.Context, data);
+                break;
         }
     }
 
-    private void UpsertWitness(MarriageApplicationForm form, int witnessNumber, SectionFillData data)
+    private void UpsertWitness(
+        MarriageApplicationForm form, int witnessNumber, WitnessContext context, SectionFillData data)
     {
-        var witness = form.WitnessSignatures.FirstOrDefault(w => w.WitnessNumber == witnessNumber);
+        // (WitnessContext, WitnessNumber) identifies a witness row: up to four
+        // pairs share the form's WitnessSignatures collection.
+        var witness = form.WitnessSignatures.FirstOrDefault(w =>
+            w.WitnessNumber == witnessNumber && w.WitnessContext == context);
 
         if (witness is null)
         {
             form.WitnessSignatures.Add(new WitnessSignatureSection
             {
                 WitnessNumber = witnessNumber,
-                WitnessContext = WitnessContext.NikahCeremony,
+                WitnessContext = context,
                 Name = data.Name,
                 Address = data.Address,
                 Tel = data.Tel,
@@ -355,19 +502,59 @@ public class SharedSectionService : ISharedSectionService
             case SectionType.Guardian when form.GuardianOrWakeelSection is not null:
                 form.GuardianOrWakeelSection.ReferenceNumber = referenceNumber;
                 break;
-            case SectionType.WitnessOne:
-                form.WitnessSignatures.FirstOrDefault(w => w.WitnessNumber == 1)!.ReferenceNumber = referenceNumber;
+            case SectionType.GroomWakeel when form.GroomWakeelSection is not null:
+                form.GroomWakeelSection.ReferenceNumber = referenceNumber;
                 break;
-            case SectionType.WitnessTwo:
-                form.WitnessSignatures.FirstOrDefault(w => w.WitnessNumber == 2)!.ReferenceNumber = referenceNumber;
+            case SectionType.Representative when form.GuardianOrWakeelSection is not null:
+                form.GuardianOrWakeelSection.ReferenceNumber = referenceNumber;
+                break;
+            default:
+                // Every witness section (all four pairs).
+                if (WitnessSlot(section) is { } slot)
+                {
+                    var witness = form.WitnessSignatures.FirstOrDefault(w =>
+                        w.WitnessNumber == slot.Number && w.WitnessContext == slot.Context);
+                    if (witness is not null)
+                        witness.ReferenceNumber = referenceNumber;
+                }
                 break;
         }
     }
 
-    private static bool IsBlockComplete(MarriageApplicationForm form) =>
-        form.GuardianOrWakeelSection is not null &&
-        !string.IsNullOrWhiteSpace(form.GuardianOrWakeelSection.Name) &&
-        form.WitnessSignatures.Count(w => w.WitnessNumber is 1 or 2 && !string.IsNullOrWhiteSpace(w.Name)) >= 2;
+    /// <summary>
+    /// The AwaitingWitnesses block is complete when the guardian, the
+    /// guardian-agreement and groom-declaration witness pairs, and every
+    /// conditional party (representative plus the witnesses to their
+    /// appointment; the groom's Wakeel) have signed. The Nikah-ceremony pair is
+    /// not part of this block; it is collected at AwaitingImamSignoff.
+    /// </summary>
+    private static bool IsBlockComplete(MarriageApplicationForm form)
+    {
+        var guardian = form.GuardianOrWakeelSection;
+        if (guardian is null || string.IsNullOrWhiteSpace(guardian.Name))
+            return false;
+
+        if (guardian.AppointsRepresentative &&
+            (string.IsNullOrWhiteSpace(guardian.RepresentativeName) ||
+             !HasWitnessPair(form, WitnessContext.WakeelAppointment)))
+            return false;
+
+        if (!form.CanAttendNikahInPerson && !HasGroomWakeelSigned(form))
+            return false;
+
+        return HasWitnessPair(form, WitnessContext.GuardianAgreement) &&
+               HasWitnessPair(form, WitnessContext.GroomDeclaration);
+    }
+
+    /// <summary>
+    /// True once the groom's Wakeel has signed through their shared link.
+    /// GroomWakeelSection.Name is not enough: StartApplicationAsync and
+    /// BridegroomSectionService fill it from the groom's own entry. Only the
+    /// shared-link submit (ApplySectionUpsert, GroomWakeel case) writes Date,
+    /// and it always writes it.
+    /// </summary>
+    private static bool HasGroomWakeelSigned(MarriageApplicationForm form) =>
+        form.GroomWakeelSection?.Date is not null;
 
     private static SectionLinkStatus BuildStatus(SectionType section, MarriageApplicationForm form)
     {
@@ -379,10 +566,22 @@ public class SharedSectionService : ISharedSectionService
             filledByName = form.GuardianOrWakeelSection?.Name;
             complete = !string.IsNullOrWhiteSpace(filledByName);
         }
-        else
+        else if (section == SectionType.GroomWakeel)
         {
-            var number = section == SectionType.WitnessOne ? 1 : 2;
-            var witness = form.WitnessSignatures.FirstOrDefault(w => w.WitnessNumber == number);
+            // Name is pre-filled from the groom's own entry, so it only says who
+            // was nominated; completion needs the Wakeel's own signature.
+            filledByName = form.GroomWakeelSection?.Name;
+            complete = HasGroomWakeelSigned(form);
+        }
+        else if (section == SectionType.Representative)
+        {
+            filledByName = form.GuardianOrWakeelSection?.RepresentativeName;
+            complete = !string.IsNullOrWhiteSpace(filledByName);
+        }
+        else if (WitnessSlot(section) is { } slot)
+        {
+            var witness = form.WitnessSignatures.FirstOrDefault(w =>
+                w.WitnessNumber == slot.Number && w.WitnessContext == slot.Context);
             filledByName = witness?.Name;
             complete = !string.IsNullOrWhiteSpace(filledByName);
         }
@@ -399,8 +598,134 @@ public class SharedSectionService : ISharedSectionService
             RawToken = token?.RawToken,
             Complete = complete,
             FilledByName = filledByName,
-            Submitted = submitted
+            Submitted = submitted,
+            Fillable = form.FormStage == RequiredStageFor(section)
         };
+    }
+
+    /// <summary>
+    /// Throws when a link for <paramref name="section"/> makes no sense for this
+    /// form (e.g. a Representative link when the guardian appointed none).
+    /// Controllers surface the message through TempData["Error"].
+    /// </summary>
+    private async Task EnsureSectionApplicableAsync(
+        Guid applicationFormId, SectionType section, CancellationToken cancellationToken)
+    {
+        if (DependsOnRepresentative(section))
+        {
+            var appoints = await _context.MarriageApplicationForms
+                .Where(f => f.Id == applicationFormId)
+                .Select(f => f.GuardianOrWakeelSection != null && f.GuardianOrWakeelSection.AppointsRepresentative)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (!appoints)
+            {
+                throw new InvalidOperationException(
+                    "The guardian has not appointed a representative, so no link for this section can be created.");
+            }
+        }
+
+        if (section == SectionType.GroomWakeel)
+        {
+            var attendsInPerson = await _context.MarriageApplicationForms
+                .Where(f => f.Id == applicationFormId)
+                .Select(f => f.CanAttendNikahInPerson)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (attendsInPerson)
+            {
+                throw new InvalidOperationException(
+                    "The groom will attend the Nikah in person, so no link for the groom's Wakeel can be created.");
+            }
+        }
+    }
+
+    /// <summary>Removes a previously recorded representative signature (entity + flat mirrors).</summary>
+    private static void ClearRepresentative(MarriageApplicationForm form)
+    {
+        if (form.GuardianOrWakeelSection is not null)
+        {
+            form.GuardianOrWakeelSection.RepresentativeName = string.Empty;
+            form.GuardianOrWakeelSection.RepresentativeAddress = string.Empty;
+            form.GuardianOrWakeelSection.ActingFor = null;
+            form.GuardianOrWakeelSection.RepresentativeSignature = null;
+            form.GuardianOrWakeelSection.RepresentativeDate = null;
+        }
+
+        form.RepresentativeName = string.Empty;
+        form.RepresentativeAddress = string.Empty;
+        form.RepresentativeActingFor = string.Empty;
+        form.RepresentativeSignatureDate = string.Empty;
+    }
+
+    /// <summary>
+    /// Kills the Representative link and the two wakeel-appointment witness links
+    /// for the form, and clears their "submitted" seals so a later re-appointment
+    /// can generate fresh links. Tracked changes only; the caller saves.
+    /// </summary>
+    private async Task ReleaseRepresentativeLinksAsync(Guid applicationFormId, CancellationToken cancellationToken)
+    {
+        var rows = await _context.SectionAccessTokens
+            .Where(x => x.MarriageApplicationFormId == applicationFormId &&
+                        (x.SectionType == SectionType.Representative ||
+                         x.SectionType == SectionType.WakeelAppointmentWitnessOne ||
+                         x.SectionType == SectionType.WakeelAppointmentWitnessTwo))
+            .ToListAsync(cancellationToken);
+
+        foreach (var row in rows)
+        {
+            row.RevokedAt ??= DateTime.UtcNow;
+            row.SubmittedAt = null;
+            row.RawToken = string.Empty;
+            row.TokenHash = string.Empty;
+            row.ModifiedAt = DateTime.UtcNow;
+        }
+    }
+
+    /// <summary>
+    /// The one stage at which a shared-link section can be opened and submitted.
+    /// The Nikah-ceremony witnesses sign after the ceremony; every other section
+    /// belongs to the pre-review signature block.
+    /// </summary>
+    private static MarriageFormStage RequiredStageFor(SectionType section) =>
+        section is SectionType.NikahCeremonyWitnessOne or SectionType.NikahCeremonyWitnessTwo
+            ? MarriageFormStage.AwaitingImamSignoff
+            : MarriageFormStage.AwaitingWitnesses;
+
+    /// <summary>Sections that only exist when the guardian appoints a representative.</summary>
+    private static bool DependsOnRepresentative(SectionType section) =>
+        section is SectionType.Representative
+            or SectionType.WakeelAppointmentWitnessOne
+            or SectionType.WakeelAppointmentWitnessTwo;
+
+    /// <summary>The witness row a witness section writes to; null for non-witness sections.</summary>
+    private static (int Number, WitnessContext Context)? WitnessSlot(SectionType section) => section switch
+    {
+        SectionType.WitnessOne => (1, WitnessContext.GuardianAgreement),
+        SectionType.WitnessTwo => (2, WitnessContext.GuardianAgreement),
+        SectionType.WakeelAppointmentWitnessOne => (1, WitnessContext.WakeelAppointment),
+        SectionType.WakeelAppointmentWitnessTwo => (2, WitnessContext.WakeelAppointment),
+        SectionType.GroomDeclarationWitnessOne => (1, WitnessContext.GroomDeclaration),
+        SectionType.GroomDeclarationWitnessTwo => (2, WitnessContext.GroomDeclaration),
+        SectionType.NikahCeremonyWitnessOne => (1, WitnessContext.NikahCeremony),
+        SectionType.NikahCeremonyWitnessTwo => (2, WitnessContext.NikahCeremony),
+        _ => null
+    };
+
+    private static bool HasWitnessPair(MarriageApplicationForm form, WitnessContext context) =>
+        form.WitnessSignatures.Count(w =>
+            w.WitnessContext == context &&
+            w.WitnessNumber is 1 or 2 &&
+            !string.IsNullOrWhiteSpace(w.Name)) >= 2;
+
+    /// <summary>Deletes both witness rows of one pair (tracked; the caller saves).</summary>
+    private void RemoveWitnessPair(MarriageApplicationForm form, WitnessContext context)
+    {
+        foreach (var witness in form.WitnessSignatures.Where(w => w.WitnessContext == context).ToList())
+        {
+            form.WitnessSignatures.Remove(witness);
+            _context.Remove(witness);
+        }
     }
 
     private static SectionTokenStatus Invalid(string reason) =>

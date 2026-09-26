@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Infrastructure.DTOs.MarriageApplicationFormDetail;
 
@@ -32,12 +33,38 @@ public class MarriageApplicationFormDetailDto
     public BridegroomSectionDetailDto? Bridegroom { get; set; }
     public GuardianSectionDetailDto? Guardian { get; set; }
     public RepresentativeSectionDetailDto? Representative { get; set; }
+    public GroomWakeelSectionDetailDto? GroomWakeel { get; set; }
 
-    /// <summary>Witnesses that have submitted, in paper-form order (One, Two).</summary>
+    /// <summary>
+    /// Guardian/bride agreement witnesses (F2 §III) that have submitted, in
+    /// paper-form order (One, Two). Read from the flat WitnessOne*/WitnessTwo* mirrors.
+    /// </summary>
     public IReadOnlyList<WitnessDetailDto> Witnesses { get; set; } = Array.Empty<WitnessDetailDto>();
+
+    /// <summary>Witnesses to the guardian's appointment of a representative (F2 §II).</summary>
+    public IReadOnlyList<WitnessDetailDto> WakeelAppointmentWitnesses { get; set; } = Array.Empty<WitnessDetailDto>();
+
+    /// <summary>Witnesses to the bridegroom's declaration (F1).</summary>
+    public IReadOnlyList<WitnessDetailDto> GroomDeclarationWitnesses { get; set; } = Array.Empty<WitnessDetailDto>();
+
+    /// <summary>Witnesses to the Nikah ceremony (F1 §IX), signed after the ceremony.</summary>
+    public IReadOnlyList<WitnessDetailDto> NikahCeremonyWitnesses { get; set; } = Array.Empty<WitnessDetailDto>();
 
     public OfficiatingImamSectionDetailDto? OfficiatingImam { get; set; }
     public JamaatPresidentSectionDetailDto? JamaatPresident { get; set; }
+
+    /// <summary>F2 Local Rishtanata Secretary; null until the bride's president signs.</summary>
+    public LocalRishtanataSecretarySectionDetailDto? BrideLocalRishtanataSecretary { get; set; }
+
+    /// <summary>
+    /// F1 Local Rishtanata Secretary; null until recorded. On the same-Jama'at path
+    /// this repeats the bride-side entry, which covers both partners.
+    /// </summary>
+    public LocalRishtanataSecretarySectionDetailDto? GroomLocalRishtanataSecretary { get; set; }
+
+    /// <summary>Jama'at Presidents' attestations (Gap 7); null until any is recorded.</summary>
+    public PresidentAttestationsDto? PresidentAttestations { get; set; }
+
     public RishtanataSecretarySectionDetailDto? NationalRishtanataSecretary { get; set; }
     public AmirApprovalSectionDetailDto? AmirApproval { get; set; }
 

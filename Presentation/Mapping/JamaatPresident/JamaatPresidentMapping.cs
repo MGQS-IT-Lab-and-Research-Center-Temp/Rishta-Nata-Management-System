@@ -36,7 +36,9 @@ public static class JamaatPresidentMapping
             BrideName = dto.BrideName,
             JamaatName = dto.JamaatName,
             SubmittedDate = dto.SubmittedDate,
-            Status = dto.Status
+            Status = dto.Status,
+            IsActionableByMe = dto.IsActionableByMe,
+            AwaitingJamaatName = dto.AwaitingJamaatName
         };
     }
 
@@ -60,6 +62,7 @@ public static class JamaatPresidentMapping
             Status = dto.Status,
             SubmittedDate = dto.SubmittedDate,
             CurrentStage = dto.CurrentStage,
+            CurrentFormStage = dto.CurrentFormStage,
             ProposedNikahDate = dto.ProposedNikahDate,
             Venue = dto.Venue,
 
@@ -82,6 +85,7 @@ public static class JamaatPresidentMapping
             BridegroomBloodGroup = dto.BridegroomBloodGroup,
             BridegroomDowerAmountPaidInCash = dto.BridegroomDowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = dto.BridegroomDowerAmountToBePaid,
+            BridegroomTotalDowerAmount = dto.BridegroomTotalDowerAmount,
             IsFirstNikah = dto.IsFirstNikah,
             CurrentNikahOrdinal = dto.CurrentNikahOrdinal,
             FormerWifeIsDead = dto.FormerWifeIsDead,
@@ -104,6 +108,11 @@ public static class JamaatPresidentMapping
             RepresentativeActingFor = dto.RepresentativeActingFor,
             RepresentativeSignatureDate = dto.RepresentativeSignatureDate,
 
+            GroomWakeelName = dto.GroomWakeelName,
+            GroomWakeelFatherName = dto.GroomWakeelFatherName,
+            GroomWakeelTel = dto.GroomWakeelTel,
+            GroomWakeelSignatureDate = dto.GroomWakeelSignatureDate,
+
             WitnessOneName = dto.WitnessOneName,
             WitnessOneAddress = dto.WitnessOneAddress,
             WitnessOneTel = dto.WitnessOneTel,
@@ -119,7 +128,18 @@ public static class JamaatPresidentMapping
             OfficiatingImamSignatureDate = dto.OfficiatingImamSignatureDate,
 
             JamaatPresidentName = dto.JamaatPresidentName,
+            JamaatPresidentTel = dto.JamaatPresidentTel,
             JamaatPresidentSignatureDate = dto.JamaatPresidentSignatureDate,
+
+            GroomJamaatPresidentName = dto.GroomJamaatPresidentName,
+            GroomJamaatPresidentTel = dto.GroomJamaatPresidentTel,
+            GroomJamaatPresidentSignatureDate = dto.GroomJamaatPresidentSignatureDate,
+
+            BrideLocalRishtanataSecretaryName = dto.BrideLocalRishtanataSecretaryName,
+            BrideLocalRishtanataSecretarySignatureDate = dto.BrideLocalRishtanataSecretarySignatureDate,
+            GroomLocalRishtanataSecretaryName = dto.GroomLocalRishtanataSecretaryName,
+            GroomLocalRishtanataSecretarySignatureDate = dto.GroomLocalRishtanataSecretarySignatureDate,
+            PresidentAttestations = dto.PresidentAttestations,
 
             NationalRishtanataSecretaryName = dto.NationalRishtanataSecretaryName,
             NationalRishtanataSecretarySignatureDate = dto.NationalRishtanataSecretarySignatureDate,

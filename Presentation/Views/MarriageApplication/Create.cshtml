@@ -9,7 +9,7 @@
     <p>Start your Nikah application. You can apply as the groom or the bride — your details are pre-filled from your membership record.</p>
 </div>
 
-<form asp-controller="MarriageApplication" asp-action="Create" method="post" id="appForm">
+<form asp-controller="MarriageApplication" asp-action="Create" method="post" id="appForm" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -82,16 +82,23 @@
 
                     <div class="col-md-4">
                         <label asp-for="BrideMaritalStatus" class="form-label"></label>
-                        <select asp-for="BrideMaritalStatus" class="form-select">
+                        <select asp-for="BrideMaritalStatus" class="form-select" required>
                             <option value="">Select</option>
-                            <option>Single</option><option>Widowed</option><option>Divorced</option>
+                            <option value="Unmarried">@Domain.Enums.BrideMaritalStatusText.ToLabel(Domain.Enums.BrideMaritalStatus.Unmarried)</option>
+                            <option value="WidowedIddatComplete">@Domain.Enums.BrideMaritalStatusText.ToLabel(Domain.Enums.BrideMaritalStatus.WidowedIddatComplete)</option>
+                            <option value="DivorcedIddatComplete">@Domain.Enums.BrideMaritalStatusText.ToLabel(Domain.Enums.BrideMaritalStatus.DivorcedIddatComplete)</option>
                         </select>
+                        <span asp-validation-for="BrideMaritalStatus" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6 d-none" id="khulaEvidenceGroup">
                         <label asp-for="BrideDivorceEvidence" class="form-label">
                             Evidence of Khula (divorce certificate reference / number)
                         </label>
                         <input asp-for="BrideDivorceEvidence" class="form-control" />
+                        <label asp-for="BrideDivorceEvidenceFile" class="form-label mt-2"></label>
+                        <input asp-for="BrideDivorceEvidenceFile" type="file" class="form-control"
+                               accept="@Application.DivorceEvidence.DivorceEvidenceRules.AcceptAttribute" />
+                        <span asp-validation-for="BrideDivorceEvidenceFile" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="BrideProposedDowerAmount" class="form-label"></label>
@@ -185,13 +192,19 @@
 
                     <div class="col-12"><hr class="my-1" /></div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label asp-for="BridegroomDowerAmountPaidInCash" class="form-label"></label>
                         <input asp-for="BridegroomDowerAmountPaidInCash" class="form-control" type="number" min="0" step="0.01" />
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label asp-for="BridegroomDowerAmountToBePaid" class="form-label"></label>
                         <input asp-for="BridegroomDowerAmountToBePaid" class="form-control" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BridegroomTotalDowerAmount" class="form-label"></label>
+                        <input asp-for="BridegroomTotalDowerAmount" class="form-control" type="number" min="0" step="0.01" />
+                        <span asp-validation-for="BridegroomTotalDowerAmount" class="text-danger small"></span>
+                        <div id="dowerSumHint" class="form-text text-warning"></div>
                     </div>
 
                     <div class="col-md-6">
@@ -234,6 +247,31 @@
                             Evidence of Talaq (divorce certificate reference / number)
                         </label>
                         <input asp-for="BridegroomDivorceEvidence" class="form-control" />
+                        <label asp-for="BridegroomDivorceEvidenceFile" class="form-label mt-2"></label>
+                        <input asp-for="BridegroomDivorceEvidenceFile" type="file" class="form-control"
+                               accept="@Application.DivorceEvidence.DivorceEvidenceRules.AcceptAttribute" />
+                        <span asp-validation-for="BridegroomDivorceEvidenceFile" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label">Will you attend the Nikah in person?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="CanAttendNikahInPerson" id="attendYes" value="true" />
+                            <label class="form-check-label" for="attendYes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="CanAttendNikahInPerson" id="attendNo" value="false" />
+                            <label class="form-check-label" for="attendNo">No, I will appoint a Wakeel</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 d-none" id="wakeelNameGroup">
+                        <label asp-for="WakeelName" class="form-label">Wakeel's Full Name</label>
+                        <input asp-for="WakeelName" class="form-control" />
+                    </div>
+                    <div class="col-md-6 d-none" id="wakeelTelGroup">
+                        <label asp-for="WakeelTel" class="form-label">Wakeel's Phone Number</label>
+                        <input asp-for="WakeelTel" class="form-control" />
                     </div>
                 </div>
             </div>
@@ -292,6 +330,46 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Gap 9: live hint when paid in cash + to be paid differs from the total.
+        // The server enforces the rule; once the figures agree, this also clears
+        // the server's error on the total, because refreshSubmit keeps the submit
+        // button disabled while any validation error is visible.
+        (function () {
+            'use strict';
+
+            var paid = document.getElementById('BridegroomDowerAmountPaidInCash');
+            var due = document.getElementById('BridegroomDowerAmountToBePaid');
+            var total = document.getElementById('BridegroomTotalDowerAmount');
+            var hint = document.getElementById('dowerSumHint');
+            if (!paid || !due || !total || !hint) { return; }
+
+            function cents(el) {
+                var v = parseFloat(el.value);
+                return isNaN(v) ? 0 : Math.round(v * 100);
+            }
+
+            function render() {
+                var sum = cents(paid) + cents(due);
+                if (sum === cents(total)) {
+                    hint.textContent = '';
+                    total.classList.remove('input-validation-error');
+                    var msg = document.querySelector('[data-valmsg-for="' + total.name + '"]');
+                    if (msg) {
+                        msg.textContent = '';
+                        msg.classList.remove('field-validation-error');
+                        msg.classList.add('field-validation-valid');
+                    }
+                } else {
+                    hint.textContent = 'Paid in cash + to be paid = ' + (sum / 100).toFixed(2) +
+                        ', which does not match the total.';
+                }
+            }
+
+            [paid, due, total].forEach(function (el) { el.addEventListener('input', render); });
+            render();
+        })();
+    </script>
     <script>
         (function () {
             'use strict';
@@ -412,10 +490,11 @@
                 if (!firstNikahYes || !firstNikahNo || !group) { return; }
                 var options = group.querySelectorAll('.remar-opt');
                 var div = document.getElementById('renDivorced');
-                var talaqInput = document.querySelector('#talaqEvidenceGroup input');
+                // The reference text box and the certificate file (Gap 8).
+                var talaqInputs = document.querySelectorAll('#talaqEvidenceGroup input');
 
                 function clearTalaq() {
-                    if (talaqInput) { talaqInput.value = ''; }
+                    talaqInputs.forEach(function (i) { i.value = ''; });
                 }
 
                 function render() {
@@ -445,15 +524,58 @@
                 var sel = document.getElementById('BrideMaritalStatus');
                 var khula = document.getElementById('khulaEvidenceGroup');
                 if (!sel || !khula) { return; }
-                var khulaInput = khula.querySelector('input');
-                function render() { khula.classList.toggle('d-none', sel.value !== 'Divorced'); }
+                var khulaInputs = khula.querySelectorAll('input');
+                function render() { khula.classList.toggle('d-none', sel.value !== 'DivorcedIddatComplete'); }
                 sel.addEventListener('change', function () {
-                    if (sel.value !== 'Divorced') { khulaInput.value = ''; }
+                    if (sel.value !== 'DivorcedIddatComplete') { khulaInputs.forEach(function (i) { i.value = ''; }); }
                     render();
                 });
                 render();
             }
             wireBrideEvidence();
+
+            function wireWakeel() {
+                var yes = document.getElementById('attendYes');
+                var no = document.getElementById('attendNo');
+                var nameGroup = document.getElementById('wakeelNameGroup');
+                var telGroup = document.getElementById('wakeelTelGroup');
+                if (!yes || !no || !nameGroup || !telGroup) return;
+                var nameInput = nameGroup.querySelector('input');
+                var telInput = telGroup.querySelector('input');
+
+                function toggle() {
+                    var show = no.checked;
+                    nameGroup.classList.toggle('d-none', !show);
+                    telGroup.classList.toggle('d-none', !show);
+                    if (!show) {
+                        if (nameInput) { nameInput.value = ''; }
+                        if (telInput) { telInput.value = ''; }
+                    }
+                }
+
+                yes.addEventListener('change', toggle);
+                no.addEventListener('change', toggle);
+                toggle();
+            }
+            wireWakeel();
+
+            // Gap 8: picking a new certificate clears the server's error for it,
+            // so refreshSubmit (which runs next, on the bubbled change) can
+            // re-enable the button.
+            function wireEvidenceFiles() {
+                document.querySelectorAll('#appForm input[type="file"]').forEach(function (f) {
+                    f.addEventListener('change', function () {
+                        f.classList.remove('input-validation-error');
+                        var msg = document.querySelector('[data-valmsg-for="' + f.name + '"]');
+                        if (msg) {
+                            msg.textContent = '';
+                            msg.classList.remove('field-validation-error');
+                            msg.classList.add('field-validation-valid');
+                        }
+                    });
+                });
+            }
+            wireEvidenceFiles();
         })();
     </script>
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Infrastructure.DTOs.JamaatPresidentDashboardDto;
 
@@ -11,6 +12,24 @@ public class JamaatPresidentReviewDto
 
     /// <summary>The form's current review-chain stage, for the revert modal.</summary>
     public ApplicationStage? CurrentStage { get; set; }
+
+    /// <summary>The form's fine-grained form stage, read-only. Lets the controller
+    /// dispatch Approve/Reject to the matching workflow submit without writing any
+    /// stage itself (workflow remains the single source of truth).</summary>
+    public MarriageFormStage? CurrentFormStage { get; set; }
+
+    /// <summary>The bride's president's phone, surfaced for the workflow submission
+    /// payload (the flat form carries no Tel column).</summary>
+    public string JamaatPresidentTel { get; set; } = string.Empty;
+
+    /// <summary>The groom's president's phone (different-Jama'at path only).</summary>
+    public string GroomJamaatPresidentTel { get; set; } = string.Empty;
+
+    /// <summary>The groom's president's name (different-Jama'at path only).</summary>
+    public string GroomJamaatPresidentName { get; set; } = string.Empty;
+
+    /// <summary>The groom's president's signature date (different-Jama'at path only).</summary>
+    public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
     public DateTime ProposedNikahDate { get; set; }
     public string Venue { get; set; } = string.Empty;
 
@@ -20,7 +39,7 @@ public class JamaatPresidentReviewDto
     public string BrideResidentOf { get; set; } = string.Empty;
     public string BrideGenotype { get; set; } = string.Empty;
     public string BrideBloodGroup { get; set; } = string.Empty;
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
     public decimal BrideProposedDowerAmount { get; set; }
     public decimal BrideDowerAmountReceivedInCash { get; set; }
     public string BrideSignatureTel { get; set; } = string.Empty;
@@ -33,6 +52,7 @@ public class JamaatPresidentReviewDto
     public string BridegroomBloodGroup { get; set; } = string.Empty;
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
     public decimal BridegroomDowerAmountToBePaid { get; set; }
+    public decimal BridegroomTotalDowerAmount { get; set; }
     public bool IsFirstNikah { get; set; }
     public MarriageOrdinal? CurrentNikahOrdinal { get; set; }
     public bool FormerWifeIsDead { get; set; }
@@ -55,6 +75,11 @@ public class JamaatPresidentReviewDto
     public string RepresentativeActingFor { get; set; } = string.Empty;
     public string RepresentativeSignatureDate { get; set; } = string.Empty;
 
+    public string GroomWakeelName { get; set; } = string.Empty;
+    public string GroomWakeelFatherName { get; set; } = string.Empty;
+    public string GroomWakeelTel { get; set; } = string.Empty;
+    public string GroomWakeelSignatureDate { get; set; } = string.Empty;
+
     public string WitnessOneName { get; set; } = string.Empty;
     public string WitnessOneAddress { get; set; } = string.Empty;
     public string WitnessOneTel { get; set; } = string.Empty;
@@ -71,6 +96,16 @@ public class JamaatPresidentReviewDto
 
     public string JamaatPresidentName { get; set; } = string.Empty;
     public string JamaatPresidentSignatureDate { get; set; } = string.Empty;
+
+    /// <summary>Recorded Local Rishtanata Secretary entries per side (Gap 4). The
+    /// groom side falls back to the bride side on the same-Jama'at path.</summary>
+    public string BrideLocalRishtanataSecretaryName { get; set; } = string.Empty;
+    public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+    public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
+    public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    /// <summary>Recorded president attestations (Gap 7).</summary>
+    public PresidentAttestationsDto PresidentAttestations { get; set; } = new();
 
     public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
     public string NationalRishtanataSecretarySignatureDate { get; set; } = string.Empty;

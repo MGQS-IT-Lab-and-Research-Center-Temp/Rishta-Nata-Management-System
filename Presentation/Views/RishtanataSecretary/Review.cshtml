@@ -242,6 +242,9 @@
 
     </div>
 
+    <!-- Divorce certificates (Gap 8) -->
+    @await Component.InvokeAsync("DivorceEvidenceLinks", new { formId = Model.Id })
+
     <!-- President Recommendation -->
 
     <div class="card shadow-sm border-0 mb-4">
@@ -271,6 +274,58 @@
                     @Model.PresidentName
 
                 </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+
+                        Local Rishtanata Secretary (Bride's side)
+
+                    </label>
+
+                    <div class="fw-bold">
+
+                        @(string.IsNullOrWhiteSpace(Model.BrideLocalRishtanataSecretaryName) ? "Not recorded" : Model.BrideLocalRishtanataSecretaryName)
+
+                    </div>
+
+                    <div class="small">@Model.BrideLocalRishtanataSecretarySignatureDate</div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+
+                        Local Rishtanata Secretary (Bridegroom's side)
+
+                    </label>
+
+                    <div class="fw-bold">
+
+                        @(string.IsNullOrWhiteSpace(Model.GroomLocalRishtanataSecretaryName) ? "Not recorded" : Model.GroomLocalRishtanataSecretaryName)
+
+                    </div>
+
+                    <div class="small">@Model.GroomLocalRishtanataSecretarySignatureDate</div>
+
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="text-muted small d-block mb-2">
+
+                    Jama'at President's attestations
+
+                </label>
+
+                <partial name="_PresidentAttestations" model="Model.PresidentAttestations" />
 
             </div>
 

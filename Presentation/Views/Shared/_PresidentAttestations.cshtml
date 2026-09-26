@@ -1,0 +1,45 @@
+@model Infrastructure.DTOs.Attestations.PresidentAttestationsDto
+
+@functions {
+    private static string YesNo(bool? value) =>
+        value is null ? "Not recorded" : value.Value ? "Yes" : "No";
+
+    private static string Ahmadiyyat(Infrastructure.DTOs.Attestations.PartnerAttestationDto? partner) =>
+        partner is null
+            ? "Not recorded"
+            : partner.IsBornAhmadi
+                ? "Born Ahmadi"
+                : $"Ahmadi for {partner.YearsAsAhmadi} years";
+}
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <small class="text-muted">Bride — Ahmadiyyat</small>
+        <div class="fw-bold">@Ahmadiyyat(Model.Bride)</div>
+        @if (!string.IsNullOrWhiteSpace(Model.Bride?.MarriageReason))
+        {
+            <div class="small">Marriage reason: @Model.Bride.MarriageReason</div>
+        }
+    </div>
+
+    <div class="col-md-6">
+        <small class="text-muted">Bridegroom — Ahmadiyyat</small>
+        <div class="fw-bold">@Ahmadiyyat(Model.Groom)</div>
+        @if (!string.IsNullOrWhiteSpace(Model.Groom?.MarriageReason))
+        {
+            <div class="small">Marriage reason: @Model.Groom.MarriageReason</div>
+        }
+    </div>
+
+    <div class="col-md-6">
+        <small class="text-muted">Guardian is bona fide</small>
+        <div class="fw-bold">@YesNo(Model.GuardianIsBonafide)</div>
+    </div>
+
+    <div class="col-md-6">
+        <small class="text-muted">Bride signed freely</small>
+        <div class="fw-bold">@YesNo(Model.BrideSignedFreely)</div>
+    </div>
+
+</div>

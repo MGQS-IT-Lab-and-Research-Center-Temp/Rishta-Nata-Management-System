@@ -25,4 +25,15 @@ public interface IStageAuthorizationService
         Guid applicationFormId,
         MarriageFormStage targetStage,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// May this member download the form's uploaded documents (Gap 8)? Allowed:
+    /// the bride and bridegroom, the Jama'at President of either partner's
+    /// Jama'at, the National Rishtanata Secretary, and the Amir/Missionary In
+    /// Charge. Not stage-gated: completed forms stay readable.
+    /// </summary>
+    Task<StageAuthorizationResult> CanViewFormDocumentsAsync(
+        string membershipNo,
+        Guid applicationFormId,
+        CancellationToken cancellationToken = default);
 }

@@ -7,14 +7,17 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using Application.Workflow;
 using Domain.Constants;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Presentation.Mapping;
+using Presentation.ViewModels;
 
 namespace Presentation.Controllers;
 
@@ -24,15 +27,18 @@ public class JamaatPresidentController : Controller
     private readonly IJamaatPresidentService _service;
     private readonly ICertificateService _certificateService;
     private readonly IStageAuthorizationService _authorizationService;
+    private readonly IMarriageFormWorkflowService _workflowService;
 
     public JamaatPresidentController(
         IJamaatPresidentService service,
         ICertificateService certificateService,
-        IStageAuthorizationService authorizationService)
+        IStageAuthorizationService authorizationService,
+        IMarriageFormWorkflowService workflowService)
     {
         _service = service;
         _certificateService = certificateService;
         _authorizationService = authorizationService;
+        _workflowService = workflowService;
     }
 
     // ============================================================
@@ -103,74 +109,96 @@ public class JamaatPresidentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Approve(Guid id)
+    public async Task<IActionResult> Approve(
+        Guid id,
+        [Bind(Prefix = nameof(JamaatPresidentReviewViewModel.Approve))] JamaatPresidentApproveInput input,
+        CancellationToken ct)
     {
         if (!await CanReviewAsync(id))
         {
             return NotFound("Marriage application or its form was not found.");
         }
 
-        var success = await _service.ApproveAsync(id, GetCurrentUserId());
+        var dto = await _service.GetReviewByIdAsync(id);
 
-        TempData["Success"] = success
-            ? "Nikah application approved and forwarded to the National Rishtanata Secretary."
-            : null;
-
-        TempData["Error"] = success
-            ? null
-            : "This application is no longer awaiting Jama'at President review.";
-
-        return RedirectToAction(nameof(Dashboard));
-    }
-
-    // ============================================================
-    // REJECT
-    // ============================================================
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Reject(Guid id)
-    {
-        if (!await CanReviewAsync(id))
+        if (dto == null)
         {
             return NotFound("Marriage application or its form was not found.");
         }
 
-        var success = await _service.RejectAsync(id, GetCurrentUserId());
-
-        TempData["Success"] = success
-            ? "Nikah application has been rejected."
-            : null;
-
-        TempData["Error"] = success
-            ? null
-            : "This application is no longer awaiting Jama'at President review.";
-
-        return RedirectToAction(nameof(Dashboard));
-    }
-
-    // ============================================================
-    // REQUEST MORE INFORMATION
-    // ============================================================
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RequestMoreInformation(Guid id)
-    {
-        if (!await CanReviewAsync(id))
+        // Signing needs the president's attestations for the side(s) signed
+        // (Gap 7): the bride's president attests the bride, and the groom too
+        // when the partners share a Jama'at; the groom's president attests the groom.
+        var signingForBrideSide = dto.CurrentFormStage == MarriageFormStage.AwaitingBrideJamaatPresident;
+        var signingForGroomSide = dto.CurrentFormStage == MarriageFormStage.AwaitingGroomJamaatPresident;
+        foreach (var (field, message) in input.ValidateForSigning(
+                     attestsBride: signingForBrideSide,
+                     attestsGroom: signingForGroomSide || (signingForBrideSide && dto.PartnersShareJamaat)))
         {
-            return NotFound("Marriage application or its form was not found.");
+            ModelState.AddModelError($"{nameof(JamaatPresidentReviewViewModel.Approve)}.{field}", message);
         }
 
-        var success = await _service.RequestMoreInformationAsync(id, GetCurrentUserId());
+        // Signing needs the Local Rishtanata Secretary block (Gap 4). Redisplay
+        // the review page with the entered values and errors; nothing is written.
+        if (!ModelState.IsValid)
+        {
+            var viewModel = JamaatPresidentMapping.ToViewModel(dto);
+            viewModel.Approve = input;
+            return View(nameof(Review), viewModel);
+        }
 
-        TempData["Success"] = success
-            ? "More information has been requested for this Nikah application."
-            : null;
+        var result = dto.CurrentFormStage switch
+        {
+            MarriageFormStage.AwaitingBrideJamaatPresident =>
+                await _workflowService.SubmitJamaatPresidentVerificationAsync(
+                    CurrentMembershipNo, id,
+                    new JamaatPresidentVerificationSubmission(
+                        dto.JamaatPresidentName,
+                        dto.JamaatPresidentTel,
+                        dto.JamaatPresidentSignatureDate,
+                        input.LocalRishtanataSecretaryName,
+                        input.LocalRishtanataSecretaryTel,
+                        input.LocalRishtanataSecretarySignatureDate,
+                        new PartnerAttestationSubmission(
+                            input.BrideIsBornAhmadi, input.BrideYearsAsAhmadi, input.BrideMarriageReason),
+                        new PartnerAttestationSubmission(
+                            input.GroomIsBornAhmadi, input.GroomYearsAsAhmadi, input.GroomMarriageReason),
+                        input.GuardianIsBonafide,
+                        input.BrideSignedFreely),
+                    ct),
+            MarriageFormStage.AwaitingGroomJamaatPresident =>
+                await _workflowService.SubmitGroomJamaatPresidentVerificationAsync(
+                    CurrentMembershipNo, id,
+                    new JamaatPresidentVerificationSubmission(
+                        dto.GroomJamaatPresidentName,
+                        dto.GroomJamaatPresidentTel,
+                        dto.GroomJamaatPresidentSignatureDate,
+                        input.LocalRishtanataSecretaryName,
+                        input.LocalRishtanataSecretaryTel,
+                        input.LocalRishtanataSecretarySignatureDate,
+                        Bride: null,
+                        new PartnerAttestationSubmission(
+                            input.GroomIsBornAhmadi, input.GroomYearsAsAhmadi, input.GroomMarriageReason),
+                        GuardianIsBonafide: false,
+                        BrideSignedFreely: false),
+                    ct),
+            _ => null
+        };
 
-        TempData["Error"] = success
-            ? null
-            : "This application is no longer awaiting Jama'at President review.";
+        if (result == null)
+        {
+            TempData["Error"] =
+                "This application is no longer awaiting Jama'at President review.";
+        }
+        else if (!result.IsAllowed)
+        {
+            TempData["Error"] = result.Message;
+        }
+        else
+        {
+            TempData["Success"] =
+                "Nikah application approved and forwarded to the National Rishtanata Secretary.";
+        }
 
         return RedirectToAction(nameof(Dashboard));
     }

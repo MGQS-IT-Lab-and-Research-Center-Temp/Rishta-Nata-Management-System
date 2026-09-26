@@ -38,13 +38,17 @@ public static class MarriageFormRequestMapping
             BridegroomBloodGroup = request.BridegroomBloodGroup,
             BridegroomDowerAmountPaidInCash = request.BridegroomDowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = request.BridegroomDowerAmountToBePaid,
+            BridegroomTotalDowerAmount = request.BridegroomTotalDowerAmount,
             IsFirstNikah = request.IsFirstNikah,
             CurrentNikahOrdinal = request.CurrentNikahOrdinal,
             FormerWifeIsDead = request.FormerWifeIsDead,
             HasDivorcedFormerWife = request.HasDivorcedFormerWife,
             FormerWifeIsPresent = request.FormerWifeIsPresent,
             FormerWifeObtainedKhula = request.FormerWifeObtainedKhula,
-            BridegroomSignatureTel = request.BridegroomSignatureTel
+            BridegroomSignatureTel = request.BridegroomSignatureTel,
+            CanAttendNikahInPerson = request.CanAttendNikahInPerson,
+            WakeelName = request.WakeelName,
+            WakeelTel = request.WakeelTel
         };
     }
 
@@ -77,6 +81,7 @@ public static class MarriageFormRequestMapping
             BridegroomBloodGroup = model.BloodGroup,
             BridegroomDowerAmountPaidInCash = model.DowerAmountPaidInCash,
             BridegroomDowerAmountToBePaid = model.DowerAmountToBePaid,
+            BridegroomTotalDowerAmount = model.TotalDowerAmount,
             IsFirstNikah = model.IsFirstNikah,
             CurrentNikahOrdinal = model.CurrentNikahOrdinal,
             FormerWifeIsDead = model.FormerWifeIsDead,
@@ -84,6 +89,9 @@ public static class MarriageFormRequestMapping
             BridegroomDivorceEvidence = model.BridegroomDivorceEvidence,
             FormerWifeIsPresent = model.FormerWifeIsPresent,
             FormerWifeObtainedKhula = model.FormerWifeObtainedKhula,
-            BridegroomSignatureTel = model.Phone
+            BridegroomSignatureTel = model.Phone,
+            CanAttendNikahInPerson = model.CanAttendNikahInPerson,
+            WakeelName = model.WakeelName,
+            WakeelTel = model.WakeelTel
         };
 }

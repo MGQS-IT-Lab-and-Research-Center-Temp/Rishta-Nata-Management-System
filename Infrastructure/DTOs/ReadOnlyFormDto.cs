@@ -22,7 +22,7 @@ public class ReadOnlyFormDto
     public string BrideResidentOf { get; set; } = string.Empty;
     public string BrideGenotype { get; set; } = string.Empty;
     public string BrideBloodGroup { get; set; } = string.Empty;
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
 
     public decimal BrideProposedDowerAmount { get; set; }
     public decimal BrideDowerAmountReceivedInCash { get; set; }
@@ -62,6 +62,12 @@ public class ReadOnlyFormDto
     public string RepresentativeAddress { get; set; } = string.Empty;
     public string RepresentativeActingFor { get; set; } = string.Empty;
     public string RepresentativeSignatureDate { get; set; } = string.Empty;
+
+    // ===== Groom's Wakeel =====
+    public string GroomWakeelName { get; set; } = string.Empty;
+    public string GroomWakeelFatherName { get; set; } = string.Empty;
+    public string GroomWakeelTel { get; set; } = string.Empty;
+    public string GroomWakeelSignatureDate { get; set; } = string.Empty;
 
     // ===== Witness One =====
     public string WitnessOneName { get; set; } = string.Empty;

@@ -104,6 +104,63 @@ public class StageAuthorizationService : IStageAuthorizationService
         return Allow(membershipNo, applicationFormId, targetStage);
     }
 
+    public async Task<StageAuthorizationResult> CanViewFormDocumentsAsync(
+        string membershipNo,
+        Guid applicationFormId,
+        CancellationToken cancellationToken = default)
+    {
+        const string target = "FormDocuments";
+
+        var form = await LoadFormAsync(applicationFormId, cancellationToken);
+        if (form is null)
+        {
+            return Deny(membershipNo, applicationFormId, target,
+                StageAuthorizationDenyReason.FormNotFound,
+                "No such application/form exists.");
+        }
+
+        var member = await ResolveMemberAsync(membershipNo, cancellationToken);
+        if (!member.IsKnown)
+        {
+            return Deny(membershipNo, applicationFormId, target,
+                member.FailureReason!.Value, member.FailureMessage!);
+        }
+
+        var principal = member.Member!;
+
+        // The applicants themselves.
+        if (MembershipNumbersMatch(principal.ChandaNo, form.BrideMembershipNo) ||
+            MembershipNumbersMatch(principal.ChandaNo, form.BridegroomMembershipNo))
+        {
+            return Allow(membershipNo, applicationFormId, target);
+        }
+
+        // National office-holders.
+        if (HasRole(principal, RoleNames.RishtanataSecretary, RoleNames.Amir, RoleNames.MissionaryInCharge))
+        {
+            return Allow(membershipNo, applicationFormId, target);
+        }
+
+        // The Jama'at President handling either partner.
+        foreach (var partnerMembershipNo in new[] { form.BrideMembershipNo, form.BridegroomMembershipNo })
+        {
+            var presidentGate = await RequireJamaatPresidentForAsync(
+                principal, form, partnerMembershipNo, cancellationToken);
+
+            if (presidentGate.IsAllowed)
+            {
+                return Allow(membershipNo, applicationFormId, target);
+            }
+        }
+
+        return Deny(membershipNo, applicationFormId, target,
+            StageAuthorizationDenyReason.WrongRole,
+            $"Member '{principal.ChandaNo}' is not an applicant, a Jama'at President handling this application, " +
+            "the National Rishtanata Secretary or the Amir/Missionary In Charge.");
+    }
+
+    // Keep this filter identical to DivorceEvidenceService.ResolveFormIdAsync:
+    // authorization and data resolution must pick the same form for an id.
     private async Task<MarriageApplicationForm?> LoadFormAsync(Guid applicationFormId, CancellationToken cancellationToken) =>
         await _context.MarriageApplicationForms
             .Include(f => f.MarriageApplication)

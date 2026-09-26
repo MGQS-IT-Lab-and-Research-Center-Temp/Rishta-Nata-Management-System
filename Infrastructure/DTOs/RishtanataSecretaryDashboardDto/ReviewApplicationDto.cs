@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
 {
@@ -26,6 +27,19 @@ namespace Infrastructure.DTOs.RishtanataSecretaryDashboardDto
         public string? PresidentName { get; set; }
 
         public string? PresidentRecommendation { get; set; }
+
+        // Local Rishtanata Secretary per side (Gap 4); the groom side falls back to
+        // the bride side on the same-Jama'at path.
+        public string? BrideLocalRishtanataSecretaryName { get; set; }
+
+        public string? BrideLocalRishtanataSecretarySignatureDate { get; set; }
+
+        public string? GroomLocalRishtanataSecretaryName { get; set; }
+
+        public string? GroomLocalRishtanataSecretarySignatureDate { get; set; }
+
+        // Jama'at Presidents' attestations (Gap 7).
+        public PresidentAttestationsDto PresidentAttestations { get; set; } = new();
 
         public DateTime SubmittedDate { get; set; }
 

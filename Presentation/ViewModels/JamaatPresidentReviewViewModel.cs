@@ -1,5 +1,6 @@
 ﻿using System;
 using Domain.Enums;
+using Infrastructure.DTOs.Attestations;
 
 namespace Presentation.ViewModels;
 
@@ -19,6 +20,11 @@ public class JamaatPresidentReviewViewModel
 
     /// <summary>The form's current review-chain stage, for the revert modal.</summary>
     public ApplicationStage? CurrentStage { get; set; }
+
+    /// <summary>The form's fine-grained stage, read-only (bride/groom president
+    /// dispatch context). The Approve action dispatches off the DTO directly,
+    /// not this view model; this mirrors it for display use.</summary>
+    public MarriageFormStage? CurrentFormStage { get; set; }
 
     public DateTime ProposedNikahDate { get; set; }
 
@@ -41,7 +47,7 @@ public class JamaatPresidentReviewViewModel
 
     public string BrideBloodGroup { get; set; } = string.Empty;
 
-    public string BrideMaritalStatus { get; set; } = string.Empty;
+    public BrideMaritalStatus? BrideMaritalStatus { get; set; }
 
     public decimal BrideProposedDowerAmount { get; set; }
 
@@ -69,6 +75,8 @@ public class JamaatPresidentReviewViewModel
     public decimal BridegroomDowerAmountPaidInCash { get; set; }
 
     public decimal BridegroomDowerAmountToBePaid { get; set; }
+
+    public decimal BridegroomTotalDowerAmount { get; set; }
 
     public bool IsFirstNikah { get; set; }
 
@@ -123,6 +131,19 @@ public class JamaatPresidentReviewViewModel
 
 
     // =========================================================
+    // GROOM'S WAKEEL
+    // =========================================================
+
+    public string GroomWakeelName { get; set; } = string.Empty;
+
+    public string GroomWakeelFatherName { get; set; } = string.Empty;
+
+    public string GroomWakeelTel { get; set; } = string.Empty;
+
+    public string GroomWakeelSignatureDate { get; set; } = string.Empty;
+
+
+    // =========================================================
     // WITNESS ONE
     // =========================================================
 
@@ -160,7 +181,30 @@ public class JamaatPresidentReviewViewModel
 
     public string JamaatPresidentName { get; set; } = string.Empty;
 
+    public string JamaatPresidentTel { get; set; } = string.Empty;
+
     public string JamaatPresidentSignatureDate { get; set; } = string.Empty;
+
+    public string GroomJamaatPresidentName { get; set; } = string.Empty;
+
+    public string GroomJamaatPresidentTel { get; set; } = string.Empty;
+
+    public string GroomJamaatPresidentSignatureDate { get; set; } = string.Empty;
+
+    // Recorded Local Rishtanata Secretary entries (Gap 4), read-only.
+    public string BrideLocalRishtanataSecretaryName { get; set; } = string.Empty;
+
+    public string BrideLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    public string GroomLocalRishtanataSecretaryName { get; set; } = string.Empty;
+
+    public string GroomLocalRishtanataSecretarySignatureDate { get; set; } = string.Empty;
+
+    /// <summary>Recorded president attestations (Gap 7), read-only.</summary>
+    public PresidentAttestationsDto PresidentAttestations { get; set; } = new();
+
+    /// <summary>What the president enters to sign; posted back with prefix "Approve".</summary>
+    public JamaatPresidentApproveInput Approve { get; set; } = new();
 
     public string NationalRishtanataSecretaryName { get; set; } = string.Empty;
 

@@ -132,7 +132,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.Property<string>("BrideMaritalStatus")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
@@ -295,6 +294,12 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
 
+                    b.Property<decimal>("BridegroomTotalDowerAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("CanAttendNikahInPerson")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -332,6 +337,16 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("WakeelName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("WakeelTel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.HasKey("Id");
 
@@ -414,6 +429,69 @@ namespace Infrastructure.Migrations
                     b.ToTable("NikahCertificates", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.DivorceEvidenceDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MarriageApplicationFormId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Party")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StoredFileName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoredFileName")
+                        .IsUnique();
+
+                    b.HasIndex("MarriageApplicationFormId", "Party")
+                        .IsUnique();
+
+                    b.ToTable("DivorceEvidenceDocuments", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.FormApplication", b =>
                 {
                     b.Property<Guid>("Id")
@@ -462,6 +540,32 @@ namespace Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
+                    b.Property<bool?>("GroomIsBornAhmadi")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("GroomMarriageReason")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int?>("GroomYearsAsAhmadi")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LocalRishtanataSecretaryName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("LocalRishtanataSecretarySignatureDate")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("LocalRishtanataSecretaryTel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
                     b.Property<Guid>("MarriageApplicationFormId")
                         .HasColumnType("char(36)");
 
@@ -494,6 +598,61 @@ namespace Infrastructure.Migrations
                     b.ToTable("GroomJamaatPresidentVerifications", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.GroomWakeelSection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FatherName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<Guid>("MarriageApplicationFormId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("ReferenceNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Signature")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Tel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarriageApplicationFormId")
+                        .IsUnique();
+
+                    b.ToTable("NikahGroomWakeels", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.GuardianOrWakeelSection", b =>
                 {
                     b.Property<Guid>("Id")
@@ -506,6 +665,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<bool>("AppointsRepresentative")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -542,6 +704,20 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("RelationToBride")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RepresentativeAddress")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("RepresentativeDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("RepresentativeName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RepresentativeSignature")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Signature")
@@ -741,11 +917,54 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<bool?>("BrideIsBornAhmadi")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("BrideMarriageReason")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("BrideSignedFreely")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("BrideYearsAsAhmadi")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
+
+                    b.Property<bool?>("GroomIsBornAhmadi")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("GroomMarriageReason")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int?>("GroomYearsAsAhmadi")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("GuardianIsBonafide")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LocalRishtanataSecretaryName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("LocalRishtanataSecretarySignatureDate")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("LocalRishtanataSecretaryTel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<Guid>("MarriageApplicationFormId")
                         .HasColumnType("char(36)");
@@ -818,8 +1037,17 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
-                    b.Property<string>("BrideMaritalStatus")
+                    b.Property<string>("BrideLocalRishtanataSecretaryName")
                         .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("BrideLocalRishtanataSecretarySignatureDate")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("BrideMaritalStatus")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
@@ -899,6 +1127,12 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
 
+                    b.Property<decimal>("BridegroomTotalDowerAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("CanAttendNikahInPerson")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -929,6 +1163,36 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("GroomLocalRishtanataSecretaryName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("GroomLocalRishtanataSecretarySignatureDate")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("GroomWakeelFatherName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("GroomWakeelName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("GroomWakeelSignatureDate")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("GroomWakeelTel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("GuardianAddress")
                         .IsRequired()
@@ -1047,6 +1311,16 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
+
+                    b.Property<string>("WakeelName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("WakeelTel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("WitnessOneAddress")
                         .IsRequired()
@@ -1215,20 +1489,20 @@ namespace Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("OfficiatingImamMembershipNo")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("Recommendation")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("SignatureDate")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("WakeelDeclaration")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("WakeelName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -1393,11 +1667,33 @@ namespace Infrastructure.Migrations
                     b.Navigation("FormApplication");
                 });
 
+            modelBuilder.Entity("Domain.Entities.DivorceEvidenceDocument", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithMany("DivorceEvidenceDocuments")
+                        .HasForeignKey("MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
             modelBuilder.Entity("Domain.Entities.GroomJamaatPresidentVerificationSection", b =>
                 {
                     b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
                         .WithOne("GroomJamaatPresidentVerification")
                         .HasForeignKey("Domain.Entities.GroomJamaatPresidentVerificationSection", "MarriageApplicationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarriageApplicationForm");
+                });
+
+            modelBuilder.Entity("Domain.Entities.GroomWakeelSection", b =>
+                {
+                    b.HasOne("Domain.Entities.MarriageApplicationForm", "MarriageApplicationForm")
+                        .WithOne("GroomWakeelSection")
+                        .HasForeignKey("Domain.Entities.GroomWakeelSection", "MarriageApplicationFormId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1540,7 +1836,11 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("BridegroomSection");
 
+                    b.Navigation("DivorceEvidenceDocuments");
+
                     b.Navigation("GroomJamaatPresidentVerification");
+
+                    b.Navigation("GroomWakeelSection");
 
                     b.Navigation("GuardianOrWakeelSection");
 

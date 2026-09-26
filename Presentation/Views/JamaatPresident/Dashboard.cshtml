@@ -250,12 +250,21 @@
 
                                 <td>
 
-                                    <a asp-controller="JamaatPresident"
-                                       asp-action="Review"
-                                       asp-route-id="@item.Id"
-                                       class="review-button">
-                                        Review
-                                    </a>
+                                    @if (item.IsActionableByMe)
+                                    {
+                                        <a asp-controller="JamaatPresident"
+                                           asp-action="Review"
+                                           asp-route-id="@item.Id"
+                                           class="review-button">
+                                            Review
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="awaiting-indicator">
+                                            Awaiting @item.AwaitingJamaatName Jama'at President
+                                        </span>
+                                    }
 
                                 </td>
 

@@ -1,4 +1,5 @@
 using Application.Authorization;
+using Application.DivorceEvidence;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
@@ -19,19 +20,23 @@ public class BrideSectionService : IBrideSectionService
     private readonly RishtanataDbContext _context;
     private readonly IStageAuthorizationService _stageAuthorizationService;
     private readonly IPartnerEligibilityService _eligibility;
+    private readonly IDivorceEvidenceService _divorceEvidence;
 
     public BrideSectionService(
         RishtanataDbContext context,
         IStageAuthorizationService stageAuthorizationService,
-        IPartnerEligibilityService eligibility)
+        IPartnerEligibilityService eligibility,
+        IDivorceEvidenceService divorceEvidence)
     {
         _context = context;
         _stageAuthorizationService = stageAuthorizationService;
         _eligibility = eligibility;
+        _divorceEvidence = divorceEvidence;
     }
 
     public async Task<StageAuthorizationResult> SubmitBrideSectionAsync(
         string membershipNo, Guid applicationFormId, BrideSectionDto dto,
+        DivorceEvidenceUpload? divorceEvidence,
         CancellationToken cancellationToken = default)
     {
         var authResult = await _stageAuthorizationService.CanUserActAsync(
@@ -68,15 +73,43 @@ public class BrideSectionService : IBrideSectionService
                 StageAuthorizationDenyReason.WrongStage,
                 $"Form is at {form.FormStage}, not awaiting the bride.");
 
+        // Gap 6: the paper form's marital status is mandatory for the bride.
+        // The JsonStringEnumConverter on BrideMaritalStatus still accepts raw
+        // integers, so an out-of-range number (e.g. 7) binds successfully to an
+        // undefined enum value instead of failing model binding — reject that
+        // the same way as a missing value.
+        if (dto.BrideMaritalStatus is null || !Enum.IsDefined(dto.BrideMaritalStatus.Value))
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage,
+                BrideMaritalStatusText.RequiredMessage);
+
+        // Gap 8: a divorced bride needs her Khula certificate on file, either
+        // uploaded with this submission or kept from an earlier upload on this
+        // form. An upload is ignored unless she declares herself divorced.
+        var isDivorced = dto.BrideMaritalStatus == BrideMaritalStatus.DivorcedIddatComplete;
+        var upload = isDivorced ? divorceEvidence : null;
+
+        if (upload is not null && DivorceEvidenceRules.Validate(upload) is { } uploadError)
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage, uploadError);
+
+        // Only a divorced bride needs the certificate, so only then look for an earlier upload.
+        var hasEvidence = upload is not null ||
+            (isDivorced && await _divorceEvidence.HasDocumentAsync(form.Id, DivorceEvidenceParty.Bride, cancellationToken));
+
+        if (isDivorced && !hasEvidence)
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage, DivorceEvidenceRules.BrideMissingMessage);
+
         var eligibility = await _eligibility.ValidateSectionAsync(
             dto.BrideMembershipNo,
             partnerIsGroom: false,
             declaresSubsequentNikah: false,
             isWidower: false,
             isDivorced: false,
-            divorceEvidence: string.Empty,
+            hasDivorceEvidence: false,
             dto.BrideMaritalStatus,
-            dto.BrideDivorceEvidence,
+            hasEvidence,
             applicationFormId,
             cancellationToken);
 
@@ -85,6 +118,14 @@ public class BrideSectionService : IBrideSectionService
             return StageAuthorizationResult.Deny(
                 StageAuthorizationDenyReason.WrongStage, eligibility.Message);
         }
+
+        // Store the certificate before touching the section fields. SaveAsync
+        // commits, and at this point only the document row is pending.
+        if (upload is not null &&
+            await _divorceEvidence.SaveAsync(
+                form.Id, DivorceEvidenceParty.Bride, upload, membershipNo, cancellationToken) is { } saveError)
+            return StageAuthorizationResult.Deny(
+                StageAuthorizationDenyReason.WrongStage, saveError);
 
         // Persist the bride's section fields onto the form
         form.BrideMembershipNo = dto.BrideMembershipNo;
